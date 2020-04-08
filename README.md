@@ -21,7 +21,7 @@ sudo pip install speedtest-cli
 Then, download the code by running:
 
 ```bash
-git clone [URL]
+git clone https://github.com/henrywhitaker3/Speedtest-Tracker.git
 ```
 
 Install the composer and npm dependencies:
@@ -31,13 +31,25 @@ composer install
 npm install && npm run production
 ```
 
+### Scheduling Setup
+
+To get speed test results every hour, you need to add a cronjob, run `sudo crontab -e` and add an entry with the following:
+
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
 ### Queue Setup
 
-`sudo apt install supervisor`
+```bash
+sudo apt install supervisor
+```
 
-`sudo vim /etc/supervisor/conf.d/laravel-worker.conf`
+```bash
+sudo vim /etc/supervisor/conf.d/laravel-worker.conf
+```
 
-Add the following:
+Add the following, updating the `command` and user `values`:
 
 ```bash
 [program:laravel-worker]
