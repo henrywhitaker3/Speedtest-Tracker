@@ -12,7 +12,6 @@ export default class HistoryGraph extends Component {
 
         this.state = {
             days: 30,
-            token: this.props.token,
             duData: {},
             duOptions: {},
             pingData: {},
@@ -31,7 +30,7 @@ export default class HistoryGraph extends Component {
     }
 
     getData = (days = this.state.days) => {
-        var url = '/api/speedtest/time/' + days + '?token=' + this.state.token.access_token;
+        var url = '/api/speedtest/time/' + days;
 
         Axios.get(url)
         .then((resp) => {
@@ -62,6 +61,15 @@ export default class HistoryGraph extends Component {
                     display: false,
                     text: 'Speedtests results for the last ' + days + ' days',
                 },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'DateTime'
+                        }
+                    }],
+                },
             };
 
             var pingData = {
@@ -84,6 +92,15 @@ export default class HistoryGraph extends Component {
                 title: {
                     display: false,
                     text: 'Ping results for the last ' + days + ' days',
+                },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'DateTime'
+                        }
+                    }],
                 },
             }
 
@@ -150,13 +167,15 @@ export default class HistoryGraph extends Component {
             )
         } else {
             return (
-                <Container className="my-4" fluid>
+                <Container className="mb-4 mt-3" fluid>
                     <Row>
                         <Col sm={{ span: 12 }}>
                             <div className="text-center">
-                                <h4 className="d-inline">Show results for the last</h4>
-                                <Form.Control id="duDaysInput" className="d-inline mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
-                                <h4 className="d-inline">days</h4>
+                                <div className="d-inline-flex align-items-center mb-2">
+                                    <h4 className="d-inline mb-0">Show results for the last</h4>
+                                    <Form.Control id="duDaysInput" className="d-inline-block mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
+                                    <h4 className="d-inline mb-0">days</h4>
+                                </div>
                                 <p className="text-muted">This data refreshes every 10 seconds</p>
                             </div>
                         </Col>

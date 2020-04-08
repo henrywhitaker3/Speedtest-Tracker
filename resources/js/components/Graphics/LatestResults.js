@@ -4,13 +4,14 @@ import Axios from 'axios';
 import Widget from './Widget';
 import { Container, Row, Spinner } from 'react-bootstrap';
 import { Col } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 export default class LatestResults extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            token: this.props.token,
             data: {},
             interval: null,
             loading: true,
@@ -26,7 +27,7 @@ export default class LatestResults extends Component {
     }
 
     getData = () => {
-        var url = '/api/speedtest/latest?token=' + this.state.token.access_token;
+        var url = '/api/speedtest/latest';
 
         Axios.get(url)
         .then((resp) => {
@@ -37,6 +38,25 @@ export default class LatestResults extends Component {
         })
         .catch((err) => {
             console.log(err);
+        })
+    }
+
+    newScan = () => {
+        var url = '/api/speedtest/run';
+
+        Axios.get(url)
+        .then((resp) => {
+            toast.info('A scan has been queued. This page will refresh when the scan has finished.');
+        })
+        .catch((err) => {
+            if(err.response) {
+                if(err.response.status == 429) {
+                    toast.error('You are doing that too much. Try again later.');
+                }
+                console.log(err.response);
+            } else {
+                console.log(err.data);
+            }
         })
     }
 
@@ -57,6 +77,11 @@ export default class LatestResults extends Component {
         } else {
             return (
                 <Container fluid>
+                    <Row>
+                        <Col sm={{ span: 12 }} className="text-center">
+                            <h4>Latest test results:</h4>
+                        </Col>
+                    </Row>
                     <Row>
                         <Col
                             lg={{ span: 2, offset: 3 }}
@@ -99,8 +124,15 @@ export default class LatestResults extends Component {
                         </Col>
                     </Row>
                     <Row>
+                        <Col sm={{ span: 12 }} className="text-center mb-2">
+                            <p className="text-muted mb-0">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col sm={{ span: 12 }} className="text-center">
-                            <p className="text-muted">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                            <div>
+                                <Button variant="primary" onClick={this.newScan}>Scan again</Button>
+                            </div>
                         </Col>
                     </Row>
                 </Container>
