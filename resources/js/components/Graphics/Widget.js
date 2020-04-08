@@ -33,13 +33,13 @@ export default class Widget extends Component {
 
         switch(icon) {
             case 'ping':
-                icon = <span class="ti-pulse icon text-success"></span>;
+                icon = <span className="ti-pulse icon text-success"></span>;
                 break;
             case 'dl':
-                icon = <span class="ti-download icon text-warning"></span>;
+                icon = <span className="ti-download icon text-warning"></span>;
                 break;
             case 'ul':
-                icon = <span class="ti-upload icon text-primary"></span>;
+                icon = <span className="ti-upload icon text-primary"></span>;
                 break;
         }
 

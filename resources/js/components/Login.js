@@ -4,7 +4,6 @@ import { Container, Row, Form, Toast } from 'react-bootstrap';
 import { Col } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import Axios from 'axios';
-import { Alert } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 export default class Login extends Component {

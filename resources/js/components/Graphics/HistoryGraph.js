@@ -4,6 +4,7 @@ import Axios from 'axios';
 import { Spinner, Container, Row, Form, Card } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import { Col } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 export default class HistoryGraph extends Component {
     constructor(props) {
@@ -119,6 +120,20 @@ export default class HistoryGraph extends Component {
         })
     }
 
+    updateDays = (e) => {
+        var days = e.target.value;
+        if(days) {
+            this.getData(days);
+            clearInterval(this.state.int);
+            var int = setInterval(this.getData, 10000);
+            toast.info('Showing results for the last ' + days + ' days');
+            this.setState({
+                days: days,
+                interval: int
+            });
+        }
+    }
+
     render() {
         var loading = this.state.loading;
         var duData = this.state.duData;
@@ -140,7 +155,7 @@ export default class HistoryGraph extends Component {
                         <Col sm={{ span: 12 }}>
                             <div className="text-center">
                                 <h4 className="d-inline">Show results for the last</h4>
-                                <Form.Control id="duDaysInput" className="d-inline mx-2" defaultValue={days}></Form.Control>
+                                <Form.Control id="duDaysInput" className="d-inline mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
                                 <h4 className="d-inline">days</h4>
                                 <p className="text-muted">This data refreshes every 10 seconds</p>
                             </div>
