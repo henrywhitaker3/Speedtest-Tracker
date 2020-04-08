@@ -100,7 +100,7 @@ export default class LatestResults extends Component {
                     </Row>
                     <Row>
                         <Col sm={{ span: 12 }} className="text-center">
-                            <p className="text-muted">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                            <p className="text-muted mb-0">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
                         </Col>
                     </Row>
                 </Container>

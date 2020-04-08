@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <link href="/icons/themify/themify-icons.css" rel="stylesheet">
-        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/bootstrap.dark.min.css">
         <link rel="stylesheet" href="/css/main.css">
 
         <title>{{ $title }}</title>
