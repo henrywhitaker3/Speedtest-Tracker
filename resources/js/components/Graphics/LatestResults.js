@@ -58,6 +58,11 @@ export default class LatestResults extends Component {
             return (
                 <Container fluid>
                     <Row>
+                        <Col sm={{ span: 12 }} className="text-center">
+                            <h4>Latest test results:</h4>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col
                             lg={{ span: 2, offset: 3 }}
                             md={{ span: 4 }}

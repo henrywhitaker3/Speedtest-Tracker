@@ -39,3 +39,7 @@
 .form-control:focus {
     color: #fff;
 }
+
+.Toastify__toast--info {
+    background: #1f5a81 !important;
+}

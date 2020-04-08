@@ -103,8 +103,8 @@ export default class HistoryGraph extends Component {
                 duData.datasets[0].data.push(download);
                 duData.datasets[1].data.push(upload);
                 pingData.datasets[0].data.push(ping);
-                duData.labels.push(new Date(e.created_at).toLocaleDateString());
-                pingData.labels.push(new Date(e.created_at).toLocaleDateString());
+                duData.labels.push(new Date(e.created_at).toLocaleString());
+                pingData.labels.push(new Date(e.created_at).toLocaleString());
             });
 
             this.setState({
@@ -154,9 +154,11 @@ export default class HistoryGraph extends Component {
                     <Row>
                         <Col sm={{ span: 12 }}>
                             <div className="text-center">
-                                <h4 className="d-inline">Show results for the last</h4>
-                                <Form.Control id="duDaysInput" className="d-inline mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
-                                <h4 className="d-inline">days</h4>
+                                <div className="d-inline-flex align-items-center mb-2">
+                                    <h4 className="d-inline mb-0">Show results for the last</h4>
+                                    <Form.Control id="duDaysInput" className="d-inline-block mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
+                                    <h4 className="d-inline mb-0">days</h4>
+                                </div>
                                 <p className="text-muted">This data refreshes every 10 seconds</p>
                             </div>
                         </Col>
