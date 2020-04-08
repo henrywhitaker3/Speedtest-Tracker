@@ -5,22 +5,13 @@ import LatestResults from '../Graphics/LatestResults';
 import Footer from './Footer';
 
 export default class HomePage extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            token: this.props.token,
-        }
-    }
 
     render() {
-        var token = this.state.token;
-
         return (
             <div>
                 <div className="my-4">
-                    <LatestResults token={token} />
-                    <HistoryGraph token={token} />
+                    <LatestResults />
+                    <HistoryGraph />
                 </div>
                 <Footer />
             </div>

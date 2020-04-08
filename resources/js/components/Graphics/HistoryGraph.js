@@ -12,7 +12,6 @@ export default class HistoryGraph extends Component {
 
         this.state = {
             days: 30,
-            token: this.props.token,
             duData: {},
             duOptions: {},
             pingData: {},
@@ -31,7 +30,7 @@ export default class HistoryGraph extends Component {
     }
 
     getData = (days = this.state.days) => {
-        var url = '/api/speedtest/time/' + days + '?token=' + this.state.token.access_token;
+        var url = '/api/speedtest/time/' + days;
 
         Axios.get(url)
         .then((resp) => {

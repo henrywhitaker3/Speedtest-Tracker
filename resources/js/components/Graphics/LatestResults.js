@@ -12,7 +12,6 @@ export default class LatestResults extends Component {
         super(props)
 
         this.state = {
-            token: this.props.token,
             data: {},
             interval: null,
             loading: true,
@@ -28,7 +27,7 @@ export default class LatestResults extends Component {
     }
 
     getData = () => {
-        var url = '/api/speedtest/latest?token=' + this.state.token.access_token;
+        var url = '/api/speedtest/latest';
 
         Axios.get(url)
         .then((resp) => {
@@ -43,7 +42,7 @@ export default class LatestResults extends Component {
     }
 
     newScan = () => {
-        var url = '/api/speedtest/run?token=' + this.state.token.access_token;
+        var url = '/api/speedtest/run';
 
         Axios.get(url)
         .then((resp) => {
