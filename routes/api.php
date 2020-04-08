@@ -51,6 +51,9 @@ Route::group([
     'middleware' => [ 'api', 'session_active' ],
     'prefix' => 'speedtest'
 ], function($router) {
-    Route::get('latest', 'SpeedtestController@latest')->name('speedtest.latest');
-    Route::get('run', 'SpeedtestController@run')->name('speedtest.run');
+    Route::get('latest', 'SpeedtestController@latest')
+         ->name('speedtest.latest');
+    Route::get('run', 'SpeedtestController@run')
+         ->name('speedtest.run')
+         ->middleware('throttle:2,1');
 });
