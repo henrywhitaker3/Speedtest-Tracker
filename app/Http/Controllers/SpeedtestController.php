@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\SpeedtestHelper;
+use App\Jobs\SpeedtestJob;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -28,10 +29,10 @@ class SpeedtestController extends Controller
     public function run()
     {
         try {
-            $data = SpeedtestHelper::runSpeedtest();
+            $data = SpeedtestJob::dispatch();
             return response()->json([
                 'method' => 'run speedtest',
-                'data' => $data
+                'data' => 'a new speedtest has been added to the queue'
             ], 200);
         } catch(Exception $e) {
             return response()->json([

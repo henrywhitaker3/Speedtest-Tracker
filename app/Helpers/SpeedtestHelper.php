@@ -5,9 +5,11 @@ namespace App\Helpers;
 use App\Speedtest;
 
 class SpeedtestHelper {
-    public static function runSpeedtest()
+    public static function runSpeedtest($output = false)
     {
-        $output = shell_exec('speedtest-cli');
+        if($output === false) {
+            $output = shell_exec('speedtest-cli');
+        }
         $output = preg_replace("/\r|\n/", "", $output);
 
         $pattern = '/([0-9\.]{1,}) ms.*Download: ([0-9\.]{1,} [A-Za-z]{1,}\/s).*Upload: ([0-9\.]{1,} [A-Za-z]{1,}\/s)/';
