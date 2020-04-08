@@ -4,7 +4,7 @@ This program runs a speedtest check every hour and graphs the results. The back-
 
 ![speedtest](https://user-images.githubusercontent.com/36062479/78822484-a82b8300-79ca-11ea-8525-fdeae496a0bd.gif)
 
-## Installation
+## Installation & Setup
 
 ### Installing Dependencies
 
@@ -12,10 +12,17 @@ This program has some dependencies, to install them you need to run the followin
 
 ```bash
 sudo apt update
-sudo apt install software-properties-common
-sudo add-apt [ONDREJ 7.4]
-sudo apt install php7.4 composer python3 python3-pip
-sudo pip install speedtest-cli
+sudo apt update
+sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 composer python3 python3-pip git
+```
+```bash
+sudo apt install curl
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt install nodejs
+```
+
+```bash
+sudo pip3 install speedtest-cli
 ```
 
 Then, download the code by running:
@@ -31,9 +38,32 @@ composer install
 npm install && npm run production
 ```
 
+### Setting up the database
+
+Run the following to set your database variables:
+
+```bash
+cp .env.example .env
+```
+
+Then update the `DB_DATABASE` value with the absolute path of your install, followed by `/database/speed.db`.
+
+Finally, run the following to setup the tables in the database:
+
+```bash
+php artisan key:generate
+php artisan migrate
+```
+
+Now run the following to make sure everything has been setup properly (it should output a speedtest result):
+
+```bash
+php artisan speedtest:run
+```
+
 ### Scheduling Setup
 
-To get speed test results every hour, you need to add a cronjob, run `sudo crontab -e` and add an entry with the following:
+To get speed test results every hour, you need to add a cronjob, run `sudo crontab -e` and add an entry with the following (with the path you your install):
 
 ```bash
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
