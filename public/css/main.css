@@ -9,3 +9,12 @@
     right: 0;
     margin: 0 5em 1rem;
 }
+
+#duDaysInput,
+#pingDaysInput {
+    width: 75px;
+}
+
+.widget-card span.icon {
+    font-size: 2em;
+}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import HistoryGraph from '../Graphics/HistoryGraph';
+import LatestResults from '../Graphics/LatestResults';
 
 export default class HomePage extends Component {
     constructor(props) {
@@ -15,7 +16,8 @@ export default class HomePage extends Component {
         var token = this.state.token;
 
         return (
-            <div>
+            <div className="my-4">
+                <LatestResults token={token} />
                 <HistoryGraph token={token} />
             </div>
         );
