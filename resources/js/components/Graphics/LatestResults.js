@@ -4,6 +4,8 @@ import Axios from 'axios';
 import Widget from './Widget';
 import { Container, Row, Spinner } from 'react-bootstrap';
 import { Col } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 export default class LatestResults extends Component {
     constructor(props) {
@@ -37,6 +39,25 @@ export default class LatestResults extends Component {
         })
         .catch((err) => {
             console.log(err);
+        })
+    }
+
+    newScan = () => {
+        var url = '/api/speedtest/run?token=' + this.state.token.access_token;
+
+        Axios.get(url)
+        .then((resp) => {
+            toast.info('A scan has been queued. This page will refresh when the scan has finished.');
+        })
+        .catch((err) => {
+            if(err.response) {
+                if(err.response.status == 429) {
+                    toast.error('You are doing that too much. Try again later.');
+                }
+                console.log(err.response);
+            } else {
+                console.log(err.data);
+            }
         })
     }
 
@@ -104,8 +125,15 @@ export default class LatestResults extends Component {
                         </Col>
                     </Row>
                     <Row>
-                        <Col sm={{ span: 12 }} className="text-center">
+                        <Col sm={{ span: 12 }} className="text-center mb-2">
                             <p className="text-muted mb-0">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={{ span: 12 }} className="text-center">
+                            <div>
+                                <Button variant="primary" onClick={this.newScan}>Scan again</Button>
+                            </div>
                         </Col>
                     </Row>
                 </Container>

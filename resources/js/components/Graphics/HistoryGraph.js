@@ -62,6 +62,15 @@ export default class HistoryGraph extends Component {
                     display: false,
                     text: 'Speedtests results for the last ' + days + ' days',
                 },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'DateTime'
+                        }
+                    }],
+                },
             };
 
             var pingData = {
@@ -85,6 +94,15 @@ export default class HistoryGraph extends Component {
                     display: false,
                     text: 'Ping results for the last ' + days + ' days',
                 },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'DateTime'
+                        }
+                    }],
+                },
             }
 
             resp.data.data.forEach(e => {
@@ -103,8 +121,8 @@ export default class HistoryGraph extends Component {
                 duData.datasets[0].data.push(download);
                 duData.datasets[1].data.push(upload);
                 pingData.datasets[0].data.push(ping);
-                duData.labels.push(new Date(e.created_at).toLocaleString());
-                pingData.labels.push(new Date(e.created_at).toLocaleString());
+                duData.labels.push(new Date(e.created_at).toLocaleDateString());
+                pingData.labels.push(new Date(e.created_at).toLocaleDateString());
             });
 
             this.setState({
@@ -150,7 +168,7 @@ export default class HistoryGraph extends Component {
             )
         } else {
             return (
-                <Container className="my-4" fluid>
+                <Container className="mb-4 mt-3" fluid>
                     <Row>
                         <Col sm={{ span: 12 }}>
                             <div className="text-center">
