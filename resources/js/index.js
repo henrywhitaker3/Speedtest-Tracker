@@ -53,6 +53,7 @@ export default class Index extends Component {
                 user: resp.data,
                 loading: false,
                 redirectLogin: false,
+                token: token
             });
             if(reload) {
                 this.setState({
