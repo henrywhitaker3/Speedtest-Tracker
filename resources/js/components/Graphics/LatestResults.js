@@ -43,7 +43,6 @@ export default class LatestResults extends Component {
     render() {
         var loading = this.state.loading;
         var data = this.state.data;
-        console.log(data);
 
         if(loading) {
             return (
@@ -97,6 +96,11 @@ export default class LatestResults extends Component {
                                 unit="Mbit/s"
                                 icon="ul"
                             />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={{ span: 12 }} className="text-center">
+                            <p className="text-muted">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
                         </Col>
                     </Row>
                 </Container>
