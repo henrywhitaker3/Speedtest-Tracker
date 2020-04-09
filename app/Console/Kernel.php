@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Helpers\SpeedtestHelper;
+use App\Jobs\SpeedtestJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -26,8 +27,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function() {
-            SpeedtestHelper::runSpeedtest();
-        })->hourly();
+            SpeedtestJob::dispatch();
+        })->hourlyAt(0);
     }
 
     /**
