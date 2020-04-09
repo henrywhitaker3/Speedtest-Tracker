@@ -43,3 +43,7 @@
 .Toastify__toast--info {
     background: #1f5a81 !important;
 }
+
+.Toastify__toast--success {
+    background: #28922b !important;
+}

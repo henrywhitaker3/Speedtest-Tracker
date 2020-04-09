@@ -28,3 +28,12 @@ Route::group([
     Route::get('run', 'SpeedtestController@run')
          ->name('speedtest.run');
 });
+
+Route::group([
+    'middleware' => 'api'
+], function () {
+    Route::get('backup', 'BackupController@backup')
+         ->name('data.backup');
+    Route::post('restore', 'BackupController@restore')
+         ->name('data.restore');
+});
