@@ -6,13 +6,20 @@ import { Col } from 'react-bootstrap';
 export default class Footer extends Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+            version: document.querySelector('meta[name="version"]').content
+        };
     }
 
     render() {
+        var version = this.state.version;
+
         return (
             <Container>
                 <Row>
                     <Col sm={{ span: 12 }} className="text-center">
+                        <p className="text-muted mb-0">Speedtest Tracker Version: {version}</p>
                         <p className="text-muted">See the code on <a href="https://github.com/henrywhitaker3/Speedtest-Tracker" target="_blank" rel="noopener noreferrer">GitHub</a></p>
                     </Col>
                 </Row>
