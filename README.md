@@ -6,7 +6,13 @@ This program runs a speedtest check every hour and graphs the results. The back-
 
 ## Installation & Setup
 
-### Installing Dependencies
+### Using Docker
+
+A docker image is available [here](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker)
+
+### Manual Install
+
+#### Installing Dependencies
 
 This program has some dependencies, to install them you need to run the following:
 
@@ -38,7 +44,7 @@ composer install
 npm install && npm run production
 ```
 
-### Setting up the database
+#### Setting up the database
 
 Run the following to set your database variables:
 
@@ -61,7 +67,7 @@ Now run the following to make sure everything has been setup properly (it should
 php artisan speedtest:run
 ```
 
-### Scheduling Setup
+#### Scheduling Setup
 
 To get speed test results every hour, you need to add a cronjob, run `sudo crontab -e` and add an entry with the following (with the path you your install):
 
@@ -69,7 +75,7 @@ To get speed test results every hour, you need to add a cronjob, run `sudo cront
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-### Queue Setup
+#### Queue Setup
 
 ```bash
 sudo apt install supervisor
