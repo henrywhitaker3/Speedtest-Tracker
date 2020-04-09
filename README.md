@@ -10,6 +10,8 @@ This program runs a speedtest check every hour and graphs the results. The back-
 
 A docker image is available [here](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker)
 
+When updating to a new version of the docker image, use the built-in backup function before updating, and then restore your data after updating.
+
 ### Manual Install
 
 #### Installing Dependencies
