@@ -27,7 +27,7 @@ This program has some dependencies, to install them you need to run the followin
 ```bash
 sudo apt update
 sudo apt update
-sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 composer python3 python3-pip git
+sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 php-zip composer python3 python3-pip git
 ```
 ```bash
 sudo apt install curl
