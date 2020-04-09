@@ -37,6 +37,9 @@ export default class LatestResults extends Component {
             });
         })
         .catch((err) => {
+            this.setState({
+                data: false
+            });
             console.log(err);
         })
     }
@@ -64,12 +67,24 @@ export default class LatestResults extends Component {
         var loading = this.state.loading;
         var data = this.state.data;
 
-        if(loading) {
+        if(loading && data !== false) {
             return (
                 <Container fluid>
                     <Row>
                         <Col sm={{ span: 12 }}>
                             <Spinner animation="grow" />
+                        </Col>
+                    </Row>
+                </Container>
+            );
+        } else if(data === false) {
+            return (
+                <Container fluid>
+                    <Row>
+                        <Col sm={{ span: 12 }} className="text-center">
+                            <div>
+                                <Button variant="primary" onClick={this.newScan}>Start your first scan!</Button>
+                            </div>
                         </Col>
                     </Row>
                 </Container>
