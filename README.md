@@ -4,6 +4,12 @@ This program runs a speedtest check every hour and graphs the results. The back-
 
 ![speedtest](https://user-images.githubusercontent.com/36062479/78822484-a82b8300-79ca-11ea-8525-fdeae496a0bd.gif)
 
+## Features
+
+- Automatically run a speedtest every hour
+- Graph of previous speedtests going back x days
+- Backup/restore data in JSON format
+
 ## Installation & Setup
 
 ### Using Docker
