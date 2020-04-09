@@ -120,8 +120,8 @@ export default class HistoryGraph extends Component {
                 duData.datasets[0].data.push(download);
                 duData.datasets[1].data.push(upload);
                 pingData.datasets[0].data.push(ping);
-                duData.labels.push(new Date(e.created_at).toLocaleDateString());
-                pingData.labels.push(new Date(e.created_at).toLocaleDateString());
+                duData.labels.push(new Date(e.created_at).toLocaleString());
+                pingData.labels.push(new Date(e.created_at).toLocaleString());
             });
 
             this.setState({
