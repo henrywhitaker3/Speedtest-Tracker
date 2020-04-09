@@ -26,6 +26,5 @@ Route::group([
     Route::get('time/{time}', 'SpeedtestController@time')
          ->name('speedtest.time');
     Route::get('run', 'SpeedtestController@run')
-         ->name('speedtest.run')
-         ->middleware('throttle:5,1');
+         ->name('speedtest.run');
 });
