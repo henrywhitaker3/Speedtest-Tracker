@@ -1,0 +1,18 @@
+{
+    "1.2.0": [
+        {
+            "description": "Added an updating mechainism within the app to keep code up to date.",
+            "link": ""
+        }
+    ],
+    "1.1.0": [
+        {
+            "description": "Added a version number to the app",
+            "link": ""
+        },
+        {
+            "description": "Added a backup/restore function",
+            "link": ""
+        }
+    ]
+}

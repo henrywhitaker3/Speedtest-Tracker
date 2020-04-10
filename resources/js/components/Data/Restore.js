@@ -57,7 +57,7 @@ export default class Restore extends Component {
 
         Axios.post(url, data)
         .then((resp) => {
-            toast.success('Your is being restored...');
+            toast.success('Your data is being restored...');
             this.setState({
                 show: false,
                 data: null,
