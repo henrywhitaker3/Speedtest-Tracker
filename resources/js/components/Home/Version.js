@@ -74,16 +74,13 @@ export default class Version extends Component {
                 toast.info('Applying update');
                 Axios.get('/api/update/move')
                 .then((resp) => {
-                    Axios.get('/api/update/move')
-                    .then((resp) => {
-                        this.setState({
-                            updateProgress: 100,
-                        });
-                        toast.success('Update successful. Refreshing your page...');
-                        setTimeout(function() {
-                            location.reload(true);
-                        }, 5000);
-                    })
+                    this.setState({
+                        updateProgress: 100,
+                    });
+                    toast.success('Update successful. Refreshing your page...');
+                    setTimeout(function() {
+                        location.reload(true);
+                    }, 5000);
                 })
             })
         })
@@ -123,7 +120,9 @@ export default class Version extends Component {
                                             <li key={i}>{e.description}</li>
                                         );
                                     } else {
-                                        <li key={i}><a href={e.link} target="_blank" rel="noopener noreferer">{e.description}</a></li>
+                                        return (
+                                            <li key={i}><a href={e.link} target="_blank" rel="noopener noreferer">{e.description}</a></li>
+                                        )
                                     }
                                 })}
                             </ul>
