@@ -146,6 +146,7 @@ class UpdateHelper {
         $this->deleteExcluded($dir);
         $this->backupCurrent();
         $this->moveFiles();
+        $this->clearup();
 
         Log::info('Successfully applied update');
     }
@@ -280,6 +281,17 @@ class UpdateHelper {
             } catch(Exception $e) {
                 Log::error('Couldn\' restore ' . $dir);
             }
+        }
+    }
+
+    private function clearup()
+    {
+        try {
+            File::deleteDirectory('/tmp/'.$this->repo.'-update/');
+            Log::info('Deleted download directory');
+        } catch(Exception $e) {
+            Log::error('Failed cleaning up update');
+            Log::error($e);
         }
     }
 }

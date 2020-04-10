@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
 import { toast } from 'react-toastify';
-import { Modal } from 'react-bootstrap';
+import { Modal, ProgressBar } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
 export default class Version extends Component {
     constructor(props) {
@@ -13,6 +14,8 @@ export default class Version extends Component {
             update: false,
             modalShow: false,
             changelog: [],
+            showProgress: false,
+            updateProgress: 0,
         };
     }
 
@@ -51,11 +54,48 @@ export default class Version extends Component {
         });
     }
 
+    updateApp = () => {
+        this.setState({
+            showProgress: true,
+            updateProgress: 0,
+        });
+        toast.info('Downloading update');
+        Axios.get('/api/update/download')
+        .then((resp) => {
+            this.setState({
+                updateProgress: 50,
+            });
+            toast.info('Extracting update');
+            Axios.get('/api/speedtest/extract')
+            .then((resp) => {
+                this.setState({
+                    updateProgress: 75,
+                });
+                toast.info('Applying update');
+                Axios.get('/api/update/move')
+                .then((resp) => {
+                    this.setState({
+                        updateProgress: 100,
+                    });
+                    toast.success('Update successful. Refreshing your page...');
+                    setTimeout(function() {
+                        location.reload(true);
+                    }, 5000);
+                })
+            })
+        })
+        .catch((err) => {
+            toast.error('Something went wrong...');
+        })
+    }
+
     render() {
         var version = this.state.version;
         var update = this.state.update;
         var modalShow = this.state.modalShow;
         var changelog = this.state.changelog;
+        var showProgress = this.state.showProgress;
+        var updateProgress = this.state.updateProgress;
 
         if(update === false) {
             return (
@@ -84,6 +124,15 @@ export default class Version extends Component {
                                     }
                                 })}
                             </ul>
+                            {showProgress &&
+                                <div>
+                                    <p>Update progress:</p>
+                                    <ProgressBar animated now={updateProgress} />
+                                </div>
+                            }
+                            {!showProgress &&
+                                <Button variant="primary" onClick={this.updateApp}>Update</Button>
+                            }
                         </Modal.Body>
                     </Modal>
                 </div>

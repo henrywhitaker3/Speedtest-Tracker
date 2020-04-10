@@ -53,16 +53,9 @@ class UpdateController extends Controller
     {
         $cp = Updater::updateFiles();
 
-        if($cp) {
-            return response()->json([
-                'method' => 'copy latest version',
-                'success' => $cp,
-            ], 200);
-        } else {
-            return response()->json([
-                'method' => 'copy latest version',
-                'success' => false,
-            ], 500);
-        }
+        return response()->json([
+            'method' => 'copy latest version',
+            'success' => $cp,
+        ], 200);
     }
 }
