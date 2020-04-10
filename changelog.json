@@ -1,4 +1,10 @@
 {
+    "1.2.1": [
+        {
+            "description": "Fixed issue where changelog entry with a link wouldn't show.",
+            "link": ""
+        }
+    ],
     "1.2.0": [
         {
             "description": "Added an updating mechainism within the app to keep code up to date.",
