@@ -37,3 +37,11 @@ Route::group([
     Route::post('restore', 'BackupController@restore')
          ->name('data.restore');
 });
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'update',
+], function () {
+    Route::get('check', 'UpdateController@checkForUpdate')
+         ->name('update.check');
+});
