@@ -1,4 +1,10 @@
 {
+    "1.2.0": [
+        {
+            "description": "Added an updating mechainism within the app.",
+            "link": ""
+        }
+    ],
     "1.1.0": [
         {
             "description": "Added a version number to the app",

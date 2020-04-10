@@ -44,4 +44,10 @@ Route::group([
 ], function () {
     Route::get('check', 'UpdateController@checkForUpdate')
          ->name('update.check');
+    Route::get('download', 'UpdateController@downloadUpdate')
+         ->name('update.download');
+    Route::get('extract', 'UpdateController@extractUpdate')
+         ->name('update.extract');
+    Route::get('extract', 'UpdateController@moveUpdate')
+         ->name('update.move');
 });
