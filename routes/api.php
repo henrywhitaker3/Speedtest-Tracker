@@ -48,6 +48,6 @@ Route::group([
          ->name('update.download');
     Route::get('extract', 'UpdateController@extractUpdate')
          ->name('update.extract');
-    Route::get('extract', 'UpdateController@moveUpdate')
+    Route::get('move', 'UpdateController@moveUpdate')
          ->name('update.move');
 });

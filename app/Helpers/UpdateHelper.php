@@ -3,6 +3,10 @@
 namespace App\Helpers;
 
 use Exception;
+use File;
+use Illuminate\Support\Facades\Log;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use ZipArchive;
 
 class UpdateHelper {
@@ -23,6 +27,8 @@ class UpdateHelper {
 
     public function check()
     {
+        Log::info('Checking for new version');
+
         if($this->currentVersion === false) {
             return false;
         }
@@ -33,6 +39,7 @@ class UpdateHelper {
         }
 
         if((bool)(version_compare($this->currentVersion, $gitVersion['version']))) {
+            Log::info('New version found! v' . $gitVersion['version']);
             $changelog = $this->getChangelog();
             return [
                 'version' => $gitVersion['version'],
@@ -45,7 +52,6 @@ class UpdateHelper {
 
     public function checkLatestVersion()
     {
-
         $url = 'https://raw.githubusercontent.com/'
                .$this->user
                .'/'
@@ -93,6 +99,7 @@ class UpdateHelper {
 
     public function downloadLatest()
     {
+        Log::info('Downloading the latest version from GitHub');
         $url = 'https://github.com/'
                 .$this->user
                 .'/'
@@ -105,29 +112,103 @@ class UpdateHelper {
             $zip = file_get_contents($url);
             $name = '/tmp/'.$this->repo.'-update.zip';
             file_put_contents($name, $zip);
+            Log::info('New version successfully downloaded');
             return true;
         } catch(Exception $e) {
+            Log::error('Couldn\'t download the update');
+            Log::error($e);
             return $e;
         }
     }
 
     public function extractFiles()
     {
+        Log::info('Extracting the update');
         $zip = new ZipArchive();
         $res = $zip->open('/tmp/'.$this->repo.'-update.zip');
         if($res === true) {
             $zip->extractTo('/tmp/'.$this->repo.'-update/');
             $zip->close();
+            Log::info('Update extracted');
             return true;
         } else {
+            Log::error('Couldn\'t extract the update');
             return false;
         }
     }
 
     public function updateFiles()
     {
-        foreach (glob('/tmp/'.$this->repo.'-update/') as $folder) {
-            return $folder;
+        Log::info('Applying update');
+        $dir = array_filter(glob('/tmp/'.$this->repo.'-update/*'), 'is_dir');
+        $dir = $dir[0].DIRECTORY_SEPARATOR;
+
+        $this->deleteExcluded($dir);
+        $this->backupCurrent();
+
+        Log::info('Successfully applied update');
+    }
+
+    private function deleteExcluded($path)
+    {
+        Log::info('Deleting excluded items');
+        $exclude_dirs = config('speedtest.exclude_dirs', []);
+        foreach($exclude_dirs as $dir) {
+            $dir = $path . $dir;
+            Log::info('Deleting excluded directory: ' . $dir);
+
+            File::deleteDirectory($dir);
         }
+
+        $exclude_files = config('speedtest.exclude_files', []);
+        foreach($exclude_files as $file) {
+            $file = $path . $file;
+            Log::info('Deleting excluded file: ' . $file);
+
+            File::delete($file);
+        }
+        Log::info('Excluded items deleted');
+    }
+
+    private function backupCurrent()
+    {
+        Log::info('Backing up current installation');
+
+        $rootPath = realpath(base_path());
+        $backupZip = '/tmp/speedtest-backup-'.time().'.zip';
+
+        // Initialize archive object
+        $zip = new ZipArchive();
+        $zip->open($backupZip, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+        // Create recursive directory iterator
+        /** @var SplFileInfo[] $files */
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($rootPath),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+
+        foreach ($files as $name => $file)
+        {
+            // Skip directories (they would be added automatically)
+            if (!$file->isDir())
+            {
+                // Get real and relative path for current file
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($rootPath) + 1);
+
+                // Add current file to archive
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+
+        // Zip archive will be created only after closing object
+        $zip->close();
+        Log::info('Backup created at: ' . $backupZip);
+    }
+
+    private function moveFiles()
+    {
+
     }
 }

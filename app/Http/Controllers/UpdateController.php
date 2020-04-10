@@ -56,7 +56,7 @@ class UpdateController extends Controller
         if($cp) {
             return response()->json([
                 'method' => 'copy latest version',
-                'success' => true,
+                'success' => $cp,
             ], 200);
         } else {
             return response()->json([
