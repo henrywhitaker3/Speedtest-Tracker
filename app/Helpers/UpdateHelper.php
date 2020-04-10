@@ -17,7 +17,7 @@ class UpdateHelper {
             return false;
         }
 
-        return (bool)(version_compare($current, $gitVersion['version']));
+        return ((bool)(version_compare($current, $gitVersion['version']))) ? $gitVersion['version'] : false;
     }
 
     public static function checkLatestVersion()
