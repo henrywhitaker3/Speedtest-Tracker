@@ -10,6 +10,7 @@ class UpdateController extends Controller
     public function checkForUpdate()
     {
         return response()->json([
+            'method' => 'check for updates',
             'update' => UpdateHelper::check(),
         ], 200);
     }
