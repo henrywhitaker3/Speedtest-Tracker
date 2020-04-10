@@ -1,8 +1,14 @@
 {
+    "1.2.1": [
+        {
+            "description": "Fixed issue where changelog entry with a link wouldn't show.",
+            "link": ""
+        }
+    ],
     "1.2.0": [
         {
             "description": "Added an updating mechainism within the app to keep code up to date.",
-            "link": ""
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/commit/710a770d40e59e1b985053c5a7c9f43580132570?diff=unified"
         }
     ],
     "1.1.0": [
