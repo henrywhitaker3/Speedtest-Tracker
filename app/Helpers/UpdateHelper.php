@@ -17,7 +17,15 @@ class UpdateHelper {
             return false;
         }
 
-        return ((bool)(version_compare($current, $gitVersion['version']))) ? $gitVersion['version'] : false;
+        if((bool)(version_compare($current, $gitVersion['version']))) {
+            $changelog = UpdateHelper::getChangelog();
+            return [
+                'version' => $gitVersion['version'],
+                'changelog' => $changelog[$gitVersion['version']],
+            ];
+        } else {
+            return false;
+        }
     }
 
     public static function checkLatestVersion()
@@ -26,12 +34,13 @@ class UpdateHelper {
         $repo = config('speedtest.repo');
         $branch = config('speedtest.branch');
 
-        $url = 'https://raw.githubusercontent.com/'.$user
-                                                   .'/'
-                                                   .$repo
-                                                   .'/'
-                                                   .$branch
-                                                   .'/config/speedtest.php';
+        $url = 'https://raw.githubusercontent.com/'
+               .$user
+               .'/'
+               .$repo
+               .'/'
+               .$branch
+               .'/config/speedtest.php';
 
         try {
             $gitFile = file_get_contents($url);
@@ -49,5 +58,28 @@ class UpdateHelper {
             'branch' => $branch,
             'version' => $version,
         ];
+    }
+
+    public static function getChangelog()
+    {
+        $user = config('speedtest.user');
+        $repo = config('speedtest.repo');
+        $branch = config('speedtest.branch');
+
+        $url = 'https://raw.githubusercontent.com/'
+               .$user
+               .'/'
+               .$repo
+               .'/'
+               .$branch
+               .'/changelog.json';
+
+        try {
+            $changelog = json_decode(file_get_contents($url), true);
+        } catch(Exception $e) {
+            $changelog = [];
+        }
+
+        return $changelog;
     }
 }
