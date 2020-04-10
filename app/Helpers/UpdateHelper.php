@@ -145,17 +145,18 @@ class UpdateHelper {
 
         $this->deleteExcluded($dir);
         $this->backupCurrent();
+        $this->moveFiles();
 
         Log::info('Successfully applied update');
     }
 
     private function deleteExcluded($path)
     {
-        Log::info('Deleting excluded items');
+        Log::info('Deleting excluded items from update directory');
         $exclude_dirs = config('speedtest.exclude_dirs', []);
         foreach($exclude_dirs as $dir) {
             $dir = $path . $dir;
-            Log::info('Deleting excluded directory: ' . $dir);
+            Log::debug('Deleting excluded directory: ' . $dir);
 
             File::deleteDirectory($dir);
         }
@@ -163,11 +164,11 @@ class UpdateHelper {
         $exclude_files = config('speedtest.exclude_files', []);
         foreach($exclude_files as $file) {
             $file = $path . $file;
-            Log::info('Deleting excluded file: ' . $file);
+            Log::debug('Deleting excluded file: ' . $file);
 
             File::delete($file);
         }
-        Log::info('Excluded items deleted');
+        Log::info('Excluded items deleted from update directory');
     }
 
     private function backupCurrent()
@@ -209,6 +210,76 @@ class UpdateHelper {
 
     private function moveFiles()
     {
+            $new = array_filter(glob('/tmp/'.$this->repo.'-update/*'), 'is_dir');
+            $new = $new[0].DIRECTORY_SEPARATOR;
 
+            foreach(File::files($new) as $file) {
+                $filename = explode('/', $file);
+                $filename = array_slice($filename, -1)[0];
+                try {
+                    Log::info('Overwriting ' . $filename);
+                    Log::debug('From: ' . $file . ' to: ' . base_path().DIRECTORY_SEPARATOR.$filename);
+                    File::delete(base_path().DIRECTORY_SEPARATOR.$filename);
+                    File::move($file, base_path().DIRECTORY_SEPARATOR.$filename);
+                } catch(Exception $e) {
+                    Log::error('Failed to overwrite: ' . $filename);
+                    Log::debug($e);
+                }
+            }
+
+            $this->tempStoreExcludedFiles();
+
+            foreach(File::directories($new) as $dir) {
+                $dirname = explode('/', $dir);
+                $dirname = array_slice($dirname, -1)[0];
+                Log::info('Overwriting ' . $dir);
+                File::deleteDirectory(base_path().DIRECTORY_SEPARATOR.$dirname);
+                File::move($dir, base_path().DIRECTORY_SEPARATOR.$dirname);
+            }
+
+            $this->restoreExcludedFiles();
+
+    }
+
+    private function tempStoreExcludedFiles()
+    {
+        Log::info('Temporarily moving exluded files from root directory');
+        foreach(config('speedtest.exclude_files', []) as $file) {
+            try {
+                Log::info('Moving ' . $file);
+                File::copy(base_path().DIRECTORY_SEPARATOR.$file, '/tmp/'.$file);
+            } catch(Exception $e) {
+                Log::error('Couldn\'t backup '.$file);
+            }
+        }
+        foreach(config('speedtest.exclude_dirs', []) as $dir) {
+            try {
+                Log::info('Moving ' . $dir);
+                File::copyDirectory(base_path().DIRECTORY_SEPARATOR.$dir, '/tmp/'.$dir);
+            } catch(Exception $e) {
+                Log::error('Couldn\'t backup '.$dir);
+            }
+        }
+    }
+
+    private function restoreExcludedFiles()
+    {
+        Log::info('Restoring exluded files to root directory');
+        foreach(config('speedtest.exclude_files', []) as $file) {
+            try {
+                Log::info('Moving ' . $file);
+                File::copy('/tmp/'.$file, base_path().DIRECTORY_SEPARATOR.$file);
+            } catch(Exception $e) {
+                Log::error('Couldn\'t restore '.$file);
+            }
+        }
+        foreach(config('speedtest.exclude_dirs', []) as $dir) {
+            try {
+                Log::info('Moving ' . $dir);
+                File::copyDirectory('/tmp/'.$dir, base_path().DIRECTORY_SEPARATOR.$dir);
+            } catch(Exception $e) {
+                Log::error('Couldn\' restore ' . $dir);
+            }
+        }
     }
 }
