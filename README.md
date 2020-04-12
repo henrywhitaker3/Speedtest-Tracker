@@ -1,0 +1,45 @@
+# Speedtest Tracker
+
+This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [speedtest-cli](https://github.com/sivel/speedtest-cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
+
+![speedtest](https://user-images.githubusercontent.com/36062479/78822484-a82b8300-79ca-11ea-8525-fdeae496a0bd.gif)
+
+## Features
+
+- Automatically run a speedtest every hour
+- Graph of previous speedtests going back x days
+- Backup/restore data in JSON format
+
+## Usage
+
+```bash
+docker create \
+      --name=speedtest \
+      -p 8765:80 \
+      -v /path/to/data:/config \
+      --restart unless-stopped \
+      henrywhitaker3/speedtest-tracker
+```
+
+## Getting the Image
+
+To get the base image, you have 2 options:
+
+- Use the pre-built image on dockerhub
+- Build the image yourself
+
+### Pre-built Image
+
+Run `docker pull henrywhitaker3/speedtest-tracker`
+
+### Dockerfile
+
+Clone the required files from the github repo [here](https://github.com/henrywhitaker3/Speedtest-Tracker/tree/docker) maing sure to use the `docker` branch of the repo.
+
+Build the image form the docker file by running (within the cloned git repo):
+
+```bash
+docker build . -f Dockerfile --tag=henrywhitaker3/speedtest-tracker:<tag>
+```
+
+
