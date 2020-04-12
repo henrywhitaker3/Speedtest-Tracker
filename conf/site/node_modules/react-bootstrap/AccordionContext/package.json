@@ -1,0 +1,6 @@
+{
+  "name": "react-bootstrap/AccordionContext",
+  "private": true,
+  "main": "../cjs/AccordionContext.js",
+  "module": "../esm/AccordionContext.js"
+}

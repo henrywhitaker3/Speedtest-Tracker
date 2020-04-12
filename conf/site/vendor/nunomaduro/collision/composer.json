@@ -1,0 +1,71 @@
+{
+    "name": "nunomaduro/collision",
+    "description": "Cli error handling for console/command-line PHP applications.",
+    "keywords": ["console", "command-line", "php", "cli", "error", "handling", "laravel-zero", "laravel", "artisan", "symfony"],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/nunomaduro/collision/issues",
+        "source": "https://github.com/nunomaduro/collision"
+    },
+    "authors": [
+        {
+            "name": "Nuno Maduro",
+            "email": "enunomaduro@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5",
+        "facade/ignition-contracts": "^1.0",
+        "filp/whoops": "^2.4",
+        "symfony/console": "^5.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "facade/ignition": "^2.0",
+        "fideloper/proxy": "^4.2",
+        "fruitcake/laravel-cors": "^1.0",
+        "laravel/framework": "^7.0",
+        "laravel/tinker": "^2.0",
+        "nunomaduro/larastan": "^0.5",
+        "orchestra/testbench": "^5.0",
+        "phpstan/phpstan": "^0.12.3",
+        "phpunit/phpunit": "^8.5.1 || ^9.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Unit\\": "tests/Unit",
+            "Tests\\FakeProgram\\": "tests/FakeProgram",
+            "Tests\\": "tests/LaravelApp/tests",
+            "App\\": "tests/LaravelApp/app/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "NunoMaduro\\Collision\\": "src/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "lint": "php-cs-fixer fix -v",
+        "test:types": "phpstan analyse --ansi",
+        "test:unit": "phpunit --colors=always",
+        "test:lint": "php-cs-fixer fix -v --dry-run",
+        "test": [
+            "@test:lint",
+            "@test:unit",
+            "@test:types"
+        ]
+    }
+}

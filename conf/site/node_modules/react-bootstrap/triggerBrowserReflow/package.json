@@ -1,0 +1,6 @@
+{
+  "name": "react-bootstrap/triggerBrowserReflow",
+  "private": true,
+  "main": "../cjs/triggerBrowserReflow.js",
+  "module": "../esm/triggerBrowserReflow.js"
+}

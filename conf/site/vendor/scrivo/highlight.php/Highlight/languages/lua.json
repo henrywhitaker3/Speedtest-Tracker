@@ -1,0 +1,118 @@
+{
+    "lexemes": "[a-zA-Z_]\\w*",
+    "keywords": {
+        "literal": "true false nil",
+        "keyword": "and break do else elseif end for goto if in local not or repeat return then until while",
+        "built_in": "_G _ENV _VERSION __index __newindex __mode __call __metatable __tostring __len __gc __add __sub __mul __div __mod __pow __concat __unm __eq __lt __le assert collectgarbage dofile error getfenv getmetatable ipairs load loadfile loadstringmodule next pairs pcall print rawequal rawget rawset require select setfenvsetmetatable tonumber tostring type unpack xpcall arg selfcoroutine resume yield status wrap create running debug getupvalue debug sethook getmetatable gethook setmetatable setlocal traceback setfenv getinfo setupvalue getlocal getregistry getfenv io lines write close flush open output type read stderr stdin input stdout popen tmpfile math log max acos huge ldexp pi cos tanh pow deg tan cosh sinh random randomseed frexp ceil floor rad abs sqrt modf asin min mod fmod log10 atan2 exp sin atan os exit setlocale date getenv difftime remove time clock tmpname rename execute package preload loadlib loaded loaders cpath config path seeall string sub upper len gfind rep find match char dump gmatch reverse byte format gsub lower table setn insert getn foreachi maxn foreach concat sort remove"
+    },
+    "contains": [
+        {
+            "className": "comment",
+            "begin": "--(?!\\[=*\\[)",
+            "end": "$",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "--\\[=*\\[",
+            "end": "\\]=*\\]",
+            "contains": [
+                {
+                    "begin": "\\[=*\\[",
+                    "end": "\\]=*\\]",
+                    "contains": [
+                        "self"
+                    ]
+                },
+                {
+                    "$ref": "#contains.0.contains.0"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ],
+            "relevance": 10
+        },
+        {
+            "className": "function",
+            "beginKeywords": "function",
+            "end": "\\)",
+            "contains": [
+                {
+                    "className": "title",
+                    "begin": "([_a-zA-Z]\\w*\\.)*([_a-zA-Z]\\w*:)?[_a-zA-Z]\\w*",
+                    "relevance": 0
+                },
+                {
+                    "className": "params",
+                    "begin": "\\(",
+                    "endsWithParent": true,
+                    "contains": [
+                        {
+                            "$ref": "#contains.0"
+                        },
+                        {
+                            "$ref": "#contains.1"
+                        }
+                    ]
+                },
+                {
+                    "$ref": "#contains.0"
+                },
+                {
+                    "$ref": "#contains.1"
+                }
+            ]
+        },
+        {
+            "className": "number",
+            "begin": "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)",
+            "relevance": 0
+        },
+        {
+            "className": "string",
+            "begin": "'",
+            "end": "'",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "begin": "\\\\[\\s\\S]",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "\"",
+            "end": "\"",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "$ref": "#contains.4.contains.0"
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "\\[=*\\[",
+            "end": "\\]=*\\]",
+            "contains": [
+                {
+                    "$ref": "#contains.1.contains.0"
+                }
+            ],
+            "relevance": 5
+        }
+    ]
+}

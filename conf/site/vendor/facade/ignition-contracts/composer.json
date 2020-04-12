@@ -1,0 +1,40 @@
+{
+    "name": "facade/ignition-contracts",
+    "description": "Solution contracts for Ignition",
+    "keywords": [
+        "flare",
+        "contracts",
+        "ignition"
+    ],
+    "homepage": "https://github.com/facade/ignition-contracts",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Freek Van der Herten",
+            "email": "freek@spatie.be",
+            "homepage": "https://flareapp.io",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Facade\\IgnitionContracts\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Facade\\IgnitionContracts\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

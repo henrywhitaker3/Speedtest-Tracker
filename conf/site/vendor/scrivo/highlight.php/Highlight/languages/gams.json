@@ -1,0 +1,286 @@
+{
+    "aliases": [
+        "gms"
+    ],
+    "case_insensitive": true,
+    "keywords": {
+        "keyword": "abort acronym acronyms alias all and assign binary card diag display else eq file files for free ge gt if integer le loop lt maximizing minimizing model models ne negative no not option options or ord positive prod put putpage puttl repeat sameas semicont semiint smax smin solve sos1 sos2 sum system table then until using while xor yes",
+        "literal": "eps inf na",
+        "built-in": "abs arccos arcsin arctan arctan2 Beta betaReg binomial ceil centropy cos cosh cvPower div div0 eDist entropy errorf execSeed exp fact floor frac gamma gammaReg log logBeta logGamma log10 log2 mapVal max min mod ncpCM ncpF ncpVUpow ncpVUsin normal pi poly power randBinomial randLinear randTriangle round rPower sigmoid sign signPower sin sinh slexp sllog10 slrec sqexp sqlog10 sqr sqrec sqrt tan tanh trunc uniform uniformInt vcPower bool_and bool_eqv bool_imp bool_not bool_or bool_xor ifThen rel_eq rel_ge rel_gt rel_le rel_lt rel_ne gday gdow ghour gleap gmillisec gminute gmonth gsecond gyear jdate jnow jstart jtime errorLevel execError gamsRelease gamsVersion handleCollect handleDelete handleStatus handleSubmit heapFree heapLimit heapSize jobHandle jobKill jobStatus jobTerminate licenseLevel licenseStatus maxExecError sleep timeClose timeComp timeElapsed timeExec timeStart"
+    },
+    "contains": [
+        {
+            "className": "comment",
+            "begin": "^\\$ontext",
+            "end": "^\\$offtext",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "meta",
+            "begin": "^\\$[a-z0-9]+",
+            "end": "$",
+            "returnBegin": true,
+            "contains": [
+                {
+                    "className": "meta-keyword",
+                    "begin": "^\\$[a-z0-9]+"
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "^\\*",
+            "end": "$",
+            "contains": [
+                {
+                    "$ref": "#contains.0.contains.0"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "\/\/",
+            "end": "$",
+            "contains": [
+                {
+                    "$ref": "#contains.0.contains.0"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "\/\\*",
+            "end": "\\*\/",
+            "contains": [
+                {
+                    "$ref": "#contains.0.contains.0"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "\"",
+            "end": "\"",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "begin": "\\\\[\\s\\S]",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "'",
+            "end": "'",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "$ref": "#contains.5.contains.0"
+                }
+            ]
+        },
+        {
+            "beginKeywords": "set sets parameter parameters variable variables scalar scalars equation equations",
+            "end": ";",
+            "contains": [
+                {
+                    "className": "comment",
+                    "begin": "^\\*",
+                    "end": "$",
+                    "contains": [
+                        {
+                            "$ref": "#contains.0.contains.0"
+                        },
+                        {
+                            "className": "doctag",
+                            "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                            "relevance": 0
+                        }
+                    ]
+                },
+                {
+                    "$ref": "#contains.3"
+                },
+                {
+                    "$ref": "#contains.4"
+                },
+                {
+                    "$ref": "#contains.5"
+                },
+                {
+                    "$ref": "#contains.6"
+                },
+                {
+                    "begin": "\/",
+                    "end": "\/",
+                    "keywords": {
+                        "$ref": "#keywords"
+                    },
+                    "contains": [
+                        {
+                            "className": "comment",
+                            "variants": [
+                                {
+                                    "begin": "'",
+                                    "end": "'"
+                                },
+                                {
+                                    "begin": "\"",
+                                    "end": "\""
+                                }
+                            ],
+                            "illegal": "\\n",
+                            "contains": [
+                                {
+                                    "$ref": "#contains.5.contains.0"
+                                }
+                            ]
+                        },
+                        {
+                            "$ref": "#contains.3"
+                        },
+                        {
+                            "$ref": "#contains.4"
+                        },
+                        {
+                            "$ref": "#contains.5"
+                        },
+                        {
+                            "$ref": "#contains.6"
+                        },
+                        {
+                            "className": "number",
+                            "begin": "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)",
+                            "relevance": 0
+                        }
+                    ]
+                },
+                {
+                    "begin": "[a-z][a-z0-9_]*(\\([a-z0-9_, ]*\\))?[ \\t]+",
+                    "excludeBegin": true,
+                    "end": "$",
+                    "endsWithParent": true,
+                    "contains": [
+                        {
+                            "$ref": "#contains.7.contains.5.contains.0"
+                        },
+                        {
+                            "$ref": "#contains.7.contains.5"
+                        },
+                        {
+                            "className": "comment",
+                            "begin": "([ ]*[a-z0-9&#*=?@>\\\\<:\\-,()$\\[\\]_.{}!+%^]+)+",
+                            "relevance": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "beginKeywords": "table",
+            "end": ";",
+            "returnBegin": true,
+            "contains": [
+                {
+                    "beginKeywords": "table",
+                    "end": "$",
+                    "contains": [
+                        {
+                            "$ref": "#contains.7.contains.6"
+                        }
+                    ]
+                },
+                {
+                    "className": "comment",
+                    "begin": "^\\*",
+                    "end": "$",
+                    "contains": [
+                        {
+                            "$ref": "#contains.0.contains.0"
+                        },
+                        {
+                            "className": "doctag",
+                            "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                            "relevance": 0
+                        }
+                    ]
+                },
+                {
+                    "$ref": "#contains.3"
+                },
+                {
+                    "$ref": "#contains.4"
+                },
+                {
+                    "$ref": "#contains.5"
+                },
+                {
+                    "$ref": "#contains.6"
+                },
+                {
+                    "$ref": "#contains.7.contains.5.contains.5"
+                }
+            ]
+        },
+        {
+            "className": "function",
+            "begin": "^[a-z][a-z0-9_,\\-+' ()$]+\\.{2}",
+            "returnBegin": true,
+            "contains": [
+                {
+                    "className": "title",
+                    "begin": "^[a-z0-9_]+"
+                },
+                {
+                    "className": "params",
+                    "begin": "\\(",
+                    "end": "\\)",
+                    "excludeBegin": true,
+                    "excludeEnd": true
+                },
+                {
+                    "className": "symbol",
+                    "variants": [
+                        {
+                            "begin": "\\=[lgenxc]="
+                        },
+                        {
+                            "begin": "\\$"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "$ref": "#contains.7.contains.5.contains.5"
+        },
+        {
+            "$ref": "#contains.9.contains.2"
+        }
+    ]
+}

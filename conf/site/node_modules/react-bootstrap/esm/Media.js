@@ -1,0 +1,23 @@
+import _extends from "@babel/runtime/helpers/esm/extends";
+import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/esm/objectWithoutPropertiesLoose";
+import classNames from 'classnames';
+import React from 'react';
+import createWithBsPrefix from './createWithBsPrefix';
+import { useBootstrapPrefix } from './ThemeProvider';
+var Media = React.forwardRef( // Need to define the default "as" during prop destructuring to be compatible with styled-components github.com/react-bootstrap/react-bootstrap/issues/3595
+function (_ref, ref) {
+  var bsPrefix = _ref.bsPrefix,
+      className = _ref.className,
+      _ref$as = _ref.as,
+      Component = _ref$as === void 0 ? 'div' : _ref$as,
+      props = _objectWithoutPropertiesLoose(_ref, ["bsPrefix", "className", "as"]);
+
+  var prefix = useBootstrapPrefix(bsPrefix, 'media');
+  return React.createElement(Component, _extends({}, props, {
+    ref: ref,
+    className: classNames(className, prefix)
+  }));
+});
+Media.displayName = 'Media';
+Media.Body = createWithBsPrefix('media-body');
+export default Media;

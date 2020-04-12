@@ -1,0 +1,38 @@
+let objectValues = require('lodash').values;
+
+/**
+ * Generic tap function.
+ *
+ * @param {mixed}    val
+ * @param {Function} callback
+ */
+global.tap = function(val, callback) {
+    callback(val);
+
+    return val;
+};
+
+/**
+ * Add tap to arrays.
+ *
+ * @param {mixed}    val
+ * @param {Function} callback
+ */
+Object.defineProperty(Array.prototype, 'tap', {
+    value: function(callback) {
+        if (this.length) {
+            callback(this);
+        }
+
+        return this;
+    }
+});
+
+/**
+ * Flatten the given array.
+ *
+ * @param {Array} arr
+ */
+global.flatten = function(arr) {
+    return [].concat.apply([], objectValues(arr));
+};

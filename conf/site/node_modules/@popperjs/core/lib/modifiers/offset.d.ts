@@ -1,0 +1,17 @@
+import { Placement } from "../enums";
+import { Modifier, Rect, Offsets } from "../types";
+declare type OffsetsFunction = (arg0: {
+    popper: Rect;
+    reference: Rect;
+    placement: Placement;
+}) => [number | null | undefined, number | null | undefined];
+declare type Offset = OffsetsFunction | [number | null | undefined, number | null | undefined];
+declare type Options = {
+    offset: Offset;
+};
+export declare function distanceAndSkiddingToXY(placement: Placement, rects: {
+    popper: Rect;
+    reference: Rect;
+}, offset: Offset): Offsets;
+declare const _default: Modifier<Options>;
+export default _default;

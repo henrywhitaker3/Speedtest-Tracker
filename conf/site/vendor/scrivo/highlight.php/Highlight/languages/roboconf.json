@@ -1,0 +1,82 @@
+{
+    "aliases": [
+        "graph",
+        "instances"
+    ],
+    "case_insensitive": true,
+    "keywords": "import",
+    "contains": [
+        {
+            "begin": "^facet [a-zA-Z\\-_][^\\n{]+\\{",
+            "end": "}",
+            "keywords": "facet",
+            "contains": [
+                {
+                    "className": "attribute",
+                    "begin": "[a-zA-Z\\-_]+",
+                    "end": "\\s*:",
+                    "excludeEnd": true,
+                    "starts": {
+                        "end": ";",
+                        "relevance": 0,
+                        "contains": [
+                            {
+                                "className": "variable",
+                                "begin": "\\.[a-zA-Z\\-_]+"
+                            },
+                            {
+                                "className": "keyword",
+                                "begin": "\\(optional\\)"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "className": "comment",
+                    "begin": "#",
+                    "end": "$",
+                    "contains": [
+                        {
+                            "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                        },
+                        {
+                            "className": "doctag",
+                            "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                            "relevance": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "begin": "^\\s*instance of [a-zA-Z\\-_][^\\n{]+\\{",
+            "end": "}",
+            "keywords": "name count channels instance-data instance-state instance of",
+            "illegal": "\\S",
+            "contains": [
+                "self",
+                {
+                    "$ref": "#contains.0.contains.0"
+                },
+                {
+                    "$ref": "#contains.0.contains.1"
+                }
+            ]
+        },
+        {
+            "begin": "^[a-zA-Z\\-_][^\\n{]+\\{",
+            "end": "}",
+            "contains": [
+                {
+                    "$ref": "#contains.0.contains.0"
+                },
+                {
+                    "$ref": "#contains.0.contains.1"
+                }
+            ]
+        },
+        {
+            "$ref": "#contains.0.contains.1"
+        }
+    ]
+}

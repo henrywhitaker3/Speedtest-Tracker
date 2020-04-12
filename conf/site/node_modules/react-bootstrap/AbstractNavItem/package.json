@@ -1,0 +1,6 @@
+{
+  "name": "react-bootstrap/AbstractNavItem",
+  "private": true,
+  "main": "../cjs/AbstractNavItem.js",
+  "module": "../esm/AbstractNavItem.js"
+}

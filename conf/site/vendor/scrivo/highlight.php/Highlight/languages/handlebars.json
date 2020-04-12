@@ -1,0 +1,131 @@
+{
+    "aliases": [
+        "hbs",
+        "html.hbs",
+        "html.handlebars"
+    ],
+    "case_insensitive": true,
+    "subLanguage": "xml",
+    "contains": [
+        {
+            "begin": "\\\\\\{\\{",
+            "skip": true
+        },
+        {
+            "begin": "\\\\\\\\(?=\\{\\{)",
+            "skip": true
+        },
+        {
+            "className": "comment",
+            "begin": "\\{\\{!--",
+            "end": "--\\}\\}",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "\\{\\{!",
+            "end": "\\}\\}",
+            "contains": [
+                {
+                    "$ref": "#contains.2.contains.0"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "template-tag",
+            "begin": "\\{\\{\\{\\{(?!\\\/)",
+            "end": "\\}\\}\\}\\}",
+            "contains": [
+                {
+                    "begin": "\".*?\"|'.*?'|\\[.*?\\]|\\w+",
+                    "keywords": {
+                        "builtin-name": "each in with if else unless bindattr action collection debugger log outlet template unbound view yield lookup"
+                    },
+                    "starts": {
+                        "endsWithParent": true,
+                        "relevance": 0,
+                        "contains": [
+                            {
+                                "begin": "\".*?\"|'.*?'|\\[.*?\\]|\\w+",
+                                "relevance": 0
+                            }
+                        ]
+                    },
+                    "className": "name"
+                }
+            ],
+            "starts": {
+                "end": "\\{\\{\\{\\{\\\/",
+                "returnEnd": true,
+                "subLanguage": "xml"
+            }
+        },
+        {
+            "className": "template-tag",
+            "begin": "\\{\\{\\{\\{\\\/",
+            "end": "\\}\\}\\}\\}",
+            "contains": [
+                {
+                    "$ref": "#contains.4.contains.0"
+                }
+            ]
+        },
+        {
+            "className": "template-tag",
+            "begin": "\\{\\{[#\\\/]",
+            "end": "\\}\\}",
+            "contains": [
+                {
+                    "$ref": "#contains.4.contains.0"
+                }
+            ]
+        },
+        {
+            "className": "template-variable",
+            "begin": "\\{\\{\\{",
+            "end": "\\}\\}\\}",
+            "keywords": {
+                "$ref": "#contains.4.contains.0.keywords"
+            },
+            "contains": [
+                {
+                    "begin": "\".*?\"|'.*?'|\\[.*?\\]|\\w+",
+                    "keywords": {
+                        "$ref": "#contains.4.contains.0.keywords"
+                    },
+                    "starts": {
+                        "$ref": "#contains.4.contains.0.starts"
+                    },
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "template-variable",
+            "begin": "\\{\\{",
+            "end": "\\}\\}",
+            "keywords": {
+                "$ref": "#contains.4.contains.0.keywords"
+            },
+            "contains": [
+                {
+                    "$ref": "#contains.7.contains.0"
+                }
+            ]
+        }
+    ]
+}

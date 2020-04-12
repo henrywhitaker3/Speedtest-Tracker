@@ -1,0 +1,334 @@
+{
+    "aliases": [
+        "ts"
+    ],
+    "keywords": {
+        "keyword": "in if for while finally var new function do return void else break catch instanceof with throw case default try this switch continue typeof delete let yield const class public private protected get set super static implements enum export import declare type namespace abstract as from extends async await",
+        "literal": "true false null undefined NaN Infinity",
+        "built_in": "eval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError Number Math Date String RegExp Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray ArrayBuffer DataView JSON Intl arguments require module console window document any number boolean string void Promise"
+    },
+    "contains": [
+        {
+            "className": "meta",
+            "begin": "^\\s*['\"]use strict['\"]"
+        },
+        {
+            "className": "string",
+            "begin": "'",
+            "end": "'",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "begin": "\\\\[\\s\\S]",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "\"",
+            "end": "\"",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "$ref": "#contains.1.contains.0"
+                }
+            ]
+        },
+        {
+            "begin": "html`",
+            "end": "",
+            "starts": {
+                "end": "`",
+                "returnEnd": false,
+                "contains": [
+                    {
+                        "$ref": "#contains.1.contains.0"
+                    },
+                    {
+                        "className": "subst",
+                        "begin": "\\$\\{",
+                        "end": "\\}",
+                        "keywords": {
+                            "$ref": "#keywords"
+                        },
+                        "contains": [
+                            {
+                                "$ref": "#contains.1"
+                            },
+                            {
+                                "$ref": "#contains.2"
+                            },
+                            {
+                                "$ref": "#contains.3"
+                            },
+                            {
+                                "begin": "css`",
+                                "end": "",
+                                "starts": {
+                                    "end": "`",
+                                    "returnEnd": false,
+                                    "contains": [
+                                        {
+                                            "$ref": "#contains.1.contains.0"
+                                        },
+                                        {
+                                            "$ref": "#contains.3.starts.contains.1"
+                                        }
+                                    ],
+                                    "subLanguage": "css"
+                                }
+                            },
+                            {
+                                "className": "string",
+                                "begin": "`",
+                                "end": "`",
+                                "contains": [
+                                    {
+                                        "$ref": "#contains.1.contains.0"
+                                    },
+                                    {
+                                        "$ref": "#contains.3.starts.contains.1"
+                                    }
+                                ]
+                            },
+                            {
+                                "className": "number",
+                                "variants": [
+                                    {
+                                        "begin": "\\b(0[bB][01]+)n?"
+                                    },
+                                    {
+                                        "begin": "\\b(0[oO][0-7]+)n?"
+                                    },
+                                    {
+                                        "begin": "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)n?"
+                                    }
+                                ],
+                                "relevance": 0
+                            },
+                            {
+                                "className": "regexp",
+                                "begin": "\\\/",
+                                "end": "\\\/[gimuy]*",
+                                "illegal": "\\n",
+                                "contains": [
+                                    {
+                                        "$ref": "#contains.1.contains.0"
+                                    },
+                                    {
+                                        "begin": "\\[",
+                                        "end": "\\]",
+                                        "relevance": 0,
+                                        "contains": [
+                                            {
+                                                "$ref": "#contains.1.contains.0"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "subLanguage": "xml"
+            }
+        },
+        {
+            "$ref": "#contains.3.starts.contains.1.contains.3"
+        },
+        {
+            "$ref": "#contains.3.starts.contains.1.contains.4"
+        },
+        {
+            "className": "comment",
+            "begin": "\/\/",
+            "end": "$",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "\/\\*",
+            "end": "\\*\/",
+            "contains": [
+                {
+                    "$ref": "#contains.6.contains.0"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "$ref": "#contains.3.starts.contains.1.contains.5"
+        },
+        {
+            "begin": "(!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|-|-=|\/=|\/|:|;|<<|<<=|<=|<|===|==|=|>>>=|>>=|>=|>>>|>>|>|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~|\\b(case|return|throw)\\b)\\s*",
+            "keywords": "return throw case",
+            "contains": [
+                {
+                    "$ref": "#contains.6"
+                },
+                {
+                    "$ref": "#contains.7"
+                },
+                {
+                    "$ref": "#contains.3.starts.contains.1.contains.6"
+                },
+                {
+                    "className": "function",
+                    "begin": "(\\(.*?\\)|[a-zA-Z]\\w*)\\s*=>",
+                    "returnBegin": true,
+                    "end": "\\s*=>",
+                    "contains": [
+                        {
+                            "className": "params",
+                            "variants": [
+                                {
+                                    "begin": "[a-zA-Z]\\w*"
+                                },
+                                {
+                                    "begin": "\\(\\s*\\)"
+                                },
+                                {
+                                    "begin": "\\(",
+                                    "end": "\\)",
+                                    "excludeBegin": true,
+                                    "excludeEnd": true,
+                                    "keywords": {
+                                        "$ref": "#keywords"
+                                    },
+                                    "contains": [
+                                        "self",
+                                        {
+                                            "$ref": "#contains.6"
+                                        },
+                                        {
+                                            "$ref": "#contains.7"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "relevance": 0
+        },
+        {
+            "className": "function",
+            "beginKeywords": "function",
+            "end": "[\\{;]",
+            "excludeEnd": true,
+            "keywords": {
+                "$ref": "#keywords"
+            },
+            "contains": [
+                "self",
+                {
+                    "className": "title",
+                    "begin": "[A-Za-z$_][0-9A-Za-z$_]*",
+                    "relevance": 0
+                },
+                {
+                    "className": "params",
+                    "begin": "\\(",
+                    "end": "\\)",
+                    "excludeBegin": true,
+                    "excludeEnd": true,
+                    "keywords": {
+                        "$ref": "#keywords"
+                    },
+                    "contains": [
+                        {
+                            "$ref": "#contains.6"
+                        },
+                        {
+                            "$ref": "#contains.7"
+                        },
+                        {
+                            "className": "meta",
+                            "begin": "@[A-Za-z$_][0-9A-Za-z$_]*"
+                        },
+                        {
+                            "begin": "\\(",
+                            "end": "\\)",
+                            "keywords": {
+                                "$ref": "#keywords"
+                            },
+                            "contains": [
+                                "self",
+                                {
+                                    "$ref": "#contains.2"
+                                },
+                                {
+                                    "$ref": "#contains.1"
+                                },
+                                {
+                                    "className": "number",
+                                    "begin": "\\b\\d+(\\.\\d+)?",
+                                    "relevance": 0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "illegal": "%",
+            "relevance": 0
+        },
+        {
+            "beginKeywords": "constructor",
+            "end": "[\\{;]",
+            "excludeEnd": true,
+            "contains": [
+                "self",
+                {
+                    "$ref": "#contains.10.contains.2"
+                }
+            ]
+        },
+        {
+            "begin": "module\\.",
+            "keywords": {
+                "built_in": "module"
+            },
+            "relevance": 0
+        },
+        {
+            "beginKeywords": "module",
+            "end": "\\{",
+            "excludeEnd": true
+        },
+        {
+            "beginKeywords": "interface",
+            "end": "\\{",
+            "excludeEnd": true,
+            "keywords": "interface extends"
+        },
+        {
+            "begin": "\\$[(.]"
+        },
+        {
+            "begin": "\\.[a-zA-Z]\\w*",
+            "relevance": 0
+        },
+        {
+            "$ref": "#contains.10.contains.2.contains.2"
+        },
+        {
+            "$ref": "#contains.10.contains.2.contains.3"
+        }
+    ]
+}

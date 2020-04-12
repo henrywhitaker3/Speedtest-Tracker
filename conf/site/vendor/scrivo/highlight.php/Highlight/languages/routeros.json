@@ -1,0 +1,174 @@
+{
+    "aliases": [
+        "routeros",
+        "mikrotik"
+    ],
+    "case_insensitive": true,
+    "lexemes": ":?[\\w\\-]+",
+    "keywords": {
+        "literal": "true false yes no nothing nil null",
+        "keyword": "foreach do while for if from to step else on-error and or not in :foreach :do :while :for :if :from :to :step :else :on-error :and :or :not :in :global :local :beep :delay :put :len :typeof :pick :log :time :set :find :environment :terminal :error :execute :parse :resolve :toarray :tobool :toid :toip :toip6 :tonum :tostr :totime"
+    },
+    "contains": [
+        {
+            "variants": [
+                {
+                    "begin": "^@",
+                    "end": "$"
+                },
+                {
+                    "begin": "\\\/\\*",
+                    "end": "\\*\\\/"
+                },
+                {
+                    "begin": "%%",
+                    "end": "$"
+                },
+                {
+                    "begin": "^'",
+                    "end": "$"
+                },
+                {
+                    "begin": "^\\s*\\\/[\\w\\-]+=",
+                    "end": "$"
+                },
+                {
+                    "begin": "\\\/\\\/",
+                    "end": "$"
+                },
+                {
+                    "begin": "^\\[\\<",
+                    "end": "\\>\\]$"
+                },
+                {
+                    "begin": "<\\\/",
+                    "end": ">"
+                },
+                {
+                    "begin": "^facet ",
+                    "end": "\\}"
+                },
+                {
+                    "begin": "^1\\.\\.(\\d+)$",
+                    "end": "$"
+                }
+            ],
+            "illegal": "."
+        },
+        {
+            "className": "comment",
+            "begin": "^#",
+            "end": "$",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "\"",
+            "end": "\"",
+            "contains": [
+                {
+                    "begin": "\\\\[\\s\\S]",
+                    "relevance": 0
+                },
+                {
+                    "className": "variable",
+                    "variants": [
+                        {
+                            "begin": "\\$[\\w\\d#@][\\w\\d_]*"
+                        },
+                        {
+                            "begin": "\\$\\{(.*?)}"
+                        }
+                    ]
+                },
+                {
+                    "className": "variable",
+                    "begin": "\\$\\(",
+                    "end": "\\)",
+                    "contains": [
+                        {
+                            "$ref": "#contains.2.contains.0"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "'",
+            "end": "'"
+        },
+        {
+            "$ref": "#contains.2.contains.1"
+        },
+        {
+            "begin": "[\\w\\-]+\\=([^\\s\\{\\}\\[\\]\\(\\)]+)",
+            "relevance": 0,
+            "returnBegin": true,
+            "contains": [
+                {
+                    "className": "attribute",
+                    "begin": "[^=]+"
+                },
+                {
+                    "begin": "=",
+                    "endsWithParent": true,
+                    "relevance": 0,
+                    "contains": [
+                        {
+                            "$ref": "#contains.2"
+                        },
+                        {
+                            "$ref": "#contains.3"
+                        },
+                        {
+                            "$ref": "#contains.2.contains.1"
+                        },
+                        {
+                            "className": "literal",
+                            "begin": "\\b(true|false|yes|no|nothing|nil|null)\\b"
+                        },
+                        {
+                            "begin": "(\"[^\"]*\"|[^\\s\\{\\}\\[\\]]+)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "className": "number",
+            "begin": "\\*[0-9a-fA-F]+"
+        },
+        {
+            "begin": "\\b(add|remove|enable|disable|set|get|print|export|edit|find|run|debug|error|info|warning)([\\s[(]|])",
+            "returnBegin": true,
+            "contains": [
+                {
+                    "className": "builtin-name",
+                    "begin": "\\w+"
+                }
+            ]
+        },
+        {
+            "className": "built_in",
+            "variants": [
+                {
+                    "begin": "(\\.\\.\/|\/|\\s)((traffic-flow|traffic-generator|firewall|scheduler|aaa|accounting|address-list|address|align|area|bandwidth-server|bfd|bgp|bridge|client|clock|community|config|connection|console|customer|default|dhcp-client|dhcp-server|discovery|dns|e-mail|ethernet|filter|firewall|firmware|gps|graphing|group|hardware|health|hotspot|identity|igmp-proxy|incoming|instance|interface|ip|ipsec|ipv6|irq|l2tp-server|lcd|ldp|logging|mac-server|mac-winbox|mangle|manual|mirror|mme|mpls|nat|nd|neighbor|network|note|ntp|ospf|ospf-v3|ovpn-server|page|peer|pim|ping|policy|pool|port|ppp|pppoe-client|pptp-server|prefix|profile|proposal|proxy|queue|radius|resource|rip|ripng|route|routing|screen|script|security-profiles|server|service|service-port|settings|shares|smb|sms|sniffer|snmp|snooper|socks|sstp-server|system|tool|tracking|type|upgrade|upnp|user-manager|users|user|vlan|secret|vrrp|watchdog|web-access|wireless|pptp|pppoe|lan|wan|layer7-protocol|lease|simple|raw);?\\s)+",
+                    "relevance": 10
+                },
+                {
+                    "begin": "\\.\\."
+                }
+            ]
+        }
+    ]
+}

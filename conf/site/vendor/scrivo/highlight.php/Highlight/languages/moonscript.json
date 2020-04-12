@@ -1,0 +1,187 @@
+{
+    "aliases": [
+        "moon"
+    ],
+    "keywords": {
+        "keyword": "if then not for in while do return else elseif break continue switch and or unless when class extends super local import export from using",
+        "literal": "true false nil",
+        "built_in": "_G _VERSION assert collectgarbage dofile error getfenv getmetatable ipairs load loadfile loadstring module next pairs pcall print rawequal rawget rawset require select setfenv setmetatable tonumber tostring type unpack xpcall coroutine debug io math os package string table"
+    },
+    "illegal": "\\\/\\*",
+    "contains": [
+        {
+            "className": "number",
+            "begin": "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)",
+            "relevance": 0,
+            "starts": {
+                "end": "(\\s*\/)?",
+                "relevance": 0
+            }
+        },
+        {
+            "className": "string",
+            "variants": [
+                {
+                    "begin": "'",
+                    "end": "'",
+                    "contains": [
+                        {
+                            "begin": "\\\\[\\s\\S]",
+                            "relevance": 0
+                        }
+                    ]
+                },
+                {
+                    "begin": "\"",
+                    "end": "\"",
+                    "contains": [
+                        {
+                            "$ref": "#contains.1.variants.0.contains.0"
+                        },
+                        {
+                            "className": "subst",
+                            "begin": "#\\{",
+                            "end": "}",
+                            "keywords": {
+                                "$ref": "#keywords"
+                            },
+                            "contains": [
+                                {
+                                    "$ref": "#contains.0"
+                                },
+                                {
+                                    "$ref": "#contains.1"
+                                },
+                                {
+                                    "className": "built_in",
+                                    "begin": "@__[a-zA-Z]\\w*"
+                                },
+                                {
+                                    "begin": "@[a-zA-Z]\\w*"
+                                },
+                                {
+                                    "begin": "[a-zA-Z]\\w*\\\\[a-zA-Z]\\w*"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "$ref": "#contains.1.variants.1.contains.1.contains.2"
+        },
+        {
+            "$ref": "#contains.1.variants.1.contains.1.contains.3"
+        },
+        {
+            "$ref": "#contains.1.variants.1.contains.1.contains.4"
+        },
+        {
+            "className": "comment",
+            "begin": "--",
+            "end": "$",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "function",
+            "begin": "^\\s*[A-Za-z$_][0-9A-Za-z$_]*\\s*=\\s*(\\(.*\\))?\\s*\\B[-=]>",
+            "end": "[-=]>",
+            "returnBegin": true,
+            "contains": [
+                {
+                    "className": "title",
+                    "begin": "[A-Za-z$_][0-9A-Za-z$_]*",
+                    "relevance": 0
+                },
+                {
+                    "className": "params",
+                    "begin": "\\([^\\(]",
+                    "returnBegin": true,
+                    "contains": [
+                        {
+                            "begin": "\\(",
+                            "end": "\\)",
+                            "keywords": {
+                                "$ref": "#keywords"
+                            },
+                            "contains": [
+                                "self",
+                                {
+                                    "$ref": "#contains.0"
+                                },
+                                {
+                                    "$ref": "#contains.1"
+                                },
+                                {
+                                    "$ref": "#contains.1.variants.1.contains.1.contains.2"
+                                },
+                                {
+                                    "$ref": "#contains.1.variants.1.contains.1.contains.3"
+                                },
+                                {
+                                    "$ref": "#contains.1.variants.1.contains.1.contains.4"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "begin": "[\\(,:=]\\s*",
+            "relevance": 0,
+            "contains": [
+                {
+                    "className": "function",
+                    "begin": "(\\(.*\\))?\\s*\\B[-=]>",
+                    "end": "[-=]>",
+                    "returnBegin": true,
+                    "contains": [
+                        {
+                            "$ref": "#contains.6.contains.1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "className": "class",
+            "beginKeywords": "class",
+            "end": "$",
+            "illegal": "[:=\"\\[\\]]",
+            "contains": [
+                {
+                    "beginKeywords": "extends",
+                    "endsWithParent": true,
+                    "illegal": "[:=\"\\[\\]]",
+                    "contains": [
+                        {
+                            "$ref": "#contains.6.contains.0"
+                        }
+                    ]
+                },
+                {
+                    "$ref": "#contains.6.contains.0"
+                }
+            ]
+        },
+        {
+            "className": "name",
+            "begin": "[A-Za-z$_][0-9A-Za-z$_]*:",
+            "end": ":",
+            "returnBegin": true,
+            "returnEnd": true,
+            "relevance": 0
+        }
+    ]
+}

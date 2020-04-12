@@ -1,0 +1,6 @@
+{
+  "name": "react-bootstrap/CardContext",
+  "private": true,
+  "main": "../cjs/CardContext.js",
+  "module": "../esm/CardContext.js"
+}

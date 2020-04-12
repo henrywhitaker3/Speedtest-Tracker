@@ -1,0 +1,33 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->in('demo')
+    ->in('Highlight')
+    ->in('HighlightUtilities')
+    ->in('test')
+    ->in('tools')
+    ->exclude('tools/lib_*')
+;
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR1' => true,
+        '@PSR2' => true,
+        '@Symfony' => true,
+        'array_syntax' => ['syntax' => 'long'],
+        'concat_space' => ['spacing' => 'one'],
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'phpdoc_align' => true,
+        'phpdoc_order' => true,
+        'phpdoc_trim_consecutive_blank_line_separation' => true,
+        'single_quote' => false,
+        'ternary_to_null_coalescing' => false,
+        'trailing_comma_in_multiline_array' => true,
+        'yoda_style' => [
+            'equal' => false,
+            'identical' => false,
+        ],
+    ])
+    ->setFinder($finder)
+;

@@ -1,0 +1,90 @@
+{
+    "aliases": [
+        "mk",
+        "mak"
+    ],
+    "keywords": "define endef undefine ifdef ifndef ifeq ifneq else endif include -include sinclude override export unexport private vpath",
+    "lexemes": "[\\w\\-]+",
+    "contains": [
+        {
+            "className": "comment",
+            "begin": "#",
+            "end": "$",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "variable",
+            "variants": [
+                {
+                    "begin": "\\$\\([a-zA-Z_]\\w*\\)",
+                    "contains": [
+                        {
+                            "begin": "\\\\[\\s\\S]",
+                            "relevance": 0
+                        }
+                    ]
+                },
+                {
+                    "begin": "\\$[@%<?\\^\\+\\*]"
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "\"",
+            "end": "\"",
+            "contains": [
+                {
+                    "$ref": "#contains.1.variants.0.contains.0"
+                },
+                {
+                    "$ref": "#contains.1"
+                }
+            ]
+        },
+        {
+            "className": "variable",
+            "begin": "\\$\\([\\w\\-]+\\s",
+            "end": "\\)",
+            "keywords": {
+                "built_in": "subst patsubst strip findstring filter filter-out sort word wordlist firstword lastword dir notdir suffix basename addsuffix addprefix join wildcard realpath abspath error warning shell origin flavor foreach if or and call eval file value"
+            },
+            "contains": [
+                {
+                    "$ref": "#contains.1"
+                }
+            ]
+        },
+        {
+            "begin": "^[a-zA-Z_]\\w*\\s*(?=[:+?]?=)"
+        },
+        {
+            "className": "meta",
+            "begin": "^\\.PHONY:",
+            "end": "$",
+            "keywords": {
+                "meta-keyword": ".PHONY"
+            },
+            "lexemes": "[\\.\\w]+"
+        },
+        {
+            "className": "section",
+            "begin": "^[^\\s]+:",
+            "end": "$",
+            "contains": [
+                {
+                    "$ref": "#contains.1"
+                }
+            ]
+        }
+    ]
+}

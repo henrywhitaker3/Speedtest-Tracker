@@ -1,0 +1,4 @@
+<? echo 'php'; /* ?> */ ?>
+<body>
+<script>document.write('Legacy code');</script>
+</body>

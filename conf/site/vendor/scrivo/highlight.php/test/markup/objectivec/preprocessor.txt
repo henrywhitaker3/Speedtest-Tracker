@@ -1,0 +1,19 @@
+#include <iostream>
+#define foo 1<<16
+
+#ifdef DEBUG
+TYPE1 foo(void)
+#else
+int foo(void)
+#endif
+{ }
+
+#define x(v) ((v))
+# define x(v) ((v))
+#  define x(v) ((v))
+
+#if MACRO_WITH_STRING_ARG("hello \"world\"")
+#elif MULTI_LINE /* comment */ < \
+    EXPRESSION
+int bar;
+#endif  // comment

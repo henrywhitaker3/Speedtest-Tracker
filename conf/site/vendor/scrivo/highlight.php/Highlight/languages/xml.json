@@ -1,0 +1,260 @@
+{
+    "aliases": [
+        "html",
+        "xhtml",
+        "rss",
+        "atom",
+        "xjb",
+        "xsd",
+        "xsl",
+        "plist",
+        "wsf",
+        "svg"
+    ],
+    "case_insensitive": true,
+    "contains": [
+        {
+            "className": "meta",
+            "begin": "<![a-z]",
+            "end": ">",
+            "relevance": 10,
+            "contains": [
+                {
+                    "begin": "\\s",
+                    "contains": [
+                        {
+                            "className": "meta-keyword",
+                            "begin": "#?[a-z_][a-z1-9_\\-]+",
+                            "illegal": "\\n"
+                        }
+                    ]
+                },
+                {
+                    "className": "meta-string",
+                    "begin": "\"",
+                    "end": "\"",
+                    "illegal": "\\n",
+                    "contains": [
+                        {
+                            "begin": "\\\\[\\s\\S]",
+                            "relevance": 0
+                        }
+                    ]
+                },
+                {
+                    "className": "meta-string",
+                    "begin": "'",
+                    "end": "'",
+                    "illegal": "\\n",
+                    "contains": [
+                        {
+                            "$ref": "#contains.0.contains.1.contains.0"
+                        }
+                    ]
+                },
+                {
+                    "begin": "\\(",
+                    "contains": {
+                        "$ref": "#contains.0.contains.0.contains"
+                    },
+                    "end": "\\)"
+                },
+                {
+                    "begin": "\\[",
+                    "end": "\\]",
+                    "contains": [
+                        {
+                            "className": "meta",
+                            "begin": "<![a-z]",
+                            "end": ">",
+                            "contains": [
+                                {
+                                    "$ref": "#contains.0.contains.0"
+                                },
+                                {
+                                    "$ref": "#contains.0.contains.3"
+                                },
+                                {
+                                    "$ref": "#contains.0.contains.1"
+                                },
+                                {
+                                    "$ref": "#contains.0.contains.2"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "<!--",
+            "end": "-->",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ],
+            "relevance": 10
+        },
+        {
+            "begin": "<\\!\\[CDATA\\[",
+            "end": "\\]\\]>",
+            "relevance": 10
+        },
+        {
+            "className": "symbol",
+            "begin": "&[a-z]+;|&#[0-9]+;|&#x[a-f0-9]+;"
+        },
+        {
+            "className": "meta",
+            "begin": "<\\?xml",
+            "end": "\\?>",
+            "relevance": 10
+        },
+        {
+            "begin": "<\\?(php)?",
+            "end": "\\?>",
+            "subLanguage": "php",
+            "contains": [
+                {
+                    "begin": "\/\\*",
+                    "end": "\\*\/",
+                    "skip": true
+                },
+                {
+                    "begin": "b\"",
+                    "end": "\"",
+                    "skip": true
+                },
+                {
+                    "begin": "b'",
+                    "end": "'",
+                    "skip": true
+                },
+                {
+                    "className": null,
+                    "begin": "'",
+                    "end": "'",
+                    "illegal": null,
+                    "contains": null,
+                    "skip": true
+                },
+                {
+                    "className": null,
+                    "begin": "\"",
+                    "end": "\"",
+                    "illegal": null,
+                    "contains": null,
+                    "skip": true
+                }
+            ]
+        },
+        {
+            "className": "tag",
+            "begin": "<style(?=\\s|>)",
+            "end": ">",
+            "keywords": {
+                "name": "style"
+            },
+            "contains": [
+                {
+                    "endsWithParent": true,
+                    "illegal": "<",
+                    "relevance": 0,
+                    "contains": [
+                        {
+                            "className": "attr",
+                            "begin": "[A-Za-z0-9\\._:-]+",
+                            "relevance": 0
+                        },
+                        {
+                            "begin": "=\\s*",
+                            "relevance": 0,
+                            "contains": [
+                                {
+                                    "className": "string",
+                                    "endsParent": true,
+                                    "variants": [
+                                        {
+                                            "begin": "\"",
+                                            "end": "\"",
+                                            "contains": [
+                                                {
+                                                    "$ref": "#contains.3"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "begin": "'",
+                                            "end": "'",
+                                            "contains": [
+                                                {
+                                                    "$ref": "#contains.3"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "begin": "[^\\s\"'=<>`]+"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "starts": {
+                "end": "<\/style>",
+                "returnEnd": true,
+                "subLanguage": [
+                    "css",
+                    "xml"
+                ]
+            }
+        },
+        {
+            "className": "tag",
+            "begin": "<script(?=\\s|>)",
+            "end": ">",
+            "keywords": {
+                "name": "script"
+            },
+            "contains": [
+                {
+                    "$ref": "#contains.6.contains.0"
+                }
+            ],
+            "starts": {
+                "end": "<\/script>",
+                "returnEnd": true,
+                "subLanguage": [
+                    "actionscript",
+                    "javascript",
+                    "handlebars",
+                    "xml"
+                ]
+            }
+        },
+        {
+            "className": "tag",
+            "begin": "<\/?",
+            "end": "\/?>",
+            "contains": [
+                {
+                    "className": "name",
+                    "begin": "[^\\\/><\\s]+",
+                    "relevance": 0
+                },
+                {
+                    "$ref": "#contains.6.contains.0"
+                }
+            ]
+        }
+    ]
+}

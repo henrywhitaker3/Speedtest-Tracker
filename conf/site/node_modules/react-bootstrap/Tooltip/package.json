@@ -1,0 +1,7 @@
+{
+  "name": "react-bootstrap/Tooltip",
+  "private": true,
+  "main": "../cjs/Tooltip.js",
+  "module": "../esm/Tooltip.js",
+  "types": "../Tooltip.d.ts"
+}

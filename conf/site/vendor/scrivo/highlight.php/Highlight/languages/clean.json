@@ -1,0 +1,75 @@
+{
+    "aliases": [
+        "clean",
+        "icl",
+        "dcl"
+    ],
+    "keywords": {
+        "keyword": "if let in with where case of class instance otherwise implementation definition system module from import qualified as special code inline foreign export ccall stdcall generic derive infix infixl infixr",
+        "built_in": "Int Real Char Bool",
+        "literal": "True False"
+    },
+    "contains": [
+        {
+            "className": "comment",
+            "begin": "\/\/",
+            "end": "$",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "\/\\*",
+            "end": "\\*\/",
+            "contains": [
+                {
+                    "$ref": "#contains.0.contains.0"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "'",
+            "end": "'",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "begin": "\\\\[\\s\\S]",
+                    "relevance": 0
+                }
+            ]
+        },
+        {
+            "className": "string",
+            "begin": "\"",
+            "end": "\"",
+            "illegal": "\\n",
+            "contains": [
+                {
+                    "$ref": "#contains.2.contains.0"
+                }
+            ]
+        },
+        {
+            "className": "number",
+            "begin": "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)",
+            "relevance": 0
+        },
+        {
+            "begin": "->|<-[|:]?|#!?|>>=|\\{\\||\\|\\}|:==|=:|<>"
+        }
+    ]
+}

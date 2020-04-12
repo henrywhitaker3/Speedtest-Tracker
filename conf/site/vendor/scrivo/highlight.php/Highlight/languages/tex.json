@@ -1,0 +1,87 @@
+{
+    "contains": [
+        {
+            "className": "tag",
+            "begin": "\\\\",
+            "relevance": 0,
+            "contains": [
+                {
+                    "className": "name",
+                    "variants": [
+                        {
+                            "begin": "[a-zA-Z\\x{0430}-\\x{044f}\\x{0410}-\\x{042f}]+[*]?"
+                        },
+                        {
+                            "begin": "[^a-zA-Z\\x{0430}-\\x{044f}\\x{0410}-\\x{042f0}-9]"
+                        }
+                    ],
+                    "starts": {
+                        "endsWithParent": true,
+                        "relevance": 0,
+                        "contains": [
+                            {
+                                "className": "string",
+                                "variants": [
+                                    {
+                                        "begin": "\\[",
+                                        "end": "\\]"
+                                    },
+                                    {
+                                        "begin": "\\{",
+                                        "end": "\\}"
+                                    }
+                                ]
+                            },
+                            {
+                                "begin": "\\s*=\\s*",
+                                "endsWithParent": true,
+                                "relevance": 0,
+                                "contains": [
+                                    {
+                                        "className": "number",
+                                        "begin": "-?\\d*\\.?\\d+(pt|pc|mm|cm|in|dd|cc|ex|em)?"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "className": "formula",
+            "contains": [
+                {
+                    "$ref": "#contains.0"
+                }
+            ],
+            "relevance": 0,
+            "variants": [
+                {
+                    "begin": "\\$\\$",
+                    "end": "\\$\\$"
+                },
+                {
+                    "begin": "\\$",
+                    "end": "\\$"
+                }
+            ]
+        },
+        {
+            "className": "comment",
+            "begin": "%",
+            "end": "$",
+            "contains": [
+                {
+                    "begin": "\\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\\b"
+                },
+                {
+                    "className": "doctag",
+                    "begin": "(?:TODO|FIXME|NOTE|BUG|XXX):",
+                    "relevance": 0
+                }
+            ],
+            "relevance": 0
+        }
+    ]
+}

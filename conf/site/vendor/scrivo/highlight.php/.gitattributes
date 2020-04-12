@@ -1,0 +1,6 @@
+* text=auto
+
+*.crlf.* eol=crlf
+
+styles/* linguist-vendored
+test/**/*.txt linguist-vendored

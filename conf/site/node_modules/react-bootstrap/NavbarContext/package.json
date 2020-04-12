@@ -1,0 +1,6 @@
+{
+  "name": "react-bootstrap/NavbarContext",
+  "private": true,
+  "main": "../cjs/NavbarContext.js",
+  "module": "../esm/NavbarContext.js"
+}

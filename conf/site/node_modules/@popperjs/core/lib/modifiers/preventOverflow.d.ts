@@ -1,0 +1,23 @@
+import { Placement, Boundary, RootBoundary } from "../enums";
+import { Rect, Modifier, Padding } from "../types";
+declare type TetherOffset = (arg0: {
+    popper: Rect;
+    reference: Rect;
+    placement: Placement;
+}) => number | number;
+declare type Options = {
+    mainAxis: boolean;
+    altAxis: boolean;
+    boundary: Boundary;
+    rootBoundary: RootBoundary;
+    altBoundary: boolean;
+    /**
+     * Allows the popper to overflow from its boundaries to keep it near its
+     * reference element
+     */
+    tether: boolean;
+    tetherOffset: TetherOffset;
+    padding: Padding;
+};
+declare const _default: Modifier<Options>;
+export default _default;

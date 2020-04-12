@@ -1,0 +1,6 @@
+{
+  "name": "react-bootstrap/ModalContext",
+  "private": true,
+  "main": "../cjs/ModalContext.js",
+  "module": "../esm/ModalContext.js"
+}
