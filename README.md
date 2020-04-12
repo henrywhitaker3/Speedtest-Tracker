@@ -14,9 +14,16 @@ This program runs a speedtest check every hour and graphs the results. The back-
 
 ### Using Docker
 
-A docker image is available [here](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker)
+A docker image is available [here](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker), you can create a new conatiner by running:
 
-When updating to a new version of the docker image, use the built-in backup function before updating, and then restore your data after updating.
+```bash
+docker create \
+      --name=speedtest \
+      -p 8765:80 \
+      -v /path/to/data:/config \
+      --restart unless-stopped \
+      henrywhitaker3/speedtest-tracker
+```
 
 ### Manual Install
 
