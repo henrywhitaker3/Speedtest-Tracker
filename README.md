@@ -34,9 +34,9 @@ Run `docker pull henrywhitaker3/speedtest-tracker`
 
 ### Dockerfile
 
-Clone the required files from the github repo [here](https://github.com/henrywhitaker3/Speedtest-Tracker/tree/docker) maing sure to use the `docker` branch of the repo.
+Clone the required files from the github repo [here](https://github.com/henrywhitaker3/Speedtest-Tracker/tree/docker) making sure to use the `docker` branch of the repo.
 
-Build the image form the docker file by running (within the cloned git repo):
+Build the image from the docker file by running (within the cloned git repo):
 
 ```bash
 docker build . -f Dockerfile --tag=henrywhitaker3/speedtest-tracker:<tag>

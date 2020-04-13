@@ -47,3 +47,7 @@
 .Toastify__toast--success {
     background: #28922b !important;
 }
+
+.mouse {
+    cursor: pointer;
+}

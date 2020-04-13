@@ -1,4 +1,10 @@
 {
+    "1.2.2": [
+        {
+            "description": "Added a table of all speedtests",
+            "link": ""
+        }
+    ],
     "1.2.1": [
         {
             "description": "Fixed issue where changelog entry with a link wouldn't show.",

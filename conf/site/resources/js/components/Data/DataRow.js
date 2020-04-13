@@ -9,7 +9,7 @@ import Restore from './Restore';
 export default class DataRow extends Component {
     render() {
         return (
-            <Container>
+            <Container className="mb-4">
                 <Row>
                     <Col sm={{ span: 12 }} className="text-center">
                         <p>Use these buttons to backup/restore your data</p>
