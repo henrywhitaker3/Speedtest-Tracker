@@ -1,4 +1,10 @@
 {
+    "1.2.3": [
+        {
+            "description": "Changed order of speedtests table show the latest results first.",
+            "link": ""
+        }
+    ],
     "1.2.2": [
         {
             "description": "Added a table of all speedtests",

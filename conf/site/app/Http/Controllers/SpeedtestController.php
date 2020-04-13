@@ -14,7 +14,8 @@ class SpeedtestController extends Controller
 {
     public function index()
     {
-        $data = Speedtest::paginate();
+        $data = Speedtest::orderBy('id', 'desc')
+                         ->paginate();
 
         return response()->json([
             'method' => 'index of speedtests',
