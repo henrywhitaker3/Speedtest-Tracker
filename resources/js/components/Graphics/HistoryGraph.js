@@ -72,7 +72,8 @@ export default class HistoryGraph extends Component {
                 },
                 elements: {
                     point:{
-                        radius: 0
+                        radius: 0,
+                        hitRadius: 8
                     }
                 }
             };
@@ -109,7 +110,8 @@ export default class HistoryGraph extends Component {
                 },
                 elements: {
                     point:{
-                        radius: 0
+                        radius: 0,
+                        hitRadius: 8
                     }
                 }
             }
