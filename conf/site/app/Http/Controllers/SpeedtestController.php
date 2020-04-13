@@ -8,6 +8,7 @@ use App\Speedtest;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SpeedtestController extends Controller
@@ -51,11 +52,17 @@ class SpeedtestController extends Controller
     public function latest()
     {
         $data = SpeedtestHelper::latest();
+        $avg = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
+                        ->get();
+        $max = Speedtest::select(DB::raw('MAX(ping) as ping, MAX(download) as download, MAX(upload) as upload'))
+                        ->get();
 
         if($data) {
             return response()->json([
                 'method' => 'get latest speedtest',
-                'data' => $data
+                'data' => $data,
+                'average' => $avg[0],
+                'max' => $max[0],
             ], 200);
         } else {
             return response()->json([

@@ -93,46 +93,47 @@ export default class LatestResults extends Component {
             return (
                 <Container fluid>
                     <Row>
-                        <Col sm={{ span: 12 }} className="text-center">
-                            <h4>Latest test results:</h4>
-                        </Col>
-                    </Row>
-                    <Row>
                         <Col
-                            lg={{ span: 2, offset: 3 }}
+                            lg={{ span: 4 }}
                             md={{ span: 4 }}
-                            sm={{ span: 4 }}
+                            sm={{ span: 12 }}
                             className="my-2"
                         >
                             <Widget
                                 title="Ping"
                                 value={parseFloat(data.data.ping).toFixed(1)}
+                                avg={parseFloat(data.average.ping).toFixed(1)}
+                                max={parseFloat(data.max.ping).toFixed(1)}
                                 unit="ms"
                                 icon="ping"
                             />
                         </Col>
                         <Col
-                            lg={{ span: 2 }}
+                            lg={{ span: 4 }}
                             md={{ span: 4 }}
-                            sm={{ span: 4 }}
+                            sm={{ span: 12 }}
                             className="my-2"
                         >
                             <Widget
                                 title="Download"
                                 value={parseFloat(data.data.download).toFixed(1)}
+                                avg={parseFloat(data.average.download).toFixed(1)}
+                                max={parseFloat(data.max.download).toFixed(1)}
                                 unit="Mbit/s"
                                 icon="dl"
                             />
                         </Col>
                         <Col
-                            lg={{ span: 2 }}
+                            lg={{ span: 4 }}
                             md={{ span: 4 }}
-                            sm={{ span: 4 }}
+                            sm={{ span: 12 }}
                             className="my-2"
                         >
                             <Widget
                                 title="Upload"
                                 value={parseFloat(data.data.upload).toFixed(1)}
+                                avg={parseFloat(data.average.upload).toFixed(1)}
+                                max={parseFloat(data.max.upload).toFixed(1)}
                                 unit="Mbit/s"
                                 icon="ul"
                             />
