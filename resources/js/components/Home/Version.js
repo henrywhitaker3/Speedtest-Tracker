@@ -20,7 +20,7 @@ export default class Version extends Component {
     }
 
     componentDidMount() {
-        this.checkForUpdates();
+        // this.checkForUpdates();
     }
 
     checkForUpdates = () => {
