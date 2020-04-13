@@ -70,6 +70,11 @@ export default class HistoryGraph extends Component {
                         }
                     }],
                 },
+                elements: {
+                    point:{
+                        radius: 0
+                    }
+                }
             };
 
             var pingData = {
@@ -102,6 +107,11 @@ export default class HistoryGraph extends Component {
                         }
                     }],
                 },
+                elements: {
+                    point:{
+                        radius: 0
+                    }
+                }
             }
 
             resp.data.data.forEach(e => {

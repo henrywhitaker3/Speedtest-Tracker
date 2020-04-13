@@ -1,4 +1,13 @@
 {
+    "1.2.4": [
+        {
+            "description": "Set radius of chart point to 0 so a graph with lots of data looks less cluttered.",
+            "link": ""
+        },
+        {
+            "description": "Updated JS dependencies"
+        }
+    ],
     "1.2.3": [
         {
             "description": "Changed order of speedtests table show the latest results first.",
