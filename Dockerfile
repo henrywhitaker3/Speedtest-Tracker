@@ -28,11 +28,15 @@ RUN cd /app/site \
 # Copy supervisor queue worker config
 RUN cp /setup/laravel-worker.conf /opt/docker/etc/supervisor.d/
 
+# Copy entry script
+RUN cp /setup/entrypoint/init.sh /entrypoint.d \
+    && chmod +x /setup/entrypoint/init.sh
+
 # Set permissions for files
-RUN cp /setup/entrypoint/init.sh /entrypoint.d
-RUN chmod +x /setup/entrypoint/init.sh
-RUN chown -R application:application /app
-RUN chmod -R 775 /app
+RUN chown -R application:application /app/site/storage \
+    && chmod -R 775 /app/site/storage \
+    && chown -R application:application /app/site/bootstrap \
+    && chmod -R 775 /app/site/bootstrap
 
 # Cleanup setup files
 RUN rm -r /setup
