@@ -5,7 +5,8 @@
             "link": ""
         },
         {
-            "description": "Updated JS dependencies"
+            "description": "Updated JS dependencies",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/11"
         }
     ],
     "1.2.3": [
