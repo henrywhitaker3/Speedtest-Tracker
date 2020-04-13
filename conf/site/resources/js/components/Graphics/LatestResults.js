@@ -93,6 +93,14 @@ export default class LatestResults extends Component {
             return (
                 <Container fluid>
                     <Row>
+                        <Col sm={{ span: 12 }} className="text-center mb-2">
+                            <div>
+                                <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newScan}>Scan again</Button>
+                                <p className="text-muted mb-0 d-inline-block">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col
                             lg={{ span: 4 }}
                             md={{ span: 4 }}
@@ -137,18 +145,6 @@ export default class LatestResults extends Component {
                                 unit="Mbit/s"
                                 icon="ul"
                             />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm={{ span: 12 }} className="text-center mb-2">
-                            <p className="text-muted mb-0">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm={{ span: 12 }} className="text-center">
-                            <div>
-                                <Button variant="primary" onClick={this.newScan}>Scan again</Button>
-                            </div>
                         </Col>
                     </Row>
                 </Container>
