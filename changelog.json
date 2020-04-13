@@ -1,4 +1,10 @@
 {
+    "1.2.5": [
+        {
+            "description": "Added max and average values to the latest results cards.",
+            "link": ""
+        }
+    ],
     "1.2.4": [
         {
             "description": "Set radius of chart point to 0 so a graph with lots of data looks less cluttered.",

@@ -10,26 +10,32 @@ export default class Widget extends Component {
             title: this.props.title,
             value: this.props.value,
             unit: this.props.unit,
-            icon: this.props.icon
+            icon: this.props.icon,
+            avg: this.props.avg,
+            max: this.props.max
         }
     }
 
     componentDidUpdate = () => {
-        if(this.props.title != this.state.title || this.props.value != this.state.value || this.props.unit != this.state.unit || this.props.icon != this.state.icon) {
+        if(this.props.title != this.state.title || this.props.value != this.state.value || this.props.unit != this.state.unit || this.props.icon != this.state.icon || this.props.avg != this.state.avg || this.props.max != this.state.max) {
             this.setState({
                 title: this.props.title,
                 value: this.props.value,
                 unit: this.props.unit,
-                icon: this.props.icon
+                icon: this.props.icon,
+                avg: this.props.avg,
+                max: this.props.max
             });
         }
     }
 
     render() {
-        var title = this.props.title;
-        var value = this.props.value;
-        var unit = this.props.unit;
-        var icon = this.props.icon;
+        var title = this.state.title;
+        var value = this.state.value;
+        var unit = this.state.unit;
+        var icon = this.state.icon;
+        var max = this.state.max;
+        var avg = this.state.avg;
 
         switch(icon) {
             case 'ping':
@@ -46,14 +52,25 @@ export default class Widget extends Component {
         return (
             <Card className="widget-card shadow-sm">
                 <Card.Body>
-                    <div className="d-flex align-items-center justify-content-between">
+                    <div>
                         <div>
-                            <p>{title}</p>
-                            <h3 className="d-inline">{value}</h3>
-                            <p className="d-inline ml-2">{unit}</p>
-                        </div>
-                        <div>
-                            {icon}
+                            <div className="d-flex align-items-center justify-content-between">
+                                <h4>{title}</h4>
+                                {icon}
+                            </div>
+
+                            <div className="text-truncate">
+                                <h3 className="d-inline">{value}</h3>
+                                <p className="d-inline ml-2">{unit} (current)</p>
+                            </div>
+                            <div className="text-muted text-truncate">
+                                <h5 className="d-inline">{avg}</h5>
+                                <p className="d-inline ml-2">{unit} (average)</p>
+                            </div>
+                            <div className="text-muted text-truncate">
+                                <h5 className="d-inline">{max}</h5>
+                                <p className="d-inline ml-2">{unit} (maximum)</p>
+                            </div>
                         </div>
                     </div>
                 </Card.Body>
