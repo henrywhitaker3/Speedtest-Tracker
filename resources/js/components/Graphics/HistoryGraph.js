@@ -179,19 +179,8 @@ export default class HistoryGraph extends Component {
             )
         } else {
             return (
-                <Container className="mb-4 mt-3" fluid>
-                    <Row>
-                        <Col sm={{ span: 12 }}>
-                            <div className="text-center">
-                                <div className="d-inline-flex align-items-center mb-2">
-                                    <h4 className="d-inline mb-0">Show results for the last</h4>
-                                    <Form.Control id="duDaysInput" className="d-inline-block mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
-                                    <h4 className="d-inline mb-0">days</h4>
-                                </div>
-                                <p className="text-muted">This data refreshes every 10 seconds</p>
-                            </div>
-                        </Col>
-                    </Row>
+                <Container className="mb-4 mt-1" fluid>
+
                     <Row>
                         <Col
                             lg={{ span: 6 }}
@@ -218,6 +207,18 @@ export default class HistoryGraph extends Component {
                                     <Line data={pingData} options={pingOptions} />
                                 </Card.Body>
                             </Card>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={{ span: 12 }}>
+                            <div className="text-center">
+                                <div className="d-inline-flex align-items-center mb-2">
+                                    <h4 className="d-inline mb-0">Show results for the last</h4>
+                                    <Form.Control id="duDaysInput" className="d-inline-block mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
+                                    <h4 className="d-inline mb-0">days</h4>
+                                </div>
+                                {/* <p className="text-muted">This data refreshes every 10 seconds</p> */}
+                            </div>
                         </Col>
                     </Row>
                 </Container>
