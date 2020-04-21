@@ -11,7 +11,7 @@ export default class HistoryGraph extends Component {
         super(props)
 
         this.state = {
-            days: 30,
+            days: 7,
             duData: {},
             duOptions: {},
             pingData: {},
