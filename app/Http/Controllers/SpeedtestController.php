@@ -15,7 +15,7 @@ class SpeedtestController extends Controller
 {
     public function index()
     {
-        $data = Speedtest::orderBy('id', 'desc')
+        $data = Speedtest::orderBy('created_at', 'desc')
                          ->paginate();
 
         return response()->json([
@@ -40,6 +40,7 @@ class SpeedtestController extends Controller
         }
 
         $data = Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
+                         ->orderBy('created_at', 'desc')
                          ->get();
 
         return response()->json([
