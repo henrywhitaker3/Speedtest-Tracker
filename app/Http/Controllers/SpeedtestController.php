@@ -40,7 +40,7 @@ class SpeedtestController extends Controller
         }
 
         $data = Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
-                         ->orderBy('created_at', 'desc')
+                         ->orderBy('created_at', 'asc')
                          ->get();
 
         return response()->json([
