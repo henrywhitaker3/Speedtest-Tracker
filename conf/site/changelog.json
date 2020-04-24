@@ -1,4 +1,26 @@
 {
+    "1.2.7": [
+        {
+            "description": "Added modal to show changelog",
+            "link": ""
+        },
+        {
+            "description": "Updated sass",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/22"
+        },
+        {
+            "description": "Updated laravel framework",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/19"
+        },
+        {
+            "description": "Updated react-bootstrap",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/20"
+        },
+        {
+            "description": "Updated phpunit",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/21"
+        }
+    ],
     "1.2.6": [
         {
             "description": "Changed default view to last 7 days rather than last 30.",

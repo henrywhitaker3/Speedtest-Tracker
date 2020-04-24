@@ -42,6 +42,8 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'update',
 ], function () {
+    Route::get('changelog', 'UpdateController@changelog')
+         ->name('update.changelog');
     Route::get('check', 'UpdateController@checkForUpdate')
          ->name('update.check');
     Route::get('download', 'UpdateController@downloadUpdate')
