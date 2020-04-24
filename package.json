@@ -27,7 +27,7 @@
     "dependencies": {
         "@babel/plugin-proposal-class-properties": "^7.8.3",
         "chart.js": "^2.9.3",
-        "react-bootstrap": "^1.0.0",
+        "react-bootstrap": "^1.0.1",
         "react-chartjs-2": "^2.9.0",
         "react-router": "^5.1.2",
         "react-router-dom": "^5.1.2",
