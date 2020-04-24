@@ -4,6 +4,7 @@ import Axios from 'axios';
 import { toast } from 'react-toastify';
 import { Modal, ProgressBar } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
+import Changelog from '../Data/Changelog';
 
 export default class Version extends Component {
     constructor(props) {
@@ -99,7 +100,10 @@ export default class Version extends Component {
 
         if(update === false) {
             return (
-                <p className="text-muted mb-0">Speedtest Tracker Version: {version}</p>
+                <div>
+                    <p className="text-muted mb-0 d-inline-block">Speedtest Tracker Version: {version}</p>
+                    <Changelog />
+                </div>
             );
         } else {
             return (
