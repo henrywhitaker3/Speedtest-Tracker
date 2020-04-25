@@ -1,4 +1,10 @@
 {
+    "1.2.8": [
+        {
+            "description": "Added favicons",
+            "link": ""
+        }
+    ],
     "1.2.7": [
         {
             "description": "Added modal to show changelog",
