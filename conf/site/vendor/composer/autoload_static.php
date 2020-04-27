@@ -19,9 +19,9 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         '9cdd7b9056abc3081735233ba9dd9c7f' => __DIR__ . '/..' . '/facade/flare-client-php/src/helpers.php',
@@ -122,6 +122,7 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         ),
         'I' => 
         array (
+            'Illuminate\\Notifications\\' => 25,
             'Illuminate\\Foundation\\Auth\\' => 27,
             'Illuminate\\' => 11,
         ),
@@ -179,9 +180,9 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         ),
         'phpDocumentor\\Reflection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'XdgBaseDir\\' => 
         array (
@@ -379,6 +380,10 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         array (
             0 => __DIR__ . '/..' . '/laravel/tinker/src',
         ),
+        'Illuminate\\Notifications\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravel/slack-notification-channel/src',
+        ),
         'Illuminate\\Foundation\\Auth\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/ui/auth-backend',
@@ -496,6 +501,7 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         'App\\Console\\Commands\\SpeedtestCommand' => __DIR__ . '/../..' . '/app/Console/Commands/SpeedtestCommand.php',
         'App\\Console\\Commands\\SpeedtestLatestCommand' => __DIR__ . '/../..' . '/app/Console/Commands/SpeedtestLatestCommand.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Events\\SpeedtestCompleteEvent' => __DIR__ . '/../..' . '/app/Events/SpeedtestCompleteEvent.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Facades\\UpdaterFacade' => __DIR__ . '/../..' . '/app/Facades/UpdaterFacade.php',
         'App\\Helpers\\BackupHelper' => __DIR__ . '/../..' . '/app/Helpers/BackupHelper.php',
@@ -518,6 +524,8 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Jobs\\SpeedtestJob' => __DIR__ . '/../..' . '/app/Jobs/SpeedtestJob.php',
+        'App\\Listeners\\SpeedtestCompleteListener' => __DIR__ . '/../..' . '/app/Listeners/SpeedtestCompleteListener.php',
+        'App\\Notifications\\SpeedtestComplete' => __DIR__ . '/../..' . '/app/Notifications/SpeedtestComplete.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
@@ -2008,6 +2016,7 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         'Illuminate\\Notifications\\Channels\\BroadcastChannel' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Channels/BroadcastChannel.php',
         'Illuminate\\Notifications\\Channels\\DatabaseChannel' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Channels/DatabaseChannel.php',
         'Illuminate\\Notifications\\Channels\\MailChannel' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Channels/MailChannel.php',
+        'Illuminate\\Notifications\\Channels\\SlackWebhookChannel' => __DIR__ . '/..' . '/laravel/slack-notification-channel/src/Channels/SlackWebhookChannel.php',
         'Illuminate\\Notifications\\Console\\NotificationTableCommand' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Console/NotificationTableCommand.php',
         'Illuminate\\Notifications\\DatabaseNotification' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/DatabaseNotification.php',
         'Illuminate\\Notifications\\DatabaseNotificationCollection' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/DatabaseNotificationCollection.php',
@@ -2020,12 +2029,16 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         'Illuminate\\Notifications\\Messages\\DatabaseMessage' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Messages/DatabaseMessage.php',
         'Illuminate\\Notifications\\Messages\\MailMessage' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Messages/MailMessage.php',
         'Illuminate\\Notifications\\Messages\\SimpleMessage' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Messages/SimpleMessage.php',
+        'Illuminate\\Notifications\\Messages\\SlackAttachment' => __DIR__ . '/..' . '/laravel/slack-notification-channel/src/Messages/SlackAttachment.php',
+        'Illuminate\\Notifications\\Messages\\SlackAttachmentField' => __DIR__ . '/..' . '/laravel/slack-notification-channel/src/Messages/SlackAttachmentField.php',
+        'Illuminate\\Notifications\\Messages\\SlackMessage' => __DIR__ . '/..' . '/laravel/slack-notification-channel/src/Messages/SlackMessage.php',
         'Illuminate\\Notifications\\Notifiable' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Notifiable.php',
         'Illuminate\\Notifications\\Notification' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/Notification.php',
         'Illuminate\\Notifications\\NotificationSender' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/NotificationSender.php',
         'Illuminate\\Notifications\\NotificationServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/NotificationServiceProvider.php',
         'Illuminate\\Notifications\\RoutesNotifications' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/RoutesNotifications.php',
         'Illuminate\\Notifications\\SendQueuedNotifications' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Notifications/SendQueuedNotifications.php',
+        'Illuminate\\Notifications\\SlackChannelServiceProvider' => __DIR__ . '/..' . '/laravel/slack-notification-channel/src/SlackChannelServiceProvider.php',
         'Illuminate\\Pagination\\AbstractPaginator' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Pagination/AbstractPaginator.php',
         'Illuminate\\Pagination\\LengthAwarePaginator' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Pagination/LengthAwarePaginator.php',
         'Illuminate\\Pagination\\PaginationServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Pagination/PaginationServiceProvider.php',

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\SpeedtestCompleteEvent;
 use App\Helpers\SpeedtestHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -31,7 +32,8 @@ class SpeedtestJob implements ShouldQueue
     public function handle()
     {
         $output = shell_exec('speedtest-cli');
-
-        return SpeedtestHelper::runSpeedtest($output);
+        $speedtest = SpeedtestHelper::runSpeedtest($output);
+        event(new SpeedtestCompleteEvent($speedtest));
+        return $speedtest;
     }
 }

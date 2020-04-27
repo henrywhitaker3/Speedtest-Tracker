@@ -14,6 +14,12 @@ else
     cd /app/site && php artisan key:generate
 fi
 
+if [ -z ${SLACK_WEBHOOK+x} ]; then
+    echo "Slack webhook is unset"
+else
+    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak .env
+fi
+
 cd /app/site && php artisan migrate
 
 cd /config

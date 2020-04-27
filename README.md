@@ -1,6 +1,6 @@
 # Speedtest Tracker
 
-[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) [![commit_freq](https://img.shields.io/github/commit-activity/m/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) ![version](https://img.shields.io/badge/version-v1.2.9-success) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
+[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) [![commit_freq](https://img.shields.io/github/commit-activity/m/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) ![version](https://img.shields.io/badge/version-v1.3.0-success) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
 
 This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [speedtest-cli](https://github.com/sivel/speedtest-cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
 
@@ -19,9 +19,21 @@ docker create \
       --name=speedtest \
       -p 8765:80 \
       -v /path/to/data:/config \
+      -e SLACK_WEBHOOK=webhook `#optional` \
       --restart unless-stopped \
       henrywhitaker3/speedtest-tracker
 ```
+
+## Parameters
+
+Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
+
+| Parameter | Function |
+| :----: | --- |
+| `-p 8765:80` | Exposes the webserver on port 8765 |
+| `-e SLACK_WEBHOOK` | Put a slack webhook here to get slack notifications when a speedtest is run. To use discord webhooks, just append `/slack` to the end of your discord webhook URL |
+| `-v /config` | All the config files reside here. |
+
 
 ## Getting the Image
 
