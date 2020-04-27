@@ -8,7 +8,7 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/thephpleague/commonmark.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/commonmark)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/126/badge)](https://bestpractices.coreinfrastructure.org/projects/126)
 
-[![Support development with Patreon](https://img.shields.io/badge/patreon-donate-red.svg)](https://www.patreon.com/colinodell)
+[![Sponsor development of this project](https://img.shields.io/badge/sponsor%20this%20package-%E2%9D%A4-ff69b4.svg?style=flat-square)](https://www.colinodell.com/sponsor)
 
 ![league/commonmark](commonmark-banner.png)
 
@@ -74,7 +74,7 @@ The `GithubFlavoredMarkdownConverter` shown earlier is a drop-in replacement for
  - Tables
  - Task Lists
 
-See the [Extensions documentation](https://commonmark.thephpleague.com/1.0/customization/extensions/) for more details on how to include only certain GFM features if you don't want them all.
+See the [Extensions documentation](https://commonmark.thephpleague.com/customization/extensions/) for more details on how to include only certain GFM features if you don't want them all.
 
 ## 🗃️ Related Packages
 
@@ -91,7 +91,7 @@ See the [Extensions documentation](https://commonmark.thephpleague.com/1.0/custo
 
 ### Included Extensions
 
-See [our extension documentation](https://commonmark.thephpleague.com/1.0/customization/extensions/#included-extensions) for a full list of extensions bundled with this library.
+See [our extension documentation](https://commonmark.thephpleague.com/customization/extensions/#included-extensions) for a full list of extensions bundled with this library.
 
 ### Community Extensions
 
@@ -176,7 +176,7 @@ We'd also like to extend our sincere thanks the following sponsors who support o
  - [RIPS Technologies](https://www.ripstech.com/) for supporting this project with a complimentary [RIPS SaaS](https://www.ripstech.com/product/) license
  - [JetBrains](https://www.jetbrains.com/) for supporting this project with complimentary [PhpStorm](https://www.jetbrains.com/phpstorm/) licenses
 
-Are you interested in sponsoring development of this project? [Make a pledge](https://www.patreon.com/join/colinodell) of $10 or more and we'll include your name [on our website](https://commonmark.thephpleague.com/#sponsors)!
+Are you interested in sponsoring development of this project? See <https://www.colinodell.com/sponsor> for a list of ways to contribute.
 
 ## 📄 License
 

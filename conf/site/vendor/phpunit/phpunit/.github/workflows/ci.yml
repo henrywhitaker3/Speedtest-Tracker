@@ -41,7 +41,7 @@ jobs:
           coverage: none
 
       - name: Update dependencies with composer
-        run: ./tools/composer update --no-interaction --no-ansi --no-progress --no-suggest
+        run: ./tools/composer update --no-interaction --no-ansi --no-progress
 
       - name: Run vimeo/psalm on public API
         run: ./tools/psalm --config=.psalm/static-analysis.xml --no-progress --show-info=false
@@ -71,7 +71,7 @@ jobs:
           extensions: intl
 
       - name: Run roave/backward-compatibility-check
-        run: ./tools/roave-backward-compatibility-check --from=8.5.0
+        run: ./tools/roave-backward-compatibility-check --from=9041d82604effd0d0ab59ce67eafbc3462a2ba83
 
   lint-xml-configuration:
     name: Lint XML Configuration
@@ -140,11 +140,11 @@ jobs:
 
       - name: Install lowest dependencies with composer
         if: matrix.dependencies == 'lowest'
-        run: ./tools/composer update --no-ansi --no-interaction --no-progress --no-suggest --prefer-lowest
+        run: ./tools/composer update --no-ansi --no-interaction --no-progress --prefer-lowest
 
       - name: Install highest dependencies with composer
         if: matrix.dependencies == 'highest'
-        run: ./tools/composer update --no-ansi --no-interaction --no-progress --no-suggest
+        run: ./tools/composer update --no-ansi --no-interaction --no-progress
 
       - name: Run sanity check
         run: bash ./build/scripts/sanity-check

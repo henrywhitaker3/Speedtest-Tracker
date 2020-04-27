@@ -225,7 +225,7 @@ class Builder
     public function select($columns = ['*'])
     {
         $this->columns = [];
-
+        $this->bindings['select'] = [];
         $columns = is_array($columns) ? $columns : func_get_args();
 
         foreach ($columns as $as => $column) {
@@ -1819,7 +1819,7 @@ class Builder
     /**
      * Add an "order by" clause to the query.
      *
-     * @param  \Closure|\Illuminate\Database\Query\Builder|string  $column
+     * @param  \Closure|\Illuminate\Database\Query\Builder|\Illuminate\Database\Query\Expression|string  $column
      * @param  string  $direction
      * @return $this
      *
@@ -2360,9 +2360,9 @@ class Builder
             return $column;
         }
 
-        $seperator = strpos(strtolower($column), ' as ') !== false ? ' as ' : '\.';
+        $separator = strpos(strtolower($column), ' as ') !== false ? ' as ' : '\.';
 
-        return last(preg_split('~'.$seperator.'~i', $column));
+        return last(preg_split('~'.$separator.'~i', $column));
     }
 
     /**

@@ -13,19 +13,9 @@ namespace League\CommonMark;
 
 /**
  * Interface for a service which converts CommonMark to HTML.
+ *
+ * @deprecated ConverterInterface is deprecated since league/commonmark 1.4, use MarkdownConverterInterface instead
  */
-interface ConverterInterface
+interface ConverterInterface extends MarkdownConverterInterface
 {
-    /**
-     * Converts CommonMark to HTML.
-     *
-     * @param string $commonMark
-     *
-     * @throws \RuntimeException
-     *
-     * @return string HTML
-     *
-     * @api
-     */
-    public function convertToHtml(string $commonMark): string;
 }

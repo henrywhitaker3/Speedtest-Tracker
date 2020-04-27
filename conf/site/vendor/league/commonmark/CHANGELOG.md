@@ -4,6 +4,64 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [1.4.2] - 2020-04-24
+
+### Fixed
+
+ - Fixed inline code blocks not be included within heading permalinks (#457)
+
+## [1.4.1] - 2020-04-20
+
+### Fixed
+
+ - Fixed BC break caused by ConverterInterface alias not being used by some DI containers (#454)
+
+## [1.4.0] - 2020-04-18
+
+### Added
+
+ - Added new [Heading Permalink extension](https://commonmark.thephpleague.com/extensions/heading-permalinks/) (#420)
+ - Added new [Table of Contents extension](https://commonmark.thephpleague.com/extensions/table-of-contents/) (#441)
+ - Added new `MarkdownConverterInterface` as a long-term replacement for `ConverterInterface` (#439)
+ - Added new `DocumentPreParsedEvent` event (#427, #359, #399)
+ - Added new `ListBlock::TYPE_BULLET` constant as a replacement for `ListBlock::TYPE_UNORDERED`
+ - Added new `MarkdownInput` class and `MarkdownInputInterface` to handle pre-parsing and allow listeners to replace Markdown contents
+
+### Changed
+
+ - Block & inline renderers will now render child classes automatically (#222, #209)
+ - The `ListBlock` constants now use fully-lowercased values instead of titlecased values
+ - Significantly improved typing
+
+### Fixed
+
+ - Fixed loose comparison when checking for table alignment
+ - Fixed `StaggeredDelimiterProcessor` returning from a `void` function
+
+### Deprecated
+
+ - The `Converter` class has been deprecated; use `CommonMarkConverter` instead (#438, #439)
+ - The `ConverterInterface` has been deprecated; use `MarkdownConverterInterface` instead (#438, #439)
+ - The `bin/commonmark` script has been deprecated
+ - The following methods of `ArrayCollection` have been deprecated:
+   - `add()`
+   - `set()`
+   - `get()`
+   - `remove()`
+   - `isEmpty()`
+   - `contains()`
+   - `indexOf()`
+   - `containsKey()`
+   - `replaceWith()`
+   - `removeGaps()`
+ - The `ListBlock::TYPE_UNORDERED` constant has been deprecated, use `ListBlock::TYPE_BULLET` instead
+
+## [1.3.4] - 2020-04-13
+
+### Fixed
+
+ - Fixed configuration/environment not being injected into event listeners when adding them via `[$instance, 'method']` callable syntax (#440)
+
 ## [1.3.3] - 2020-04-05
 
 ### Fixed
@@ -237,7 +295,11 @@ No changes were made since 1.0.0-rc1.
    - Removed `DelimiterStack::iterateByCharacters()` (use the new `processDelimiters()` method instead)
    - Removed the protected `DelimiterStack::findMatchingOpener()` method
 
-[unreleased]: https://github.com/thephpleague/commonmark/compare/1.3.3...HEAD
+[unreleased]: https://github.com/thephpleague/commonmark/compare/1.4.2...HEAD
+[1.4.2]: https://github.com/thephpleague/commonmark/compare/1.4.1...1.4.2
+[1.4.1]: https://github.com/thephpleague/commonmark/compare/1.4.0...1.4.1
+[1.4.0]: https://github.com/thephpleague/commonmark/compare/1.3.4...1.4.0
+[1.3.4]: https://github.com/thephpleague/commonmark/compare/1.3.3...1.3.4
 [1.3.3]: https://github.com/thephpleague/commonmark/compare/1.3.2...1.3.3
 [1.3.2]: https://github.com/thephpleague/commonmark/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/thephpleague/commonmark/compare/1.3.0...1.3.1
