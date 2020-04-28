@@ -1,6 +1,6 @@
 # Speedtest Tracker
 
-[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) ![version](https://img.shields.io/badge/version-v1.3.0-success) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
+[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) ![version](https://img.shields.io/badge/version-v1.3.1-success) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
 
 This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [speedtest-cli](https://github.com/sivel/speedtest-cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
 
@@ -11,6 +11,8 @@ This program runs a speedtest check every hour and graphs the results. The back-
 - Automatically run a speedtest every hour
 - Graph of previous speedtests going back x days
 - Backup/restore data in JSON format
+- Slack/Discord notifications
+- Organizr integration
 
 ## Installation & Setup
 
