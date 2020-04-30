@@ -1,4 +1,14 @@
 {
+    "1.3.2": [
+        {
+            "description": "Updated laravel framework",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/28"
+        },
+        {
+            "description": "Updated laravel ui",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/30"
+        }
+    ],
     "1.3.1": [
         {
             "description": "Updated laravel-cors",
