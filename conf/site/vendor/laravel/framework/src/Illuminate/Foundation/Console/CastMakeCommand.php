@@ -4,40 +4,28 @@ namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\GeneratorCommand;
 
-class EventMakeCommand extends GeneratorCommand
+class CastMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:event';
+    protected $name = 'make:cast';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new event class';
+    protected $description = 'Create a new custom Eloquent cast class';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Event';
-
-    /**
-     * Determine if the class already exists.
-     *
-     * @param  string  $rawName
-     * @return bool
-     */
-    protected function alreadyExists($rawName)
-    {
-        return class_exists($rawName) ||
-               $this->files->exists($this->getPath($this->qualifyClass($rawName)));
-    }
+    protected $type = 'Cast';
 
     /**
      * Get the stub file for the generator.
@@ -46,7 +34,7 @@ class EventMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/event.stub';
+        return __DIR__.'/stubs/cast.stub';
     }
 
     /**
@@ -57,6 +45,6 @@ class EventMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Events';
+        return $rootNamespace.'\Casts';
     }
 }
