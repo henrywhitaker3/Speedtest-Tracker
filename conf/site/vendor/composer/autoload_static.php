@@ -466,7 +466,7 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         ),
         'Asm89\\Stack\\' => 
         array (
-            0 => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack',
+            0 => __DIR__ . '/..' . '/asm89/stack-cors/src',
         ),
         'App\\' => 
         array (
@@ -534,8 +534,8 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         'App\\Providers\\UpdaterServiceProvider' => __DIR__ . '/../..' . '/app/Providers/UpdaterServiceProvider.php',
         'App\\Speedtest' => __DIR__ . '/../..' . '/app/Speedtest.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
-        'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack/Cors.php',
-        'Asm89\\Stack\\CorsService' => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack/CorsService.php',
+        'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Cors.php',
+        'Asm89\\Stack\\CorsService' => __DIR__ . '/..' . '/asm89/stack-cors/src/CorsService.php',
         'Brick\\Math\\BigDecimal' => __DIR__ . '/..' . '/brick/math/src/BigDecimal.php',
         'Brick\\Math\\BigInteger' => __DIR__ . '/..' . '/brick/math/src/BigInteger.php',
         'Brick\\Math\\BigNumber' => __DIR__ . '/..' . '/brick/math/src/BigNumber.php',
