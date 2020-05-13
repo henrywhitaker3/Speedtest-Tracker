@@ -1,4 +1,22 @@
 {
+    "1.3.6": [
+        {
+            "description": "Updated react router",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/50"
+        },
+        {
+            "description": "Updated react toastify",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/48"
+        },
+        {
+            "description": "Updated bootstrap",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/49"
+        },
+        {
+            "description": "Updated the way the changelog is displayed",
+            "link": ""
+        }
+    ],
     "1.3.5": [
         {
             "description": "Updated laravel CORS",
