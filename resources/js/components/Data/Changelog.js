@@ -1,7 +1,7 @@
 import React, { Component, version } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
-import { Modal } from 'react-bootstrap';
+import { Modal, Collapse, Button } from 'react-bootstrap';
 
 export default class Changelog extends Component {
     constructor(props) {
@@ -11,6 +11,7 @@ export default class Changelog extends Component {
             changelog: {},
             modal: false,
             loading: true,
+            hidden: false,
         }
     }
 
@@ -40,6 +41,19 @@ export default class Changelog extends Component {
         });
     }
 
+    toggleHidden = () => {
+        var hidden = this.state.hidden;
+        if(hidden) {
+            this.setState({
+                hidden: false
+            });
+        } else {
+            this.setState({
+                hidden: true
+            });
+        }
+    }
+
     versionList = (key, data) => {
         return (
             <div key={key}>
@@ -59,18 +73,29 @@ export default class Changelog extends Component {
 
     makeChangelog() {
         var changelog = this.state.changelog;
-        var versions = [];
+        var versionsVis = [];
+        var versionsHid = [];
 
+        var i = 0;
         for(var key in changelog) {
-            versions.push(this.versionList(key, changelog[key]));
+            if(i <= 5) {
+                versionsVis.push(this.versionList(key, changelog[key]));
+            } else {
+                versionsHid.push(this.versionList(key, changelog[key]));
+            }
+            i++;
         }
 
-        return versions;
+        return {
+            visible: versionsVis,
+            hidden: versionsHid
+        };
     }
 
     render() {
         var show = this.state.modal;
         var loading = this.state.loading;
+        var showHidden = this.state.hidden;
 
         if(loading) {
             return <></>
@@ -83,7 +108,23 @@ export default class Changelog extends Component {
                     <Modal show={show} onHide={this.hideModal} animation={true}>
                         <Modal.Body>
                             <h3>Changelog:</h3>
-                            {changelog}
+                            {changelog.visible}
+                            {changelog.hidden.length > 5 &&
+                                <>
+                                    <Collapse in={showHidden}>
+                                        <div>
+                                            {changelog.hidden}
+                                        </div>
+                                    </Collapse>
+                                    <div className="w-100 text-center">
+                                    {showHidden ?
+                                        <Button variant="primary" className="mx-auto mouse" onClick={this.toggleHidden}>Show less</Button>
+                                    :
+                                        <Button variant="primary" className="mx-auto mouse" onClick={this.toggleHidden}>Show more</Button>
+                                    }
+                                    </div>
+                                </>
+                            }
                         </Modal.Body>
                     </Modal>
                 </div>
