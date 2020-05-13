@@ -12,7 +12,7 @@
     "devDependencies": {
         "@babel/preset-react": "^7.0.0",
         "axios": "^0.19",
-        "bootstrap": "^4.4.1",
+        "bootstrap": "^4.5.0",
         "cross-env": "^7.0",
         "jquery": "^3.5",
         "laravel-mix": "^5.0.1",
@@ -29,8 +29,8 @@
         "chart.js": "^2.9.3",
         "react-bootstrap": "^1.0.1",
         "react-chartjs-2": "^2.9.0",
-        "react-router": "^5.1.2",
+        "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",
-        "react-toastify": "^6.0.2"
+        "react-toastify": "^6.0.3"
     }
 }
