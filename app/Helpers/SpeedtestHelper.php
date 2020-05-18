@@ -11,7 +11,7 @@ class SpeedtestHelper {
     public static function runSpeedtest($output = false)
     {
         if($output === false) {
-            $output = shell_exec('speedtest-cli --json');
+            $output = SpeedtestHelper::output();
         }
 
         try {
@@ -29,6 +29,11 @@ class SpeedtestHelper {
         }
 
         return (isset($test)) ? $test : false;
+    }
+
+    public static function output()
+    {
+        return shell_exec('speedtest-cli --json');
     }
 
     public static function latest()
