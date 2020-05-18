@@ -3,30 +3,32 @@
 namespace App\Helpers;
 
 use App\Speedtest;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use JsonException;
 
 class SpeedtestHelper {
     public static function runSpeedtest($output = false)
     {
         if($output === false) {
-            $output = shell_exec('speedtest-cli');
+            $output = shell_exec('speedtest-cli --json');
         }
-        $output = preg_replace("/\r|\n/", "", $output);
 
-        $pattern = '/([0-9\.]{1,}) ms.*Download: ([0-9\.]{1,} [A-Za-z]{1,}\/s).*Upload: ([0-9\.]{1,} [A-Za-z]{1,}\/s)/';
-        $matches = [];
-        preg_match_all($pattern, $output, $matches);
+        try {
+            $output = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+            $test = Speedtest::create([
+                'ping' => $output['ping'],
+                'download' => $output['download'] / 1000000,
+                'upload' => $output['upload'] / 1000000
+            ]);
+        } catch(JsonException $e) {
+            Log::error('Failed to parse speedtest JSON');
+            Log::error($output);
+        } catch(Exception $e) {
+            Log::error($e->getMessage());
+        }
 
-        $ping = $matches[1][0];
-        $down = SpeedtestHelper::parseUnits($matches[2][0]);
-        $up = SpeedtestHelper::parseUnits($matches[3][0]);
-
-        $test = Speedtest::create([
-            'ping' => $ping,
-            'download' => $down['val'],
-            'upload' => $up['val']
-        ]);
-
-        return $test;
+        return (isset($test)) ? $test : false;
     }
 
     public static function latest()
