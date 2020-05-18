@@ -1,4 +1,26 @@
 {
+    "1.3.7": [
+        {
+            "description": "Updated laravel framework",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/52"
+        },
+        {
+            "description": "Updated react toastify",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/53"
+        },
+        {
+            "description": "Updated bootstrap",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/49"
+        },
+        {
+            "description": "Switch to JSON output from speedtest-cli",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/issues/55"
+        },
+        {
+            "description": "Changed \"scan\" to \"test\"",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/issues/56"
+        }
+    ],
     "1.3.6": [
         {
             "description": "Updated react router",
