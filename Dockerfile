@@ -1,4 +1,4 @@
-FROM webdevops/php-nginx:ubuntu-18.04
+FROM webdevops/php-nginx:7.4
 MAINTAINER henrywhitaker3@outlook.com
 
 ENV WEB_DOCUMENT_ROOT  /app/site/public

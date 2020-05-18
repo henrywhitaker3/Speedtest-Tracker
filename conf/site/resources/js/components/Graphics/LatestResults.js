@@ -49,7 +49,7 @@ export default class LatestResults extends Component {
 
         Axios.get(url)
         .then((resp) => {
-            toast.info('A scan has been queued. This page will refresh when the scan has finished.');
+            toast.info('A test has been queued. This page will refresh when the test has finished.');
         })
         .catch((err) => {
             if(err.response) {
@@ -83,7 +83,7 @@ export default class LatestResults extends Component {
                     <Row>
                         <Col sm={{ span: 12 }} className="text-center">
                             <div>
-                                <Button variant="primary" onClick={this.newScan}>Start your first scan!</Button>
+                                <Button variant="primary" onClick={this.newScan}>Start your first test!</Button>
                             </div>
                         </Col>
                     </Row>
@@ -95,8 +95,8 @@ export default class LatestResults extends Component {
                     <Row>
                         <Col sm={{ span: 12 }} className="text-center mb-2">
                             <div>
-                                <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newScan}>Scan again</Button>
-                                <p className="text-muted mb-0 d-inline-block">Last scan performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                                <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newScan}>Test again</Button>
+                                <p className="text-muted mb-0 d-inline-block">Last test performed at: {new Date(data.data.created_at).toLocaleString()}</p>
                             </div>
                         </Col>
                     </Row>
