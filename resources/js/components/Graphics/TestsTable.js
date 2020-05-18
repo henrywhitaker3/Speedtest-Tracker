@@ -111,7 +111,7 @@ export default class TestsTable extends Component {
                                     </Table>
                                 </Col>
                             </Row>
-                            {page <= lastPage &&
+                            {page < lastPage &&
                                 <Row>
                                     <Col sm={{ span: 12 }} className="text-center">
                                         <Button variant="primary" onClick={this.getMoreData}>Show more</Button>
