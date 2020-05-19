@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\SettingsHelper;
+use App\Rules\Cron;
 use App\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -11,7 +12,7 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        return Setting::get();
+        return Setting::get()->keyBy('name');
     }
 
     public function get(Setting $setting)
@@ -24,6 +25,10 @@ class SettingsController extends Controller
         $rule = [
             'name' => [ 'required', 'string', 'min:1' ],
         ];
+        if($request->name == 'schedule') {
+            $rule['value'] = [ 'required', new Cron ];
+        }
+
         $validator = Validator::make($request->all(), $rule);
         if($validator->fails()) {
             return response()->json([

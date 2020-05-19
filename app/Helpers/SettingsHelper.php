@@ -14,7 +14,8 @@ class SettingsHelper {
         } else if(sizeof($name) == 1) {
             return $name[0];
         } else {
-            return $name;
+            $name = $name->keyBy('name');
+            return $name->all();
         }
     }
 
