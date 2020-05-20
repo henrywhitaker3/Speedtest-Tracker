@@ -5,6 +5,7 @@ import LatestResults from '../Graphics/LatestResults';
 import Footer from './Footer';
 import DataRow from '../Data/DataRow';
 import TestsTable from '../Graphics/TestsTable';
+import Settings from './Settings';
 
 export default class HomePage extends Component {
 
@@ -15,6 +16,7 @@ export default class HomePage extends Component {
                     <LatestResults />
                     <HistoryGraph />
                     <TestsTable />
+                    <Settings />
                     <DataRow />
                 </div>
                 <Footer />

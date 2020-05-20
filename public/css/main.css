@@ -51,3 +51,7 @@
 .mouse {
     cursor: pointer;
 }
+
+.setting-card {
+    width: 500px;
+}
