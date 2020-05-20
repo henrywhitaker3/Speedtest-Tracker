@@ -1,4 +1,14 @@
 {
+    "1.4.1": [
+        {
+            "description": "Updated laravel framework",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/65"
+        },
+        {
+            "description": "Updated facade/ignition",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/64"
+        }
+    ],
     "1.4.0": [
         {
             "description": "Added custom speedtest.net server ids",
