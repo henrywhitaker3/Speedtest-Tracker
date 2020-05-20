@@ -33,9 +33,6 @@ export default class Index extends Component {
                 loading: false,
                 redirect: true,
             });
-            if(window.location.pathname != window.config.base) {
-                window.location.href = window.config.base;
-            }
         })
     }
 
@@ -49,7 +46,7 @@ export default class Index extends Component {
                 <Loader />
             );
         } else {
-            if(baseSet) {
+            if(baseSet && window.config.base) {
                 return (
                     <BrowserRouter>
                         <Route render={(props) => (<ToastContainer />)} />
