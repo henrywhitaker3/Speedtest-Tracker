@@ -33,6 +33,14 @@ class SpeedtestHelper {
 
     public static function output()
     {
+        $server = SettingsHelper::get('server')['value'];
+        if($server != '' && $server != false) {
+            $server = explode(',', $server);
+            $server = $server[array_rand($server)];
+
+            return shell_exec('speedtest-cli --json --server ' . $server);
+        }
+
         return shell_exec('speedtest-cli --json');
     }
 
