@@ -15,6 +15,23 @@ export default class Loader extends Component {
     }
 
     render() {
+        if(this.props.small) {
+            return (
+                <Container fluid>
+                    <Row className="text-center align-items-center">
+                        <Col
+                            lg={{ span: 2, offset: 5}}
+                            md={{ span: 4, offset: 4}}
+                            sm={{ span: 4, offset: 4}}
+                            xs={{ span: 12}}
+                        >
+                            <Spinner animation="grow" size="lg"/>
+                        </Col>
+                    </Row>
+                </Container>
+            )
+        }
+
         return (
             <Container fluid>
                 <Row className="fullscreen text-center align-items-center">

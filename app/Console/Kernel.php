@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
 use App\Jobs\SpeedtestJob;
 use Illuminate\Console\Scheduling\Schedule;
@@ -26,9 +27,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function() {
-            SpeedtestJob::dispatch();
-        })->hourlyAt(0);
+        $schedule->job(new SpeedtestJob)->cron(SettingsHelper::get('schedule')['value']);
     }
 
     /**
