@@ -20,6 +20,12 @@ else
     sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak .env
 fi
 
+if [ -z ${BASE_PATH+x} ]; then
+    echo "Base path is unset"
+else
+    sed "s,BASE_PATH=.*,BASE_PATH=$BASE_PATH," -i.bak .env
+fi
+
 cd /app/site && php artisan migrate
 
 cd /config

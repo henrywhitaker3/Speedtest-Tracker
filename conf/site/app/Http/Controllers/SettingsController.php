@@ -48,4 +48,15 @@ class SettingsController extends Controller
             'data' => $setting
         ], 200);
     }
+
+    public function config()
+    {
+
+
+        $config = [
+            'base' => SettingsHelper::getBase()
+        ];
+
+        return $config;
+    }
 }
