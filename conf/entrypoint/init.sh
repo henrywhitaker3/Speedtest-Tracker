@@ -28,4 +28,4 @@ mkdir -p logs
 chown -R application /config
 chmod 775 -R /config
 
-echo "* * * * * cd /app/site/ && php artisan schedule:run >> /dev/null 2>&1" | crontab -
+echo "* * * * * /usr/local/bin/php /app/site/artisan schedule:run >> /dev/null 2>&1" | crontab -

@@ -31,7 +31,7 @@ class SpeedtestJob implements ShouldQueue
      */
     public function handle()
     {
-        $output = shell_exec('speedtest-cli --json');
+        $output = SpeedtestHelper::output();
         $speedtest = SpeedtestHelper::runSpeedtest($output);
         event(new SpeedtestCompleteEvent($speedtest));
         return $speedtest;

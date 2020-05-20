@@ -1,4 +1,22 @@
 {
+    "1.4.0": [
+        {
+            "description": "Added custom speedtest.net server ids",
+            "link": ""
+        },
+        {
+            "description": "Added custom schedule",
+            "link": ""
+        },
+        {
+            "description": "Updated react toastify",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/62"
+        },
+        {
+            "description": "Updated facade/ignition",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/60"
+        }
+    ],
     "1.3.7": [
         {
             "description": "Updated laravel framework",

@@ -53,3 +53,15 @@ Route::group([
     Route::get('move', 'UpdateController@moveUpdate')
          ->name('update.move');
 });
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'settings'
+], function () {
+    Route::get('/', 'SettingsController@index')
+         ->name('settings.index');
+    Route::put('/', 'SettingsController@store')
+         ->name('settings.store');
+    Route::post('/', 'SettingsController@store')
+         ->name('settings.update');
+});

@@ -27,8 +27,8 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         '9cdd7b9056abc3081735233ba9dd9c7f' => __DIR__ . '/..' . '/facade/flare-client-php/src/helpers.php',
         'b6ec61354e97f32c0ae683041c78392a' => __DIR__ . '/..' . '/scrivo/highlight.php/HighlightUtilities/functions.php',
         'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
-        'ed962a97bd972bc82007176b647d4e36' => __DIR__ . '/..' . '/facade/ignition/src/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        'ed962a97bd972bc82007176b647d4e36' => __DIR__ . '/..' . '/facade/ignition/src/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -506,11 +506,13 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         'App\\Facades\\UpdaterFacade' => __DIR__ . '/../..' . '/app/Facades/UpdaterFacade.php',
         'App\\Helpers\\BackupHelper' => __DIR__ . '/../..' . '/app/Helpers/BackupHelper.php',
         'App\\Helpers\\EmailVerificationHelper' => __DIR__ . '/../..' . '/app/Helpers/EmailVerificationHelper.php',
+        'App\\Helpers\\SettingsHelper' => __DIR__ . '/../..' . '/app/Helpers/SettingsHelper.php',
         'App\\Helpers\\SpeedtestHelper' => __DIR__ . '/../..' . '/app/Helpers/SpeedtestHelper.php',
         'App\\Helpers\\UpdateHelper' => __DIR__ . '/../..' . '/app/Helpers/UpdateHelper.php',
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
         'App\\Http\\Controllers\\BackupController' => __DIR__ . '/../..' . '/app/Http/Controllers/BackupController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\SettingsController' => __DIR__ . '/../..' . '/app/Http/Controllers/SettingsController.php',
         'App\\Http\\Controllers\\SpeedtestController' => __DIR__ . '/../..' . '/app/Http/Controllers/SpeedtestController.php',
         'App\\Http\\Controllers\\UpdateController' => __DIR__ . '/../..' . '/app/Http/Controllers/UpdateController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
@@ -532,6 +534,8 @@ class ComposerStaticInit5f38f71e2023aa5bb7a383f21d759786
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
         'App\\Providers\\UpdaterServiceProvider' => __DIR__ . '/../..' . '/app/Providers/UpdaterServiceProvider.php',
+        'App\\Rules\\Cron' => __DIR__ . '/../..' . '/app/Rules/Cron.php',
+        'App\\Setting' => __DIR__ . '/../..' . '/app/Setting.php',
         'App\\Speedtest' => __DIR__ . '/../..' . '/app/Speedtest.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
         'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Cors.php',

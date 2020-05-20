@@ -2,7 +2,15 @@
 
 All notable changes to `ignition` will be documented in this file
 
-## 2.0.1 - 2020-03-18
+## 2.0.4 - 2020-05-18
+
+- handle exceptions in case the request doesn't have a user (#274)
+
+## 2.0.3 - 2020-04-07
+
+- support Laravel 8
+
+## 2.0.2 - 2020-03-18
 
 - fix execute solution route not defined (#265)
 
