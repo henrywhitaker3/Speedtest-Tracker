@@ -24,7 +24,7 @@ export default class Login extends Component {
             email: this.state.loginEmailInput,
             password: this.state.loginPasswordInput
         };
-        var url = '/api/auth/login';
+        var url = 'api/auth/login';
 
         Axios.post(url, data)
         .then((resp) => {

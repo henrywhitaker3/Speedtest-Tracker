@@ -1,4 +1,10 @@
 {
+    "1.5.0": [
+        {
+            "description": "Added option to set base path",
+            "link": ""
+        }
+    ],
     "1.4.1": [
         {
             "description": "Updated laravel framework",

@@ -27,7 +27,7 @@ export default class LatestResults extends Component {
     }
 
     getData = () => {
-        var url = '/api/speedtest/latest';
+        var url = 'api/speedtest/latest';
 
         Axios.get(url)
         .then((resp) => {
@@ -45,7 +45,7 @@ export default class LatestResults extends Component {
     }
 
     newScan = () => {
-        var url = '/api/speedtest/run';
+        var url = 'api/speedtest/run';
 
         Axios.get(url)
         .then((resp) => {
