@@ -9,7 +9,7 @@
 
         <link href="/icons/themify/themify-icons.css" rel="stylesheet">
         <link rel="stylesheet" href="/css/bootstrap.dark.min.css">
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/main.css?v={{ str_replace('.', '-', config('speedtest.version')) }}">
 
         <link rel="apple-touch-icon" sizes="57x57" href="/icons/fav/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="/icons/fav/apple-icon-60x60.png">
@@ -36,6 +36,6 @@
 
         <script src="/js/jquery.min.js"></script>
         <script src="/js/popper.min.js"></script>
-        <script src="/js/app.js"></script>
+        <script src="/js/app.js?v={{ str_replace('.', '-', config('speedtest.version')) }}"></script>
     </body>
 </html>
