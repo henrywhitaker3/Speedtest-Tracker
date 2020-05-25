@@ -14,6 +14,13 @@ else
     cd /app/site && php artisan key:generate
 fi
 
+if cat /app/site/.env | grep -E "JWT_SECRET=base64" > /dev/null; then
+    echo "JWT secret found. Skipping generation"
+else
+    echo "No JWT secret found. Generating secret"
+    cd /app/site && php artisan jwt:secret
+fi
+
 if [ -z ${SLACK_WEBHOOK+x} ]; then
     echo "Slack webhook is unset"
 else
