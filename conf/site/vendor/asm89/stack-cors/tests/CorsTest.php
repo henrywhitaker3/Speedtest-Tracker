@@ -89,7 +89,8 @@ class CorsTest extends TestCase
         $response = $app->handle($request);
 
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Headers'));
+        $this->assertEquals('Foo, BAR', $response->headers->get('Access-Control-Allow-Headers'));
+        $this->assertEquals('Access-Control-Request-Headers, Access-Control-Request-Method', $response->headers->get('Vary'));
     }
 
     /**
@@ -395,7 +396,9 @@ class CorsTest extends TestCase
 
         $this->assertTrue($response->headers->has('Access-Control-Allow-Methods'));
         // it will return the Access-Control-Request-Method pass in the request
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertEquals('GET', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertEquals('Access-Control-Request-Method', $response->headers->get('Vary'));
+
     }
 
     /**
