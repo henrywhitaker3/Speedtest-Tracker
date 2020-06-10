@@ -35,4 +35,20 @@ class SettingsHelper {
 
         return $setting;
     }
+
+    public static function getBase()
+    {
+        $base = env('BASE_PATH', '/');
+        if($base == '') {
+            $base = '/';
+        } else {
+            if($base[0] != '/') {
+                $base = '/' . $base;
+            }
+            if($base[-1] != '/') {
+                $base = $base . '/';
+            }
+        }
+        return $base;
+    }
 }

@@ -25,7 +25,7 @@ export default class Version extends Component {
     }
 
     checkForUpdates = () => {
-        var url = '/api/update/check';
+        var url = 'api/update/check';
 
         Axios.get(url)
         .then((resp) => {
@@ -61,19 +61,19 @@ export default class Version extends Component {
             updateProgress: 0,
         });
         toast.info('Downloading update');
-        Axios.get('/api/update/download')
+        Axios.get('api/update/download')
         .then((resp) => {
             this.setState({
                 updateProgress: 50,
             });
             toast.info('Extracting update');
-            Axios.get('/api/speedtest/extract')
+            Axios.get('api/speedtest/extract')
             .then((resp) => {
                 this.setState({
                     updateProgress: 75,
                 });
                 toast.info('Applying update');
-                Axios.get('/api/update/move')
+                Axios.get('api/update/move')
                 .then((resp) => {
                     this.setState({
                         updateProgress: 100,

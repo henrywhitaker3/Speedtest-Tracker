@@ -6,7 +6,7 @@ import Axios from 'axios';
 
 export default class Backup extends Component {
     backup = () => {
-        var url = '/api/backup';
+        var url = 'api/backup';
 
         toast.info('Your backup has started downloading...');
 

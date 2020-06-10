@@ -20,7 +20,7 @@ export default class Changelog extends Component {
     }
 
     getChangelog = () => {
-        Axios.get('/api/update/changelog')
+        Axios.get('api/update/changelog')
         .then((resp) => {
             this.setState({
                 changelog: resp.data.data,
