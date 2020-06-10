@@ -30,7 +30,7 @@ export default class HistoryGraph extends Component {
     }
 
     getData = (days = this.state.days) => {
-        var url = '/api/speedtest/time/' + days;
+        var url = 'api/speedtest/time/' + days;
 
         Axios.get(url)
         .then((resp) => {

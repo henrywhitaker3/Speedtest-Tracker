@@ -20,7 +20,7 @@ export default class TestsTable extends Component {
     }
 
     getData = (page = this.state.page) => {
-        var url = '/api/speedtest/?page=' + page;
+        var url = 'api/speedtest/?page=' + page;
 
         Axios.get(url)
         .then((resp) => {
