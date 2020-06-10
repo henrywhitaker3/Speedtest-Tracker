@@ -33,7 +33,7 @@ class Application extends Container implements ApplicationContract, CachesConfig
      *
      * @var string
      */
-    const VERSION = '7.12.0';
+    const VERSION = '7.14.1';
 
     /**
      * The base path for the Laravel installation.
@@ -152,7 +152,7 @@ class Application extends Container implements ApplicationContract, CachesConfig
      *
      * @var array
      */
-    protected $absoluteCachePathPrefixes = [DIRECTORY_SEPARATOR];
+    protected $absoluteCachePathPrefixes = ['/', '\\'];
 
     /**
      * Create a new Illuminate application instance.

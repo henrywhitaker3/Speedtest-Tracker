@@ -51,7 +51,7 @@ final class MimeTypes implements MimeTypesInterface
             $this->extensions[$mimeType] = $extensions;
 
             foreach ($extensions as $extension) {
-                $this->mimeTypes[$extension] = $mimeType;
+                $this->mimeTypes[$extension][] = $mimeType;
             }
         }
         $this->registerGuesser(new FileBinaryMimeTypeGuesser());
@@ -526,6 +526,7 @@ final class MimeTypes implements MimeTypesInterface
         'application/vnd.ms-ims' => ['ims'],
         'application/vnd.ms-lrm' => ['lrm'],
         'application/vnd.ms-officetheme' => ['thmx'],
+        'application/vnd.ms-outlook' => ['msg'],
         'application/vnd.ms-pki.seccat' => ['cat'],
         'application/vnd.ms-pki.stl' => ['stl'],
         'application/vnd.ms-powerpoint' => ['ppt', 'pps', 'pot', 'ppz'],
@@ -2374,6 +2375,7 @@ final class MimeTypes implements MimeTypesInterface
         'mseed' => ['application/vnd.fdsn.mseed'],
         'mseq' => ['application/vnd.mseq'],
         'msf' => ['application/vnd.epson.msf'],
+        'msg' => ['application/vnd.ms-outlook'],
         'msh' => ['model/mesh'],
         'msi' => ['application/x-msdownload', 'application/x-msi'],
         'msl' => ['application/vnd.mobius.msl'],

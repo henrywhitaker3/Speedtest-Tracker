@@ -166,12 +166,8 @@ class CorsService
     private function configureAllowedMethods(Response $response, Request $request)
     {
         if ($this->options['allowedMethods'] === true) {
-            if ($this->options['supportsCredentials']) {
-                $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
-                $this->varyHeader($response, 'Access-Control-Request-Method');
-            } else {
-                $allowMethods = '*';
-            }
+            $allowMethods = strtoupper($request->headers->get('Access-Control-Request-Method'));
+            $this->varyHeader($response, 'Access-Control-Request-Method');
         } else {
             $allowMethods = implode(', ', $this->options['allowedMethods']);
         }
@@ -182,12 +178,8 @@ class CorsService
     private function configureAllowedHeaders(Response $response, Request $request)
     {
         if ($this->options['allowedHeaders'] === true) {
-            if ($this->options['supportsCredentials']) {
-                $allowHeaders = $request->headers->get('Access-Control-Request-Headers');
-                $this->varyHeader($response, 'Access-Control-Request-Headers');
-            } else {
-                $allowHeaders = '*';
-            }
+            $allowHeaders = $request->headers->get('Access-Control-Request-Headers');
+            $this->varyHeader($response, 'Access-Control-Request-Headers');
         } else {
             $allowHeaders = implode(', ', $this->options['allowedHeaders']);
         }

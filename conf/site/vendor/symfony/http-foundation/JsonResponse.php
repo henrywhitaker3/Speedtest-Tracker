@@ -63,9 +63,13 @@ class JsonResponse extends Response
      * @param array $headers An array of response headers
      *
      * @return static
+     *
+     * @deprecated since Symfony 5.1, use __construct() instead.
      */
     public static function create($data = null, int $status = 200, array $headers = [])
     {
+        trigger_deprecation('symfony/http-foundation', '5.1', 'The "%s()" method is deprecated, use "new %s()" instead.', __METHOD__, \get_called_class());
+
         return new static($data, $status, $headers);
     }
 

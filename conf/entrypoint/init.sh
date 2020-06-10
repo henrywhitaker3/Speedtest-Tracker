@@ -1,37 +1,66 @@
-#!/bin/bash
-# This script sets up the
+#!/usr/bin/with-contenv bash
+# # This script sets up the speedtest app
 
+# Copy site files to /config
+echo "Copying latest site files to config"
+cp -rfT /setup/site/ /config/www/
+chown -R abc:abc /config/www
+chmod -R 755 /config/www/storage
+chmod -R 755 /config/www/bootstrap
+
+# Check for DB
 if [ ! -f /config/speed.db ]; then
-    echo "Database file not found!"
-    echo "Creating the database..."
+    echo "Database file not found! Creating empty database"
     touch /config/speed.db
+else
+    echo "Database file exists"
 fi
 
-if cat /app/site/.env | grep -E "APP_KEY=base64" > /dev/null; then
-    echo "App key found. Skipping app key generation"
+
+# Check for .env
+if [ ! -f /config/www/.env ]; then
+    echo "Env file not found! Creating .env file"
+    cp /setup/site/.env.example /config/www/.env
 else
-    echo "No app key found. Generating app key"
-    cd /app/site && php artisan key:generate
+    echo "Env file exists"
+fi
+
+sed "s,DB_DATABASE=.*,DB_DATABASE=/config/speed.db," -i.bak /config/www/.env
+
+echo "Running database migrations"
+php /config/www/artisan migrate
+
+# Check app key exists
+if cat /config/www/.env | grep -E "APP_KEY=[0-9A-Za-z:+\/=]{1,}" > /dev/null ; then
+    echo "App key exists"
+else
+    echo "Generating app key"
+    php /config/www/artisan key:generate
+fi
+
+# Check JWT secret exists
+if cat /config/www/.env | grep -E "JWT_SECRET=[0-9A-Za-z:+\/=]{1,}" > /dev/null ; then
+    echo "JWT secret exists"
+else
+    echo "Generating JWT secret"
+    php /config/www/artisan jwt:secret
 fi
 
 if [ -z ${SLACK_WEBHOOK+x} ]; then
     echo "Slack webhook is unset"
+    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=," -i.bak /config/www/.env
 else
-    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak .env
+    echo "Slack webhook set, updating .env"
+    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak /config/www/.env
 fi
 
 if [ -z ${BASE_PATH+x} ]; then
     echo "Base path is unset"
+    sed "s,BASE_PATH=.*,BASE_PATH=," -i.bak /config/www/.env
 else
-    sed "s,BASE_PATH=.*,BASE_PATH=$BASE_PATH," -i.bak .env
+    echo "Base path set, updating .env"
+    sed "s,BASE_PATH=.*,BASE_PATH=$BASE_PATH," -i.bak /config/www/.env
 fi
 
-cd /app/site && php artisan migrate
-
-cd /config
-mkdir -p logs
-
-chown -R application /config
-chmod 775 -R /config
-
-echo "* * * * * /usr/local/bin/php /app/site/artisan schedule:run >> /dev/null 2>&1" | crontab -
+mkdir -p /config/log/speedtest
+echo "* * * * * php /config/www/artisan schedule:run >> /config/log/speedtest/cron.log" >> /etc/crontabs/root
