@@ -27,6 +27,7 @@
     "dependencies": {
         "@babel/plugin-proposal-class-properties": "^7.10.1",
         "chart.js": "^2.9.3",
+        "csv-file-validator": "^1.8.0",
         "react-bootstrap": "^1.0.1",
         "react-chartjs-2": "^2.9.0",
         "react-router": "^5.2.0",
