@@ -1,4 +1,14 @@
 {
+    "1.5.1": [
+        {
+            "description": "Updated PHP dependencies",
+            "link": ""
+        },
+        {
+            "description": "Updated JS dependencies",
+            "link": ""
+        }
+    ],
     "1.5.0": [
         {
             "description": "Added option to set base path",
