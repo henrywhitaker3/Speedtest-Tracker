@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Axios from 'axios';
 
@@ -29,16 +29,10 @@ export default class Backup extends Component {
 
     render() {
         return (
-            <Dropdown className="m-2">
-                <Dropdown.Toggle variant="primary" id="backupDropdown">
-                    Backup
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                    <Dropdown.Item href="#" onClick={() => { this.backup('json') }}>JSON</Dropdown.Item>
-                    <Dropdown.Item href="#" onClick={() => { this.backup('csv') }}>CSV</Dropdown.Item>
-                </Dropdown.Menu>
-            </Dropdown>
+            <DropdownButton title="Backup" variant="primary" className="m-2 d-inline-block">
+                <Dropdown.Item href="#" onClick={() => { this.backup('json') }}>JSON</Dropdown.Item>
+                <Dropdown.Item href="#" onClick={() => { this.backup('csv') }}>CSV</Dropdown.Item>
+            </DropdownButton>
         );
     }
 }
