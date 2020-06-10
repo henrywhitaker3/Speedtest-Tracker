@@ -3,14 +3,43 @@
 namespace App\Helpers;
 
 use App\Speedtest;
+use DateTime;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class BackupHelper {
-    public static function backup()
+    public static function backup($format = 'json')
     {
-        $data = Speedtest::get();
+        $timestamp = new DateTime();
+        $timestamp = $timestamp->format('Y-m-d_H:i:s');
+        $name = 'speedtest_backup_' . $timestamp;
 
-        return $data;
+        switch($format) {
+            case 'csv':
+                $data = Speedtest::get();
+
+                $csv = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix() . $name . '.csv';
+                $name = $name . '.csv';
+                $handle = fopen($csv, 'w+');
+                fputcsv($handle, array('id', 'ping', 'download', 'upload', 'created_at', 'updated_at'));
+
+                foreach($data as $d) {
+                    fputcsv($handle, array($d->id, $d->ping, $d->download, $d->upload, $d->created_at, $d->updated_at));
+                }
+
+                fclose($handle);
+
+                break;
+            case 'json':
+            default:
+                $data = Speedtest::get()->toJson();
+                $name = $name . '.json';
+                Storage::disk('local')->put($name, $data);
+                break;
+
+        }
+
+        return $name;
     }
 
     public static function restore($array)
