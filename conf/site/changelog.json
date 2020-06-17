@@ -1,4 +1,10 @@
 {
+    "1.5.3": [
+        {
+            "description": "Changed speedtest client",
+            "link": ""
+        }
+    ],
     "1.5.2": [
         {
             "description": "Updated dependencies",
