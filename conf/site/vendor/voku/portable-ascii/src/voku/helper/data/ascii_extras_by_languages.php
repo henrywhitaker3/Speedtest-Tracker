@@ -496,6 +496,17 @@ return [
         '&' => ' und ',
         '+' => ' plus ',
     ],
+    // Bengali (Bangla)
+    'bn' => [
+        '=' => ' Saman ',
+        '%' => ' Satakora ',
+        '∑' => ' Samasti ',
+        '∆' => ' Badhip ',
+        '∞' => ' Ananta ',
+        '♥' => ' Valobasa ',
+        '&' => ' Abong ',
+        '+' => ' Songzojon ',
+    ],
     // English
     'en' => [
         '=' => ' equal ',
