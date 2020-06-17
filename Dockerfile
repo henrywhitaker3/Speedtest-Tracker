@@ -3,15 +3,25 @@ MAINTAINER henrywhitaker3@outlook.com
 
 # Install apt stuff
 RUN apk add --no-cache --upgrade \
-        python3 \
-        py-pip \
+        gcc \
+        cmake \
+        curl-dev \
+        libxml2-dev \
+        build-base \
+        openssl-dev \
         supervisor
-
-# Install speedtest-cli
-RUN pip3 install speedtest-cli
 
 # Copy over static files
 COPY conf/ /setup/
+
+# Get and compile SpeedTest++
+RUN cd /tmp && \
+    git clone https://github.com/taganaka/SpeedTest && \
+    cd SpeedTest && \
+    cmake -DCMAKE_BUILD_TYPE=Release . && \
+    cd /tmp/SpeedTest && \
+    make install && \
+    mv /usr/local/bin/SpeedTest /setup/site/app/Bin/
 
 # Setup new init script
 RUN cp /setup/entrypoint/init.sh /etc/cont-init.d/50-speedtest
