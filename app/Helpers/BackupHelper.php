@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Speedtest;
 use DateTime;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class BackupHelper {
@@ -42,19 +43,49 @@ class BackupHelper {
         return $name;
     }
 
-    public static function restore($array)
+    public static function restore($array, $format)
     {
-        foreach($array as $test) {
-            try {
-                $st = Speedtest::create([
-                    'ping' => $test['ping'],
-                    'download' => $test['download'],
-                    'upload' => $test['upload'],
-                    'created_at' => $test['created_at'],
-                ]);
-            } catch(Exception $e) {
-                continue;
+        if($format == 'json') {
+            foreach($array as $test) {
+                try {
+                    $st = Speedtest::create([
+                        'ping' => $test['ping'],
+                        'download' => $test['download'],
+                        'upload' => $test['upload'],
+                        'created_at' => $test['created_at'],
+                    ]);
+                } catch(Exception $e) {
+                    continue;
+                }
             }
+            return true;
+        } else if($format == 'csv') {
+            $csv = explode(PHP_EOL, $array);
+            $headers = 'id,ping,download,upload,created_at,updated_at';
+            if($csv[0] != $headers) {
+                Log::error('Incorrect CSV format');
+                return false;
+            }
+
+            unset($csv[0]);
+            $csv = array_values($csv);
+
+            for($i = 0; $i < sizeof($csv); $i++) {
+                $e = explode(',', $csv[$i]);
+                try {
+                    $st = Speedtest::create([
+                        'ping' => $e[1],
+                        'download' => $e[2],
+                        'upload' => $e[3],
+                        'created_at' => substr($e[4], 1, -1),
+                    ]);
+                } catch(Exception $e) {
+                    Log::error($e);
+                    continue;
+                }
+            }
+
+            return true;
         }
     }
 }

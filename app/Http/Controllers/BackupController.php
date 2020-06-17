@@ -28,7 +28,8 @@ class BackupController extends Controller
     public function restore(Request $request)
     {
         $rule = [
-            'data' => [ 'required', 'array' ],
+            'data' => [ 'required' ],
+            'format' => [ 'required', 'in:json,csv' ]
         ];
 
         $validator = Validator::make($request->all(), $rule);
@@ -39,10 +40,14 @@ class BackupController extends Controller
             ], 422);
         }
 
-        BackupHelper::restore($request->data);
-
-        return response()->json([
-            'method' => 'restore data from backup',
-        ], 200);
+        if(BackupHelper::restore($request->data, $request->format) != false) {
+            return response()->json([
+                'method' => 'restore data from backup',
+            ], 200);
+        } else {
+            return response()->json([
+                'method' => 'incorrect backup format',
+            ], 422);
+        }
     }
 }
