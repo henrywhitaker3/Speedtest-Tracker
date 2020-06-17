@@ -1,0 +1,17 @@
+// The configured options and settings for SpeedTest
+#define SpeedTest_VERSION_MAJOR @SpeedTest_VERSION_MAJOR@
+#define SpeedTest_VERSION_MINOR @SpeedTest_VERSION_MINOR@
+#define SpeedTest_SYSTEM_PROCESSOR "@SpeedTest_SYSTEM_PROCESSOR@"
+#define SpeedTest_SYSTEM "@SpeedTest_SYSTEM@"
+#define SpeedTest_AUTHOR "@SpeedTest_AUTHOR@"
+#define SpeedTest_HOME_PAGE "@SpeedTest_HOME_PAGE@"
+
+#define SPEED_TEST_USER_AGENT "@SpeedTest_USER_AGENT@"
+#define SPEED_TEST_SERVER_LIST_URL "@SpeedTest_SERVER_LIST_URL@"
+
+#define SPEED_TEST_IP_INFO_API_URL "@SpeedTest_IP_INFO_API_URL@"
+#define SPEED_TEST_API_URL "@SpeedTest_API_URL@"
+#define SPEED_TEST_API_REFERER "@SpeedTest_API_REFERER@"
+#define SPEED_TEST_API_KEY "@SpeedTest_API_KEY@"
+#define SPEED_TEST_MIN_SERVER_VERSION @SpeedTest_MIN_SERVER_VERSION@
+#define SPEED_TEST_LATENCY_SAMPLE_SIZE @SpeedTest_LATENCY_SAMPLE_SIZE@
