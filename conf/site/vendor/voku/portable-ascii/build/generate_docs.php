@@ -13,7 +13,7 @@ $readmeGenerator->templateMethod = <<<RAW
 %params%
 
 **Return:**
-- `%return%`
+%return%
 
 --------
 

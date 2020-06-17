@@ -1,0 +1,4 @@
+First Name;Last Name;Email;Password;Roles
+Vasyl;Stokolosa;api01@test.com;123;admin, manager
+Vasyl_2;Stokolosa_2;api01@test.com;123123123;admin, manager, user
+;Stokolosa_2;api@test;123123123;admin, manager, user
