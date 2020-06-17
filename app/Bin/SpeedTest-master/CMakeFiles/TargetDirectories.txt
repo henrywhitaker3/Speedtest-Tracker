@@ -1,0 +1,7 @@
+/home/henry/Downloads/SpeedTest-master/CMakeFiles/install/strip.dir
+/home/henry/Downloads/SpeedTest-master/CMakeFiles/install/local.dir
+/home/henry/Downloads/SpeedTest-master/CMakeFiles/install.dir
+/home/henry/Downloads/SpeedTest-master/CMakeFiles/list_install_components.dir
+/home/henry/Downloads/SpeedTest-master/CMakeFiles/rebuild_cache.dir
+/home/henry/Downloads/SpeedTest-master/CMakeFiles/edit_cache.dir
+/home/henry/Downloads/SpeedTest-master/CMakeFiles/SpeedTest.dir

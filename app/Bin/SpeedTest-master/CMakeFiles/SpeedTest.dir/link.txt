@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -pedantic -Wall -Wno-unused-result -O3 -DNDEBUG  -rdynamic CMakeFiles/SpeedTest.dir/main.cpp.o CMakeFiles/SpeedTest.dir/SpeedTest.cpp.o CMakeFiles/SpeedTest.dir/SpeedTestClient.cpp.o CMakeFiles/SpeedTest.dir/MD5Util.cpp.o  -o SpeedTest  -lcurl -lxml2 -lpthread -lssl -lcrypto 
