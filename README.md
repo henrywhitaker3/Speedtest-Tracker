@@ -1,6 +1,6 @@
 # Speedtest Tracker
 
-[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) ![version](https://img.shields.io/badge/version-v1.5.0-success) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
+[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) ![version](https://img.shields.io/badge/version-v1.5.2-success) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
 
 This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [speedtest-cli](https://github.com/sivel/speedtest-cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
 
@@ -10,7 +10,7 @@ This program runs a speedtest check every hour and graphs the results. The back-
 
 - Automatically run a speedtest every hour
 - Graph of previous speedtests going back x days
-- Backup/restore data in JSON format
+- Backup/restore data in JSON/CSV format
 - Slack/Discord notifications
 - Organizr integration
 
@@ -26,6 +26,8 @@ docker create \
       -p 8765:80 \
       -v /path/to/data:/config \
       -e SLACK_WEBHOOK=webhook `#optional` \
+      -e PUID=uid `#optional` \
+      -e PGID=gid `#optional` \
       --restart unless-stopped \
       henrywhitaker3/speedtest-tracker
 ```
