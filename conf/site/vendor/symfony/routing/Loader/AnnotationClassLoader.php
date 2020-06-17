@@ -18,12 +18,11 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Routing\Annotation\Route as RouteAnnotation;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RouteCompiler;
 
 /**
  * AnnotationClassLoader loads routing information from a PHP class and its methods.
  *
- * You need to define an implementation for the getRouteDefaults() method. Most of the
+ * You need to define an implementation for the configureRoute() method. Most of the
  * time, this method should define some PHP callable to be called for the route
  * (a controller in MVC speak).
  *
@@ -158,10 +157,8 @@ abstract class AnnotationClassLoader implements LoaderInterface
             $host = $globals['host'];
         }
 
-        $condition = $annot->getCondition();
-        if (null === $condition) {
-            $condition = $globals['condition'];
-        }
+        $condition = $annot->getCondition() ?? $globals['condition'];
+        $priority = $annot->getPriority() ?? $globals['priority'];
 
         $path = $annot->getLocalizedPaths() ?: $annot->getPath();
         $prefix = $globals['localized_paths'] ?: $globals['path'];
@@ -208,11 +205,11 @@ abstract class AnnotationClassLoader implements LoaderInterface
             $this->configureRoute($route, $class, $method, $annot);
             if (0 !== $locale) {
                 $route->setDefault('_locale', $locale);
-                $route->setRequirement('_locale', preg_quote($locale, RouteCompiler::REGEX_DELIMITER));
+                $route->setRequirement('_locale', preg_quote($locale));
                 $route->setDefault('_canonical_route', $name);
-                $collection->add($name.'.'.$locale, $route);
+                $collection->add($name.'.'.$locale, $route, $priority);
             } else {
-                $collection->add($name, $route);
+                $collection->add($name, $route, $priority);
             }
         }
     }
@@ -299,6 +296,8 @@ abstract class AnnotationClassLoader implements LoaderInterface
                 $globals['condition'] = $annot->getCondition();
             }
 
+            $globals['priority'] = $annot->getPriority() ?? 0;
+
             foreach ($globals['requirements'] as $placeholder => $requirement) {
                 if (\is_int($placeholder)) {
                     throw new \InvalidArgumentException(sprintf('A placeholder name must be a string (%d given). Did you forget to specify the placeholder key for the requirement "%s" in "%s"?', $placeholder, $requirement, $class->getName()));
@@ -322,6 +321,7 @@ abstract class AnnotationClassLoader implements LoaderInterface
             'host' => '',
             'condition' => '',
             'name' => '',
+            'priority' => 0,
         ];
     }
 

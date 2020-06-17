@@ -1,0 +1,30 @@
+server {
+	listen 80 default_server;
+
+	listen 443 ssl;
+
+	root /config/www/public;
+	index index.html index.htm index.php;
+
+	server_name _;
+
+	ssl_certificate /config/keys/cert.crt;
+	ssl_certificate_key /config/keys/cert.key;
+
+	client_max_body_size 0;
+
+	location / {
+		try_files $uri $uri/ /index.php?$args;
+	}
+
+	location ~ \.php$ {
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		# With php5-cgi alone:
+		fastcgi_pass 127.0.0.1:9000;
+		# With php5-fpm:
+		#fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		include /etc/nginx/fastcgi_params;
+
+	}
+}

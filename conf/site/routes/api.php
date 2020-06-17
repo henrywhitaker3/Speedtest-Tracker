@@ -58,6 +58,8 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'settings'
 ], function () {
+    Route::get('/config', 'SettingsController@config')
+         ->name('settings.config');
     Route::get('/', 'SettingsController@index')
          ->name('settings.index');
     Route::put('/', 'SettingsController@store')

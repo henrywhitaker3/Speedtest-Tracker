@@ -1209,6 +1209,18 @@ class Process implements \IteratorAggregate
     }
 
     /**
+     * @throws LogicException in case process is not started
+     */
+    public function getStartTime(): float
+    {
+        if (!$this->isStarted()) {
+            throw new LogicException('Start time is only available after process start.');
+        }
+
+        return $this->starttime;
+    }
+
+    /**
      * Returns whether TTY is supported on the current operating system.
      */
     public static function isTtySupported(): bool
@@ -1596,7 +1608,7 @@ class Process implements \IteratorAggregate
     {
         return preg_replace_callback('/"\$\{:([_a-zA-Z]++[_a-zA-Z0-9]*+)\}"/', function ($matches) use ($commandline, $env) {
             if (!isset($env[$matches[1]]) || false === $env[$matches[1]]) {
-                throw new InvalidArgumentException(sprintf('Command line is missing a value for parameter "%s": '.$commandline, $matches[1]));
+                throw new InvalidArgumentException(sprintf('Command line is missing a value for parameter "%s": ', $matches[1]).$commandline);
             }
 
             return $this->escapeArgument($env[$matches[1]]);

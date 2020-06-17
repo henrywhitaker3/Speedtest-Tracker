@@ -1,44 +1,27 @@
-FROM webdevops/php-nginx:7.4
+FROM linuxserver/nginx
 MAINTAINER henrywhitaker3@outlook.com
 
-ENV WEB_DOCUMENT_ROOT  /app/site/public
-ARG DEBIAN_FRONTEND=noninteractive
-
 # Install apt stuff
-RUN apt-get update
-RUN apt-get install \
-            python3 \
-            python3-pip -y
+RUN apk add --no-cache --upgrade \
+        python3 \
+        py-pip \
+        supervisor
 
 # Install speedtest-cli
 RUN pip3 install speedtest-cli
 
 # Copy over static files
-RUN mkdir /setup
 COPY conf/ /setup/
 
-# Copy over Speedtest site files
-RUN cp -r /setup/site/ /app/
+# Setup new init script
+RUN cp /setup/entrypoint/init.sh /etc/cont-init.d/50-speedtest
 
-# Setup env file
-RUN cd /app/site \
-    && cp .env.example .env \
-    && sed 's/DB_DATABASE=.*/DB_DATABASE=\/config\/speed.db/' -i.bak .env
+# Update webroot
+RUN cp /setup/default /defaults/default
 
-# Copy supervisor queue worker config
-RUN cp /setup/laravel-worker.conf /opt/docker/etc/supervisor.d/
-
-# Copy entry script
-RUN cp /setup/entrypoint/init.sh /entrypoint.d \
-    && chmod +x /setup/entrypoint/init.sh
-
-# Set permissions for files
-RUN chown -R application:application /app/site/storage \
-    && chmod -R 775 /app/site/storage \
-    && chown -R application:application /app/site/bootstrap \
-    && chmod -R 775 /app/site/bootstrap
-
-# Cleanup setup files
-RUN rm -r /setup
+RUN mkdir -p /etc/services.d/supervisord/ && \
+    cp /setup/supervisor-service.sh /etc/services.d/supervisord/run && \
+    mkdir -p /etc/supervisor.d/ && \
+    cp /setup/laravel-worker.conf /etc/supervisor.d/laravel-worker.ini
 
 VOLUME ["/config"]

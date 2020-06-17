@@ -33,7 +33,7 @@ export default class Settings extends Component {
     }
 
     getData = () => {
-        var url = '/api/settings/';
+        var url = 'api/settings/';
 
         Axios.get(url)
         .then((resp) => {

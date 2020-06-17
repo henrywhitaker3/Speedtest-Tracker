@@ -53,7 +53,7 @@ export default class Restore extends Component {
 
     uploadFile = () => {
         var data = { data: this.state.data };
-        var url = '/api/restore';
+        var url = 'api/restore';
 
         Axios.post(url, data)
         .then((resp) => {

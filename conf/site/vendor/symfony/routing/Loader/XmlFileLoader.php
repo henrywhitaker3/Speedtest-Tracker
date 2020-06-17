@@ -14,9 +14,10 @@ namespace Symfony\Component\Routing\Loader;
 use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Config\Util\XmlUtils;
-use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Loader\Configurator\Traits\HostTrait;
+use Symfony\Component\Routing\Loader\Configurator\Traits\LocalizedRouteTrait;
+use Symfony\Component\Routing\Loader\Configurator\Traits\PrefixTrait;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RouteCompiler;
 
 /**
  * XmlFileLoader loads XML routing files.
@@ -26,6 +27,10 @@ use Symfony\Component\Routing\RouteCompiler;
  */
 class XmlFileLoader extends FileLoader
 {
+    use HostTrait;
+    use LocalizedRouteTrait;
+    use PrefixTrait;
+
     const NAMESPACE_URI = 'http://symfony.com/schema/routing';
     const SCHEME_PATH = '/schema/routing/routing-1.0.xsd';
 
@@ -113,7 +118,7 @@ class XmlFileLoader extends FileLoader
         $schemes = preg_split('/[\s,\|]++/', $node->getAttribute('schemes'), -1, PREG_SPLIT_NO_EMPTY);
         $methods = preg_split('/[\s,\|]++/', $node->getAttribute('methods'), -1, PREG_SPLIT_NO_EMPTY);
 
-        list($defaults, $requirements, $options, $condition, $paths) = $this->parseConfigs($node, $path);
+        list($defaults, $requirements, $options, $condition, $paths, /* $prefixes */, $hosts) = $this->parseConfigs($node, $path);
 
         if (!$paths && '' === $node->getAttribute('path')) {
             throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must have a "path" attribute or <path> child nodes.', $path));
@@ -123,17 +128,16 @@ class XmlFileLoader extends FileLoader
             throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must not have both a "path" attribute and <path> child nodes.', $path));
         }
 
-        if (!$paths) {
-            $route = new Route($node->getAttribute('path'), $defaults, $requirements, $options, $node->getAttribute('host'), $schemes, $methods, $condition);
-            $collection->add($id, $route);
-        } else {
-            foreach ($paths as $locale => $p) {
-                $defaults['_locale'] = $locale;
-                $defaults['_canonical_route'] = $id;
-                $requirements['_locale'] = preg_quote($locale, RouteCompiler::REGEX_DELIMITER);
-                $route = new Route($p, $defaults, $requirements, $options, $node->getAttribute('host'), $schemes, $methods, $condition);
-                $collection->add($id.'.'.$locale, $route);
-            }
+        $routes = $this->createLocalizedRoute($collection, $id, $paths ?: $node->getAttribute('path'));
+        $routes->addDefaults($defaults);
+        $routes->addRequirements($requirements);
+        $routes->addOptions($options);
+        $routes->setSchemes($schemes);
+        $routes->setMethods($methods);
+        $routes->setCondition($condition);
+
+        if (null !== $hosts) {
+            $this->addHost($routes, $hosts);
         }
     }
 
@@ -154,12 +158,12 @@ class XmlFileLoader extends FileLoader
 
         $type = $node->getAttribute('type');
         $prefix = $node->getAttribute('prefix');
-        $host = $node->hasAttribute('host') ? $node->getAttribute('host') : null;
         $schemes = $node->hasAttribute('schemes') ? preg_split('/[\s,\|]++/', $node->getAttribute('schemes'), -1, PREG_SPLIT_NO_EMPTY) : null;
         $methods = $node->hasAttribute('methods') ? preg_split('/[\s,\|]++/', $node->getAttribute('methods'), -1, PREG_SPLIT_NO_EMPTY) : null;
         $trailingSlashOnRoot = $node->hasAttribute('trailing-slash-on-root') ? XmlUtils::phpize($node->getAttribute('trailing-slash-on-root')) : true;
+        $namePrefix = $node->getAttribute('name-prefix') ?: null;
 
-        list($defaults, $requirements, $options, $condition, /* $paths */, $prefixes) = $this->parseConfigs($node, $path);
+        list($defaults, $requirements, $options, $condition, /* $paths */, $prefixes, $hosts) = $this->parseConfigs($node, $path);
 
         if ('' !== $prefix && $prefixes) {
             throw new \InvalidArgumentException(sprintf('The <route> element in file "%s" must not have both a "prefix" attribute and <prefix> child nodes.', $path));
@@ -189,44 +193,12 @@ class XmlFileLoader extends FileLoader
         }
 
         foreach ($imported as $subCollection) {
-            /* @var $subCollection RouteCollection */
-            if ('' !== $prefix || !$prefixes) {
-                $subCollection->addPrefix($prefix);
-                if (!$trailingSlashOnRoot) {
-                    $rootPath = (new Route(trim(trim($prefix), '/').'/'))->getPath();
-                    foreach ($subCollection->all() as $route) {
-                        if ($route->getPath() === $rootPath) {
-                            $route->setPath(rtrim($rootPath, '/'));
-                        }
-                    }
-                }
-            } else {
-                foreach ($prefixes as $locale => $localePrefix) {
-                    $prefixes[$locale] = trim(trim($localePrefix), '/');
-                }
-                foreach ($subCollection->all() as $name => $route) {
-                    if (null === $locale = $route->getDefault('_locale')) {
-                        $subCollection->remove($name);
-                        foreach ($prefixes as $locale => $localePrefix) {
-                            $localizedRoute = clone $route;
-                            $localizedRoute->setPath($localePrefix.(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
-                            $localizedRoute->setDefault('_locale', $locale);
-                            $localizedRoute->setRequirement('_locale', preg_quote($locale, RouteCompiler::REGEX_DELIMITER));
-                            $localizedRoute->setDefault('_canonical_route', $name);
-                            $subCollection->add($name.'.'.$locale, $localizedRoute);
-                        }
-                    } elseif (!isset($prefixes[$locale])) {
-                        throw new \InvalidArgumentException(sprintf('Route "%s" with locale "%s" is missing a corresponding prefix when imported in "%s".', $name, $locale, $path));
-                    } else {
-                        $route->setPath($prefixes[$locale].(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
-                        $subCollection->add($name, $route);
-                    }
-                }
+            $this->addPrefix($subCollection, $prefixes ?: $prefix, $trailingSlashOnRoot);
+
+            if (null !== $hosts) {
+                $this->addHost($subCollection, $hosts);
             }
 
-            if (null !== $host) {
-                $subCollection->setHost($host);
-            }
             if (null !== $condition) {
                 $subCollection->setCondition($condition);
             }
@@ -236,13 +208,12 @@ class XmlFileLoader extends FileLoader
             if (null !== $methods) {
                 $subCollection->setMethods($methods);
             }
+            if (null !== $namePrefix) {
+                $subCollection->addNamePrefix($namePrefix);
+            }
             $subCollection->addDefaults($defaults);
             $subCollection->addRequirements($requirements);
             $subCollection->addOptions($options);
-
-            if ($namePrefix = $node->getAttribute('name-prefix')) {
-                $subCollection->addNamePrefix($namePrefix);
-            }
 
             $collection->addCollection($subCollection);
         }
@@ -277,6 +248,7 @@ class XmlFileLoader extends FileLoader
         $condition = null;
         $prefixes = [];
         $paths = [];
+        $hosts = [];
 
         /** @var \DOMElement $n */
         foreach ($node->getElementsByTagNameNS(self::NAMESPACE_URI, '*') as $n) {
@@ -287,6 +259,9 @@ class XmlFileLoader extends FileLoader
             switch ($n->localName) {
                 case 'path':
                     $paths[$n->getAttribute('locale')] = trim($n->textContent);
+                    break;
+                case 'host':
+                    $hosts[$n->getAttribute('locale')] = trim($n->textContent);
                     break;
                 case 'prefix':
                     $prefixes[$n->getAttribute('locale')] = trim($n->textContent);
@@ -331,8 +306,21 @@ class XmlFileLoader extends FileLoader
         if ($node->hasAttribute('utf8')) {
             $options['utf8'] = XmlUtils::phpize($node->getAttribute('utf8'));
         }
+        if ($stateless = $node->getAttribute('stateless')) {
+            if (isset($defaults['_stateless'])) {
+                $name = $node->hasAttribute('id') ? sprintf('"%s".', $node->getAttribute('id')) : sprintf('the "%s" tag.', $node->tagName);
 
-        return [$defaults, $requirements, $options, $condition, $paths, $prefixes];
+                throw new \InvalidArgumentException(sprintf('The routing file "%s" must not specify both the "stateless" attribute and the defaults key "_stateless" for ', $path).$name);
+            }
+
+            $defaults['_stateless'] = XmlUtils::phpize($stateless);
+        }
+
+        if (!$hosts) {
+            $hosts = $node->hasAttribute('host') ? $node->getAttribute('host') : null;
+        }
+
+        return [$defaults, $requirements, $options, $condition, $paths, $prefixes, $hosts];
     }
 
     /**
