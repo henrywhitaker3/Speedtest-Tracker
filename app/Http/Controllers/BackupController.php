@@ -10,15 +10,19 @@ use Illuminate\Support\Facades\Validator;
 
 class BackupController extends Controller
 {
-    public function backup()
+    public function backup(Request $request)
     {
-        $data = BackupHelper::backup();
-        $timestamp = new DateTime();
-        $timestamp = $timestamp->format('Y-m-d_H:i:s');
-        $name = 'speedtest_backup_' . $timestamp . '.json';
-        Storage::disk('local')->put($name, $data);
+        $validator = Validator::make($request->all(), [ 'format' => 'in:json,csv' ]);
+        if($validator->fails()) {
+            return response()->json([
+                'method' => 'backup data',
+                'error' => $validator->errors(),
+            ], 422);
+        }
 
-        return Storage::disk('local')->download($name);
+        $filename = BackupHelper::backup($request->format);
+
+        return Storage::disk('local')->download($filename);
     }
 
     public function restore(Request $request)
