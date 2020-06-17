@@ -14,6 +14,7 @@ if [ ! -f /config/speed.db ]; then
     touch /config/speed.db
 else
     echo "Database file exists"
+    chown abc:abc /config/speed.db
 fi
 
 
