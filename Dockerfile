@@ -1,7 +1,6 @@
-FROM linuxserver/nginx
-MAINTAINER henrywhitaker3@outlook.com
+FROM lsiobase/alpine:3.12 as build-stage
 
-# Install apt stuff
+# Install apk stuff
 RUN apk add --no-cache --upgrade \
         gcc \
         cmake \
@@ -9,29 +8,26 @@ RUN apk add --no-cache --upgrade \
         libxml2-dev \
         build-base \
         openssl-dev \
-        supervisor
-
-# Copy over static files
-COPY conf/ /setup/
-
-# Get and compile SpeedTest++
-RUN cd /tmp && \
+        git && \
+    cd /tmp && \
     git clone https://github.com/taganaka/SpeedTest && \
     cd SpeedTest && \
     cmake -DCMAKE_BUILD_TYPE=Release . && \
     cd /tmp/SpeedTest && \
-    make install && \
-    mv /usr/local/bin/SpeedTest /setup/site/app/Bin/
+    make install
 
-# Setup new init script
-RUN cp /setup/entrypoint/init.sh /etc/cont-init.d/50-speedtest
+FROM linuxserver/nginx
+MAINTAINER henrywhitaker3@outlook.com
 
-# Update webroot
-RUN cp /setup/default /defaults/default
+# Install apt stuff
+# RUN apk add --no-cache --upgrade supervisor
 
-RUN mkdir -p /etc/services.d/supervisord/ && \
-    cp /setup/supervisor-service.sh /etc/services.d/supervisord/run && \
-    mkdir -p /etc/supervisor.d/ && \
-    cp /setup/laravel-worker.conf /etc/supervisor.d/laravel-worker.ini
+# Copy over static files
+COPY conf/ /
+
+# Get SpeedTest++
+COPY --from=build-stage /usr/local/bin/SpeedTest /site/app/Bin/
+
+EXPOSE 80 443
 
 VOLUME ["/config"]

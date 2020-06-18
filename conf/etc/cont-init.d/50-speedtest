@@ -3,10 +3,7 @@
 
 # Copy site files to /config
 echo "Copying latest site files to config"
-cp -rfT /setup/site/ /config/www/
-chown -R abc:abc /config/www
-chmod -R 755 /config/www/storage
-chmod -R 755 /config/www/bootstrap
+cp -rfT /site/ /config/www/
 
 # Check for DB
 if [ ! -f /config/speed.db ]; then
@@ -21,7 +18,7 @@ fi
 # Check for .env
 if [ ! -f /config/www/.env ]; then
     echo "Env file not found! Creating .env file"
-    cp /setup/site/.env.example /config/www/.env
+    cp /site/.env.example /config/www/.env
 else
     echo "Env file exists"
 fi
@@ -32,7 +29,7 @@ echo "Running database migrations"
 php /config/www/artisan migrate
 
 # Check app key exists
-if cat /config/www/.env | grep -E "APP_KEY=[0-9A-Za-z:+\/=]{1,}" > /dev/null ; then
+if grep -E "APP_KEY=[0-9A-Za-z:+\/=]{1,}" /config/www/.env > /dev/null; then
     echo "App key exists"
 else
     echo "Generating app key"
@@ -40,7 +37,7 @@ else
 fi
 
 # Check JWT secret exists
-if cat /config/www/.env | grep -E "JWT_SECRET=[0-9A-Za-z:+\/=]{1,}" > /dev/null ; then
+if grep -E "JWT_SECRET=[0-9A-Za-z:+\/=]{1,}" /config/www/.env > /dev/null ; then
     echo "JWT secret exists"
 else
     echo "Generating JWT secret"
@@ -64,4 +61,7 @@ else
 fi
 
 mkdir -p /config/log/speedtest
-echo "* * * * * php /config/www/artisan schedule:run >> /config/log/speedtest/cron.log" >> /etc/crontabs/root
+
+cp /defaults/crontab /etc/crontabs/root
+
+chown -R abc:abc /config
