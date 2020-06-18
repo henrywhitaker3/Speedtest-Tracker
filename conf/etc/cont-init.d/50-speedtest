@@ -1,6 +1,33 @@
 #!/usr/bin/with-contenv bash
 # # This script sets up the speedtest app
 
+function eulaError()
+{
+    echo "##################################################################################################################################"
+    echo "##################################################################################################################################"
+    echo "You haven't accepted the Ookla EULA. Please re-create the container with the environment variable 'OOKLA_EULA_GDPR' set to 'true'."
+    echo "##################################################################################################################################"
+    echo "##################################################################################################################################"
+    exit 1
+}
+
+# Do Ookla stuff
+if [ -z ${OOKLA_EULA_GDPR+x} ]; then
+    eulaError
+else
+    if [ $OOKLA_EULA_GDPR != "true" ]; then
+        eulaError
+    fi
+
+    echo "Ookla GDPR and EULA accepted. Downloading Speedtest CLI."
+    cd /tmp
+    wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz > /dev/null
+    tar zxvf speedtest.tgz > /dev/null
+    cp speedtest /site/app/Bin/
+    HOME=/config && s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null&
+    HOME=/root
+fi
+
 # Copy site files to /config
 echo "Copying latest site files to config"
 cp -rfT /site/ /config/www/
@@ -13,7 +40,6 @@ else
     echo "Database file exists"
     chown abc:abc /config/speed.db
 fi
-
 
 # Check for .env
 if [ ! -f /config/www/.env ]; then
