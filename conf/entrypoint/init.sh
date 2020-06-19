@@ -12,6 +12,7 @@ chmod -R 755 /config/www/bootstrap
 if [ ! -f /config/speed.db ]; then
     echo "Database file not found! Creating empty database"
     touch /config/speed.db
+    chown abc:abc /config/speed.db
 else
     echo "Database file exists"
     chown abc:abc /config/speed.db
