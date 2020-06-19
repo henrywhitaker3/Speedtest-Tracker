@@ -24,7 +24,7 @@ else
     wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz > /dev/null
     tar zxvf speedtest.tgz > /dev/null
     cp speedtest /site/app/Bin/
-    HOME=/config && s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null&
+    HOME=/config && timeout 5s s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
     HOME=/root
 fi
 
