@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class UpdateController extends Controller
 {
+
+    /**
+     * Check for new update
+     *
+     * @return  Response
+     */
     public function checkForUpdate()
     {
         return response()->json([
@@ -16,6 +22,11 @@ class UpdateController extends Controller
         ], 200);
     }
 
+    /**
+     * Download new update
+     *
+     * @return  Response
+     */
     public function downloadUpdate()
     {
         $dl = Updater::downloadLatest();
@@ -33,6 +44,11 @@ class UpdateController extends Controller
         }
     }
 
+    /**
+     * Trigger update extraction
+     *
+     * @return  Response
+     */
     public function extractUpdate()
     {
         $ex = Updater::extractFiles();
@@ -50,6 +66,11 @@ class UpdateController extends Controller
         }
     }
 
+    /**
+     * Trigger update file move
+     *
+     * @return  Response
+     */
     public function moveUpdate()
     {
         $cp = Updater::updateFiles();
@@ -60,6 +81,11 @@ class UpdateController extends Controller
         ], 200);
     }
 
+    /**
+     * Get local changelog
+     *
+     * @return  Response
+     */
     public function changelog()
     {
         $url = base_path() . '/changelog.json';

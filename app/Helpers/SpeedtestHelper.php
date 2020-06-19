@@ -13,6 +13,13 @@ use JsonException;
 use SimpleXMLElement;
 
 class SpeedtestHelper {
+
+    /**
+     * Runs/processes speedtest output to created a Speedtest object
+     *
+     * @param   boolean|string  $output If false, new speedtest runs. If anything else, will try to parse as JSON for speedtest results.
+     * @return \App\Speedtest|boolean
+     */
     public static function runSpeedtest($output = false)
     {
         if($output === false) {
@@ -36,6 +43,11 @@ class SpeedtestHelper {
         return (isset($test)) ? $test : false;
     }
 
+    /**
+     * Gets the output of executing speedtest binary.
+     *
+     * @return boolean|string
+     */
     public static function output()
     {
         $server = SettingsHelper::get('server')['value'];
@@ -54,10 +66,21 @@ class SpeedtestHelper {
         return shell_exec($binPath . ' -f json');
     }
 
+    /**
+     * Converts bytes/s to Mbps
+     *
+     * @param   int|float   $bytes
+     * @return int|float
+     */
     public static function convert($bytes) {
         return ( $bytes * 8 ) / 1000000;
     }
 
+    /**
+     * Returns the latest speedtest object.
+     *
+     * @return boolean|\App\Speedtest
+     */
     public static function latest()
     {
         $data = Speedtest::latest()->get();
@@ -69,6 +92,12 @@ class SpeedtestHelper {
         return $data->first();
     }
 
+    /**
+     * Parses network speeds and return converted to Mbps
+     *
+     * @param   array  $input
+     * @return  array
+     */
     public static function parseUnits($input)
     {
         $input = explode(' ', $input);

@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Validator;
 
 class SpeedtestController extends Controller
 {
+
+    /**
+     * Returns paginated list of speedtests
+     *
+     * @return  Response
+     */
     public function index()
     {
         $data = Speedtest::orderBy('created_at', 'desc')
@@ -24,6 +30,12 @@ class SpeedtestController extends Controller
         ], 200);
     }
 
+    /**
+     * Returns speedtest going back 'x' days
+     *
+     * @param   int     $days
+     * @return  void
+     */
     public function time($days)
     {
         $rule = [
@@ -50,6 +62,11 @@ class SpeedtestController extends Controller
         ], 200);
     }
 
+    /**
+     * Return latest speedtest
+     *
+     * @return  Response
+     */
     public function latest()
     {
         $data = SpeedtestHelper::latest();
@@ -73,6 +90,11 @@ class SpeedtestController extends Controller
         }
     }
 
+    /**
+     * Queue a new speedtest
+     *
+     * @return Response
+     */
     public function run()
     {
         try {
