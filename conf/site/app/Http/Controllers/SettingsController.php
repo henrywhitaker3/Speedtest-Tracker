@@ -10,16 +10,34 @@ use Illuminate\Support\Facades\Validator;
 
 class SettingsController extends Controller
 {
+
+    /**
+     * Return all settings
+     *
+     * @return  array
+     */
     public function index()
     {
         return Setting::get()->keyBy('name');
     }
 
+    /**
+     * Get setting by id
+     *
+     * @param   Setting $setting
+     * @return  Setting
+     */
     public function get(Setting $setting)
     {
         return $setting;
     }
 
+    /**
+     * Store/update a setting
+     *
+     * @param   Request $request
+     * @return  Response
+     */
     public function store(Request $request)
     {
         $rule = [
@@ -49,6 +67,11 @@ class SettingsController extends Controller
         ], 200);
     }
 
+    /**
+     * Returns instance config
+     *
+     * @return  array
+     */
     public function config()
     {
 

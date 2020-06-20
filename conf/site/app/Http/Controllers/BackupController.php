@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Validator;
 
 class BackupController extends Controller
 {
+
+    /**
+     * Get backup of speedtests
+     *
+     * @param   Request $request
+     * @return  file
+     */
     public function backup(Request $request)
     {
         $validator = Validator::make($request->all(), [ 'format' => 'in:json,csv' ]);
@@ -25,6 +32,12 @@ class BackupController extends Controller
         return Storage::disk('local')->download($filename);
     }
 
+    /**
+     * Retore from a backup
+     *
+     * @param   Request $request
+     * @return  Response
+     */
     public function restore(Request $request)
     {
         $rule = [

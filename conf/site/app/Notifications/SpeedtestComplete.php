@@ -34,6 +34,12 @@ class SpeedtestComplete extends Notification
         return ['slack'];
     }
 
+    /**
+     * Format slack notification
+     *
+     * @param   mixed   $notifiable
+     * @return  SlackMessage
+     */
     public function toSlack($notifiable)
     {
         $speedtest = $this->speedtest;

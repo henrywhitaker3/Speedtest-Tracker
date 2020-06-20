@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
 import { Container, Row, Table, Col, Collapse, Button } from 'react-bootstrap';
+import TableRow from './TableRow';
 
 export default class TestsTable extends Component {
     constructor(props) {
@@ -93,18 +94,13 @@ export default class TestsTable extends Component {
                                                 <th>Download (Mbit/s)</th>
                                                 <th>Upload (Mbit/s)</th>
                                                 <th>Ping (ms)</th>
+                                                <th>More</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {data.map((e,i) => {
                                                 return (
-                                                    <tr key={e.id}>
-                                                        <td>{e.id}</td>
-                                                        <td>{new Date(e.created_at).toLocaleString()}</td>
-                                                        <td>{e.download}</td>
-                                                        <td>{e.upload}</td>
-                                                        <td>{e.ping}</td>
-                                                    </tr>
+                                                    <TableRow key={e.id} data={e} />
                                                 );
                                             })}
                                         </tbody>

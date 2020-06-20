@@ -33,9 +33,9 @@ class SpeedtestLatestCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Prints the latest speedtest values.
      *
-     * @return mixed
+     * @return null
      */
     public function handle()
     {
