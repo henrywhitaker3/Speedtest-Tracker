@@ -1,4 +1,10 @@
 {
+    "1.5.5": [
+        {
+            "description": "Store host/id of speedtes.net server",
+            "link": ""
+        }
+    ],
     "1.5.4": [
         {
             "description": "Updated dependencies",
