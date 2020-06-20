@@ -28,7 +28,6 @@ export default class TableRow extends Component {
     render() {
         var e = this.state.data;
         var show = this.state.show;
-        console.log(e.server_host == null);
 
         return (
             <tr>
