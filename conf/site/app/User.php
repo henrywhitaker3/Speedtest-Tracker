@@ -75,6 +75,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne('\App\Auth\EmailVerification');
     }
 
+    /**
+     * Returns a user's login sessions
+     *
+     * @return  array
+     */
     public function sessions()
     {
         return $this->hasMany('\App\Auth\LoginSession');

@@ -10,10 +10,39 @@ use RecursiveIteratorIterator;
 use ZipArchive;
 
 class UpdateHelper {
+    /**
+     * URL of updates
+     *
+     * @var string
+     */
     public $url;
+
+    /**
+     * Current app version number
+     *
+     * @var string
+     */
     public $currentVersion;
+
+    /**
+     * Username of GitHub repo
+     *
+     * @var string
+     */
     public $user;
+
+    /**
+     * Name of GitHub repo
+     *
+     * @var string
+     */
     public $repo;
+
+    /**
+     * Branch of GitHub repo
+     *
+     * @var string
+     */
     public $branch;
 
     function __construct() {
@@ -25,6 +54,11 @@ class UpdateHelper {
         $this->download = null;
     }
 
+    /**
+     * Returns data on new version available
+     *
+     * @return  boolean|array   false|[ version, changelog ]
+     */
     public function check()
     {
         Log::info('Checking for new version');
@@ -50,6 +84,11 @@ class UpdateHelper {
         }
     }
 
+    /**
+     * Gets the latest version number from GitHub
+     *
+     * @return  array   [ repo, branch, version ]
+     */
     public function checkLatestVersion()
     {
         $url = 'https://raw.githubusercontent.com/'
@@ -78,6 +117,11 @@ class UpdateHelper {
         ];
     }
 
+    /**
+     * Gets the latest changelog from GitHub
+     *
+     * @return  array
+     */
     public function getChangelog()
     {
         $url = 'https://raw.githubusercontent.com/'
@@ -97,6 +141,11 @@ class UpdateHelper {
         return $changelog;
     }
 
+    /**
+     * Downloads the latest version from GitHub
+     *
+     * @return  boolean|Exception
+     */
     public function downloadLatest()
     {
         Log::info('Downloading the latest version from GitHub');
@@ -121,6 +170,11 @@ class UpdateHelper {
         }
     }
 
+    /**
+     * Extracts zip archive from update
+     *
+     * @return  boolean
+     */
     public function extractFiles()
     {
         Log::info('Extracting the update');
@@ -137,6 +191,11 @@ class UpdateHelper {
         }
     }
 
+    /**
+     * Replace existing files with newly downloaded files
+     *
+     * @return  void
+     */
     public function updateFiles()
     {
         Log::info('Applying update');
@@ -151,6 +210,14 @@ class UpdateHelper {
         Log::info('Successfully applied update');
     }
 
+    /**
+     * Deletes default templates from updated files.
+     * This is for things like .env so that user specified files are not
+     * overwritten.
+     *
+     * @param   string  $path
+     * @return  void
+     */
     private function deleteExcluded($path)
     {
         Log::info('Deleting excluded items from update directory');
@@ -172,6 +239,11 @@ class UpdateHelper {
         Log::info('Excluded items deleted from update directory');
     }
 
+    /**
+     * Creates a ZIP backup of current installation
+     *
+     * @return  void
+     */
     private function backupCurrent()
     {
         Log::info('Backing up current installation');
@@ -209,6 +281,11 @@ class UpdateHelper {
         Log::info('Backup created at: ' . $backupZip);
     }
 
+    /**
+     * Move updated files into server dir.
+     *
+     * @return  void
+     */
     private function moveFiles()
     {
             $new = array_filter(glob('/tmp/'.$this->repo.'-update/*'), 'is_dir');
@@ -242,6 +319,11 @@ class UpdateHelper {
 
     }
 
+    /**
+     * Make a copy of excluded, user customised files
+     *
+     * @return  void
+     */
     private function tempStoreExcludedFiles()
     {
         Log::info('Temporarily moving exluded files from root directory');
@@ -263,6 +345,11 @@ class UpdateHelper {
         }
     }
 
+    /**
+     * Restore user cusotmised files from the copy
+     *
+     * @return  void
+     */
     private function restoreExcludedFiles()
     {
         Log::info('Restoring exluded files to root directory');
@@ -284,6 +371,11 @@ class UpdateHelper {
         }
     }
 
+    /**
+     * Delete update files from download dir.
+     *
+     * @return  void
+     */
     private function clearup()
     {
         try {

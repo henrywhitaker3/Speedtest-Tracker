@@ -22,7 +22,7 @@ class SpeedtestCompleteListener
     }
 
     /**
-     * Handle the event.
+     * Handle what to do after speedtest completes
      *
      * @param  object  $event
      * @return void

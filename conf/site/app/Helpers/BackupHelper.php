@@ -9,7 +9,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class BackupHelper {
-    public static function backup($format = 'json')
+
+    /**
+     * Generates a backup of all speedtests.
+     *
+     * @param string    $format json|csv
+     * @return string   $name   Returns the filename of the backup.
+     */
+    public static function backup(String $format = 'json')
     {
         $timestamp = new DateTime();
         $timestamp = $timestamp->format('Y-m-d_H:i:s');
@@ -43,6 +50,13 @@ class BackupHelper {
         return $name;
     }
 
+    /**
+     * Restore data from a backup in CSV or JSON format
+     *
+     * @param   array|string    $array  Backup data
+     * @param   string          $format json|csv
+     * @return  boolean
+     */
     public static function restore($array, $format)
     {
         if($format == 'json') {

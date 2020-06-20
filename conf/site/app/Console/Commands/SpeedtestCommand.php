@@ -32,9 +32,9 @@ class SpeedtestCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Runs a speedtest synchroonously and displays the results..
      *
-     * @return mixed
+     * @return null
      */
     public function handle()
     {
