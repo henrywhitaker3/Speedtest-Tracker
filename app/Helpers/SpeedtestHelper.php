@@ -32,6 +32,10 @@ class SpeedtestHelper {
                 'ping' => $output['ping']['latency'],
                 'download' => SpeedtestHelper::convert($output['download']['bandwidth']),
                 'upload' => SpeedtestHelper::convert($output['upload']['bandwidth']),
+                'server_id' => $output['server']['id'],
+                'server_name' => $output['server']['name'],
+                'server_host' => $output['server']['host'] . ':' . $output['server']['port'],
+                'url' => $output['result']['url'],
             ]);
         } catch(JsonException $e) {
             Log::error('Failed to parse speedtest JSON');
