@@ -66,4 +66,6 @@ Route::group([
          ->name('settings.store');
     Route::post('/', 'SettingsController@store')
          ->name('settings.update');
+    Route::post('/bulk', 'SettingsController@bulkStore')
+         ->name('settings.bulk.update');
 });

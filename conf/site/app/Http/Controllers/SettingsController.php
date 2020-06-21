@@ -68,6 +68,49 @@ class SettingsController extends Controller
     }
 
     /**
+     * Bulk store/update a setting
+     *
+     * @param   Request $request
+     * @return  Response
+     */
+    public function bulkStore(Request $request)
+    {
+        $rule = [
+            'data' => [ 'array', 'required' ],
+            'data.*.name' => [ 'string', 'required' ],
+            'data.*.value' => [ 'required' ],
+        ];
+
+        $validator = Validator::make($request->all(), $rule);
+        if($validator->fails()) {
+            return response()->json([
+                'method' => 'Bulk store a setting',
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        $settings = [];
+        foreach($request->data as $d) {
+            if($d['name'] == 'speedtest_overview_time') {
+                $ok = [ '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ];
+                if(!in_array($d['value'], $ok)) {
+                    return response()->json([
+                        'method' => 'Bulk store a setting',
+                        'error' => 'Invalid speedtest_overview_time value'
+                    ], 422);
+                }
+            }
+            $setting = SettingsHelper::set($d['name'], $d['value']);
+            array_push($settings, $setting);
+        }
+
+        return response()->json([
+            'method' => 'Bulk store a setting',
+            'data' => $settings,
+        ], 200);
+    }
+
+    /**
      * Returns instance config
      *
      * @return  array

@@ -1,4 +1,14 @@
 {
+    "1.7.0": [
+        {
+            "description": "Added notification toggles",
+            "link": ""
+        },
+        {
+            "description": "Added daily overview notification",
+            "link": ""
+        }
+    ],
     "1.6.1": [
         {
             "description": "Added cli option to get version number",
