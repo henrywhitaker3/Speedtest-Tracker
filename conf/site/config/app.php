@@ -162,6 +162,8 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
+        NotificationChannels\Telegram\TelegramServiceProvider::class,
+
         /*
          * Package Service Providers...
          */
