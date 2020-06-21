@@ -5,12 +5,9 @@ namespace App\Helpers;
 use App\Speedtest;
 use Carbon\Carbon;
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use JsonException;
-use SimpleXMLElement;
 
 class SpeedtestHelper {
 
@@ -68,6 +65,22 @@ class SpeedtestHelper {
         }
 
         return shell_exec($binPath . ' -f json');
+    }
+
+    /**
+     * Get a 24 hour average of speedtest results
+     *
+     * @return array
+     */
+    public static function last24Hours()
+    {
+        $t = Carbon::now()->subDay();
+        $s = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
+                      ->where('created_at', '>=', $t)
+                      ->first()
+                      ->toArray();
+
+        return $s;
     }
 
     /**

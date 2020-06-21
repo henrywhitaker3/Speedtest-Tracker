@@ -2,23 +2,27 @@
 
 namespace App\Console\Commands;
 
+use App\Events\SpeedtestOverviewEvent;
+use App\Helpers\SpeedtestHelper;
+use App\Notifications\SpeedtestOverviewSlack;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Notification;
 
-class SpeedtestVersionCommand extends Command
+class SpeedtestOverviewCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'speedtest:version';
+    protected $signature = 'speedtest:overview';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Displays the version number of this instance';
+    protected $description = 'Trigger a speedtest overview event';
 
     /**
      * Create a new command instance.
@@ -37,6 +41,6 @@ class SpeedtestVersionCommand extends Command
      */
     public function handle()
     {
-        $this->info('Speedtest Tracker v' . config('speedtest.version'));
+        event(new SpeedtestOverviewEvent());
     }
 }
