@@ -13,7 +13,7 @@ Disclaimer: You will need to accept Ookla's [EULA](https://www.speedtest.net/abo
 - Automatically run a speedtest every hour
 - Graph of previous speedtests going back x days
 - Backup/restore data in JSON/CSV format
-- Slack/Discord notifications
+- Slack/Discord/Telegram notifications
 - Organizr integration
 
 ## Usage
@@ -41,6 +41,8 @@ Container images are configured using parameters passed at runtime (such as thos
 |     `-v /config`          |   All the config files reside here.   |
 |     `-e OOKLA_EULA_GDPR`  |   Set to 'true' to accept the Ookla [EULA](https://www.speedtest.net/about/eula) and privacy agreement. If this is not set, the container will not start   |
 |     `-e SLACK_WEBHOOK`    |   Optional. Put a slack webhook here to get slack notifications when a speedtest is run. To use discord webhooks, just append `/slack` to the end of your discord webhook URL   |
+|     `-e TELEGRAM_BOT_TOKEN`    |   Optional. Telegram bot API token.   |
+|     `-e TELEGRAM_CHAT_ID`    |   Optional. Telegram chat ID.   |
 |     `-e PUID`             |   Optional. Supply a local user ID for volume permissions   |
 |     `-e PGID`             |   Optional. Supply a local group ID for volume permissions  |
 
