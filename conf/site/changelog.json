@@ -1,4 +1,10 @@
 {
+    "1.6.1": [
+        {
+            "description": "Added cli option to get version number",
+            "link": ""
+        }
+    ],
     "1.6.0": [
         {
             "description": "Added telegram notifications",
