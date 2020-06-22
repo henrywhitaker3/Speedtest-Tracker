@@ -54,13 +54,13 @@ export default class Settings extends Component {
         var e = this.state.data;
         return (
             <Row>
-                <Col lg={{ span: 2, offset: 3 }} md={{ span: 6 }} sm={{ span: 12 }}>
+                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
                     <Setting name={e.schedule.name} value={e.schedule.value} description={e.schedule.description} />
                 </Col>
-                <Col lg={{ span: 2 }} md={{ span: 6 }} sm={{ span: 12 }}>
+                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
                     <Setting name={e.server.name} value={e.server.value} description={e.server.description} />
                 </Col>
-                <Col lg={{ span: 2 }} md={{ span: 6 }} sm={{ span: 12 }}>
+                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
                     <SettingWithModal title="Notification settings" description="Control which types of notifications the server sends." settings={[
                         {
                             obj: e.speedtest_notifications,
@@ -92,7 +92,7 @@ export default class Settings extends Component {
 
         return (
             <div>
-                <Container className="my-4" fluid>
+                <Container className="my-4">
                     <Row>
                         <Col sm={{ span: 12 }} className="mb-3 text-center">
                             <div className="mouse" onClick={this.toggleShow}>
