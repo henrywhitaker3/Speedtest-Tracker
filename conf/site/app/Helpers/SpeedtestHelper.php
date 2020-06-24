@@ -25,6 +25,11 @@ class SpeedtestHelper {
 
         try {
             $output = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+
+            if(!SpeedtestHelper::checkOutputIsComplete($output)) {
+                return false;
+            }
+
             $test = Speedtest::create([
                 'ping' => $output['ping']['latency'],
                 'download' => SpeedtestHelper::convert($output['download']['bandwidth']),
@@ -141,5 +146,47 @@ class SpeedtestHelper {
             'val' => $val,
             'unit' => 'Mbit/s'
         ];
+    }
+
+    /**
+     * Checks that the speedtest JSON output is complete/valid
+     *
+     * @param array $output
+     * @return boolean
+     */
+    public static function checkOutputIsComplete($output)
+    {
+        /**
+         * Array of indexes that must exist in $output
+         */
+        $checks = [
+            'type' => 'result',
+            'download' => [ 'bandwidth' => '*' ],
+            'upload' => [ 'bandwidth' => '*' ],
+            'ping' => [ 'latency' => '*' ],
+            'server' => [
+                'id' => '*',
+                'name' => '*',
+                'host' => '*',
+                'port' => '*'
+            ],
+            'result' => [
+                'url' => '*'
+            ],
+        ];
+        /**
+         * Array of indexes that must not exist
+         */
+        $checkMissing = [
+            'type' => 'error'
+        ];
+
+        foreach($checks as $key => $value) {
+            if(!isset($output[$key])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
