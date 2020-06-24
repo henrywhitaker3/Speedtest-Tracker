@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
 import { Container, Row, Table, Col, Collapse, Button } from 'react-bootstrap';
+import TableRow from './TableRow';
 
 export default class TestsTable extends Component {
     constructor(props) {
@@ -12,26 +13,35 @@ export default class TestsTable extends Component {
             lastPage: 1,
             data: [],
             showTable: false,
+            refresh: true,
+            interval: null
         }
     }
 
     componentDidMount() {
         this.getData();
+        var int = setInterval(this.getData, 10000);
+        this.setState({
+            interval: int
+        });
     }
 
-    getData = (page = this.state.page) => {
+    getData = (page = this.state.page, refresh = true) => {
         var url = 'api/speedtest/?page=' + page;
 
         Axios.get(url)
         .then((resp) => {
             var data = resp.data.data.data;
-            data = this.state.data.concat(data);
+            if(!refresh) {
+                data = this.state.data.concat(data);
+            }
             var page = resp.data.data.current_page;
             var lastPage = resp.data.data.last_page;
             this.setState({
                 data: data,
                 page: page,
                 lastPage: lastPage,
+                refresh: refresh
             });
         })
         .catch((err) => {
@@ -43,7 +53,11 @@ export default class TestsTable extends Component {
         var page = this.state.page;
         page = page + 1;
 
-        this.getData(page);
+        if(this.state.refresh) {
+            clearInterval(this.state.interval);
+        }
+
+        this.getData(page, false);
     }
 
     toggleCollapse = () => {
@@ -65,6 +79,7 @@ export default class TestsTable extends Component {
         var lastPage = this.state.lastPage;
         var data = this.state.data;
         var show = this.state.showTable;
+        var refresh = this.state.refresh;
 
         if(data.length > 0) {
             return (
@@ -79,6 +94,11 @@ export default class TestsTable extends Component {
                                     <span className="ti-angle-down"></span>
                                 }
                             </div>
+                            {(show) &&
+                                <div className="my-1">
+                                    <span className="text-muted">Auto refresh: {(refresh) ? 'On' : 'Off'}</span>
+                                </div>
+                            }
                         </Col>
                     </Row>
                     <Collapse in={show}>
@@ -93,18 +113,13 @@ export default class TestsTable extends Component {
                                                 <th>Download (Mbit/s)</th>
                                                 <th>Upload (Mbit/s)</th>
                                                 <th>Ping (ms)</th>
+                                                <th>More</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {data.map((e,i) => {
                                                 return (
-                                                    <tr key={e.id}>
-                                                        <td>{e.id}</td>
-                                                        <td>{new Date(e.created_at).toLocaleString()}</td>
-                                                        <td>{e.download}</td>
-                                                        <td>{e.upload}</td>
-                                                        <td>{e.ping}</td>
-                                                    </tr>
+                                                    <TableRow key={e.id} data={e} />
                                                 );
                                             })}
                                         </tbody>

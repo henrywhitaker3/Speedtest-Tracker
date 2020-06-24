@@ -10,21 +10,39 @@ use Illuminate\Support\Facades\Validator;
 
 class BackupController extends Controller
 {
-    public function backup()
-    {
-        $data = BackupHelper::backup();
-        $timestamp = new DateTime();
-        $timestamp = $timestamp->format('Y-m-d_H:i:s');
-        $name = 'speedtest_backup_' . $timestamp . '.json';
-        Storage::disk('local')->put($name, $data);
 
-        return Storage::disk('local')->download($name);
+    /**
+     * Get backup of speedtests
+     *
+     * @param   Request $request
+     * @return  file
+     */
+    public function backup(Request $request)
+    {
+        $validator = Validator::make($request->all(), [ 'format' => 'in:json,csv' ]);
+        if($validator->fails()) {
+            return response()->json([
+                'method' => 'backup data',
+                'error' => $validator->errors(),
+            ], 422);
+        }
+
+        $filename = BackupHelper::backup($request->format);
+
+        return Storage::disk('local')->download($filename);
     }
 
+    /**
+     * Retore from a backup
+     *
+     * @param   Request $request
+     * @return  Response
+     */
     public function restore(Request $request)
     {
         $rule = [
-            'data' => [ 'required', 'array' ],
+            'data' => [ 'required' ],
+            'format' => [ 'required', 'in:json,csv' ]
         ];
 
         $validator = Validator::make($request->all(), $rule);
@@ -35,10 +53,14 @@ class BackupController extends Controller
             ], 422);
         }
 
-        BackupHelper::restore($request->data);
-
-        return response()->json([
-            'method' => 'restore data from backup',
-        ], 200);
+        if(BackupHelper::restore($request->data, $request->format) != false) {
+            return response()->json([
+                'method' => 'restore data from backup',
+            ], 200);
+        } else {
+            return response()->json([
+                'method' => 'incorrect backup format',
+            ], 422);
+        }
     }
 }

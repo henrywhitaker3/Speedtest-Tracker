@@ -1,0 +1,16 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Vasyl Stokolosa",
+    "email": "v.stokol@gmail.com",
+    "url": "https://github.com/shystruk"
+  },
+  "license": "MIT"
+}

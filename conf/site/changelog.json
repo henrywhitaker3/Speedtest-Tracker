@@ -1,4 +1,66 @@
 {
+    "1.7.1": [
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
+    "1.7.0": [
+        {
+            "description": "Added notification toggles",
+            "link": ""
+        },
+        {
+            "description": "Added daily overview notification",
+            "link": ""
+        }
+    ],
+    "1.6.1": [
+        {
+            "description": "Added cli option to get version number",
+            "link": ""
+        }
+    ],
+    "1.6.0": [
+        {
+            "description": "Added telegram notifications",
+            "link": ""
+        }
+    ],
+    "1.5.6": [
+        {
+            "description": "Auto-update all tests table",
+            "link": ""
+        }
+    ],
+    "1.5.5": [
+        {
+            "description": "Store host/id of speedtest.net server",
+            "link": ""
+        }
+    ],
+    "1.5.4": [
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
+    "1.5.3": [
+        {
+            "description": "Changed speedtest client",
+            "link": ""
+        }
+    ],
+    "1.5.2": [
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        },
+        {
+            "description": "Added CSV backup/restore formats",
+            "link": ""
+        }
+    ],
     "1.5.1": [
         {
             "description": "Updated PHP dependencies",

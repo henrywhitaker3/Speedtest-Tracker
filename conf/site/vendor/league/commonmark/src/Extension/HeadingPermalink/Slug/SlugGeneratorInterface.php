@@ -11,6 +11,13 @@
 
 namespace League\CommonMark\Extension\HeadingPermalink\Slug;
 
+use League\CommonMark\Normalizer\TextNormalizerInterface;
+
+@trigger_error(sprintf('%s is deprecated; use %s instead', SlugGeneratorInterface::class, TextNormalizerInterface::class), E_USER_DEPRECATED);
+
+/**
+ * @deprecated Use League\CommonMark\Normalizer\TextNormalizerInterface instead
+ */
 interface SlugGeneratorInterface
 {
     /**
