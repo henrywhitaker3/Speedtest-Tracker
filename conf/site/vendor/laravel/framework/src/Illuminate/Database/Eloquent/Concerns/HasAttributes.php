@@ -1185,6 +1185,20 @@ trait HasAttributes
      */
     public function getOriginal($key = null, $default = null)
     {
+        return (new static)->setRawAttributes(
+            $this->original, $sync = true
+        )->getOriginalWithoutRewindingModel($key, $default);
+    }
+
+    /**
+     * Get the model's original attribute values.
+     *
+     * @param  string|null  $key
+     * @param  mixed  $default
+     * @return mixed|array
+     */
+    protected function getOriginalWithoutRewindingModel($key = null, $default = null)
+    {
         if ($key) {
             return $this->transformModelValue(
                 $key, Arr::get($this->original, $key, $default)
