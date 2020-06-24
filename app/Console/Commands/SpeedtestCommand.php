@@ -42,6 +42,16 @@ class SpeedtestCommand extends Command
 
         $results = SpeedtestHelper::runSpeedtest();
 
+        if(!is_object($results)) {
+            $this->error('Something went wrong running the speedtest.');
+            exit();
+        }
+
+        if(property_exists($results, 'ping') && property_exists($results, 'download') && property_exists($results, 'upload')) {
+            $this->error('Something went wrong running the speedtest.');
+            exit();
+        }
+
         $this->info('Ping: ' . $results->ping . ' ms');
         $this->info('Download: ' . $results->download . ' Mbit/s');
         $this->info('Upload: ' . $results->upload . ' Mbit/s');
