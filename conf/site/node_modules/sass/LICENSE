@@ -822,8 +822,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 --------------------------------------------------------------------------------
 
-io, json_annotation, multi_server_socket, pedantic, stream_transform, term_glyph
-and test_process license:
+io, json_annotation, pedantic, stream_transform, term_glyph and test_process
+license:
 
 Copyright 2017, the Dart project authors. All rights reserved.
 Redistribution and use in source and binary forms, with or without

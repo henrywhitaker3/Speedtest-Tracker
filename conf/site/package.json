@@ -21,16 +21,17 @@
         "react": "^16.2.0",
         "react-dom": "^16.2.0",
         "resolve-url-loader": "^3.1.0",
-        "sass": "^1.26.8",
+        "sass": "^1.26.9",
         "sass-loader": "^8.0.0"
     },
     "dependencies": {
         "@babel/plugin-proposal-class-properties": "^7.10.1",
         "chart.js": "^2.9.3",
+        "csv-file-validator": "^1.8.0",
         "react-bootstrap": "^1.0.1",
         "react-chartjs-2": "^2.9.0",
         "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",
-        "react-toastify": "^6.0.5"
+        "react-toastify": "^6.0.6"
     }
 }

@@ -156,6 +156,11 @@ final class ASCII
     private static $ORD;
 
     /**
+     * @var array<string, int>|null
+     */
+    private static $LANGUAGE_MAX_KEY;
+
+    /**
      * url: https://en.wikipedia.org/wiki/Wikipedia:ASCII#ASCII_printable_characters
      *
      * @var string
@@ -321,7 +326,7 @@ final class ASCII
      * @param string $language              [optional] <p>Language of the source string e.g.: en, de_at, or de-ch.
      *                                      (default is 'en') | ASCII::*_LANGUAGE_CODE</p>
      * @param bool   $replace_extra_symbols [optional] <p>Add some more replacements e.g. "£" with " pound ".</p>
-     * @param bool   $asOrigReplaceArray    [optional] <p>TRUE === return thr {orig: string[], replace: string[]}
+     * @param bool   $asOrigReplaceArray    [optional] <p>TRUE === return {orig: string[], replace: string[]}
      *                                      array</p>
      * @psalm-pure
      *
@@ -417,7 +422,7 @@ final class ASCII
      * </code>
      *
      * @param bool $replace_extra_symbols [optional] <p>Add some more replacements e.g. "£" with " pound ".</p>
-     * @param bool $asOrigReplaceArray    [optional] <p>TRUE === return thr {orig: string[], replace: string[]}
+     * @param bool $asOrigReplaceArray    [optional] <p>TRUE === return {orig: string[], replace: string[]}
      *                                    array</p>
      * @psalm-pure
      *
@@ -769,7 +774,11 @@ final class ASCII
 
             $langSpecific = self::charsArrayWithOneLanguage($language, $replace_extra_symbols, false);
 
-            $REPLACE_HELPER_CACHE[$cacheKey] = \array_merge([], $langAll, $langSpecific);
+            if ($langSpecific === []) {
+                $REPLACE_HELPER_CACHE[$cacheKey] = $langAll;
+            } else {
+                $REPLACE_HELPER_CACHE[$cacheKey] = \array_merge([], $langAll, $langSpecific);
+            }
         }
 
         if (
@@ -789,6 +798,69 @@ final class ASCII
         $charDone = [];
         if (\preg_match_all('/' . self::$REGEX_ASCII . ($replace_extra_symbols ? '|[' . $EXTRA_SYMBOLS_CACHE . ']' : '') . '/u', $str, $matches)) {
             if (!$replace_single_chars_only) {
+                if (self::$LANGUAGE_MAX_KEY === null) {
+                    /** @noinspection PsalmLocalImmutableInspection */
+                    self::$LANGUAGE_MAX_KEY = self::getData('ascii_language_max_key');
+                }
+
+                $maxKeyLength = self::$LANGUAGE_MAX_KEY[$language] ?? 0;
+
+                if ($maxKeyLength >= 5) {
+                    foreach ($matches[0] as $keyTmp => $char) {
+                        if (isset($matches[0][$keyTmp + 4])) {
+                            $fiveChars = $matches[0][$keyTmp + 0] . $matches[0][$keyTmp + 1] . $matches[0][$keyTmp + 2] . $matches[0][$keyTmp + 3] . $matches[0][$keyTmp + 4];
+                        } else {
+                            $fiveChars = null;
+                        }
+                        if (
+                            $fiveChars
+                            &&
+                            !isset($charDone[$fiveChars])
+                            &&
+                            isset($REPLACE_HELPER_CACHE[$cacheKey][$fiveChars])
+                            &&
+                            \strpos($str, $fiveChars) !== false
+                        ) {
+                            // DEBUG
+                            //\var_dump($str, $fiveChars, $REPLACE_HELPER_CACHE[$cacheKey][$fiveChars]);
+
+                            $charDone[$fiveChars] = true;
+                            $str = \str_replace($fiveChars, $REPLACE_HELPER_CACHE[$cacheKey][$fiveChars], $str);
+
+                            // DEBUG
+                            //\var_dump($str, "\n");
+                        }
+                    }
+                }
+
+                if ($maxKeyLength >= 4) {
+                    foreach ($matches[0] as $keyTmp => $char) {
+                        if (isset($matches[0][$keyTmp + 3])) {
+                            $fourChars = $matches[0][$keyTmp + 0] . $matches[0][$keyTmp + 1] . $matches[0][$keyTmp + 2] . $matches[0][$keyTmp + 3];
+                        } else {
+                            $fourChars = null;
+                        }
+                        if (
+                            $fourChars
+                            &&
+                            !isset($charDone[$fourChars])
+                            &&
+                            isset($REPLACE_HELPER_CACHE[$cacheKey][$fourChars])
+                            &&
+                            \strpos($str, $fourChars) !== false
+                        ) {
+                            // DEBUG
+                            //\var_dump($str, $fourChars, $REPLACE_HELPER_CACHE[$cacheKey][$fourChars]);
+
+                            $charDone[$fourChars] = true;
+                            $str = \str_replace($fourChars, $REPLACE_HELPER_CACHE[$cacheKey][$fourChars], $str);
+
+                            // DEBUG
+                            //\var_dump($str, "\n");
+                        }
+                    }
+                }
+
                 foreach ($matches[0] as $keyTmp => $char) {
                     if (isset($matches[0][$keyTmp + 2])) {
                         $threeChars = $matches[0][$keyTmp + 0] . $matches[0][$keyTmp + 1] . $matches[0][$keyTmp + 2];

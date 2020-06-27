@@ -12,7 +12,14 @@ class Speedtest extends Model
      * @var array
      */
     protected $fillable = [
-        'ping', 'download', 'upload', 'created_at'
+        'ping',
+        'download',
+        'upload',
+        'created_at',
+        'server_id',
+        'server_name',
+        'server_host',
+        'url',
     ];
 
     protected $table = 'speedtests';

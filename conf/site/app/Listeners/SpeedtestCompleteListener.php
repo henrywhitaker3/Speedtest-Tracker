@@ -2,12 +2,15 @@
 
 namespace App\Listeners;
 
-use App\Notifications\SpeedtestComplete;
+use App\Helpers\SettingsHelper;
+use App\Notifications\SpeedtestCompleteSlack;
+use App\Notifications\SpeedtestCompleteTelegram;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use NotificationChannels\Telegram\TelegramChannel;
 
 class SpeedtestCompleteListener
 {
@@ -22,21 +25,33 @@ class SpeedtestCompleteListener
     }
 
     /**
-     * Handle the event.
+     * Handle what to do after speedtest completes
      *
      * @param  object  $event
      * @return void
      */
     public function handle($event)
     {
-        if(env('SLACK_WEBHOOK')) {
+        if(SettingsHelper::get('speedtest_notifications')->value == true) {
             $data = $event->speedtest;
-            try {
-                Notification::route('slack', env('SLACK_WEBHOOK'))
-                            ->notify(new SpeedtestComplete($data));
-            } catch(Exception $e) {
-                Log::notice('Your sleck webhook is invalid');
-                Log::notice($e);
+            if(env('SLACK_WEBHOOK')) {
+                try {
+                    Notification::route('slack', env('SLACK_WEBHOOK'))
+                                ->notify(new SpeedtestCompleteSlack($data));
+                } catch(Exception $e) {
+                    Log::notice('Your sleck webhook is invalid');
+                    Log::notice($e);
+                }
+            }
+
+            if(env('TELEGRAM_BOT_TOKEN') && env('TELEGRAM_CHAT_ID')) {
+                try {
+                    Notification::route(TelegramChannel::class, env('TELEGRAM_CHAT_ID'))
+                                ->notify(new SpeedtestCompleteTelegram($data));
+                } catch(Exception $e) {
+                    Log::notice('Your telegram settings are invalid');
+                    Log::notice($e);
+                }
             }
         }
     }

@@ -32,15 +32,25 @@ class SpeedtestCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Runs a speedtest synchroonously and displays the results..
      *
-     * @return mixed
+     * @return null
      */
     public function handle()
     {
         $this->info('Running speedtest, this might take a while...');
 
         $results = SpeedtestHelper::runSpeedtest();
+
+        if(!is_object($results)) {
+            $this->error('Something went wrong running the speedtest.');
+            exit();
+        }
+
+        if(property_exists($results, 'ping') && property_exists($results, 'download') && property_exists($results, 'upload')) {
+            $this->error('Something went wrong running the speedtest.');
+            exit();
+        }
 
         $this->info('Ping: ' . $results->ping . ' ms');
         $this->info('Download: ' . $results->download . ' Mbit/s');

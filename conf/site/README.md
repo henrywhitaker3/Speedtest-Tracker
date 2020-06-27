@@ -1,8 +1,10 @@
 # Speedtest Tracker
 
-[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) ![version](https://img.shields.io/badge/version-v1.5.0-success) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
+[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker?style=flat-square)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) [![commit_freq](https://img.shields.io/github/commit-activity/m/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) ![version](https://img.shields.io/badge/version-v1.7.1-success?style=flat-square) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
 
-This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [speedtest-cli](https://github.com/sivel/speedtest-cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
+This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [speedtest-cli](https://www.speedtest.net/apps/cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
+
+Disclaimer: You will need to accept Ookla's EULA and privacy agreements in order to use this container.
 
 ![speedtest](https://user-images.githubusercontent.com/36062479/78822484-a82b8300-79ca-11ea-8525-fdeae496a0bd.gif)
 
@@ -10,8 +12,8 @@ This program runs a speedtest check every hour and graphs the results. The back-
 
 - Automatically run a speedtest every hour
 - Graph of previous speedtests going back x days
-- Backup/restore data in JSON format
-- Slack/Discord notifications
+- Backup/restore data in JSON/CSV format
+- Slack/Discord/Telegram notifications
 - Organizr integration
 
 ## Installation & Setup
@@ -26,6 +28,9 @@ docker create \
       -p 8765:80 \
       -v /path/to/data:/config \
       -e SLACK_WEBHOOK=webhook `#optional` \
+      -e PUID=uid `#optional` \
+      -e PGID=gid `#optional` \
+      -e OOKLA_EULA_GDPR=true \
       --restart unless-stopped \
       henrywhitaker3/speedtest-tracker
 ```
@@ -39,7 +44,7 @@ This program has some dependencies, to install them you need to run the followin
 ```bash
 sudo apt update
 sudo apt update
-sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 php-zip composer python3 python3-pip git
+sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 php-zip php-mbstring composer python3 python3-pip git
 ```
 ```bash
 sudo apt install curl

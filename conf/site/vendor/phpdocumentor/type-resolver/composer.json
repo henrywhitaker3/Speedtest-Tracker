@@ -24,12 +24,12 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "phpDocumentor\\Reflection\\": "tests/unit"
+            "phpDocumentor\\Reflection\\": ["tests/unit", "tests/benchmark"]
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.x-dev"
+            "dev-1.x": "1.x-dev"
         }
     }
 }

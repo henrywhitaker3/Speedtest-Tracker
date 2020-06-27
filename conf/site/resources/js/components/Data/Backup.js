@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Button } from 'react-bootstrap';
+import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Axios from 'axios';
 
 export default class Backup extends Component {
-    backup = () => {
-        var url = 'api/backup';
+    backup = (format) => {
+        var url = 'api/backup?format=' + format;
 
         toast.info('Your backup has started downloading...');
 
@@ -29,11 +29,10 @@ export default class Backup extends Component {
 
     render() {
         return (
-            <Button
-                variant="primary"
-                className="mx-2"
-                onClick={this.backup}
-            >Backup</Button>
+            <DropdownButton title="Backup" variant="primary" className="m-2 d-inline-block">
+                <Dropdown.Item href="#" onClick={() => { this.backup('json') }}>JSON</Dropdown.Item>
+                <Dropdown.Item href="#" onClick={() => { this.backup('csv') }}>CSV</Dropdown.Item>
+            </DropdownButton>
         );
     }
 }
