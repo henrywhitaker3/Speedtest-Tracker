@@ -25,9 +25,9 @@ class SpeedtestJob implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Runs a speedtest
      *
-     * @return void
+     * @return \App\Speedtest
      */
     public function handle()
     {

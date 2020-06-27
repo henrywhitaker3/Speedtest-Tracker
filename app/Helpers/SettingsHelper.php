@@ -5,6 +5,13 @@ namespace App\Helpers;
 use App\Setting;
 
 class SettingsHelper {
+
+    /**
+     * Get a Setting object by name
+     *
+     * @param   String                  $name   The name field in the setting table
+     * @return  \App\Setting|boolean    $name   The Setting object. Returns false if no mathcing obj.
+     */
     public static function get(String $name)
     {
         $name = Setting::where('name', $name)->get();
@@ -19,6 +26,13 @@ class SettingsHelper {
         }
     }
 
+    /**
+     * Create / update value for Setting object.
+     *
+     * @param   String  $name   Name of setting
+     * @param   String  $value  Value of setting
+     * @return  \App\Setting
+     */
     public static function set(String $name, String $value)
     {
         $setting = SettingsHelper::get($name);
@@ -36,6 +50,11 @@ class SettingsHelper {
         return $setting;
     }
 
+    /**
+     * Get the app's base path
+     *
+     * @return string
+     */
     public static function getBase()
     {
         $base = env('BASE_PATH', '/');

@@ -6,8 +6,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\SlackMessage;
+use Illuminate\Support\Facades\Log;
+use NotificationChannels\Telegram\TelegramChannel;
+use NotificationChannels\Telegram\TelegramMessage;
 
-class SpeedtestComplete extends Notification
+class SpeedtestCompleteSlack extends Notification
 {
     use Queueable;
 
@@ -20,6 +23,9 @@ class SpeedtestComplete extends Notification
      */
     public function __construct($speedtest)
     {
+        $speedtest->ping = number_format((float)$speedtest->ping, 1, '.', '');
+        $speedtest->download = number_format((float)$speedtest->download, 1, '.', '');
+        $speedtest->upload = number_format((float)$speedtest->upload, 1, '.', '');
         $this->speedtest = $speedtest;
     }
 
@@ -31,9 +37,17 @@ class SpeedtestComplete extends Notification
      */
     public function via($notifiable)
     {
-        return ['slack'];
+        return [
+            'slack',
+        ];
     }
 
+    /**
+     * Format slack notification
+     *
+     * @param   mixed   $notifiable
+     * @return  SlackMessage
+     */
     public function toSlack($notifiable)
     {
         $speedtest = $this->speedtest;
@@ -42,9 +56,9 @@ class SpeedtestComplete extends Notification
                 ->attachment(function ($attachment) use ($speedtest) {
                     $attachment->title('New speedtest')
                                ->fields([
-                                    'Ping' => number_format((float)$speedtest->ping, 1, '.', '') . ' ms',
-                                    'Download' => number_format((float)$speedtest->download, 1, '.', '') . ' Mbit/s',
-                                    'Upload' => number_format((float)$speedtest->upload, 1, '.', '') . ' Mbit/s',
+                                    'Ping' => $speedtest->ping . ' ms',
+                                    'Download' => $speedtest->download . ' Mbit/s',
+                                    'Upload' => $speedtest->upload . ' Mbit/s',
                                 ]);
                 });
     }

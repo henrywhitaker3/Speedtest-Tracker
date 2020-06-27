@@ -55,15 +55,17 @@ export default class Setting extends Component {
         var description = this.state.description;
 
         return (
-            <Card className="m-2">
-                <Card.Body>
-                    <h4>{this.ucfirst(name)}</h4>
-                    <div dangerouslySetInnerHTML={{ __html: description}} />
-                    <Form.Group controlId={name}>
-                        <Form.Label>{this.ucfirst(name)}</Form.Label>
-                        <Form.Control type="text" label={name} defaultValue={value} onInput={this.updateValue} />
-                    </Form.Group>
-                    <Button variant="primary" onClick={this.update}>Save</Button>
+            <Card className="m-2 setting-card">
+                <Card.Body className="d-flex align-items-center">
+                    <div>
+                        <h4>{this.ucfirst(name)}</h4>
+                        <div dangerouslySetInnerHTML={{ __html: description}} />
+                        <Form.Group controlId={name}>
+                            <Form.Label>{this.ucfirst(name)}</Form.Label>
+                            <Form.Control type="text" label={name} defaultValue={value} onInput={this.updateValue} />
+                        </Form.Group>
+                        <Button variant="primary" onClick={this.update}>Save</Button>
+                    </div>
                 </Card.Body>
             </Card>
         );
