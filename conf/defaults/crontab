@@ -7,3 +7,4 @@
 0       5       1       *       *       run-parts /etc/periodic/monthly
 # speedtest cron
 * * * * * php /config/www/artisan schedule:run >> /config/log/speedtest/cron.log
+*/5 * * * * php /config/www/artisan queue:retry all >> /config/log/speedtest.cron.log
