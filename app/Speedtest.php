@@ -21,6 +21,7 @@ class Speedtest extends Model
         'server_host',
         'url',
         'scheduled',
+        'failed',
     ];
 
     protected $table = 'speedtests';

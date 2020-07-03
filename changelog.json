@@ -1,4 +1,14 @@
 {
+    "1.7.3": [
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        },
+        {
+            "description": "Added notifications and logging of failed tests",
+            "link": ""
+        }
+    ],
     "1.7.2": [
         {
             "description": "Updated UI for speedtest info",
