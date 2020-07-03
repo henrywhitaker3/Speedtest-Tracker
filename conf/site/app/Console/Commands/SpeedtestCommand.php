@@ -40,7 +40,7 @@ class SpeedtestCommand extends Command
     {
         $this->info('Running speedtest, this might take a while...');
 
-        $results = SpeedtestHelper::runSpeedtest();
+        $results = SpeedtestHelper::runSpeedtest(false, false);
 
         if(!is_object($results)) {
             $this->error('Something went wrong running the speedtest.');

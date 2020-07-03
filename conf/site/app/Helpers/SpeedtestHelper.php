@@ -17,7 +17,7 @@ class SpeedtestHelper {
      * @param   boolean|string  $output If false, new speedtest runs. If anything else, will try to parse as JSON for speedtest results.
      * @return \App\Speedtest|boolean
      */
-    public static function runSpeedtest($output = false)
+    public static function runSpeedtest($output = false, $scheduled = true)
     {
         if($output === false) {
             $output = SpeedtestHelper::output();
@@ -27,7 +27,7 @@ class SpeedtestHelper {
             $output = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
 
             if(!SpeedtestHelper::checkOutputIsComplete($output)) {
-                return false;
+                $test = false;
             }
 
             $test = Speedtest::create([
@@ -38,15 +38,32 @@ class SpeedtestHelper {
                 'server_name' => $output['server']['name'],
                 'server_host' => $output['server']['host'] . ':' . $output['server']['port'],
                 'url' => $output['result']['url'],
+                'scheduled' => $scheduled
             ]);
         } catch(JsonException $e) {
             Log::error('Failed to parse speedtest JSON');
             Log::error($output);
+            $test = false;
         } catch(Exception $e) {
             Log::error($e->getMessage());
+            $test = false;
         }
 
-        return (isset($test)) ? $test : false;
+        if(!$test) {
+            Speedtest::create([
+                'ping' => 0,
+                'upload' => 0,
+                'download' => 0,
+                'failed' => true,
+                'scheduled' => $scheduled,
+            ]);
+        }
+
+        if(!isset($test) || $test == false) {
+            return false;
+        }
+
+        return $test;
     }
 
     /**
@@ -82,6 +99,7 @@ class SpeedtestHelper {
         $t = Carbon::now()->subDay();
         $s = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
                       ->where('created_at', '>=', $t)
+                      ->where('failed', false)
                       ->first()
                       ->toArray();
 

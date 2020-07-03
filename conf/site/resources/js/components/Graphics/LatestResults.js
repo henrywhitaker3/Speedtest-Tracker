@@ -112,6 +112,7 @@ export default class LatestResults extends Component {
                                 value={parseFloat(data.data.ping).toFixed(1)}
                                 avg={parseFloat(data.average.ping).toFixed(1)}
                                 max={parseFloat(data.max.ping).toFixed(1)}
+                                failed={data.data.failed}
                                 unit="ms"
                                 icon="ping"
                             />
@@ -127,6 +128,7 @@ export default class LatestResults extends Component {
                                 value={parseFloat(data.data.download).toFixed(1)}
                                 avg={parseFloat(data.average.download).toFixed(1)}
                                 max={parseFloat(data.max.download).toFixed(1)}
+                                failed={data.data.failed}
                                 unit="Mbit/s"
                                 icon="dl"
                             />
@@ -142,6 +144,7 @@ export default class LatestResults extends Component {
                                 value={parseFloat(data.data.upload).toFixed(1)}
                                 avg={parseFloat(data.average.upload).toFixed(1)}
                                 max={parseFloat(data.max.upload).toFixed(1)}
+                                failed={data.data.failed}
                                 unit="Mbit/s"
                                 icon="ul"
                             />
