@@ -20,6 +20,7 @@ class Speedtest extends Model
         'server_name',
         'server_host',
         'url',
+        'scheduled',
     ];
 
     protected $table = 'speedtests';

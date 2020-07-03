@@ -47,7 +47,10 @@ export default class TableRow extends Component {
                                 <p>Server ID: {e.server_id}</p>
                                 <p>Name: {e.server_name}</p>
                                 <p>Host: {e.server_host}</p>
-                                <a href={e.url} target="_blank" rel="noopener noreferer">Speedtest.net</a>
+                                <p>URL: <a href={e.url} target="_blank" rel="noopener noreferer">Speedtest.net</a></p>
+                                {e.scheduled != undefined &&
+                                    <p>Type: {e.scheduled == true ? 'scheduled' : 'manual'}</p>
+                                }
                             </Modal.Body>
                         </Modal>
                     </td>

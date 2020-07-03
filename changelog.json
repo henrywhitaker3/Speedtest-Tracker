@@ -1,4 +1,14 @@
 {
+    "1.7.2": [
+        {
+            "description": "Updated UI for speedtest info",
+            "link": ""
+        },
+        {
+            "description": "Added field to track manual vs scheduled tests",
+            "link": ""
+        }
+    ],
     "1.7.1": [
         {
             "description": "Updated dependencies",

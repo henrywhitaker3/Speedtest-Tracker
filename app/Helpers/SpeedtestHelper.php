@@ -17,7 +17,7 @@ class SpeedtestHelper {
      * @param   boolean|string  $output If false, new speedtest runs. If anything else, will try to parse as JSON for speedtest results.
      * @return \App\Speedtest|boolean
      */
-    public static function runSpeedtest($output = false)
+    public static function runSpeedtest($output = false, $scheduled = true)
     {
         if($output === false) {
             $output = SpeedtestHelper::output();
@@ -38,6 +38,7 @@ class SpeedtestHelper {
                 'server_name' => $output['server']['name'],
                 'server_host' => $output['server']['host'] . ':' . $output['server']['port'],
                 'url' => $output['result']['url'],
+                'scheduled' => $scheduled
             ]);
         } catch(JsonException $e) {
             Log::error('Failed to parse speedtest JSON');
