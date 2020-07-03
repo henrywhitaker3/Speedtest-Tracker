@@ -25,7 +25,7 @@
         "sass-loader": "^9.0.0"
     },
     "dependencies": {
-        "@babel/plugin-proposal-class-properties": "^7.10.1",
+        "@babel/plugin-proposal-class-properties": "^7.10.4",
         "chart.js": "^2.9.3",
         "csv-file-validator": "^1.8.0",
         "react-bootstrap": "^1.0.1",
