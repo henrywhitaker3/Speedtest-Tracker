@@ -71,8 +71,10 @@ class SpeedtestController extends Controller
     {
         $data = SpeedtestHelper::latest();
         $avg = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
+                        ->where('failed', false)
                         ->get();
         $max = Speedtest::select(DB::raw('MAX(ping) as ping, MAX(download) as download, MAX(upload) as upload'))
+                        ->where('failed', false)
                         ->get();
 
         if($data) {
