@@ -27,7 +27,7 @@ class SpeedtestHelper {
             $output = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
 
             if(!SpeedtestHelper::checkOutputIsComplete($output)) {
-                return false;
+                $test = false;
             }
 
             $test = Speedtest::create([
@@ -43,11 +43,27 @@ class SpeedtestHelper {
         } catch(JsonException $e) {
             Log::error('Failed to parse speedtest JSON');
             Log::error($output);
+            $test = false;
         } catch(Exception $e) {
             Log::error($e->getMessage());
+            $test = false;
         }
 
-        return (isset($test)) ? $test : false;
+        if(!$test) {
+            Speedtest::create([
+                'ping' => 0,
+                'upload' => 0,
+                'download' => 0,
+                'failed' => true,
+                'scheduled' => $scheduled,
+            ]);
+        }
+
+        if(!isset($test) || $test == false) {
+            return false;
+        }
+
+        return $test;
     }
 
     /**
@@ -83,6 +99,7 @@ class SpeedtestHelper {
         $t = Carbon::now()->subDay();
         $s = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
                       ->where('created_at', '>=', $t)
+                      ->where('failed', false)
                       ->first()
                       ->toArray();
 
