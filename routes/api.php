@@ -25,6 +25,8 @@ Route::group([
          ->name('speedtest.latest');
     Route::get('time/{time}', 'SpeedtestController@time')
          ->name('speedtest.time');
+    Route::get('fail/{time}', 'SpeedtestController@fail')
+         ->name('speedtest.fail');
     Route::get('run', 'SpeedtestController@run')
          ->name('speedtest.run');
 });

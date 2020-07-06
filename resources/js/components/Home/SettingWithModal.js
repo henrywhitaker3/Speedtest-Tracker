@@ -116,7 +116,7 @@ export default class SettingWithModal extends Component {
                                     <Row key={e.obj.id} className="d-flex align-items-center">
                                         <Col  md={{ span: 6 }} sm={{ span: 12 }}>
                                             <Form.Group controlId={e.obj.name}>
-                                                <Form.Check type="checkbox" label={name} defaultChecked={e.obj.value} onInput={this.updateValue} />
+                                                <Form.Check type="checkbox" label={name} defaultChecked={Boolean(Number(e.obj.value))} onInput={this.updateValue} />
                                             </Form.Group>
                                         </Col>
                                         <Col md={{ span: 6 }} sm={{ span: 12 }}>
@@ -138,6 +138,26 @@ export default class SettingWithModal extends Component {
                                         </Col>
                                     </Row>
                                 );
+                            } else if(e.type == 'select') {
+                                return (
+                                    <Row key={e.obj.id}>
+                                        <Col md={{ span: 6 }} sm={{ span: 12 }}>
+                                            <Form.Group controlId={e.obj.name}>
+                                                <Form.Label>{name}</Form.Label>
+                                                <Form.Control as="select" defaultValue={e.obj.value} onInput={this.updateValue}>
+                                                    {e.options.map((e,i) => {
+                                                        return (
+                                                            <option key={i} value={e.value}>{e.name}</option>
+                                                        )
+                                                    })}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={{ span: 6 }} sm={{ span: 12 }}>
+                                            <p>{e.obj.description}</p>
+                                        </Col>
+                                    </Row>
+                                )
                             }
                         })}
                         <Button variant="primary" type="submit" onClick={this.update} >Save</Button>

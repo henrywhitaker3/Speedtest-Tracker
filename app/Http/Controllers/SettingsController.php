@@ -120,7 +120,13 @@ class SettingsController extends Controller
 
 
         $config = [
-            'base' => SettingsHelper::getBase()
+            'base' => SettingsHelper::getBase(),
+            'download_upload_graph_enabled' => SettingsHelper::get('download_upload_graph_enabled'),
+            'download_upload_graph_width' => SettingsHelper::get('download_upload_graph_width'),
+            'ping_graph_enabled' => SettingsHelper::get('ping_graph_enabled'),
+            'ping_graph_width' => SettingsHelper::get('ping_graph_width'),
+            'failure_graph_enabled' => SettingsHelper::get('failure_graph_enabled'),
+            'failure_graph_width' => SettingsHelper::get('failure_graph_width'),
         ];
 
         return $config;

@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Speedtest;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use JsonException;
@@ -62,6 +63,8 @@ class SpeedtestHelper {
         if(!isset($test) || $test == false) {
             return false;
         }
+
+        Cache::flush();
 
         return $test;
     }
@@ -206,5 +209,48 @@ class SpeedtestHelper {
         }
 
         return true;
+    }
+
+    /**
+     * Get a percentage rate of failure by days
+     *
+     * @param integer $days number of days to get rate for
+     * @return integer percentage fail rate
+     */
+    public static function failureRate(int $days)
+    {
+        $ttl = Carbon::now()->addDays(1);
+        $rate = Cache::remember('failure-rate-' . $days, $ttl, function () use ($days) {
+            $range = [
+                Carbon::today()
+            ];
+            for($i = 0; $i < $days; $i++) {
+                $prev = end($range);
+                $new = $prev->copy()->subDays(1);
+                array_push($range, $new);
+            }
+
+            $rate = [];
+
+            foreach($range as $day) {
+                $success = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', false)->get()[0]['rate'];
+                $fail = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', true)->get()[0]['rate'];
+
+                if(( $success + $fail ) == 0) {
+                    $percentage = 0;
+                } else {
+                    $percentage = round(( $fail / ( $success + $fail ) * 100 ), 1);
+                }
+
+                array_push($rate, [
+                    'date' => $day->toDateString(),
+                    'rate' => $percentage
+                ]);
+            }
+
+            return array_reverse($rate);
+        });
+
+        return $rate;
     }
 }
