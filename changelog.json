@@ -1,4 +1,18 @@
 {
+    "1.7.4": [
+        {
+            "description": "Stopped failed tests appearing in graphs",
+            "link": ""
+        },
+        {
+            "description": "Added failure rate graph",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
     "1.7.3": [
         {
             "description": "Updated dependencies",
