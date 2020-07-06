@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Setting;
+use Carbon\Carbon;
 
 class SettingsHelper {
 
@@ -38,6 +39,9 @@ class SettingsHelper {
         $setting = SettingsHelper::get($name);
 
         if($setting !== false) {
+            if($value == false) {
+                $value = "0";
+            }
             $setting->value = $value;
             $setting->save();
         } else {

@@ -8,6 +8,7 @@ use App\Speedtest;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -51,9 +52,43 @@ class SpeedtestController extends Controller
             ], 422);
         }
 
-        $data = Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
-                         ->orderBy('created_at', 'asc')
-                         ->get();
+        $ttl = Carbon::now()->addDays(1);
+        $data = Cache::remember('speedtest-days-' . $days, $ttl, function () use ($days) {
+            return Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
+                             ->where('failed', false)
+                             ->orderBy('created_at', 'asc')
+                             ->get();
+        });
+
+        return response()->json([
+            'method' => 'get speedtests in last x days',
+            'days' => $days,
+            'data' => $data
+        ], 200);
+    }
+
+    /**
+     * Returns speedtest failure rate going back 'x' days
+     *
+     * @param   int     $days
+     * @return  void
+     */
+    public function fail($days)
+    {
+        $rule = [
+            'days' => [ 'required', 'integer' ],
+        ];
+
+        $validator = Validator::make([ 'days' => $days ], $rule);
+
+        if($validator->fails()) {
+            return response()->json([
+                'method' => 'get speedtests in last x days',
+                'error' => $validator->errors(),
+            ], 422);
+        }
+
+        $data = SpeedtestHelper::failureRate($days);
 
         return response()->json([
             'method' => 'get speedtests in last x days',
