@@ -52,6 +52,7 @@ class SpeedtestController extends Controller
         }
 
         $data = Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
+                         ->where('failed', false)
                          ->orderBy('created_at', 'asc')
                          ->get();
 
