@@ -17,11 +17,4 @@ class Setting extends Model
     ];
 
     protected $table = 'settings';
-
-    protected $attributes = [ 'editable' ];
-
-    public function getEditableAttribute()
-    {
-        return SettingsHelper::settingIsEditable($this->name);
-    }
 }

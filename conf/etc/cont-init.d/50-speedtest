@@ -19,12 +19,18 @@ else
         eulaError
     fi
 
-    echo "Ookla GDPR and EULA accepted. Downloading Speedtest CLI."
-    cd /tmp
-    wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz > /dev/null
-    tar zxvf speedtest.tgz > /dev/null
-    cp speedtest /site/app/Bin/
-    HOME=/config && timeout 5s s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
+    if [ ! -f /config/www/app/Bin/speedtest ]; then
+        echo "Ookla GDPR and EULA accepted. Downloading Speedtest CLI."
+        cd /tmp
+        wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz > /dev/null
+        tar zxvf speedtest.tgz > /dev/null
+        cp speedtest /site/app/Bin/
+
+        HOME=/config && timeout 5s s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
+        HOME=/root
+    fi
+    
+    HOME=/config && timeout 5s s6-setuidgid abc /config/www/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
     HOME=/root
 fi
 
@@ -72,17 +78,21 @@ fi
 
 if [ -z ${SLACK_WEBHOOK+x} ]; then
     echo "Slack webhook is unset"
-    php /config/www/artisan speedtest:slack ""
-else
+    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=," -i.bak /config/www/.env
+elsecd
     echo "Slack webhook set, updating db"
+    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak /config/www/.env
     php /config/www/artisan speedtest:slack $SLACK_WEBHOOK
 fi
 
 if [ -z ${TELEGRAM_BOT_TOKEN+x} ] && [ -z ${TELEGRAM_CHAT_ID+x} ]; then
     echo "Telegram chat id and bot token unset"
-    php /config/www/artisan speedtest:telegram --chat="" --bot=""
+    sed "s,TELEGRAM_BOT_TOKEN=.*,TELEGRAM_BOT_TOKEN=," -i.bak /config/www/.env
+    sed "s,TELEGRAM_CHAT_ID=.*,TELEGRAM_CHAT_ID=," -i.bak /config/www/.env
 else
     echo "Telegram chat id and bot token set, updating .env"
+    sed "s,TELEGRAM_BOT_TOKEN=.*,TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN," -i.bak /config/www/.env
+    sed "s,TELEGRAM_CHAT_ID=.*,TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID," -i.bak /config/www/.env
     php /config/www/artisan speedtest:telegram --chat=$TELEGRAM_CHAT_ID --bot=$TELEGRAM_BOT_TOKEN
 fi
 
