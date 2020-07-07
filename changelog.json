@@ -1,4 +1,14 @@
 {
+    "1.7.5": [
+        {
+            "description": "Moved notification agent settings to DB",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
     "1.7.4": [
         {
             "description": "Stopped failed tests appearing in graphs",

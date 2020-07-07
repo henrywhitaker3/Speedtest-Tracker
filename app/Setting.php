@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Helpers\SettingsHelper;
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
@@ -16,4 +17,11 @@ class Setting extends Model
     ];
 
     protected $table = 'settings';
+
+    protected $attributes = [ 'editable' ];
+
+    public function getEditableAttribute()
+    {
+        return SettingsHelper::settingIsEditable($this->name);
+    }
 }

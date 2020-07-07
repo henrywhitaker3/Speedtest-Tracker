@@ -62,6 +62,8 @@ Route::group([
 ], function () {
     Route::get('/config', 'SettingsController@config')
          ->name('settings.config');
+    Route::get('/test-notification', 'SettingsController@testNotification')
+         ->name('settings.test_notification');
     Route::get('/', 'SettingsController@index')
          ->name('settings.index');
     Route::put('/', 'SettingsController@store')

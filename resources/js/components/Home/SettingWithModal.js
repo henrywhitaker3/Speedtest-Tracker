@@ -12,7 +12,8 @@ export default class SettingWithModal extends Component {
             title: this.props.title,
             description: this.props.description,
             settings: this.props.settings,
-            show: false
+            show: false,
+            autoClose: this.props.autoClose
         }
     }
 
@@ -40,7 +41,9 @@ export default class SettingWithModal extends Component {
         Axios.post(url, data)
         .then((resp) => {
             toast.success(this.state.title + ' updated');
-            this.toggleShow();
+            if(this.state.autoClose) {
+                this.toggleShow();
+            }
         })
         .catch((err) => {
             if(err.response.status == 422) {
@@ -111,51 +114,135 @@ export default class SettingWithModal extends Component {
                             var name = e.obj.name.split('_');
                             name[0] = this.ucfirst(name[0]);
                             name = name.join(' ');
+
+                            if(e.obj.description == null) {
+                                var sm = { span: 12 };
+                                var md = { span: 12 };
+                            } else {
+                                var sm = { span: 12 };
+                                var md = { span: 6 };
+                            }
+
+                            var readonly = false;
+                            if(window.config.editable[e.obj.name] == false) {
+                                readonly = true;
+                            }
+
                             if(e.type == 'checkbox') {
                                 return (
                                     <Row key={e.obj.id} className="d-flex align-items-center">
-                                        <Col  md={{ span: 6 }} sm={{ span: 12 }}>
+                                        <Col  md={md} sm={sm}>
                                             <Form.Group controlId={e.obj.name}>
-                                                <Form.Check type="checkbox" label={name} defaultChecked={Boolean(Number(e.obj.value))} onInput={this.updateValue} />
+                                                {readonly ?
+                                                    <>
+                                                        <Form.Check type="checkbox" disabled label={name} defaultChecked={Boolean(Number(e.obj.value))} onInput={this.updateValue} />
+                                                        <Form.Text className="text-muted">This setting is defined as an env variable and is not editable.</Form.Text>
+                                                    </>
+                                                :
+                                                    <Form.Check type="checkbox" label={name} defaultChecked={Boolean(Number(e.obj.value))} onInput={this.updateValue} />
+                                                }
                                             </Form.Group>
                                         </Col>
-                                        <Col md={{ span: 6 }} sm={{ span: 12 }}>
-                                            <p>{e.obj.description}</p>
-                                        </Col>
+                                        {e.description == null &&
+                                            <Col md={md} sm={sm}>
+                                                <p>{e.obj.description}</p>
+                                            </Col>
+                                        }
                                     </Row>
                                 );
                             } else if(e.type == 'number') {
                                 return (
                                     <Row key={e.obj.id}>
-                                        <Col md={{ span: 6 }} sm={{ span: 12 }}>
+                                        <Col md={md} sm={sm}>
                                             <Form.Group controlId={e.obj.name}>
                                                 <Form.Label>{name}</Form.Label>
-                                                <Form.Control type="number" min={e.min} max={e.max} defaultValue={e.obj.value} onInput={this.updateValue} />
+                                                {readonly ?
+                                                    <>
+                                                        <Form.Control type="number" disabled min={e.min} max={e.max} defaultValue={e.obj.value} onInput={this.updateValue} />
+                                                        <Form.Text className="text-muted">This setting is defined as an env variable and is not editable.</Form.Text>
+                                                    </>
+                                                :
+                                                    <Form.Control type="number" min={e.min} max={e.max} defaultValue={e.obj.value} onInput={this.updateValue} />
+                                                }
                                             </Form.Group>
                                         </Col>
-                                        <Col md={{ span: 6 }} sm={{ span: 12 }}>
-                                            <p>{e.obj.description}</p>
+                                        {e.description == null &&
+                                            <Col md={md} sm={sm}>
+                                                <p>{e.obj.description}</p>
+                                            </Col>
+                                        }
+                                    </Row>
+                                );
+                            } else if(e.type == 'text') {
+                                return (
+                                    <Row key={e.obj.id}>
+                                        <Col md={md} sm={sm}>
+                                            <Form.Group controlId={e.obj.name}>
+                                                <Form.Label>{name}</Form.Label>
+                                                {readonly ?
+                                                    <>
+                                                        <Form.Control type="text" disabled defaultValue={e.obj.value} onInput={this.updateValue} />
+                                                        <Form.Text className="text-muted">This setting is defined as an env variable and is not editable.</Form.Text>
+                                                    </>
+                                                :
+                                                    <Form.Control type="text" defaultValue={e.obj.value} onInput={this.updateValue} />
+                                                }
+                                            </Form.Group>
                                         </Col>
+                                        {e.description == null &&
+                                            <Col md={md} sm={sm}>
+                                                <p>{e.obj.description}</p>
+                                            </Col>
+                                        }
                                     </Row>
                                 );
                             } else if(e.type == 'select') {
                                 return (
                                     <Row key={e.obj.id}>
-                                        <Col md={{ span: 6 }} sm={{ span: 12 }}>
+                                        <Col md={md} sm={sm}>
                                             <Form.Group controlId={e.obj.name}>
                                                 <Form.Label>{name}</Form.Label>
-                                                <Form.Control as="select" defaultValue={e.obj.value} onInput={this.updateValue}>
-                                                    {e.options.map((e,i) => {
-                                                        return (
-                                                            <option key={i} value={e.value}>{e.name}</option>
-                                                        )
-                                                    })}
-                                                </Form.Control>
+                                                {readonly ?
+                                                    <>
+                                                        <Form.Control as="select" disabled defaultValue={e.obj.value} onInput={this.updateValue}>
+                                                            {e.options.map((e,i) => {
+                                                                return (
+                                                                    <option key={i} value={e.value}>{e.name}</option>
+                                                                )
+                                                            })}
+                                                        </Form.Control>
+                                                        <Form.Text className="text-muted">This setting is defined as an env variable and is not editable.</Form.Text>
+                                                    </>
+                                                :
+                                                    <Form.Control as="select" defaultValue={e.obj.value} onInput={this.updateValue}>
+                                                        {e.options.map((e,i) => {
+                                                            return (
+                                                                <option key={i} value={e.value}>{e.name}</option>
+                                                            )
+                                                        })}
+                                                    </Form.Control>
+                                                }
                                             </Form.Group>
                                         </Col>
-                                        <Col md={{ span: 6 }} sm={{ span: 12 }}>
-                                            <p>{e.obj.description}</p>
+                                        {e.description == null &&
+                                            <Col md={md} sm={sm}>
+                                                <p>{e.obj.description}</p>
+                                            </Col>
+                                        }
+                                    </Row>
+                                )
+                            } else if(e.type == 'button-get') {
+                                return (
+                                    <Row key={e.obj.id}>
+                                        <Col md={md} sm={sm}>
+                                            <p>{name}</p>
+                                            <Button onClick={() => { Axios.get(e.url) }} >{name}</Button>
                                         </Col>
+                                        {e.description == null &&
+                                            <Col md={md} sm={sm}>
+                                                <p>{e.obj.description}</p>
+                                            </Col>
+                                        }
                                     </Row>
                                 )
                             }
