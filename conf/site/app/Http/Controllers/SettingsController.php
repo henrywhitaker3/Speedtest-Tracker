@@ -6,6 +6,7 @@ use App\Helpers\SettingsHelper;
 use App\Rules\Cron;
 use App\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class SettingsController extends Controller
@@ -100,7 +101,17 @@ class SettingsController extends Controller
                     ], 422);
                 }
             }
-            $setting = SettingsHelper::set($d['name'], $d['value']);
+
+            $setting = SettingsHelper::get($d['name']);
+
+            if($setting == false) {
+                $setting = SettingsHelper::set($d['name'], $d['value']);
+            } else if(SettingsHelper::settingIsEditable($setting->name)) {
+                $setting = SettingsHelper::set($d['name'], $d['value']);
+            } else {
+                continue;
+            }
+
             array_push($settings, $setting);
         }
 
@@ -117,18 +128,15 @@ class SettingsController extends Controller
      */
     public function config()
     {
+        return SettingsHelper::getConfig();
+    }
 
+    public function testNotification()
+    {
+        SettingsHelper::testNotification();
 
-        $config = [
-            'base' => SettingsHelper::getBase(),
-            'download_upload_graph_enabled' => SettingsHelper::get('download_upload_graph_enabled'),
-            'download_upload_graph_width' => SettingsHelper::get('download_upload_graph_width'),
-            'ping_graph_enabled' => SettingsHelper::get('ping_graph_enabled'),
-            'ping_graph_width' => SettingsHelper::get('ping_graph_width'),
-            'failure_graph_enabled' => SettingsHelper::get('failure_graph_enabled'),
-            'failure_graph_width' => SettingsHelper::get('failure_graph_width'),
-        ];
-
-        return $config;
+        return response()->json([
+            'method' => 'test notificaiton agents'
+        ], 200);
     }
 }
