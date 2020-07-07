@@ -59,3 +59,7 @@
 .home-graph {
     height: 480px;
 }
+
+.form-control:disabled {
+    cursor: not-allowed;
+}

@@ -37,9 +37,7 @@ class SpeedtestJob implements ShouldQueue
     {
         $output = SpeedtestHelper::output();
         $speedtest = SpeedtestHelper::runSpeedtest($output, $this->scheduled);
-        Log::info($speedtest);
         if($speedtest == false) {
-            Log::info('speedtest == false');
             event(new SpeedtestFailedEvent());
         } else {
             event(new SpeedtestCompleteEvent($speedtest));
