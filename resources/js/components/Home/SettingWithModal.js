@@ -27,11 +27,13 @@ export default class SettingWithModal extends Component {
         var settings = this.state.settings;
 
         settings.forEach(e => {
-            var res = {
-                name: e.obj.name,
-                value: e.obj.value
-            };
-            data.push(res);
+            if(e.type !== 'button-get') {
+                var res = {
+                    name: e.obj.name,
+                    value: e.obj.value
+                };
+                data.push(res);
+            }
         });
 
         data = {

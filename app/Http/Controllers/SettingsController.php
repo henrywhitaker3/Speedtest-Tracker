@@ -106,7 +106,7 @@ class SettingsController extends Controller
 
             if($setting == false) {
                 $setting = SettingsHelper::set($d['name'], $d['value']);
-            } else if($setting->editable == true) {
+            } else if(SettingsHelper::settingIsEditable($setting->name)) {
                 $setting = SettingsHelper::set($d['name'], $d['value']);
             } else {
                 continue;

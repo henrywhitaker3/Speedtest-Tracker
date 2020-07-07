@@ -85,21 +85,43 @@ class SettingsHelper {
      */
     public static function settingIsEditable(string $key)
     {
+        $results = [];
+
         // Try exact key
         $val = exec('echo $' . $key);
 
         if($val == "") {
-            return true;
+            array_push($results, true);
+        } else {
+            array_push($results, false);
         }
 
         // Try key all caps
         $val = exec('echo $' . strtoupper($key));
 
         if($val == "") {
-            return true;
+            array_push($results, true);
+        } else {
+            array_push($results, false);
         }
 
-        return false;
+        if(env($key, false) == false) {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        if(env(strtoupper($key), false) == false) {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        if(in_array(false, $results)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
