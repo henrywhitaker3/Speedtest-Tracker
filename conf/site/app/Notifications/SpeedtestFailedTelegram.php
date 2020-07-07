@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Helpers\SettingsHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -40,7 +41,7 @@ class SpeedtestFailedTelegram extends Notification implements ShouldQueue
     {
         $msg = "Error: something went wrong running your speedtest";
         return TelegramMessage::create()
-                              ->to(env('TELEGRAM_CHAT_ID'))
+                              ->to(SettingsHelper::get('telegram_chat_id')->value)
                               ->content($msg)
                               ->options(['parse_mode' => 'Markdown']);
     }

@@ -225,8 +225,7 @@ export default class HistoryGraph extends Component {
     getData = (days = this.state.days) => {
         Axios.get('api/settings/config')
         .then((resp) => {
-            var data = resp.data;
-            console.log(data)
+            var data = resp.data.graphs;
             this.setState({
                 graph_ul_dl_enabled: Boolean(Number(data.download_upload_graph_enabled.value)),
                 graph_ul_dl_width: data.download_upload_graph_width.value,
@@ -273,11 +272,6 @@ export default class HistoryGraph extends Component {
         var failData = this.state.failData;
         var failOptions = this.state.failOptions;
         var days = this.state.days;
-
-        console.log(failData);
-        console.log(failOptions);
-        console.log(pingData);
-        console.log(pingOptions);
 
         var graph_ul_dl_enabled = this.state.graph_ul_dl_enabled;
         var graph_ul_dl_width = this.state.graph_ul_dl_width;

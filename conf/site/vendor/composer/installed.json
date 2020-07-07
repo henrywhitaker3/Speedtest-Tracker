@@ -1404,22 +1404,22 @@
     },
     {
         "name": "laravel-notification-channels/telegram",
-        "version": "0.4.0",
-        "version_normalized": "0.4.0.0",
+        "version": "0.4.1",
+        "version_normalized": "0.4.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/laravel-notification-channels/telegram.git",
-            "reference": "9e4bb2fbf1a7a06e8849fa2d50bf57fa7c4483e3"
+            "reference": "55a9d8bce07f456e0c675909dba9b21acda376d6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel-notification-channels/telegram/zipball/9e4bb2fbf1a7a06e8849fa2d50bf57fa7c4483e3",
-            "reference": "9e4bb2fbf1a7a06e8849fa2d50bf57fa7c4483e3",
+            "url": "https://api.github.com/repos/laravel-notification-channels/telegram/zipball/55a9d8bce07f456e0c675909dba9b21acda376d6",
+            "reference": "55a9d8bce07f456e0c675909dba9b21acda376d6",
             "shasum": ""
         },
         "require": {
             "ext-json": "*",
-            "guzzlehttp/guzzle": "^6.2",
+            "guzzlehttp/guzzle": "^6.2 || ^7.0",
             "illuminate/notifications": "^5.5 || ^6.0 || ^7.0",
             "illuminate/support": "^5.5 || ^6.0 || ^7.0",
             "php": ">=7.1"
@@ -1428,7 +1428,7 @@
             "mockery/mockery": "^1.3",
             "phpunit/phpunit": "^7.0 || ^8.0"
         },
-        "time": "2020-06-02T06:05:27+00:00",
+        "time": "2020-07-06T19:01:02+00:00",
         "type": "library",
         "extra": {
             "laravel": {

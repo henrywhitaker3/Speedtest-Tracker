@@ -72,20 +72,18 @@ fi
 
 if [ -z ${SLACK_WEBHOOK+x} ]; then
     echo "Slack webhook is unset"
-    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=," -i.bak /config/www/.env
+    php /config/www/artisan speedtest:slack ""
 else
-    echo "Slack webhook set, updating .env"
-    sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak /config/www/.env
+    echo "Slack webhook set, updating db"
+    php /config/www/artisan speedtest:slack $SLACK_WEBHOOK
 fi
 
 if [ -z ${TELEGRAM_BOT_TOKEN+x} ] && [ -z ${TELEGRAM_CHAT_ID+x} ]; then
     echo "Telegram chat id and bot token unset"
-    sed "s,TELEGRAM_BOT_TOKEN=.*,TELEGRAM_BOT_TOKEN=," -i.bak /config/www/.env
-    sed "s,TELEGRAM_CHAT_ID=.*,TELEGRAM_CHAT_ID=," -i.bak /config/www/.env
+    php /config/www/artisan speedtest:telegram --chat="" --bot=""
 else
     echo "Telegram chat id and bot token set, updating .env"
-    sed "s,TELEGRAM_BOT_TOKEN=.*,TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN," -i.bak /config/www/.env
-    sed "s,TELEGRAM_CHAT_ID=.*,TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID," -i.bak /config/www/.env
+    php /config/www/artisan speedtest:telegram --chat=$TELEGRAM_CHAT_ID --bot=$TELEGRAM_BOT_TOKEN
 fi
 
 if [ -z ${BASE_PATH+x} ]; then

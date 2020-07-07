@@ -2,6 +2,10 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 0.4.1 - 2020-07-07
+
+- Add Guzzle 7 Support. PR [#80](https://github.com/laravel-notification-channels/telegram/pull/80).
+
 ## 0.4.0 - 2020-06-02
 
 - Add support to set custom api `base_uri` for web bridge.

@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Events\SpeedtestCompleteEvent;
 use App\Events\SpeedtestFailedEvent;
 use App\Events\SpeedtestOverviewEvent;
+use App\Events\TestNotificationEvent;
 use App\Listeners\SpeedtestCompleteListener;
 use App\Listeners\SpeedtestFailedListener;
 use App\Listeners\SpeedtestOverviewListener;
+use App\Listeners\TestNotificationListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -33,6 +35,9 @@ class EventServiceProvider extends ServiceProvider
         SpeedtestFailedEvent::class => [
             SpeedtestFailedListener::class
         ],
+        TestNotificationEvent::class => [
+            TestNotificationListener::class
+        ]
     ];
 
     /**
