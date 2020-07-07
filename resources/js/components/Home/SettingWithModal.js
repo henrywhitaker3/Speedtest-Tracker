@@ -117,7 +117,7 @@ export default class SettingWithModal extends Component {
                             name[0] = this.ucfirst(name[0]);
                             name = name.join(' ');
 
-                            if(e.obj.description == null) {
+                            if(e.obj.description == null || e.obj.description == '') {
                                 var sm = { span: 12 };
                                 var md = { span: 12 };
                             } else {

@@ -35,11 +35,11 @@ class SettingsHelper {
      * @param   String  $value  Value of setting
      * @return  \App\Setting
      */
-    public static function set(String $name, String $value)
+    public static function set(String $name, $value)
     {
         $setting = SettingsHelper::get($name);
 
-        if($value == false) {
+        if($value === false) {
             $value = "0";
         }
 
