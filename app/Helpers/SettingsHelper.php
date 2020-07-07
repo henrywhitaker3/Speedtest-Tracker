@@ -91,7 +91,7 @@ class SettingsHelper {
         $val = exec('echo $' . $key);
 
         if($val == "") {
-            array_push($results, false);
+            array_push($results, true);
         } else {
             array_push($results, false);
         }
@@ -100,6 +100,18 @@ class SettingsHelper {
         $val = exec('echo $' . strtoupper($key));
 
         if($val == "") {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        if(env($key, false) == false) {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        if(env(strtoupper($key), false) == false) {
             array_push($results, true);
         } else {
             array_push($results, false);
