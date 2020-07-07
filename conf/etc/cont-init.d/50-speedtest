@@ -28,10 +28,10 @@ else
 
         HOME=/config && timeout 5s s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
         HOME=/root
+    else 
+        HOME=/config && timeout 5s s6-setuidgid abc /config/www/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
+        HOME=/root
     fi
-    
-    HOME=/config && timeout 5s s6-setuidgid abc /config/www/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
-    HOME=/root
 fi
 
 # Copy site files to /config
@@ -79,7 +79,7 @@ fi
 if [ -z ${SLACK_WEBHOOK+x} ]; then
     echo "Slack webhook is unset"
     sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=," -i.bak /config/www/.env
-elsecd
+else
     echo "Slack webhook set, updating db"
     sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak /config/www/.env
     php /config/www/artisan speedtest:slack $SLACK_WEBHOOK
