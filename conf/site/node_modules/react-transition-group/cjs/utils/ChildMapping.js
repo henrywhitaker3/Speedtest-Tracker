@@ -115,8 +115,8 @@ function getNextChildMapping(nextProps, prevChildMapping, onExited) {
   Object.keys(children).forEach(function (key) {
     var child = children[key];
     if (!(0, _react.isValidElement)(child)) return;
-    var hasPrev = key in prevChildMapping;
-    var hasNext = key in nextChildMapping;
+    var hasPrev = (key in prevChildMapping);
+    var hasNext = (key in nextChildMapping);
     var prevChild = prevChildMapping[key];
     var isLeaving = (0, _react.isValidElement)(prevChild) && !prevChild.props.in; // item is new (entering)
 

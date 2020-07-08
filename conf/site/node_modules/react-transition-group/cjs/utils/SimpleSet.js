@@ -3,9 +3,7 @@
 exports.__esModule = true;
 exports.default = void 0;
 
-var SimpleSet =
-/*#__PURE__*/
-function () {
+var SimpleSet = /*#__PURE__*/function () {
   function SimpleSet() {
     this.v = [];
   }
@@ -36,4 +34,4 @@ function () {
 }();
 
 exports.default = SimpleSet;
-module.exports = exports["default"];
+module.exports = exports.default;

@@ -2,10 +2,10 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('react-dom')) :
   typeof define === 'function' && define.amd ? define(['exports', 'react', 'react-dom'], factory) :
   (global = global || self, factory(global.ReactTransitionGroup = {}, global.React, global.ReactDOM));
-}(this, function (exports, React, ReactDOM) { 'use strict';
+}(this, (function (exports, React, ReactDOM) { 'use strict';
 
   var React__default = 'default' in React ? React['default'] : React;
-  ReactDOM = ReactDOM && ReactDOM.hasOwnProperty('default') ? ReactDOM['default'] : ReactDOM;
+  ReactDOM = ReactDOM && Object.prototype.hasOwnProperty.call(ReactDOM, 'default') ? ReactDOM['default'] : ReactDOM;
 
   function _extends() {
     _extends = Object.assign || function (target) {
@@ -49,6 +49,214 @@
   function createCommonjsModule(fn, module) {
   	return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
+
+  var reactIs_development = createCommonjsModule(function (module, exports) {
+
+
+
+  {
+    (function() {
+
+  // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
+  // nor polyfill, then a plain number is used for performance.
+  var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+  var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
+  var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
+  var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+  var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
+  var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+  var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
+  var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+  // (unstable) APIs that have been removed. Can we remove the symbols?
+
+  var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for('react.async_mode') : 0xeacf;
+  var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
+  var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+  var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
+  var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
+  var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
+  var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
+  var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
+  var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
+  var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
+  var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
+
+  function isValidElementType(type) {
+    return typeof type === 'string' || typeof type === 'function' || // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
+    type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE || type.$$typeof === REACT_BLOCK_TYPE);
+  }
+
+  function typeOf(object) {
+    if (typeof object === 'object' && object !== null) {
+      var $$typeof = object.$$typeof;
+
+      switch ($$typeof) {
+        case REACT_ELEMENT_TYPE:
+          var type = object.type;
+
+          switch (type) {
+            case REACT_ASYNC_MODE_TYPE:
+            case REACT_CONCURRENT_MODE_TYPE:
+            case REACT_FRAGMENT_TYPE:
+            case REACT_PROFILER_TYPE:
+            case REACT_STRICT_MODE_TYPE:
+            case REACT_SUSPENSE_TYPE:
+              return type;
+
+            default:
+              var $$typeofType = type && type.$$typeof;
+
+              switch ($$typeofType) {
+                case REACT_CONTEXT_TYPE:
+                case REACT_FORWARD_REF_TYPE:
+                case REACT_LAZY_TYPE:
+                case REACT_MEMO_TYPE:
+                case REACT_PROVIDER_TYPE:
+                  return $$typeofType;
+
+                default:
+                  return $$typeof;
+              }
+
+          }
+
+        case REACT_PORTAL_TYPE:
+          return $$typeof;
+      }
+    }
+
+    return undefined;
+  } // AsyncMode is deprecated along with isAsyncMode
+
+  var AsyncMode = REACT_ASYNC_MODE_TYPE;
+  var ConcurrentMode = REACT_CONCURRENT_MODE_TYPE;
+  var ContextConsumer = REACT_CONTEXT_TYPE;
+  var ContextProvider = REACT_PROVIDER_TYPE;
+  var Element = REACT_ELEMENT_TYPE;
+  var ForwardRef = REACT_FORWARD_REF_TYPE;
+  var Fragment = REACT_FRAGMENT_TYPE;
+  var Lazy = REACT_LAZY_TYPE;
+  var Memo = REACT_MEMO_TYPE;
+  var Portal = REACT_PORTAL_TYPE;
+  var Profiler = REACT_PROFILER_TYPE;
+  var StrictMode = REACT_STRICT_MODE_TYPE;
+  var Suspense = REACT_SUSPENSE_TYPE;
+  var hasWarnedAboutDeprecatedIsAsyncMode = false; // AsyncMode should be deprecated
+
+  function isAsyncMode(object) {
+    {
+      if (!hasWarnedAboutDeprecatedIsAsyncMode) {
+        hasWarnedAboutDeprecatedIsAsyncMode = true; // Using console['warn'] to evade Babel and ESLint
+
+        console['warn']('The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
+      }
+    }
+
+    return isConcurrentMode(object) || typeOf(object) === REACT_ASYNC_MODE_TYPE;
+  }
+  function isConcurrentMode(object) {
+    return typeOf(object) === REACT_CONCURRENT_MODE_TYPE;
+  }
+  function isContextConsumer(object) {
+    return typeOf(object) === REACT_CONTEXT_TYPE;
+  }
+  function isContextProvider(object) {
+    return typeOf(object) === REACT_PROVIDER_TYPE;
+  }
+  function isElement(object) {
+    return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+  }
+  function isForwardRef(object) {
+    return typeOf(object) === REACT_FORWARD_REF_TYPE;
+  }
+  function isFragment(object) {
+    return typeOf(object) === REACT_FRAGMENT_TYPE;
+  }
+  function isLazy(object) {
+    return typeOf(object) === REACT_LAZY_TYPE;
+  }
+  function isMemo(object) {
+    return typeOf(object) === REACT_MEMO_TYPE;
+  }
+  function isPortal(object) {
+    return typeOf(object) === REACT_PORTAL_TYPE;
+  }
+  function isProfiler(object) {
+    return typeOf(object) === REACT_PROFILER_TYPE;
+  }
+  function isStrictMode(object) {
+    return typeOf(object) === REACT_STRICT_MODE_TYPE;
+  }
+  function isSuspense(object) {
+    return typeOf(object) === REACT_SUSPENSE_TYPE;
+  }
+
+  exports.AsyncMode = AsyncMode;
+  exports.ConcurrentMode = ConcurrentMode;
+  exports.ContextConsumer = ContextConsumer;
+  exports.ContextProvider = ContextProvider;
+  exports.Element = Element;
+  exports.ForwardRef = ForwardRef;
+  exports.Fragment = Fragment;
+  exports.Lazy = Lazy;
+  exports.Memo = Memo;
+  exports.Portal = Portal;
+  exports.Profiler = Profiler;
+  exports.StrictMode = StrictMode;
+  exports.Suspense = Suspense;
+  exports.isAsyncMode = isAsyncMode;
+  exports.isConcurrentMode = isConcurrentMode;
+  exports.isContextConsumer = isContextConsumer;
+  exports.isContextProvider = isContextProvider;
+  exports.isElement = isElement;
+  exports.isForwardRef = isForwardRef;
+  exports.isFragment = isFragment;
+  exports.isLazy = isLazy;
+  exports.isMemo = isMemo;
+  exports.isPortal = isPortal;
+  exports.isProfiler = isProfiler;
+  exports.isStrictMode = isStrictMode;
+  exports.isSuspense = isSuspense;
+  exports.isValidElementType = isValidElementType;
+  exports.typeOf = typeOf;
+    })();
+  }
+  });
+  var reactIs_development_1 = reactIs_development.AsyncMode;
+  var reactIs_development_2 = reactIs_development.ConcurrentMode;
+  var reactIs_development_3 = reactIs_development.ContextConsumer;
+  var reactIs_development_4 = reactIs_development.ContextProvider;
+  var reactIs_development_5 = reactIs_development.Element;
+  var reactIs_development_6 = reactIs_development.ForwardRef;
+  var reactIs_development_7 = reactIs_development.Fragment;
+  var reactIs_development_8 = reactIs_development.Lazy;
+  var reactIs_development_9 = reactIs_development.Memo;
+  var reactIs_development_10 = reactIs_development.Portal;
+  var reactIs_development_11 = reactIs_development.Profiler;
+  var reactIs_development_12 = reactIs_development.StrictMode;
+  var reactIs_development_13 = reactIs_development.Suspense;
+  var reactIs_development_14 = reactIs_development.isAsyncMode;
+  var reactIs_development_15 = reactIs_development.isConcurrentMode;
+  var reactIs_development_16 = reactIs_development.isContextConsumer;
+  var reactIs_development_17 = reactIs_development.isContextProvider;
+  var reactIs_development_18 = reactIs_development.isElement;
+  var reactIs_development_19 = reactIs_development.isForwardRef;
+  var reactIs_development_20 = reactIs_development.isFragment;
+  var reactIs_development_21 = reactIs_development.isLazy;
+  var reactIs_development_22 = reactIs_development.isMemo;
+  var reactIs_development_23 = reactIs_development.isPortal;
+  var reactIs_development_24 = reactIs_development.isProfiler;
+  var reactIs_development_25 = reactIs_development.isStrictMode;
+  var reactIs_development_26 = reactIs_development.isSuspense;
+  var reactIs_development_27 = reactIs_development.isValidElementType;
+  var reactIs_development_28 = reactIs_development.typeOf;
+
+  var reactIs = createCommonjsModule(function (module) {
+
+  {
+    module.exports = reactIs_development;
+  }
+  });
 
   /*
   object-assign
@@ -155,6 +363,7 @@
   {
     var ReactPropTypesSecret$1 = ReactPropTypesSecret_1;
     var loggedTypeFailures = {};
+    var has = Function.call.bind(Object.prototype.hasOwnProperty);
 
     printWarning = function(text) {
       var message = 'Warning: ' + text;
@@ -184,7 +393,7 @@
   function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
     {
       for (var typeSpecName in typeSpecs) {
-        if (typeSpecs.hasOwnProperty(typeSpecName)) {
+        if (has(typeSpecs, typeSpecName)) {
           var error;
           // Prop type validation may throw. In case they do, we don't want to
           // fail the render phase where it didn't fail before. So we log it.
@@ -213,7 +422,6 @@
               'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' +
               'shape all require an argument).'
             );
-
           }
           if (error instanceof Error && !(error.message in loggedTypeFailures)) {
             // Only monitor this failure once because there tends to be a lot of the
@@ -231,8 +439,20 @@
     }
   }
 
+  /**
+   * Resets warning cache when testing.
+   *
+   * @private
+   */
+  checkPropTypes.resetWarningCache = function() {
+    {
+      loggedTypeFailures = {};
+    }
+  };
+
   var checkPropTypes_1 = checkPropTypes;
 
+  var has$1 = Function.call.bind(Object.prototype.hasOwnProperty);
   var printWarning$1 = function() {};
 
   {
@@ -343,6 +563,7 @@
       any: createAnyTypeChecker(),
       arrayOf: createArrayOfTypeChecker,
       element: createElementTypeChecker(),
+      elementType: createElementTypeTypeChecker(),
       instanceOf: createInstanceTypeChecker,
       node: createNodeChecker(),
       objectOf: createObjectOfTypeChecker,
@@ -403,7 +624,7 @@
             );
             err.name = 'Invariant Violation';
             throw err;
-          } else if (typeof console !== 'undefined') {
+          } else if ( typeof console !== 'undefined') {
             // Old behavior for people using React.PropTypes
             var cacheKey = componentName + ':' + propName;
             if (
@@ -496,6 +717,18 @@
       return createChainableTypeChecker(validate);
     }
 
+    function createElementTypeTypeChecker() {
+      function validate(props, propName, componentName, location, propFullName) {
+        var propValue = props[propName];
+        if (!reactIs.isValidElementType(propValue)) {
+          var propType = getPropType(propValue);
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement type.'));
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+
     function createInstanceTypeChecker(expectedClass) {
       function validate(props, propName, componentName, location, propFullName) {
         if (!(props[propName] instanceof expectedClass)) {
@@ -510,7 +743,16 @@
 
     function createEnumTypeChecker(expectedValues) {
       if (!Array.isArray(expectedValues)) {
-        printWarning$1('Invalid argument supplied to oneOf, expected an instance of array.');
+        {
+          if (arguments.length > 1) {
+            printWarning$1(
+              'Invalid arguments supplied to oneOf, expected an array, got ' + arguments.length + ' arguments. ' +
+              'A common mistake is to write oneOf(x, y, z) instead of oneOf([x, y, z]).'
+            );
+          } else {
+            printWarning$1('Invalid argument supplied to oneOf, expected an array.');
+          }
+        }
         return emptyFunctionThatReturnsNull;
       }
 
@@ -522,8 +764,14 @@
           }
         }
 
-        var valuesString = JSON.stringify(expectedValues);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + propValue + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
+        var valuesString = JSON.stringify(expectedValues, function replacer(key, value) {
+          var type = getPreciseType(value);
+          if (type === 'symbol') {
+            return String(value);
+          }
+          return value;
+        });
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + String(propValue) + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
       }
       return createChainableTypeChecker(validate);
     }
@@ -539,7 +787,7 @@
           return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
         }
         for (var key in propValue) {
-          if (propValue.hasOwnProperty(key)) {
+          if (has$1(propValue, key)) {
             var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1);
             if (error instanceof Error) {
               return error;
@@ -553,7 +801,7 @@
 
     function createUnionTypeChecker(arrayOfTypeCheckers) {
       if (!Array.isArray(arrayOfTypeCheckers)) {
-        printWarning$1('Invalid argument supplied to oneOfType, expected an instance of array.');
+         printWarning$1('Invalid argument supplied to oneOfType, expected an instance of array.') ;
         return emptyFunctionThatReturnsNull;
       }
 
@@ -696,6 +944,11 @@
         return true;
       }
 
+      // falsy value can't be a Symbol
+      if (!propValue) {
+        return false;
+      }
+
       // 19.4.3.5 Symbol.prototype[@@toStringTag] === 'Symbol'
       if (propValue['@@toStringTag'] === 'Symbol') {
         return true;
@@ -770,6 +1023,7 @@
     }
 
     ReactPropTypes.checkPropTypes = checkPropTypes_1;
+    ReactPropTypes.resetWarningCache = checkPropTypes_1.resetWarningCache;
     ReactPropTypes.PropTypes = ReactPropTypes;
 
     return ReactPropTypes;
@@ -784,21 +1038,12 @@
    */
 
   {
-    var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
-      Symbol.for &&
-      Symbol.for('react.element')) ||
-      0xeac7;
-
-    var isValidElement = function(object) {
-      return typeof object === 'object' &&
-        object !== null &&
-        object.$$typeof === REACT_ELEMENT_TYPE;
-    };
+    var ReactIs = reactIs;
 
     // By explicitly using `prop-types` you are opting into new development behavior.
     // http://fb.me/prop-types-in-prod
     var throwOnDirectAccess = true;
-    module.exports = factoryWithTypeCheckers(isValidElement, throwOnDirectAccess);
+    module.exports = factoryWithTypeCheckers(ReactIs.isElement, throwOnDirectAccess);
   }
   });
   var propTypes_1 = propTypes.object;
@@ -834,12 +1079,12 @@
     disabled: false
   };
 
-  var timeoutsShape = propTypes.oneOfType([propTypes.number, propTypes.shape({
+  var timeoutsShape =  propTypes.oneOfType([propTypes.number, propTypes.shape({
     enter: propTypes.number,
     exit: propTypes.number,
     appear: propTypes.number
-  }).isRequired]);
-  var classNamesShape = propTypes.oneOfType([propTypes.string, propTypes.shape({
+  }).isRequired]) ;
+  var classNamesShape =  propTypes.oneOfType([propTypes.string, propTypes.shape({
     enter: propTypes.string,
     exit: propTypes.string,
     active: propTypes.string
@@ -850,7 +1095,7 @@
     exit: propTypes.string,
     exitDone: propTypes.string,
     exitActive: propTypes.string
-  })]);
+  })]) ;
 
   var TransitionGroupContext = React__default.createContext(null);
 
@@ -951,9 +1196,7 @@
    * `'exiting'` to `'exited'`.
    */
 
-  var Transition =
-  /*#__PURE__*/
-  function (_React$Component) {
+  var Transition = /*#__PURE__*/function (_React$Component) {
     _inheritsLoose(Transition, _React$Component);
 
     function Transition(props, context) {
@@ -998,7 +1241,7 @@
       }
 
       return null;
-    }; // getSnapshotBeforeUpdate(prevProps) {
+    } // getSnapshotBeforeUpdate(prevProps) {
     //   let nextStatus = null
     //   if (prevProps !== this.props) {
     //     const { status } = this.state
@@ -1014,7 +1257,7 @@
     //   }
     //   return { nextStatus }
     // }
-
+    ;
 
     var _proto = Transition.prototype;
 
@@ -1073,12 +1316,11 @@
       if (nextStatus !== null) {
         // nextStatus will always be ENTERING or EXITING.
         this.cancelNextCallback();
-        var node = ReactDOM.findDOMNode(this);
 
         if (nextStatus === ENTERING) {
-          this.performEnter(node, mounting);
+          this.performEnter(mounting);
         } else {
-          this.performExit(node);
+          this.performExit();
         }
       } else if (this.props.unmountOnExit && this.state.status === EXITED) {
         this.setState({
@@ -1087,11 +1329,16 @@
       }
     };
 
-    _proto.performEnter = function performEnter(node, mounting) {
+    _proto.performEnter = function performEnter(mounting) {
       var _this2 = this;
 
       var enter = this.props.enter;
       var appearing = this.context ? this.context.isMounting : mounting;
+
+      var _ref2 = this.props.nodeRef ? [appearing] : [ReactDOM.findDOMNode(this), appearing],
+          maybeNode = _ref2[0],
+          maybeAppearing = _ref2[1];
+
       var timeouts = this.getTimeouts();
       var enterTimeout = appearing ? timeouts.appear : timeouts.enter; // no enter animation skip right to ENTERED
       // if we are mounting and running this it means appear _must_ be set
@@ -1100,53 +1347,54 @@
         this.safeSetState({
           status: ENTERED
         }, function () {
-          _this2.props.onEntered(node);
+          _this2.props.onEntered(maybeNode);
         });
         return;
       }
 
-      this.props.onEnter(node, appearing);
+      this.props.onEnter(maybeNode, maybeAppearing);
       this.safeSetState({
         status: ENTERING
       }, function () {
-        _this2.props.onEntering(node, appearing);
+        _this2.props.onEntering(maybeNode, maybeAppearing);
 
-        _this2.onTransitionEnd(node, enterTimeout, function () {
+        _this2.onTransitionEnd(enterTimeout, function () {
           _this2.safeSetState({
             status: ENTERED
           }, function () {
-            _this2.props.onEntered(node, appearing);
+            _this2.props.onEntered(maybeNode, maybeAppearing);
           });
         });
       });
     };
 
-    _proto.performExit = function performExit(node) {
+    _proto.performExit = function performExit() {
       var _this3 = this;
 
       var exit = this.props.exit;
-      var timeouts = this.getTimeouts(); // no exit animation skip right to EXITED
+      var timeouts = this.getTimeouts();
+      var maybeNode = this.props.nodeRef ? undefined : ReactDOM.findDOMNode(this); // no exit animation skip right to EXITED
 
       if (!exit || config.disabled) {
         this.safeSetState({
           status: EXITED
         }, function () {
-          _this3.props.onExited(node);
+          _this3.props.onExited(maybeNode);
         });
         return;
       }
 
-      this.props.onExit(node);
+      this.props.onExit(maybeNode);
       this.safeSetState({
         status: EXITING
       }, function () {
-        _this3.props.onExiting(node);
+        _this3.props.onExiting(maybeNode);
 
-        _this3.onTransitionEnd(node, timeouts.exit, function () {
+        _this3.onTransitionEnd(timeouts.exit, function () {
           _this3.safeSetState({
             status: EXITED
           }, function () {
-            _this3.props.onExited(node);
+            _this3.props.onExited(maybeNode);
           });
         });
       });
@@ -1187,8 +1435,9 @@
       return this.nextCallback;
     };
 
-    _proto.onTransitionEnd = function onTransitionEnd(node, timeout, handler) {
+    _proto.onTransitionEnd = function onTransitionEnd(timeout, handler) {
       this.setNextCallback(handler);
+      var node = this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
       var doesNotHaveTimeoutOrListener = timeout == null && !this.props.addEndListener;
 
       if (!node || doesNotHaveTimeoutOrListener) {
@@ -1197,7 +1446,11 @@
       }
 
       if (this.props.addEndListener) {
-        this.props.addEndListener(node, this.nextCallback);
+        var _ref3 = this.props.nodeRef ? [this.nextCallback] : [node, this.nextCallback],
+            maybeNode = _ref3[0],
+            maybeNextCallback = _ref3[1];
+
+        this.props.addEndListener(maybeNode, maybeNextCallback);
       }
 
       if (timeout != null) {
@@ -1214,36 +1467,29 @@
 
       var _this$props = this.props,
           children = _this$props.children,
-          childProps = _objectWithoutPropertiesLoose(_this$props, ["children"]); // filter props for Transtition
+          _in = _this$props.in,
+          _mountOnEnter = _this$props.mountOnEnter,
+          _unmountOnExit = _this$props.unmountOnExit,
+          _appear = _this$props.appear,
+          _enter = _this$props.enter,
+          _exit = _this$props.exit,
+          _timeout = _this$props.timeout,
+          _addEndListener = _this$props.addEndListener,
+          _onEnter = _this$props.onEnter,
+          _onEntering = _this$props.onEntering,
+          _onEntered = _this$props.onEntered,
+          _onExit = _this$props.onExit,
+          _onExiting = _this$props.onExiting,
+          _onExited = _this$props.onExited,
+          _nodeRef = _this$props.nodeRef,
+          childProps = _objectWithoutPropertiesLoose(_this$props, ["children", "in", "mountOnEnter", "unmountOnExit", "appear", "enter", "exit", "timeout", "addEndListener", "onEnter", "onEntering", "onEntered", "onExit", "onExiting", "onExited", "nodeRef"]);
 
-
-      delete childProps.in;
-      delete childProps.mountOnEnter;
-      delete childProps.unmountOnExit;
-      delete childProps.appear;
-      delete childProps.enter;
-      delete childProps.exit;
-      delete childProps.timeout;
-      delete childProps.addEndListener;
-      delete childProps.onEnter;
-      delete childProps.onEntering;
-      delete childProps.onEntered;
-      delete childProps.onExit;
-      delete childProps.onExiting;
-      delete childProps.onExited;
-
-      if (typeof children === 'function') {
+      return (
+        /*#__PURE__*/
         // allows for nested Transitions
-        return React__default.createElement(TransitionGroupContext.Provider, {
-          value: null
-        }, children(status, childProps));
-      }
-
-      var child = React__default.Children.only(children);
-      return (// allows for nested Transitions
         React__default.createElement(TransitionGroupContext.Provider, {
           value: null
-        }, React__default.cloneElement(child, childProps))
+        }, typeof children === 'function' ? children(status, childProps) : React__default.cloneElement(React__default.Children.only(children), childProps))
       );
     };
 
@@ -1251,7 +1497,22 @@
   }(React__default.Component);
 
   Transition.contextType = TransitionGroupContext;
-  Transition.propTypes = {
+  Transition.propTypes =  {
+    /**
+     * A React reference to DOM element that need to transition:
+     * https://stackoverflow.com/a/51127130/4671932
+     *
+     *   - When `nodeRef` prop is used, `node` is not passed to callback functions
+     *      (e.g. `onEnter`) because user already has direct access to the node.
+     *   - When changing `key` prop of `Transition` in a `TransitionGroup` a new
+     *     `nodeRef` need to be provided to `Transition` with changed `key` prop
+     *     (see
+     *     [test/CSSTransition-test.js](https://github.com/reactjs/react-transition-group/blob/13435f897b3ab71f6e19d724f145596f5910581c/test/CSSTransition-test.js#L362-L437)).
+     */
+    nodeRef: propTypes.shape({
+      current: typeof Element === 'undefined' ? propTypes.any : propTypes.instanceOf(Element)
+    }),
+
     /**
      * A `function` child can be used instead of a React element. This function is
      * called with the current transition status (`'entering'`, `'entered'`,
@@ -1288,10 +1549,9 @@
     unmountOnExit: propTypes.bool,
 
     /**
-     * Normally a component is not transitioned if it is shown when the
-     * `<Transition>` component mounts. If you want to transition on the first
-     * mount set `appear` to `true`, and the component will transition in as soon
-     * as the `<Transition>` mounts.
+     * By default the child component does not perform the enter transition when
+     * it first mounts, regardless of the value of `in`. If you want this
+     * behavior, set both `appear` and `in` to `true`.
      *
      * > **Note**: there are no special appear states like `appearing`/`appeared`, this prop
      * > only adds an additional enter transition. However, in the
@@ -1351,7 +1611,9 @@
     /**
      * Add a custom transition end trigger. Called with the transitioning
      * DOM node and a `done` callback. Allows for more fine grained transition end
-     * logic. **Note:** Timeouts are still used as a fallback if provided.
+     * logic. Timeouts are still used as a fallback if provided.
+     *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
      *
      * ```jsx
      * addEndListener={(node, done) => {
@@ -1366,6 +1628,8 @@
      * Callback fired before the "entering" status is applied. An extra parameter
      * `isAppearing` is supplied to indicate if the enter stage is occurring on the initial mount
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
+     *
      * @type Function(node: HtmlElement, isAppearing: bool) -> void
      */
     onEnter: propTypes.func,
@@ -1373,6 +1637,8 @@
     /**
      * Callback fired after the "entering" status is applied. An extra parameter
      * `isAppearing` is supplied to indicate if the enter stage is occurring on the initial mount
+     *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
      *
      * @type Function(node: HtmlElement, isAppearing: bool)
      */
@@ -1382,12 +1648,16 @@
      * Callback fired after the "entered" status is applied. An extra parameter
      * `isAppearing` is supplied to indicate if the enter stage is occurring on the initial mount
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
+     *
      * @type Function(node: HtmlElement, isAppearing: bool) -> void
      */
     onEntered: propTypes.func,
 
     /**
      * Callback fired before the "exiting" status is applied.
+     *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
      *
      * @type Function(node: HtmlElement) -> void
      */
@@ -1396,6 +1666,8 @@
     /**
      * Callback fired after the "exiting" status is applied.
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
+     *
      * @type Function(node: HtmlElement) -> void
      */
     onExiting: propTypes.func,
@@ -1403,11 +1675,12 @@
     /**
      * Callback fired after the "exited" status is applied.
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed
+     *
      * @type Function(node: HtmlElement) -> void
      */
-    onExited: propTypes.func // Name the function so it is clearer in the documentation
-
-  };
+    onExited: propTypes.func
+  } ; // Name the function so it is clearer in the documentation
 
   function noop() {}
 
@@ -1425,11 +1698,11 @@
     onExiting: noop,
     onExited: noop
   };
-  Transition.UNMOUNTED = 0;
-  Transition.EXITED = 1;
-  Transition.ENTERING = 2;
-  Transition.ENTERED = 3;
-  Transition.EXITING = 4;
+  Transition.UNMOUNTED = UNMOUNTED;
+  Transition.EXITED = EXITED;
+  Transition.ENTERING = ENTERING;
+  Transition.ENTERED = ENTERED;
+  Transition.EXITING = EXITING;
 
   var _addClass = function addClass$1(node, classes) {
     return node && classes && classes.split(' ').forEach(function (c) {
@@ -1444,8 +1717,8 @@
   };
   /**
    * A transition component inspired by the excellent
-   * [ng-animate](http://www.nganimate.org/) library, you should use it if you're
-   * using CSS transitions or animations. It's built upon the
+   * [ng-animate](https://docs.angularjs.org/api/ngAnimate) library, you should
+   * use it if you're using CSS transitions or animations. It's built upon the
    * [`Transition`](https://reactcommunity.org/react-transition-group/transition)
    * component, so it inherits all of its props.
    *
@@ -1500,7 +1773,12 @@
    * }
    * ```
    *
-   * `*-active` classes represent which styles you want to animate **to**.
+   * `*-active` classes represent which styles you want to animate **to**, so it's
+   * important to add `transition` declaration only to them, otherwise transitions
+   * might not behave as intended! This might not be obvious when the transitions
+   * are symmetrical, i.e. when `*-enter-active` is the same as `*-exit`, like in
+   * the example above (minus `transition`), but it becomes apparent in more
+   * complex transitions.
    *
    * **Note**: If you're using the
    * [`appear`](http://reactcommunity.org/react-transition-group/transition#Transition-prop-appear)
@@ -1508,9 +1786,7 @@
    */
 
 
-  var CSSTransition =
-  /*#__PURE__*/
-  function (_React$Component) {
+  var CSSTransition = /*#__PURE__*/function (_React$Component) {
     _inheritsLoose(CSSTransition, _React$Component);
 
     function CSSTransition() {
@@ -1527,27 +1803,39 @@
         exit: {}
       };
 
-      _this.onEnter = function (node, appearing) {
+      _this.onEnter = function (maybeNode, maybeAppearing) {
+        var _this$resolveArgument = _this.resolveArguments(maybeNode, maybeAppearing),
+            node = _this$resolveArgument[0],
+            appearing = _this$resolveArgument[1];
+
         _this.removeClasses(node, 'exit');
 
         _this.addClass(node, appearing ? 'appear' : 'enter', 'base');
 
         if (_this.props.onEnter) {
-          _this.props.onEnter(node, appearing);
+          _this.props.onEnter(maybeNode, maybeAppearing);
         }
       };
 
-      _this.onEntering = function (node, appearing) {
+      _this.onEntering = function (maybeNode, maybeAppearing) {
+        var _this$resolveArgument2 = _this.resolveArguments(maybeNode, maybeAppearing),
+            node = _this$resolveArgument2[0],
+            appearing = _this$resolveArgument2[1];
+
         var type = appearing ? 'appear' : 'enter';
 
         _this.addClass(node, type, 'active');
 
         if (_this.props.onEntering) {
-          _this.props.onEntering(node, appearing);
+          _this.props.onEntering(maybeNode, maybeAppearing);
         }
       };
 
-      _this.onEntered = function (node, appearing) {
+      _this.onEntered = function (maybeNode, maybeAppearing) {
+        var _this$resolveArgument3 = _this.resolveArguments(maybeNode, maybeAppearing),
+            node = _this$resolveArgument3[0],
+            appearing = _this$resolveArgument3[1];
+
         var type = appearing ? 'appear' : 'enter';
 
         _this.removeClasses(node, type);
@@ -1555,11 +1843,14 @@
         _this.addClass(node, type, 'done');
 
         if (_this.props.onEntered) {
-          _this.props.onEntered(node, appearing);
+          _this.props.onEntered(maybeNode, maybeAppearing);
         }
       };
 
-      _this.onExit = function (node) {
+      _this.onExit = function (maybeNode) {
+        var _this$resolveArgument4 = _this.resolveArguments(maybeNode),
+            node = _this$resolveArgument4[0];
+
         _this.removeClasses(node, 'appear');
 
         _this.removeClasses(node, 'enter');
@@ -1567,26 +1858,37 @@
         _this.addClass(node, 'exit', 'base');
 
         if (_this.props.onExit) {
-          _this.props.onExit(node);
+          _this.props.onExit(maybeNode);
         }
       };
 
-      _this.onExiting = function (node) {
+      _this.onExiting = function (maybeNode) {
+        var _this$resolveArgument5 = _this.resolveArguments(maybeNode),
+            node = _this$resolveArgument5[0];
+
         _this.addClass(node, 'exit', 'active');
 
         if (_this.props.onExiting) {
-          _this.props.onExiting(node);
+          _this.props.onExiting(maybeNode);
         }
       };
 
-      _this.onExited = function (node) {
+      _this.onExited = function (maybeNode) {
+        var _this$resolveArgument6 = _this.resolveArguments(maybeNode),
+            node = _this$resolveArgument6[0];
+
         _this.removeClasses(node, 'exit');
 
         _this.addClass(node, 'exit', 'done');
 
         if (_this.props.onExited) {
-          _this.props.onExited(node);
+          _this.props.onExited(maybeNode);
         }
+      };
+
+      _this.resolveArguments = function (maybeNode, maybeAppearing) {
+        return _this.props.nodeRef ? [_this.props.nodeRef.current, maybeNode] // here `maybeNode` is actually `appearing`
+        : [maybeNode, maybeAppearing];
       };
 
       _this.getClassNames = function (type) {
@@ -1611,8 +1913,11 @@
     _proto.addClass = function addClass(node, type, phase) {
       var className = this.getClassNames(type)[phase + "ClassName"];
 
-      if (type === 'appear' && phase === 'done') {
-        className += " " + this.getClassNames('enter').doneClassName;
+      var _this$getClassNames = this.getClassNames('enter'),
+          doneClassName = _this$getClassNames.doneClassName;
+
+      if (type === 'appear' && phase === 'done' && doneClassName) {
+        className += " " + doneClassName;
       } // This is for to force a repaint,
       // which is necessary in order to transition styles when adding a class name.
 
@@ -1622,9 +1927,11 @@
         node && node.scrollTop;
       }
 
-      this.appliedClasses[type][phase] = className;
+      if (className) {
+        this.appliedClasses[type][phase] = className;
 
-      _addClass(node, className);
+        _addClass(node, className);
+      }
     };
 
     _proto.removeClasses = function removeClasses(node, type) {
@@ -1652,7 +1959,7 @@
           _ = _this$props.classNames,
           props = _objectWithoutPropertiesLoose(_this$props, ["classNames"]);
 
-      return React__default.createElement(Transition, _extends({}, props, {
+      return /*#__PURE__*/React__default.createElement(Transition, _extends({}, props, {
         onEnter: this.onEnter,
         onEntered: this.onEntered,
         onEntering: this.onEntering,
@@ -1668,23 +1975,33 @@
   CSSTransition.defaultProps = {
     classNames: ''
   };
-  CSSTransition.propTypes = _extends({}, Transition.propTypes, {
+  CSSTransition.propTypes =  _extends({}, Transition.propTypes, {
     /**
      * The animation classNames applied to the component as it appears, enters,
-     * exits or has finished the transition. A single name can be provided and it
-     * will be suffixed for each stage: e.g.
+     * exits or has finished the transition. A single name can be provided, which
+     * will be suffixed for each stage, e.g. `classNames="fade"` applies:
      *
-     * `classNames="fade"` applies `fade-appear`, `fade-appear-active`,
-     * `fade-appear-done`, `fade-enter`, `fade-enter-active`, `fade-enter-done`,
-     * `fade-exit`, `fade-exit-active`, and `fade-exit-done`.
+     * - `fade-appear`, `fade-appear-active`, `fade-appear-done`
+     * - `fade-enter`, `fade-enter-active`, `fade-enter-done`
+     * - `fade-exit`, `fade-exit-active`, `fade-exit-done`
      *
-     * **Note**: `fade-appear-done` and `fade-enter-done` will _both_ be applied.
-     * This allows you to define different behavior for when appearing is done and
-     * when regular entering is done, using selectors like
-     * `.fade-enter-done:not(.fade-appear-done)`. For example, you could apply an
-     * epic entrance animation when element first appears in the DOM using
-     * [Animate.css](https://daneden.github.io/animate.css/). Otherwise you can
-     * simply use `fade-enter-done` for defining both cases.
+     * A few details to note about how these classes are applied:
+     *
+     * 1. They are _joined_ with the ones that are already defined on the child
+     *    component, so if you want to add some base styles, you can use
+     *    `className` without worrying that it will be overridden.
+     *
+     * 2. If the transition component mounts with `in={false}`, no classes are
+     *    applied yet. You might be expecting `*-exit-done`, but if you think
+     *    about it, a component cannot finish exiting if it hasn't entered yet.
+     *
+     * 2. `fade-appear-done` and `fade-enter-done` will _both_ be applied. This
+     *    allows you to define different behavior for when appearing is done and
+     *    when regular entering is done, using selectors like
+     *    `.fade-enter-done:not(.fade-appear-done)`. For example, you could apply
+     *    an epic entrance animation when element first appears in the DOM using
+     *    [Animate.css](https://daneden.github.io/animate.css/). Otherwise you can
+     *    simply use `fade-enter-done` for defining both cases.
      *
      * Each individual classNames can also be specified independently like:
      *
@@ -1733,6 +2050,8 @@
      * A `<Transition>` callback fired immediately after the 'enter' or 'appear' class is
      * applied.
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
+     *
      * @type Function(node: HtmlElement, isAppearing: bool)
      */
     onEnter: propTypes.func,
@@ -1740,6 +2059,8 @@
     /**
      * A `<Transition>` callback fired immediately after the 'enter-active' or
      * 'appear-active' class is applied.
+     *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
      *
      * @type Function(node: HtmlElement, isAppearing: bool)
      */
@@ -1749,6 +2070,8 @@
      * A `<Transition>` callback fired immediately after the 'enter' or
      * 'appear' classes are **removed** and the `done` class is added to the DOM node.
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed.
+     *
      * @type Function(node: HtmlElement, isAppearing: bool)
      */
     onEntered: propTypes.func,
@@ -1757,12 +2080,16 @@
      * A `<Transition>` callback fired immediately after the 'exit' class is
      * applied.
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed
+     *
      * @type Function(node: HtmlElement)
      */
     onExit: propTypes.func,
 
     /**
      * A `<Transition>` callback fired immediately after the 'exit-active' is applied.
+     *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed
      *
      * @type Function(node: HtmlElement)
      */
@@ -1772,10 +2099,12 @@
      * A `<Transition>` callback fired immediately after the 'exit' classes
      * are **removed** and the `exit-done` class is added to the DOM node.
      *
+     * **Note**: when `nodeRef` prop is passed, `node` is not passed
+     *
      * @type Function(node: HtmlElement)
      */
     onExited: propTypes.func
-  });
+  }) ;
 
   function _assertThisInitialized(self) {
     if (self === void 0) {
@@ -1891,8 +2220,8 @@
     Object.keys(children).forEach(function (key) {
       var child = children[key];
       if (!React.isValidElement(child)) return;
-      var hasPrev = key in prevChildMapping;
-      var hasNext = key in nextChildMapping;
+      var hasPrev = (key in prevChildMapping);
+      var hasNext = (key in nextChildMapping);
       var prevChild = prevChildMapping[key];
       var isLeaving = React.isValidElement(prevChild) && !prevChild.props.in; // item is new (entering)
 
@@ -1936,26 +2265,23 @@
     childFactory: function childFactory(child) {
       return child;
     }
-    /**
-     * The `<TransitionGroup>` component manages a set of transition components
-     * (`<Transition>` and `<CSSTransition>`) in a list. Like with the transition
-     * components, `<TransitionGroup>` is a state machine for managing the mounting
-     * and unmounting of components over time.
-     *
-     * Consider the example below. As items are removed or added to the TodoList the
-     * `in` prop is toggled automatically by the `<TransitionGroup>`.
-     *
-     * Note that `<TransitionGroup>`  does not define any animation behavior!
-     * Exactly _how_ a list item animates is up to the individual transition
-     * component. This means you can mix and match animations across different list
-     * items.
-     */
-
   };
+  /**
+   * The `<TransitionGroup>` component manages a set of transition components
+   * (`<Transition>` and `<CSSTransition>`) in a list. Like with the transition
+   * components, `<TransitionGroup>` is a state machine for managing the mounting
+   * and unmounting of components over time.
+   *
+   * Consider the example below. As items are removed or added to the TodoList the
+   * `in` prop is toggled automatically by the `<TransitionGroup>`.
+   *
+   * Note that `<TransitionGroup>`  does not define any animation behavior!
+   * Exactly _how_ a list item animates is up to the individual transition
+   * component. This means you can mix and match animations across different list
+   * items.
+   */
 
-  var TransitionGroup =
-  /*#__PURE__*/
-  function (_React$Component) {
+  var TransitionGroup = /*#__PURE__*/function (_React$Component) {
     _inheritsLoose(TransitionGroup, _React$Component);
 
     function TransitionGroup(props, context) {
@@ -1963,7 +2289,7 @@
 
       _this = _React$Component.call(this, props, context) || this;
 
-      var handleExited = _this.handleExited.bind(_assertThisInitialized(_assertThisInitialized(_this))); // Initial children should all be entering, dependent on appear
+      var handleExited = _this.handleExited.bind(_assertThisInitialized(_this)); // Initial children should all be entering, dependent on appear
 
 
       _this.state = {
@@ -1999,7 +2325,8 @@
         children: firstRender ? getInitialChildMapping(nextProps, handleExited) : getNextChildMapping(nextProps, prevChildMapping, handleExited),
         firstRender: false
       };
-    };
+    } // node is `undefined` when user provided `nodeRef` prop
+    ;
 
     _proto.handleExited = function handleExited(child, node) {
       var currentChildMapping = getChildMapping(this.props.children);
@@ -2034,20 +2361,20 @@
       delete props.exit;
 
       if (Component === null) {
-        return React__default.createElement(TransitionGroupContext.Provider, {
+        return /*#__PURE__*/React__default.createElement(TransitionGroupContext.Provider, {
           value: contextValue
         }, children);
       }
 
-      return React__default.createElement(TransitionGroupContext.Provider, {
+      return /*#__PURE__*/React__default.createElement(TransitionGroupContext.Provider, {
         value: contextValue
-      }, React__default.createElement(Component, props, children));
+      }, /*#__PURE__*/React__default.createElement(Component, props, children));
     };
 
     return TransitionGroup;
   }(React__default.Component);
 
-  TransitionGroup.propTypes = {
+  TransitionGroup.propTypes =  {
     /**
      * `<TransitionGroup>` renders a `<div>` by default. You can change this
      * behavior by providing a `component` prop.
@@ -2104,7 +2431,7 @@
      * @type Function(child: ReactElement) -> ReactElement
      */
     childFactory: propTypes.func
-  };
+  } ;
   TransitionGroup.defaultProps = defaultProps;
 
   /**
@@ -2119,9 +2446,7 @@
    * ```
    */
 
-  var ReplaceTransition =
-  /*#__PURE__*/
-  function (_React$Component) {
+  var ReplaceTransition = /*#__PURE__*/function (_React$Component) {
     _inheritsLoose(ReplaceTransition, _React$Component);
 
     function ReplaceTransition() {
@@ -2192,7 +2517,11 @@
       var children = this.props.children;
       var child = React__default.Children.toArray(children)[idx];
       if (child.props[handler]) (_child$props = child.props)[handler].apply(_child$props, originalArgs);
-      if (this.props[handler]) this.props[handler](ReactDOM.findDOMNode(this));
+
+      if (this.props[handler]) {
+        var maybeNode = child.props.nodeRef ? undefined : ReactDOM.findDOMNode(this);
+        this.props[handler](maybeNode);
+      }
     };
 
     _proto.render = function render() {
@@ -2211,7 +2540,7 @@
       delete props.onExit;
       delete props.onExiting;
       delete props.onExited;
-      return React__default.createElement(TransitionGroup, props, inProp ? React__default.cloneElement(first, {
+      return /*#__PURE__*/React__default.createElement(TransitionGroup, props, inProp ? React__default.cloneElement(first, {
         key: 'first',
         onEnter: this.handleEnter,
         onEntering: this.handleEntering,
@@ -2227,13 +2556,13 @@
     return ReplaceTransition;
   }(React__default.Component);
 
-  ReplaceTransition.propTypes = {
+  ReplaceTransition.propTypes =  {
     in: propTypes.bool.isRequired,
     children: function children(props, propName) {
       if (React__default.Children.count(props[propName]) !== 2) return new Error("\"" + propName + "\" must be exactly two transition components.");
       return null;
     }
-  };
+  } ;
 
   var _leaveRenders, _enterRenders;
 
@@ -2318,30 +2647,54 @@
    * Based on the selected mode and the child's key which is the `Transition` or `CSSTransition` component, the `SwitchTransition` makes a consistent transition between them.
    *
    * If the `out-in` mode is selected, the `SwitchTransition` waits until the old child leaves and then inserts a new child.
-   * If the `in-out` mode is selected, the `SwitchTransition` inserts a new child first, waits for the new child to enter and then removes the old child
+   * If the `in-out` mode is selected, the `SwitchTransition` inserts a new child first, waits for the new child to enter and then removes the old child.
+   *
+   * **Note**: If you want the animation to happen simultaneously
+   * (that is, to have the old child removed and a new child inserted **at the same time**),
+   * you should use
+   * [`TransitionGroup`](https://reactcommunity.org/react-transition-group/transition-group)
+   * instead.
    *
    * ```jsx
-   *
    * function App() {
    *  const [state, setState] = useState(false);
    *  return (
    *    <SwitchTransition>
-   *      <FadeTransition key={state ? "Goodbye, world!" : "Hello, world!"}
+   *      <CSSTransition
+   *        key={state ? "Goodbye, world!" : "Hello, world!"}
    *        addEndListener={(node, done) => node.addEventListener("transitionend", done, false)}
-   *        classNames='fade' >
+   *        classNames='fade'
+   *      >
    *        <button onClick={() => setState(state => !state)}>
    *          {state ? "Goodbye, world!" : "Hello, world!"}
    *        </button>
-   *      </FadeTransition>
+   *      </CSSTransition>
    *    </SwitchTransition>
-   *  )
+   *  );
+   * }
+   * ```
+   *
+   * ```css
+   * .fade-enter{
+   *    opacity: 0;
+   * }
+   * .fade-exit{
+   *    opacity: 1;
+   * }
+   * .fade-enter-active{
+   *    opacity: 1;
+   * }
+   * .fade-exit-active{
+   *    opacity: 0;
+   * }
+   * .fade-enter-active,
+   * .fade-exit-active{
+   *    transition: opacity 500ms;
    * }
    * ```
    */
 
-  var SwitchTransition =
-  /*#__PURE__*/
-  function (_React$Component) {
+  var SwitchTransition = /*#__PURE__*/function (_React$Component) {
     _inheritsLoose(SwitchTransition, _React$Component);
 
     function SwitchTransition() {
@@ -2432,7 +2785,7 @@
           component = current;
       }
 
-      return React__default.createElement(TransitionGroupContext.Provider, {
+      return /*#__PURE__*/React__default.createElement(TransitionGroupContext.Provider, {
         value: {
           isMounting: !this.appeared
         }
@@ -2442,21 +2795,21 @@
     return SwitchTransition;
   }(React__default.Component);
 
-  SwitchTransition.propTypes = {
+  SwitchTransition.propTypes =  {
     /**
      * Transition modes.
      * `out-in`: Current element transitions out first, then when complete, the new element transitions in.
-     * `in-out: New element transitions in first, then when complete, the current element transitions out.`
+     * `in-out`: New element transitions in first, then when complete, the current element transitions out.
      *
      * @type {'out-in'|'in-out'}
      */
     mode: propTypes.oneOf([modes.in, modes.out]),
 
     /**
-     * Any `Transition` or `CSSTransition` component
+     * Any `Transition` or `CSSTransition` component.
      */
     children: propTypes.oneOfType([propTypes.element.isRequired])
-  };
+  } ;
   SwitchTransition.defaultProps = {
     mode: modes.out
   };
@@ -2470,4 +2823,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));

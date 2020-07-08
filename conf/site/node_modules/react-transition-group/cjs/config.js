@@ -6,4 +6,4 @@ var _default = {
   disabled: false
 };
 exports.default = _default;
-module.exports = exports["default"];
+module.exports = exports.default;

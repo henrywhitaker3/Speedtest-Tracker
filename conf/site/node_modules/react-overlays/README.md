@@ -9,7 +9,7 @@ Utilities for creating robust overlay components.
 
 ## Documentation
 
-https://react-bootstrap.github.io/react-overlays/modal/
+https://react-bootstrap.github.io/react-overlays
 
 ## Installation
 
