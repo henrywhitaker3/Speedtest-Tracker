@@ -10,4 +10,4 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var _default = _react.default.createContext(null);
 
 exports.default = _default;
-module.exports = exports["default"];
+module.exports = exports.default;

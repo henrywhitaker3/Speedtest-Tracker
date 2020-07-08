@@ -1,6 +1,4 @@
-var SimpleSet =
-/*#__PURE__*/
-function () {
+var SimpleSet = /*#__PURE__*/function () {
   function SimpleSet() {
     this.v = [];
   }
