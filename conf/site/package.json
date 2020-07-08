@@ -22,13 +22,13 @@
         "react-dom": "^16.2.0",
         "resolve-url-loader": "^3.1.0",
         "sass": "^1.26.10",
-        "sass-loader": "^9.0.1"
+        "sass-loader": "^9.0.2"
     },
     "dependencies": {
         "@babel/plugin-proposal-class-properties": "^7.10.4",
         "chart.js": "^2.9.3",
         "csv-file-validator": "^1.8.0",
-        "react-bootstrap": "^1.0.1",
+        "react-bootstrap": "^1.1.1",
         "react-chartjs-2": "^2.9.0",
         "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",

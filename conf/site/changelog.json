@@ -1,4 +1,14 @@
 {
+    "1.7.7": [
+        {
+            "description": "Fixed speedtest:latest output",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
     "1.7.6": [
         {
             "description": "Fixed issue with page failing to load",
