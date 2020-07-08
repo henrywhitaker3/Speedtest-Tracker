@@ -35,6 +35,31 @@ docker create \
       henrywhitaker3/speedtest-tracker
 ```
 
+### Using Docker Compose
+
+```yml
+    speedtest:
+        container_name: speedtest
+        image: henrywhitaker3/speedtest-tracker:dev
+        ports:
+            - 8765:80
+        volumes:
+            - /path/to/data:/config
+        environment:
+            - TZ=
+            - PGID=
+            - PUID=
+            - SLACK_WEBHOOK=
+            - BASE_PATH=/speedtest
+            - OOKLA_EULA_GDPR=true
+        logging:
+            driver: json-file
+            options:
+                max-file: 10
+                max-size: 200k
+        restart: unless-stopped
+```
+
 #### Parameters
 
 Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
