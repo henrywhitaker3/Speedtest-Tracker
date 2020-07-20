@@ -34,9 +34,9 @@ class SpeedtestCompleteListener
     {
         if(SettingsHelper::get('speedtest_notifications')->value == true) {
             $data = $event->speedtest;
-            if(env('SLACK_WEBHOOK')) {
+            if(SettingsHelper::get('slack_webhook')) {
                 try {
-                    Notification::route('slack', env('SLACK_WEBHOOK'))
+                    Notification::route('slack', SettingsHelper::get('slack_webhook')->value)
                                 ->notify(new SpeedtestCompleteSlack($data));
                 } catch(Exception $e) {
                     Log::notice('Your sleck webhook is invalid');
@@ -44,9 +44,10 @@ class SpeedtestCompleteListener
                 }
             }
 
-            if(env('TELEGRAM_BOT_TOKEN') && env('TELEGRAM_CHAT_ID')) {
+            if(SettingsHelper::get('telegram_bot_token') && SettingsHelper::get('telegram_chat_id')) {
                 try {
-                    Notification::route(TelegramChannel::class, env('TELEGRAM_CHAT_ID'))
+                    config([ 'services.telegram-bot-api' => [ 'token' => SettingsHelper::get('telegram_bot_token')->value ] ]);
+                    Notification::route(TelegramChannel::class, SettingsHelper::get('telegram_chat_id')->value)
                                 ->notify(new SpeedtestCompleteTelegram($data));
                 } catch(Exception $e) {
                     Log::notice('Your telegram settings are invalid');

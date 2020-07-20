@@ -16,8 +16,16 @@ export default class HistoryGraph extends Component {
             duOptions: {},
             pingData: {},
             pingOptions: {},
+            failData: {},
+            failOptions: {},
             loading: true,
             interval: null,
+            graph_ul_dl_enabled: true,
+            graph_ul_dl_width: 6,
+            graph_failure_enabled: true,
+            graph_failure_width: 6,
+            graph_ping_enabled: true,
+            graph_ping_width: 6,
         }
     }
 
@@ -29,7 +37,7 @@ export default class HistoryGraph extends Component {
         });
     }
 
-    getData = (days = this.state.days) => {
+    getDLULPing = (days) => {
         var url = 'api/speedtest/time/' + days;
 
         Axios.get(url)
@@ -52,6 +60,7 @@ export default class HistoryGraph extends Component {
                 ],
             };
             var duOptions = {
+                maintainAspectRatio: false,
                 tooltips: {
                     callbacks: {
                       label: (item) => `${item.yLabel} Mbit/s`,
@@ -90,6 +99,7 @@ export default class HistoryGraph extends Component {
                 ],
             };
             var pingOptions = {
+                maintainAspectRatio: false,
                 tooltips: {
                     callbacks: {
                       label: (item) => `${item.yLabel} ms`,
@@ -149,6 +159,96 @@ export default class HistoryGraph extends Component {
         })
     }
 
+    getFailure = (days) => {
+        var url = 'api/speedtest/fail/' + days;
+        Axios.get(url)
+        .then((resp) => {
+            var failData = {
+                labels: [],
+                datasets:[
+                    {
+                        data: [],
+                        label: 'Failure',
+                        borderColor: "#E74C3C",
+                        fill: false,
+                    },
+                ],
+            };
+            var failOptions = {
+                maintainAspectRatio: false,
+                tooltips: {
+                    callbacks: {
+                      label: (item) => `${item.yLabel} %`,
+                    },
+                },
+                title: {
+                    display: false,
+                    text: 'Ping results for the last ' + days + ' days',
+                },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'DateTime'
+                        }
+                    }],
+                },
+                elements: {
+                    point:{
+                        radius: 0,
+                        hitRadius: 8
+                    }
+                }
+            }
+
+            resp.data.data.forEach(e => {
+                var date = new Date(e.date);
+                var fail = {
+                    t: date,
+                    y: e.rate
+                };
+                failData.datasets[0].data.push(fail);
+                failData.labels.push(date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + ('0' + date.getDay()).slice(-2));
+            });
+
+            this.setState({
+                failData: failData,
+                failOptions: failOptions
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
+    getData = (days = this.state.days) => {
+        Axios.get('api/settings/config')
+        .then((resp) => {
+            var data = resp.data.graphs;
+            this.setState({
+                graph_ul_dl_enabled: Boolean(Number(data.download_upload_graph_enabled.value)),
+                graph_ul_dl_width: data.download_upload_graph_width.value,
+                graph_ping_enabled: Boolean(Number(data.ping_graph_enabled.value)),
+                graph_ping_width: data.ping_graph_width.value,
+                graph_failure_enabled: Boolean(Number(data.failure_graph_enabled.value)),
+                graph_failure_width: data.failure_graph_width.value,
+            });
+
+            if(this.state.graph_ul_dl_enabled || this.state.graph_ping_enabled) {
+                this.getDLULPing(days);
+            }
+
+            if(this.state.graph_failure_enabled) {
+                this.getFailure(days);
+            }
+        })
+        .catch((err) => {
+            console.log('Couldn\'t get the site config');
+            console.log(err);
+        })
+    }
+
     updateDays = (e) => {
         var days = e.target.value;
         if(days) {
@@ -169,7 +269,38 @@ export default class HistoryGraph extends Component {
         var duOptions = this.state.duOptions;
         var pingData = this.state.pingData;
         var pingOptions = this.state.pingOptions;
+        var failData = this.state.failData;
+        var failOptions = this.state.failOptions;
         var days = this.state.days;
+
+        var graph_ul_dl_enabled = this.state.graph_ul_dl_enabled;
+        var graph_ul_dl_width = this.state.graph_ul_dl_width;
+        var graph_ping_enabled = this.state.graph_ping_enabled;
+        var graph_ping_width = this.state.graph_ping_width;
+        var graph_failure_enabled = this.state.graph_failure_enabled;
+        var graph_failure_width = this.state.graph_failure_width;
+
+        var dlClasses = 'my-2 home-graph ';
+        var pingClasses = 'my-2 home-graph ';
+        var failureClasses = 'my-2 home-graph ';
+
+        if(graph_ul_dl_enabled == true) {
+            //
+        } else {
+            dlClasses += 'd-none ';
+        }
+
+        if(graph_ping_enabled == true) {
+            //
+        } else {
+            pingClasses += 'd-none ';
+        }
+
+        if(graph_failure_enabled == true) {
+            //
+        } else {
+            failureClasses += 'd-none ';
+        }
 
         if(loading) {
             return (
@@ -180,31 +311,43 @@ export default class HistoryGraph extends Component {
         } else {
             return (
                 <Container className="mb-4 mt-1" fluid>
-
                     <Row>
                         <Col
-                            lg={{ span: 6 }}
-                            md={{ span: 12 }}
+                            lg={{ span: graph_ul_dl_width }}
+                            md={{ span: graph_ul_dl_width }}
                             sm={{ span: 12 }}
                             xs={{ span: 12 }}
-                            className="my-2"
+                            className={dlClasses}
                         >
                             <Card className="shadow-sm">
                                 <Card.Body>
-                                    <Line data={duData} options={duOptions} />
+                                    <Line data={duData} options={duOptions} height={440} />
                                 </Card.Body>
                             </Card>
                         </Col>
                         <Col
-                            lg={{ span: 6 }}
-                            md={{ span: 12 }}
+                            lg={{ span: graph_ping_width }}
+                            md={{ span: graph_ping_width }}
                             sm={{ span: 12 }}
                             xs={{ span: 12 }}
-                            className="my-2"
+                            className={pingClasses}
                         >
                             <Card className="shadow-sm">
                                 <Card.Body>
-                                    <Line data={pingData} options={pingOptions} />
+                                    <Line data={pingData} options={pingOptions} height={440} />
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col
+                            lg={{ span: graph_failure_width }}
+                            md={{ span: graph_failure_width }}
+                            sm={{ span: 12 }}
+                            xs={{ span: 12 }}
+                            className={failureClasses}
+                        >
+                            <Card className="shadow-sm">
+                                <Card.Body>
+                                    <Line data={failData} options={pingOptions} height={440} />
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -217,7 +360,6 @@ export default class HistoryGraph extends Component {
                                     <Form.Control id="duDaysInput" className="d-inline-block mx-2" defaultValue={days} onInput={this.updateDays}></Form.Control>
                                     <h4 className="d-inline mb-0">days</h4>
                                 </div>
-                                {/* <p className="text-muted">This data refreshes every 10 seconds</p> */}
                             </div>
                         </Col>
                     </Row>

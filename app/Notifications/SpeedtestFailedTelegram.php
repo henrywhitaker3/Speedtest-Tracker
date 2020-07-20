@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class SpeedtestOverviewTelegram extends Notification
+class SpeedtestFailedTelegram extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -19,20 +19,11 @@ class SpeedtestOverviewTelegram extends Notification
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $data['ping'] = number_format((float)$data['ping'], 1, '.', '');
-        $data['download'] = number_format((float)$data['download'], 1, '.', '');
-        $data['upload'] = number_format((float)$data['upload'], 1, '.', '');
-        $this->data = $data;
+        //
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function via($notifiable)
     {
         return [
@@ -48,27 +39,10 @@ class SpeedtestOverviewTelegram extends Notification
      */
     public function toTelegram($notifiable)
     {
-        $data = $this->data;
-        $msg = "*Speedtest Daily Overview*
-Average ping: *".$data["ping"]."*
-Average download: *".$data["download"]."*
-Average upload: *".$data["upload"]."*";
+        $msg = "Error: something went wrong running your speedtest";
         return TelegramMessage::create()
                               ->to(SettingsHelper::get('telegram_chat_id')->value)
                               ->content($msg)
                               ->options(['parse_mode' => 'Markdown']);
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
     }
 }

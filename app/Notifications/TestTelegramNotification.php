@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class SpeedtestOverviewTelegram extends Notification
+class TestTelegramNotification extends Notification
 {
     use Queueable;
 
@@ -19,12 +19,9 @@ class SpeedtestOverviewTelegram extends Notification
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $data['ping'] = number_format((float)$data['ping'], 1, '.', '');
-        $data['download'] = number_format((float)$data['download'], 1, '.', '');
-        $data['upload'] = number_format((float)$data['upload'], 1, '.', '');
-        $this->data = $data;
+        //
     }
 
     /**
@@ -48,11 +45,7 @@ class SpeedtestOverviewTelegram extends Notification
      */
     public function toTelegram($notifiable)
     {
-        $data = $this->data;
-        $msg = "*Speedtest Daily Overview*
-Average ping: *".$data["ping"]."*
-Average download: *".$data["download"]."*
-Average upload: *".$data["upload"]."*";
+        $msg = "Test notification";
         return TelegramMessage::create()
                               ->to(SettingsHelper::get('telegram_chat_id')->value)
                               ->content($msg)

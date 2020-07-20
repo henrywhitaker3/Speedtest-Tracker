@@ -1,4 +1,70 @@
 {
+    "1.7.8": [
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
+    "1.7.7": [
+        {
+            "description": "Fixed speedtest:latest output",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
+    "1.7.6": [
+        {
+            "description": "Fixed issue with page failing to load",
+            "link": ""
+        }
+    ],
+    "1.7.5": [
+        {
+            "description": "Moved notification agent settings to DB",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
+    "1.7.4": [
+        {
+            "description": "Stopped failed tests appearing in graphs",
+            "link": ""
+        },
+        {
+            "description": "Added failure rate graph",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        }
+    ],
+    "1.7.3": [
+        {
+            "description": "Updated dependencies",
+            "link": ""
+        },
+        {
+            "description": "Added notifications and logging of failed tests",
+            "link": ""
+        }
+    ],
+    "1.7.2": [
+        {
+            "description": "Updated UI for speedtest info",
+            "link": ""
+        },
+        {
+            "description": "Added field to track manual vs scheduled tests",
+            "link": ""
+        }
+    ],
     "1.7.1": [
         {
             "description": "Updated dependencies",
