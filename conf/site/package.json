@@ -10,28 +10,28 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "@babel/preset-react": "^7.10.1",
+        "@babel/preset-react": "^7.10.4",
         "axios": "^0.19",
         "bootstrap": "^4.5.0",
         "cross-env": "^7.0",
         "jquery": "^3.5",
         "laravel-mix": "^5.0.1",
-        "lodash": "^4.17.13",
+        "lodash": "^4.17.19",
         "popper.js": "^1.12",
         "react": "^16.2.0",
         "react-dom": "^16.2.0",
         "resolve-url-loader": "^3.1.0",
-        "sass": "^1.26.9",
-        "sass-loader": "^8.0.0"
+        "sass": "^1.26.10",
+        "sass-loader": "^9.0.2"
     },
     "dependencies": {
-        "@babel/plugin-proposal-class-properties": "^7.10.1",
+        "@babel/plugin-proposal-class-properties": "^7.10.4",
         "chart.js": "^2.9.3",
         "csv-file-validator": "^1.8.0",
-        "react-bootstrap": "^1.0.1",
+        "react-bootstrap": "^1.2.2",
         "react-chartjs-2": "^2.9.0",
         "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",
-        "react-toastify": "^6.0.6"
+        "react-toastify": "^6.0.8"
     }
 }

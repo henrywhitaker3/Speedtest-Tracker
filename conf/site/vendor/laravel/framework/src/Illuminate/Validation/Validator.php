@@ -277,7 +277,7 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Parse the data array, converting dots to ->.
+     * Parse the data array, converting dots and asterisks.
      *
      * @param  array  $data
      * @return array
@@ -301,6 +301,33 @@ class Validator implements ValidatorContract
         }
 
         return $newData;
+    }
+
+    /**
+     * Replace the placeholders used in data keys.
+     *
+     * @param  array  $data
+     * @return array
+     */
+    protected function replacePlaceholders($data)
+    {
+        $originalData = [];
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $value = $this->replacePlaceholders($value);
+            }
+
+            $key = str_replace(
+                [$this->dotPlaceholder, '__asterisk__'],
+                ['.', '*'],
+                $key
+            );
+
+            $originalData[$key] = $value;
+        }
+
+        return $originalData;
     }
 
     /**
@@ -401,7 +428,8 @@ class Validator implements ValidatorContract
      */
     protected function removeAttribute($attribute)
     {
-        unset($this->data[$attribute], $this->rules[$attribute]);
+        Arr::forget($this->data, $attribute);
+        Arr::forget($this->rules, $attribute);
     }
 
     /**
@@ -464,7 +492,7 @@ class Validator implements ValidatorContract
             }
         }
 
-        return $results;
+        return $this->replacePlaceholders($results);
     }
 
     /**

@@ -144,24 +144,29 @@ class Client
             case 'post':
                 curl_setopt($curlHandle, CURLOPT_POST, true);
                 $this->attachRequestPayload($curlHandle, $arguments);
+
                 break;
 
             case 'get':
                 curl_setopt($curlHandle, CURLOPT_URL, $fullUrl.'?'.http_build_query($arguments));
+
                 break;
 
             case 'delete':
                 curl_setopt($curlHandle, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
                 break;
 
             case 'patch':
                 curl_setopt($curlHandle, CURLOPT_CUSTOMREQUEST, 'PATCH');
                 $this->attachRequestPayload($curlHandle, $arguments);
+
                 break;
 
             case 'put':
                 curl_setopt($curlHandle, CURLOPT_CUSTOMREQUEST, 'PUT');
                 $this->attachRequestPayload($curlHandle, $arguments);
+
                 break;
         }
 

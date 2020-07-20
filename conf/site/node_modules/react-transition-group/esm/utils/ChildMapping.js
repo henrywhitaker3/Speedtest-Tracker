@@ -105,8 +105,8 @@ export function getNextChildMapping(nextProps, prevChildMapping, onExited) {
   Object.keys(children).forEach(function (key) {
     var child = children[key];
     if (!isValidElement(child)) return;
-    var hasPrev = key in prevChildMapping;
-    var hasNext = key in nextChildMapping;
+    var hasPrev = (key in prevChildMapping);
+    var hasNext = (key in nextChildMapping);
     var prevChild = prevChildMapping[key];
     var isLeaving = isValidElement(prevChild) && !prevChild.props.in; // item is new (entering)
 

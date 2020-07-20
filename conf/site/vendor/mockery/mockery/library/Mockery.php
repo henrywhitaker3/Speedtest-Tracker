@@ -18,16 +18,17 @@
  * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
  */
 
+use Mockery\ClosureWrapper;
 use Mockery\ExpectationInterface;
 use Mockery\Generator\CachingGenerator;
 use Mockery\Generator\Generator;
 use Mockery\Generator\MockConfigurationBuilder;
+use Mockery\Generator\MockNameBuilder;
 use Mockery\Generator\StringManipulationGenerator;
 use Mockery\Loader\EvalLoader;
 use Mockery\Loader\Loader;
 use Mockery\Matcher\MatcherAbstract;
-use Mockery\ClosureWrapper;
-use Mockery\Generator\MockNameBuilder;
+use Mockery\Reflector;
 
 class Mockery
 {
@@ -69,11 +70,13 @@ class Mockery
      */
     public static function globalHelpers()
     {
-        require_once __DIR__.'/helpers.php';
+        require_once __DIR__ . '/helpers.php';
     }
 
     /**
      * @return array
+     *
+     * @deprecated since 1.3.2 and will be removed in 2.0.
      */
     public static function builtInTypes()
     {
@@ -90,7 +93,7 @@ class Mockery
             'void',
         );
 
-        if (version_compare(PHP_VERSION, '7.2.0-dev') >= 0) {
+        if (\PHP_VERSION_ID >= 70200) {
             $builtInTypes[] = 'object';
         }
 
@@ -100,6 +103,8 @@ class Mockery
     /**
      * @param string $type
      * @return bool
+     *
+     * @deprecated since 1.3.2 and will be removed in 2.0.
      */
     public static function isBuiltInType($type)
     {
@@ -234,7 +239,7 @@ class Mockery
     }
 
     /**
-     * Setter for the $_generator static propery.
+     * Setter for the $_generator static property.
      *
      * @param \Mockery\Generator\Generator $generator
      */
@@ -592,10 +597,10 @@ class Mockery
                     $sample[] = "$key => $value";
                 }
 
-                $argument = "[".implode(", ", $sample)."]";
+                $argument = "[" . implode(", ", $sample) . "]";
             }
 
-            return ((strlen($argument) > 1000) ? substr($argument, 0, 1000).'...]' : $argument);
+            return ((strlen($argument) > 1000) ? substr($argument, 0, 1000) . '...]' : $argument);
         }
 
         if (is_bool($argument)) {
@@ -610,7 +615,7 @@ class Mockery
             return 'NULL';
         }
 
-        return "'".(string) $argument."'";
+        return "'" . (string) $argument . "'";
     }
 
     /**
@@ -858,7 +863,7 @@ class Mockery
     ) {
         $newMockName = 'demeter_' . md5($parent) . '_' . $method;
 
-        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+        if (\PHP_VERSION_ID >= 70000) {
             $parRef = null;
             $parRefMethod = null;
             $parRefMethodRetType = null;
@@ -870,13 +875,12 @@ class Mockery
 
             if ($parRef !== null && $parRef->hasMethod($method)) {
                 $parRefMethod = $parRef->getMethod($method);
-                $parRefMethodRetType = $parRefMethod->getReturnType();
+                $parRefMethodRetType = Reflector::getReturnType($parRefMethod, true);
 
                 if ($parRefMethodRetType !== null) {
                     $nameBuilder = new MockNameBuilder();
                     $nameBuilder->addPart('\\' . $newMockName);
-                    $type = PHP_VERSION_ID >= 70100 ? $parRefMethodRetType->getName() : (string)$parRefMethodRetType;
-                    $mock = self::namedMock($nameBuilder->build(), $type);
+                    $mock = self::namedMock($nameBuilder->build(), $parRefMethodRetType);
                     $exp->andReturn($mock);
 
                     return $mock;

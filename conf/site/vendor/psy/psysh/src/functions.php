@@ -136,6 +136,7 @@ if (!\function_exists('Psy\\info')) {
         };
 
         $config = $lastConfig ?: new Configuration();
+        $configEnv = (isset($_SERVER['PSYSH_CONFIG']) && $_SERVER['PSYSH_CONFIG']) ? $_SERVER['PSYSH_CONFIG'] : false;
 
         $core = [
             'PsySH version'       => Shell::VERSION,
@@ -147,7 +148,7 @@ if (!\function_exists('Psy\\info')) {
             'config file'         => [
                 'default config file' => $prettyPath($config->getConfigFile()),
                 'local config file'   => $prettyPath($config->getLocalConfigFile()),
-                'PSYSH_CONFIG env'    => $prettyPath(\getenv('PSYSH_CONFIG')),
+                'PSYSH_CONFIG env'    => $prettyPath($configEnv),
             ],
             // 'config dir'  => $config->getConfigDir(),
             // 'data dir'    => $config->getDataDir(),
@@ -335,11 +336,8 @@ if (!\function_exists('Psy\\bin')) {
             try {
                 $config = Configuration::fromInput($input);
             } catch (\InvalidArgumentException $e) {
-                $config = new Configuration();
                 $usageException = $e;
             }
-
-            $shell = new Shell($config);
 
             // Handle --help
             if ($usageException !== null || $input->getOption('help')) {
@@ -347,8 +345,10 @@ if (!\function_exists('Psy\\bin')) {
                     echo $usageException->getMessage() . PHP_EOL . PHP_EOL;
                 }
 
-                $version = $shell->getVersion();
-                $name    = \basename(\reset($_SERVER['argv']));
+                $version = Shell::getVersionHeader(false);
+                $argv    = isset($_SERVER['argv']) ? $_SERVER['argv'] : [];
+                $name    = $argv ? \basename(\reset($argv)) : 'psysh';
+
                 echo <<<EOL
 $version
 
@@ -374,9 +374,11 @@ EOL;
 
             // Handle --version
             if ($input->getOption('version')) {
-                echo $shell->getVersion() . PHP_EOL;
+                echo Shell::getVersionHeader($config->useUnicode()) . PHP_EOL;
                 exit(0);
             }
+
+            $shell = new Shell($config);
 
             // Pass additional arguments to Shell as 'includes'
             $shell->setIncludes($input->getArgument('include'));

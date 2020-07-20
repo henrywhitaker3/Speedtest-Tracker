@@ -12,7 +12,8 @@ export default class Widget extends Component {
             unit: this.props.unit,
             icon: this.props.icon,
             avg: this.props.avg,
-            max: this.props.max
+            max: this.props.max,
+            failed: this.props.failed,
         }
     }
 
@@ -36,6 +37,7 @@ export default class Widget extends Component {
         var icon = this.state.icon;
         var max = this.state.max;
         var avg = this.state.avg;
+        var failed = Boolean(Number(this.state.failed));
 
         switch(icon) {
             case 'ping':
@@ -60,7 +62,7 @@ export default class Widget extends Component {
                             </div>
 
                             <div className="text-truncate">
-                                <h3 className="d-inline">{value}</h3>
+                                <h3 className="d-inline">{(!failed) ? value : <span className="ti-close text-danger"></span> }</h3>
                                 <p className="d-inline ml-2">{unit} (current)</p>
                             </div>
                             <div className="text-muted text-truncate">

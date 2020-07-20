@@ -42,10 +42,21 @@ class SpeedtestLatestCommand extends Command
         $latest = SpeedtestHelper::latest();
 
         if($latest) {
-            $this->info('Last speedtest run at: ' . $latest->created_at);
-            $this->info('Ping: ' . $latest->ping . ' ms');
-            $this->info('Download: ' . $latest->download . ' Mbit/s');
-            $this->info('Upload: ' . $latest->upload . ' Mbit/s');
+            if($latest->scheduled) {
+                $extra = '(scheduled)';
+            } else {
+                $extra = '(manual)';
+            }
+
+            $this->info('Last speedtest run at: ' . $latest->created_at . ' ' . $extra);
+
+            if($latest->failed) {
+                $this->error('Speedtest failed');
+            } else {
+                $this->info('Ping: ' . $latest->ping . ' ms');
+                $this->info('Download: ' . $latest->download . ' Mbit/s');
+                $this->info('Upload: ' . $latest->upload . ' Mbit/s');
+            }
         } else {
             $this->info('No speedtests have been run yet.');
 

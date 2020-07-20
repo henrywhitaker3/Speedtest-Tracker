@@ -25,6 +25,8 @@ Route::group([
          ->name('speedtest.latest');
     Route::get('time/{time}', 'SpeedtestController@time')
          ->name('speedtest.time');
+    Route::get('fail/{time}', 'SpeedtestController@fail')
+         ->name('speedtest.fail');
     Route::get('run', 'SpeedtestController@run')
          ->name('speedtest.run');
 });
@@ -60,6 +62,8 @@ Route::group([
 ], function () {
     Route::get('/config', 'SettingsController@config')
          ->name('settings.config');
+    Route::get('/test-notification', 'SettingsController@testNotification')
+         ->name('settings.test_notification');
     Route::get('/', 'SettingsController@index')
          ->name('settings.index');
     Route::put('/', 'SettingsController@store')

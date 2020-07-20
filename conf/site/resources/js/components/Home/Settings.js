@@ -61,7 +61,86 @@ export default class Settings extends Component {
                     <Setting name={e.server.name} value={e.server.value} description={e.server.description} />
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
-                    <SettingWithModal title="Notification settings" description="Control which types of notifications the server sends." settings={[
+                    <SettingWithModal title="Graph settings" description="Control settings for the graphs." autoClose={true} settings={[
+                        {
+                            obj: e.download_upload_graph_enabled,
+                            type: 'checkbox'
+                        },
+                        {
+                            obj: e.download_upload_graph_width,
+                            type: 'select',
+                            options: [
+                                {
+                                    name: 'Full-width',
+                                    'value': 12
+                                },
+                                {
+                                    name: 'Half-width',
+                                    'value': 6
+                                }
+                            ],
+                        },
+                        {
+                            obj: e.ping_graph_enabled,
+                            type: 'checkbox'
+                        },
+                        {
+                            obj: e.ping_graph_width,
+                            type: 'select',
+                            options: [
+                                {
+                                    name: 'Full-width',
+                                    'value': 12
+                                },
+                                {
+                                    name: 'Half-width',
+                                    'value': 6
+                                }
+                            ],
+                        },
+                        {
+                            obj: e.failure_graph_enabled,
+                            type: 'checkbox'
+                        },
+                        {
+                            obj: e.failure_graph_width,
+                            type: 'select',
+                            options: [
+                                {
+                                    name: 'Full-width',
+                                    'value': 12
+                                },
+                                {
+                                    name: 'Half-width',
+                                    'value': 6
+                                }
+                            ],
+                        }
+                    ]} />
+                </Col>
+                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
+                    <SettingWithModal title="Notification settings" description="Control which types of notifications the server sends." autoClose={false} settings={[
+                        {
+                            obj: e.slack_webhook,
+                            type: 'text'
+                        },
+                        {
+                            obj: e.telegram_bot_token,
+                            type: 'text'
+                        },
+                        {
+                            obj: e.telegram_chat_id,
+                            type: 'text'
+                        },
+                        {
+                            obj: {
+                                id: (Math.floor(Math.random() * 10000) + 1),
+                                name: "Test notifications",
+                                description: "After saving your updated notification settings, use this to check your settings are correct."
+                            },
+                            type: 'button-get',
+                            url: 'api/settings/test-notification'
+                        },
                         {
                             obj: e.speedtest_notifications,
                             type: 'checkbox'

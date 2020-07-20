@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Helpers\SettingsHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -53,7 +54,7 @@ Average ping: *".$data["ping"]."*
 Average download: *".$data["download"]."*
 Average upload: *".$data["upload"]."*";
         return TelegramMessage::create()
-                              ->to(env('TELEGRAM_CHAT_ID'))
+                              ->to(SettingsHelper::get('telegram_chat_id')->value)
                               ->content($msg)
                               ->options(['parse_mode' => 'Markdown']);
     }

@@ -2,7 +2,7 @@
 
 namespace Facade\Ignition\DumpRecorder;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Arr;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
@@ -14,7 +14,7 @@ class DumpRecorder
 {
     protected $dumps = [];
 
-    /** @var \Illuminate\Foundation\Application */
+    /** @var \Illuminate\Contracts\Foundation\Application */
     protected $app;
 
     public function __construct(Application $app)
@@ -26,7 +26,9 @@ class DumpRecorder
     {
         $multiDumpHandler = new MultiDumpHandler();
 
-        $this->app->singleton(MultiDumpHandler::class, $multiDumpHandler);
+        $this->app->singleton(MultiDumpHandler::class, function () use ($multiDumpHandler) {
+            return $multiDumpHandler;
+        });
 
         $previousHandler = VarDumper::setHandler(function ($var) use ($multiDumpHandler) {
             $multiDumpHandler->dump($var);
@@ -39,7 +41,7 @@ class DumpRecorder
         }
 
         $multiDumpHandler->addHandler(function ($var) {
-            $this->app->make(DumpHandler::class)->dump($var);
+            (new DumpHandler($this))->dump($var);
         });
 
         return $this;
@@ -47,9 +49,14 @@ class DumpRecorder
 
     public function record(Data $data)
     {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 7);
-        $file = Arr::get($backtrace, '6.file');
-        $lineNumber = Arr::get($backtrace, '6.line');
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8);
+        $file = (string)Arr::get($backtrace, '6.file');
+        $lineNumber = (int)Arr::get($backtrace, '6.line');
+
+        if (! Arr::exists($backtrace, '7.class') && (string)Arr::get($backtrace, '7.function') === 'ddd') {
+            $file = (string)Arr::get($backtrace, '7.file');
+            $lineNumber = (int)Arr::get($backtrace, '7.line');
+        }
 
         $htmlDump = (new HtmlDumper())->dump($data);
 
@@ -82,8 +89,24 @@ class DumpRecorder
         return function ($value) {
             $data = (new VarCloner)->cloneVar($value);
 
-            $dumper = in_array(PHP_SAPI, ['cli', 'phpdbg']) ? new CliDumper : new BaseHtmlDumper;
-            $dumper->dump($data);
+            $this->getDumper()->dump($data);
         };
+    }
+
+    protected function getDumper()
+    {
+        if (isset($_SERVER['VAR_DUMPER_FORMAT'])) {
+            if ($_SERVER['VAR_DUMPER_FORMAT'] === 'html') {
+                return new BaseHtmlDumper();
+            }
+
+            return new CliDumper();
+        }
+
+        if (in_array(PHP_SAPI, ['cli', 'phpdbg'])) {
+            return new CliDumper() ;
+        }
+
+        return new BaseHtmlDumper();
     }
 }

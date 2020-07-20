@@ -82,6 +82,36 @@ trait ManagesFrequencies
     }
 
     /**
+     * Schedule the event to run every two minutes.
+     *
+     * @return $this
+     */
+    public function everyTwoMinutes()
+    {
+        return $this->spliceIntoPosition(1, '*/2');
+    }
+
+    /**
+     * Schedule the event to run every three minutes.
+     *
+     * @return $this
+     */
+    public function everyThreeMinutes()
+    {
+        return $this->spliceIntoPosition(1, '*/3');
+    }
+
+    /**
+     * Schedule the event to run every four minutes.
+     *
+     * @return $this
+     */
+    public function everyFourMinutes()
+    {
+        return $this->spliceIntoPosition(1, '*/4');
+    }
+
+    /**
      * Schedule the event to run every five minutes.
      *
      * @return $this
@@ -142,6 +172,50 @@ trait ManagesFrequencies
         $offset = is_array($offset) ? implode(',', $offset) : $offset;
 
         return $this->spliceIntoPosition(1, $offset);
+    }
+
+    /**
+     * Schedule the event to run every two hours.
+     *
+     * @return $this
+     */
+    public function everyTwoHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+                    ->spliceIntoPosition(2, '*/2');
+    }
+
+    /**
+     * Schedule the event to run every three hours.
+     *
+     * @return $this
+     */
+    public function everyThreeHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+                    ->spliceIntoPosition(2, '*/3');
+    }
+
+    /**
+     * Schedule the event to run every four hours.
+     *
+     * @return $this
+     */
+    public function everyFourHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+                    ->spliceIntoPosition(2, '*/4');
+    }
+
+    /**
+     * Schedule the event to run every six hours.
+     *
+     * @return $this
+     */
+    public function everySixHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+                    ->spliceIntoPosition(2, '*/6');
     }
 
     /**

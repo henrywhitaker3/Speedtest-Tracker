@@ -2,7 +2,9 @@
 
 namespace App\Helpers;
 
+use App\Events\TestNotificationEvent;
 use App\Setting;
+use Carbon\Carbon;
 
 class SettingsHelper {
 
@@ -33,9 +35,13 @@ class SettingsHelper {
      * @param   String  $value  Value of setting
      * @return  \App\Setting
      */
-    public static function set(String $name, String $value)
+    public static function set(String $name, $value)
     {
         $setting = SettingsHelper::get($name);
+
+        if($value === false) {
+            $value = "0";
+        }
 
         if($setting !== false) {
             $setting->value = $value;
@@ -69,5 +75,98 @@ class SettingsHelper {
             }
         }
         return $base;
+    }
+
+    /**
+     * Check whether a setting is defined in ENV vars or through DB
+     *
+     * @param string $key
+     * @return boolean
+     */
+    public static function settingIsEditable(string $key)
+    {
+        $results = [];
+
+        // Try exact key
+        $val = exec('echo $' . $key);
+
+        if($val == "") {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        // Try key all caps
+        $val = exec('echo $' . strtoupper($key));
+
+        if($val == "") {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        if(env($key, false) == false) {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        if(env(strtoupper($key), false) == false) {
+            array_push($results, true);
+        } else {
+            array_push($results, false);
+        }
+
+        if(in_array(false, $results)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get the application config
+     *
+     * @return array
+     */
+    public static function getConfig()
+    {
+        return [
+            'base' => SettingsHelper::getBase(),
+            'graphs' => [
+                'download_upload_graph_enabled' => SettingsHelper::get('download_upload_graph_enabled'),
+                'download_upload_graph_width' => SettingsHelper::get('download_upload_graph_width'),
+                'ping_graph_enabled' => SettingsHelper::get('ping_graph_enabled'),
+                'ping_graph_width' => SettingsHelper::get('ping_graph_width'),
+                'failure_graph_enabled' => SettingsHelper::get('failure_graph_enabled'),
+                'failure_graph_width' => SettingsHelper::get('failure_graph_width'),
+            ],
+            'editable' => [
+                'slack_webhook' => SettingsHelper::settingIsEditable('slack_webhook'),
+                'telegram_bot_token' => SettingsHelper::settingIsEditable('telegram_bot_token'),
+                'telegram_chat_id' => SettingsHelper::settingIsEditable('telegram_chat_id'),
+            ]
+        ];
+    }
+
+    /**
+     * Send test notification to agents
+     *
+     * @param boolean|string $agent
+     * @return void
+     */
+    public static function testNotification($agent = true)
+    {
+        $agents = [ 'slack', 'telegram' ];
+
+        if($agent === true) {
+            event(new TestNotificationEvent($agents));
+            return true;
+        }
+
+        if(in_array($agent, $agents)) {
+            event(new TestNotificationEvent([ $agent ]));
+            return true;
+        }
     }
 }
