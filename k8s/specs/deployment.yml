@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedtest-deployment
+  labels:
+    app: speedtest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: speedtest
+  template:
+    metadata:
+      labels:
+        app: speedtest
+    spec:
+      volumes:
+      - name: host-volume
+        persistentVolumeClaim:
+          claimName: speedtest-pvc
+      - name: hugepage
+        emptyDir:
+          medium: HugePages
+      containers:
+      - name: speedtest
+        image: henrywhitaker3/speedtest-tracker
+        env:
+        - name: OOKLA_EULA_GDPR
+          value: "true"
+        - name: APP_DEBUG
+          value: "true"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: host-volume
+          mountPath: /config
+        - mountPath: /hugepages
+          name: hugepage
+        resources:
+          limits:
+            hugepages-2Mi: 100Mi
+            memory: 100Mi
+      dnsConfig:
+        nameservers:
+          - 10.1.1.1
+        options:
+          - name: ndots
+            value: "1"

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "Speedtest-Tracker.fullname" . }}-test-connection"
+  labels:
+    {{- include "Speedtest-Tracker.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "Speedtest-Tracker.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
