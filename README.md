@@ -50,6 +50,10 @@ Container images are configured using parameters passed at runtime (such as thos
 |     `-e PUID`             |   Optional. Supply a local user ID for volume permissions   |
 |     `-e PGID`             |   Optional. Supply a local group ID for volume permissions  |
 
+### Using Kubernetes
+
+Please see the Kubernetes specific documentation [here](k8s/README.md).
+
 ### Manual Install
 
 #### Installing Dependencies
@@ -61,6 +65,7 @@ sudo apt update
 sudo apt update
 sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 php-zip php-mbstring composer python3 python3-pip git
 ```
+
 ```bash
 sudo apt install curl
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
