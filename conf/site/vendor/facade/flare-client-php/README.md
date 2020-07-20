@@ -1,9 +1,7 @@
 # Send PHP errors to Flare
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/facade/flare-client-php.svg?style=flat-square)](https://packagist.org/packages/facade/flare-client-php)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/facade/flare-client-php/run-tests?label=tests)
-[![Quality Score](https://img.shields.io/scrutinizer/g/facade/flare-client-php.svg?style=flat-square)](https://scrutinizer-ci.com/g/facade/flare-client-php)
-[![StyleCI](https://github.styleci.io/repos/204468479/shield?branch=master)](https://github.styleci.io/repos/204468479)
+![Tests](https://github.com/facade/flare-client-php/workflows/Run%20tests/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/facade/flare-client-php.svg?style=flat-square)](https://packagist.org/packages/facade/flare-client-php)
 
 This repository contains a PHP client to send PHP errors to [Flare](https://flareapp.io).
