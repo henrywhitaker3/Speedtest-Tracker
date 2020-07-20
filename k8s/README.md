@@ -23,7 +23,7 @@ A helm chart has been included to assist with deployment
 ```bash
 helm install speedtesttracker ./Speedtest-Tracker \
     --values Speedtest-Tracker/values.yaml \
-    --set eula.OOKLA_EULA_GDPR="true"
+    --set eula.OOKLA_EULA_GDPR=true
 ```
 
 This will stand up a minimal install for testing and validation on you system. It is advised that you use persistent and not ephemeral storage but no assumptions have been made about your setup.
