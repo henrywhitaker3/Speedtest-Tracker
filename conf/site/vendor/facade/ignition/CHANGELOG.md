@@ -2,6 +2,44 @@
 
 All notable changes to `ignition` will be documented in this file
 
+## 2.3.3 -2020-07-14
+
+- fix all psalm related issues
+
+## 2.3.2 - 2020-07-14
+
+- properly bind singleton (#291)
+
+## 2.3.1 - 2020-07-13
+
+- improve db name solution (#289)
+
+## 2.3.0 - 2020-07-13
+
+- allow override of Dumper via `$_SERVER variable` (#271)
+- make DumpHandler instance manually in DumpRecorder (#286)
+- only setup queues when queue is available (#287)
+
+## 2.2.0 - 2020-07-13
+
+- add `ignition:make:solution-provider` command
+
+## 2.1.0 - 2020-07-13
+
+- add "Undefined Property" solution (#264)
+
+## 2.0.10 - 2020-07-13
+
+- correctly detect dump location from ddd (#216)
+
+## 2.0.9 - 2020-07-13
+
+- use application contract instead of concrete class (#243)
+
+## 2.0.8 - 2020-07-12
+
+- do not render solution title tag for empty titles
+
 ## 2.0.7 - 2020-06-07
 
 - Fix `DefaultDbNameSolutionProvider` (#277)

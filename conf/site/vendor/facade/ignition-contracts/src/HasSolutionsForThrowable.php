@@ -11,4 +11,3 @@ interface HasSolutionsForThrowable
     /** \Facade\IgnitionContracts\Solution[] */
     public function getSolutions(Throwable $throwable): array;
 }
-

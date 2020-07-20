@@ -68,10 +68,21 @@ class Report
             ->setApplicationPath($applicationPath)
             ->throwable($throwable)
             ->useContext($context)
-            ->exceptionClass(get_class($throwable))
+            ->exceptionClass(self::getClassForThrowable($throwable))
             ->message($throwable->getMessage())
             ->stackTrace(Stacktrace::createForThrowable($throwable, $applicationPath))
             ->exceptionContext($throwable);
+    }
+
+    protected static function getClassForThrowable(Throwable $throwable): string
+    {
+        if ($throwable instanceof \Facade\Ignition\Exceptions\ViewException) {
+            if ($previous = $throwable->getPrevious()) {
+                return get_class($previous);
+            }
+        }
+
+        return get_class($throwable);
     }
 
     public static function createForMessage(string $message, string $logLevel, ContextInterface $context, ?string $applicationPath = null): self

@@ -19,6 +19,11 @@
     "require": {
         "php": "^7.1"
     },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "phpunit/phpunit": "^7.5|^8.0",
+        "vimeo/psalm": "^3.12"
+    },
     "autoload": {
         "psr-4": {
             "Facade\\IgnitionContracts\\": "src"
@@ -30,9 +35,10 @@
         }
     },
     "scripts": {
+        "psalm": "vendor/bin/psalm",
+        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes",
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
-
     },
     "config": {
         "sort-packages": true
