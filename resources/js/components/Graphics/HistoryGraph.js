@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
 import { Spinner, Container, Row, Form, Card } from 'react-bootstrap';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import { Col } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
@@ -61,6 +61,7 @@ export default class HistoryGraph extends Component {
             };
             var duOptions = {
                 maintainAspectRatio: false,
+                responsive: true,
                 tooltips: {
                     callbacks: {
                       label: (item) => `${item.yLabel} Mbit/s`,
@@ -100,6 +101,7 @@ export default class HistoryGraph extends Component {
             };
             var pingOptions = {
                 maintainAspectRatio: false,
+                responsive: true,
                 tooltips: {
                     callbacks: {
                       label: (item) => `${item.yLabel} ms`,
@@ -165,52 +167,45 @@ export default class HistoryGraph extends Component {
         .then((resp) => {
             var failData = {
                 labels: [],
-                datasets:[
+                datasets: [
                     {
                         data: [],
-                        label: 'Failure',
-                        borderColor: "#E74C3C",
-                        fill: false,
+                        label: 'Successful',
+                        backgroundColor: '#07db71'
+                    },
+                    {
+                        data: [],
+                        label: 'Failed',
+                        backgroundColor: '#E74C3C'
                     },
                 ],
             };
             var failOptions = {
                 maintainAspectRatio: false,
+                responsive: true,
                 tooltips: {
                     callbacks: {
-                      label: (item) => `${item.yLabel} %`,
+                      label: (item) => `${item.yLabel} speedtests`,
                     },
-                },
-                title: {
-                    display: false,
-                    text: 'Ping results for the last ' + days + ' days',
                 },
                 scales: {
                     xAxes: [{
-                        display: false,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'DateTime'
-                        }
+                        stacked: true
                     }],
-                },
-                elements: {
-                    point:{
-                        radius: 0,
-                        hitRadius: 8
-                    }
+                    yAxes: [{
+                        stacked: true
+                    }]
                 }
-            }
+            };
 
             resp.data.data.forEach(e => {
-                var date = new Date(e.date);
-                var fail = {
-                    t: date,
-                    y: e.rate
-                };
-                failData.datasets[0].data.push(fail);
-                failData.labels.push(date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + ('0' + date.getDay()).slice(-2));
-            });
+                var success = {x: e.date, y: e.success};
+                var fail = {x: e.date, y: e.failure};
+                failData.datasets[0].data.push(success);
+                failData.datasets[1].data.push(fail);
+                failData.labels.push(e.date);
+            })
+            console.log(failData);
 
             this.setState({
                 failData: failData,
@@ -235,13 +230,8 @@ export default class HistoryGraph extends Component {
                 graph_failure_width: data.failure_graph_width.value,
             });
 
-            if(this.state.graph_ul_dl_enabled || this.state.graph_ping_enabled) {
-                this.getDLULPing(days);
-            }
-
-            if(this.state.graph_failure_enabled) {
-                this.getFailure(days);
-            }
+            this.getDLULPing(days);
+            this.getFailure(days);
         })
         .catch((err) => {
             console.log('Couldn\'t get the site config');
@@ -270,7 +260,29 @@ export default class HistoryGraph extends Component {
         var pingData = this.state.pingData;
         var pingOptions = this.state.pingOptions;
         var failData = this.state.failData;
-        var failOptions = this.state.failOptions;
+        var failOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            tooltips: {
+                callbacks: {
+                  label: (item) => `${item.yLabel} speedtests`,
+                },
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }]
+            }
+        };
         var days = this.state.days;
 
         var graph_ul_dl_enabled = this.state.graph_ul_dl_enabled;
@@ -345,10 +357,10 @@ export default class HistoryGraph extends Component {
                             xs={{ span: 12 }}
                             className={failureClasses}
                         >
-                            <Card className="shadow-sm">
-                                <Card.Body>
-                                    <Line data={failData} options={pingOptions} height={440} />
-                                </Card.Body>
+                            <Card className="shadow-sm h-100">
+                                <Card.Body className="w-100 h-100">
+                                    <Bar data={failData} options={failOptions} height={440} />
+                            </Card.Body>
                             </Card>
                         </Col>
                     </Row>
