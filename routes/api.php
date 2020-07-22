@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\SpeedtestHelper;
 use App\Http\Controllers\SpeedtestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,13 @@ Route::group([
          ->name('speedtest.fail');
     Route::get('run', 'SpeedtestController@run')
          ->name('speedtest.run');
+
+    Route::group([
+        'prefix' => 'delete'
+    ], function () {
+        Route::delete('all', 'SpeedtestController@deleteAll');
+        Route::delete('{speedtest}', 'SpeedtestController@delete');
+    });
 });
 
 Route::group([
