@@ -5,6 +5,7 @@ import Loader from '../Loader';
 import Axios from 'axios';
 import Setting from './Setting';
 import SettingWithModal from './SettingWithModal';
+import ResetSettings from './ResetSettings';
 
 export default class Settings extends Component {
     constructor(props) {
@@ -156,6 +157,9 @@ export default class Settings extends Component {
                             max: 23
                         }
                     ]} />
+                </Col>
+                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
+                    <ResetSettings />
                 </Col>
             </Row>
         )

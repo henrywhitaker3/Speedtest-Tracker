@@ -5,7 +5,7 @@ import LatestResults from '../Graphics/LatestResults';
 import Footer from './Footer';
 import DataRow from '../Data/DataRow';
 import TestsTable from '../Graphics/TestsTable';
-import Settings from './Settings';
+import Settings from '../Settings/Settings';
 
 export default class HomePage extends Component {
 
