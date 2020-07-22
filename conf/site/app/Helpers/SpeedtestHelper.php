@@ -87,10 +87,10 @@ class SpeedtestHelper {
                 return false;
             }
 
-            return shell_exec('HOME= /config && ' . $binPath . ' -f json -s ' . $server);
+            return shell_exec('HOME=/config && ' . $binPath . ' -f json -s ' . $server);
         }
 
-        return shell_exec('HOME= /config && ' . $binPath . ' -f json');
+        return shell_exec('HOME=/config && ' . $binPath . ' -f json');
     }
 
     /**
