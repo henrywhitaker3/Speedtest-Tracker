@@ -1,4 +1,10 @@
 {
+    "1.7.10": [
+        {
+            "description": "Fixed notifications bug.",
+            "link": ""
+        }
+    ],
     "1.7.9": [
         {
             "description": "Added ability to delete speedtests from the database.",
