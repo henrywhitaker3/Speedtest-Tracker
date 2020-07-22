@@ -147,4 +147,45 @@ class SpeedtestController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Delete all speedtests from db
+     *
+     * @return Response
+     */
+    public function deleteAll()
+    {
+        $ret = SpeedtestHelper::deleteAll();
+
+        if($ret['success']) {
+            return response()->json([
+                'method' => 'delete all speedtests from the database',
+                'success' => true
+            ], 200);
+        }
+
+        return response()->json([
+            'method' => 'delete all speedtests from the database',
+            'success' => false,
+            'error' => $ret['msg'],
+        ], 500);
+    }
+
+    /**
+     * Delete a specific speedtest from the database
+     *
+     * @param Speedtest $speedtest
+     * @return boolean
+     */
+    public function delete(Speedtest $speedtest)
+    {
+        $speedtest->delete();
+
+        Cache::flush();
+
+        return response()->json([
+            'method' => 'delete a speedtest from the database',
+            'success' => true,
+        ], 200);
+    }
 }
