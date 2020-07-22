@@ -52,7 +52,7 @@ class TestNotificationListener
      */
     private function slackNotification()
     {
-        if(SettingsHelper::get('slack_webhook')) {
+        if(SettingsHelper::get('slack_webhook')->value == true) {
             try {
                 Notification::route('slack', SettingsHelper::get('slack_webhook')->value)
                             ->notify(new TestSlackNotification());
@@ -70,7 +70,7 @@ class TestNotificationListener
      */
     private function telegramNotification()
     {
-        if(SettingsHelper::get('telegram_bot_token') && SettingsHelper::get('telegram_chat_id')) {
+        if(SettingsHelper::get('telegram_bot_token')->value == true && SettingsHelper::get('telegram_chat_id')->value == true) {
             try {
                 config([ 'services.telegram-bot-api' => [ 'token' => SettingsHelper::get('telegram_bot_token')->value ] ]);
                 Notification::route(TelegramChannel::class, SettingsHelper::get('telegram_bot_token')->value)
