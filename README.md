@@ -38,6 +38,8 @@ docker create \
 ### Using Docker Compose
 
 ```yml
+version: '3.3'
+services:
     speedtest:
         container_name: speedtest
         image: henrywhitaker3/speedtest-tracker:dev
