@@ -203,7 +203,7 @@ export default class HistoryGraph extends Component {
                 var fail = {x: e.date, y: e.failure};
                 failData.datasets[0].data.push(success);
                 failData.datasets[1].data.push(fail);
-                failData.labels.push(e.date);
+                failData.labels.push(new Date(e.date).toLocaleString([], {year: '2-digit', month:'2-digit', day:'2-digit'}));
             })
             console.log(failData);
 
