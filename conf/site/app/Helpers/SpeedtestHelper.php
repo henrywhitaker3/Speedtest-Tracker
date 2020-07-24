@@ -237,15 +237,10 @@ class SpeedtestHelper {
                 $success = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', false)->get()[0]['rate'];
                 $fail = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', true)->get()[0]['rate'];
 
-                if(( $success + $fail ) == 0) {
-                    $percentage = 0;
-                } else {
-                    $percentage = round(( $fail / ( $success + $fail ) * 100 ), 1);
-                }
-
                 array_push($rate, [
                     'date' => $day->toDateString(),
-                    'rate' => $percentage
+                    'success' => $success,
+                    'failure' => $fail,
                 ]);
             }
 

@@ -201,8 +201,6 @@ final class ASCII
      * @return string[]
      *
      * @psalm-return array<string, string>
-     *
-     * @noinspection PhpDocMissingThrowsInspection
      */
     public static function getAllLanguages(): array
     {
@@ -267,14 +265,14 @@ final class ASCII
      *
      * @psalm-pure
      *
-     * @return array         <p>An array of replacements.</p>
-     * @return array<string, array<int, string>>
+     * @return array
+     *               <p>An array of replacements.</p>
+     *
+     * @psalm-return array<string, array<int, string>>
      */
     public static function charsArrayWithMultiLanguageValues(bool $replace_extra_symbols = false): array
     {
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var array<string, array>
          */
         static $CHARS_ARRAY = [];
@@ -328,9 +326,11 @@ final class ASCII
      * @param bool   $replace_extra_symbols [optional] <p>Add some more replacements e.g. "£" with " pound ".</p>
      * @param bool   $asOrigReplaceArray    [optional] <p>TRUE === return {orig: string[], replace: string[]}
      *                                      array</p>
+     *
      * @psalm-pure
      *
-     * @return array <p>An array of replacements.</p>
+     * @return array
+     *               <p>An array of replacements.</p>
      *
      * @psalm-return array{orig: string[], replace: string[]}|array<string, string>
      */
@@ -343,8 +343,6 @@ final class ASCII
 
         // init
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var array<string, array>
          */
         static $CHARS_ARRAY = [];
@@ -424,9 +422,11 @@ final class ASCII
      * @param bool $replace_extra_symbols [optional] <p>Add some more replacements e.g. "£" with " pound ".</p>
      * @param bool $asOrigReplaceArray    [optional] <p>TRUE === return {orig: string[], replace: string[]}
      *                                    array</p>
+     *
      * @psalm-pure
      *
-     * @return array <p>An array of replacements.</p>
+     * @return array
+     *               <p>An array of replacements.</p>
      *
      * @psalm-return array{orig: string[], replace: string[]}|array<string, string>
      */
@@ -436,8 +436,6 @@ final class ASCII
     ): array {
         // init
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var array<string,array>
          */
         static $CHARS_ARRAY = [];
@@ -584,8 +582,6 @@ final class ASCII
         }
 
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var array{orig: string[], replace: string[]}
          */
         static $MSWORD_CACHE = ['orig' => [], 'replace' => []];
@@ -636,8 +632,6 @@ final class ASCII
         }
 
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var array<int,array<string,string>>
          */
         static $WHITESPACE_CACHE = [];
@@ -658,8 +652,6 @@ final class ASCII
         if (!$keepBidiUnicodeControls) {
             /**
              * @var array<int,string>|null
-             *
-             * @psalm-suppress ImpureStaticVariable
              */
             static $BIDI_UNICODE_CONTROLS_CACHE = null;
 
@@ -762,8 +754,6 @@ final class ASCII
         static $EXTRA_SYMBOLS_CACHE = null;
 
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var array<string,array<string,string>>
          */
         static $REPLACE_HELPER_CACHE = [];
@@ -1100,22 +1090,16 @@ final class ASCII
         bool $strict = false
     ): string {
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var array<int,string>|null
          */
         static $UTF8_TO_TRANSLIT = null;
 
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * null|\Transliterator
          */
         static $TRANSLITERATOR = null;
 
         /**
-         * @psalm-suppress ImpureStaticVariable
-         *
          * @var bool|null
          */
         static $SUPPORT_INTL = null;
@@ -1153,15 +1137,12 @@ final class ASCII
             if (!isset($TRANSLITERATOR)) {
                 // INFO: see "*-Latin" rules via "transliterator_list_ids()"
                 /**
-                 * @noinspection PhpComposerExtensionStubsInspection
-                 *
                  * @var \Transliterator
                  */
                 $TRANSLITERATOR = \transliterator_create('NFKC; [:Nonspacing Mark:] Remove; NFKC; Any-Latin; Latin-ASCII;');
             }
 
             // INFO: https://unicode.org/cldr/utility/character.jsp
-            /** @noinspection PhpComposerExtensionStubsInspection */
             $str_tmp = \transliterator_transliterate($TRANSLITERATOR, $str);
 
             if ($str_tmp !== false) {
@@ -1274,8 +1255,10 @@ final class ASCII
 
                 $new_char = $UTF8_TO_TRANSLIT[$bank][$new_char];
 
+                /** @noinspection MissingOrEmptyGroupStatementInspection */
+                /** @noinspection PhpStatementHasEmptyBodyInspection */
                 if ($unknown === null && $new_char === '') {
-                    $c = $unknown ?? $c;
+                    // nothing
                 } elseif (
                     $new_char === '[?]'
                     ||
@@ -1378,6 +1361,10 @@ final class ASCII
     private static function getDataIfExists(string $file): array
     {
         $file = __DIR__ . '/data/' . $file . '.php';
+        /**
+         * @noinspection LowPerformingFilesystemOperationsInspection
+         * -> we use this only once, so no extra caching is needed
+         */
         if (\file_exists($file)) {
             /** @noinspection PhpIncludeInspection */
             /** @noinspection UsingInclusionReturnValueInspection */
