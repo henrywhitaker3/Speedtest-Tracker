@@ -32,10 +32,12 @@
         "michelf/php-markdown": "~1.4",
         "mikehaertl/php-shellcommand": "^1.4",
         "phpstan/phpstan": "^0.12",
-        "phpunit/phpunit": "^7.5",
+        "phpunit/phpunit": "^7.5 || ^8.5 || ^9.2",
         "scrutinizer/ocular": "^1.5",
         "symfony/finder": "^4.2"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "conflict": {
         "scrutinizer/ocular": "1.7.*"
     },
