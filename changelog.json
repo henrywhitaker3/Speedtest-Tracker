@@ -1,4 +1,18 @@
 {
+    "1.7.12": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        },
+        {
+            "description": "Added more unit tests.",
+            "link": ""
+        },
+        {
+            "description": "Display date on failure graph in local format.",
+            "link": ""
+        }
+    ],
     "1.7.11": [
         {
             "description": "Changed failure graph to a bar chart.",
