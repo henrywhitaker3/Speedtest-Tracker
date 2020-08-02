@@ -1,3 +1,15 @@
+1.11.1 / 2020/07/08
+===================
+
+* [fixed] can't double objects with `self` type hints (@greg0ire)
+* [fixed] cloned doubes were not loosely comparable (@tkulka)
+
+1.11.0 / 2020/07/07
+===================
+
+* [changed] dropped support for PHP versions earlier than 7.2 (@ciaranmcnulty)
+* [fixed] removed use of Reflection APIs deprecated in PHP 8.0 (@Ayesh)
+
 1.10.3 / 2020/03/05
 ===================
 
