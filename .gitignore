@@ -12,3 +12,6 @@ npm-debug.log
 yarn-error.log
 
 .vscode/
+
+_ide_helper.php
+.idea
