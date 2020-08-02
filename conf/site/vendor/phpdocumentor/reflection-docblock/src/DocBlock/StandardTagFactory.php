@@ -17,7 +17,6 @@ use InvalidArgumentException;
 use phpDocumentor\Reflection\DocBlock\Tags\Author;
 use phpDocumentor\Reflection\DocBlock\Tags\Covers;
 use phpDocumentor\Reflection\DocBlock\Tags\Deprecated;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\StaticMethod;
 use phpDocumentor\Reflection\DocBlock\Tags\Generic;
 use phpDocumentor\Reflection\DocBlock\Tags\InvalidTag;
 use phpDocumentor\Reflection\DocBlock\Tags\Link as LinkTag;
@@ -37,6 +36,7 @@ use phpDocumentor\Reflection\DocBlock\Tags\Version;
 use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\Types\Context as TypeContext;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
 use Webmozart\Assert\Assert;
 use function array_merge;
@@ -165,7 +165,7 @@ final class StandardTagFactory implements TagFactory
     {
         Assert::stringNotEmpty($tagName);
         Assert::classExists($handler);
-        Assert::implementsInterface($handler, StaticMethod::class);
+        Assert::implementsInterface($handler, Tag::class);
 
         if (strpos($tagName, '\\') && $tagName[0] !== '\\') {
             throw new InvalidArgumentException(
@@ -255,10 +255,16 @@ final class StandardTagFactory implements TagFactory
     {
         $arguments = [];
         foreach ($parameters as $parameter) {
-            $class    = $parameter->getClass();
+            $type     = $parameter->getType();
             $typeHint = null;
-            if ($class !== null) {
-                $typeHint = $class->getName();
+            if ($type instanceof ReflectionNamedType) {
+                $typeHint = $type->getName();
+                if ($typeHint === 'self') {
+                    $declaringClass = $parameter->getDeclaringClass();
+                    if ($declaringClass !== null) {
+                        $typeHint = $declaringClass->getName();
+                    }
+                }
             }
 
             if (isset($locator[$typeHint])) {
@@ -281,6 +287,8 @@ final class StandardTagFactory implements TagFactory
     /**
      * Retrieves a series of ReflectionParameter objects for the static 'create' method of the given
      * tag handler class name.
+     *
+     * @param class-string $handlerClassName
      *
      * @return ReflectionParameter[]
      */
