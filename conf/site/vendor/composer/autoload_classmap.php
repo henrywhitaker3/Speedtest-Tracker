@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\Auth\\EmailVerification' => $baseDir . '/app/Auth/EmailVerification.php',
     'App\\Auth\\LoginSession' => $baseDir . '/app/Auth/LoginSession.php',
+    'App\\Console\\Commands\\ClearQueueCommand' => $baseDir . '/app/Console/Commands/ClearQueueCommand.php',
     'App\\Console\\Commands\\GetConfig' => $baseDir . '/app/Console/Commands/GetConfig.php',
     'App\\Console\\Commands\\SetSlackWebhook' => $baseDir . '/app/Console/Commands/SetSlackWebhook.php',
     'App\\Console\\Commands\\SetTelegramOptions' => $baseDir . '/app/Console/Commands/SetTelegramOptions.php',
@@ -1592,6 +1593,7 @@ return array(
     'Illuminate\\Contracts\\View\\View' => $vendorDir . '/laravel/framework/src/Illuminate/Contracts/View/View.php',
     'Illuminate\\Cookie\\CookieJar' => $vendorDir . '/laravel/framework/src/Illuminate/Cookie/CookieJar.php',
     'Illuminate\\Cookie\\CookieServiceProvider' => $vendorDir . '/laravel/framework/src/Illuminate/Cookie/CookieServiceProvider.php',
+    'Illuminate\\Cookie\\CookieValuePrefix' => $vendorDir . '/laravel/framework/src/Illuminate/Cookie/CookieValuePrefix.php',
     'Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse' => $vendorDir . '/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php',
     'Illuminate\\Cookie\\Middleware\\EncryptCookies' => $vendorDir . '/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php',
     'Illuminate\\Database\\Capsule\\Manager' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Capsule/Manager.php',
