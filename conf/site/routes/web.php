@@ -30,6 +30,6 @@ Route::get(SettingsHelper::getBase() . 'files/{path?}', function($file) {
   ->name('files');
 
 Route::get('/{path?}', function() {
-    return view('app', [ 'title' => 'Speedtest Checker' ]);
+    return view('app', [ 'title' => 'Speedtest Tracker' ]);
 })->where('path', '^((?!\/api\/).)*$')
   ->name('react');

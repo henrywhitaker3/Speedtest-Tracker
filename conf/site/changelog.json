@@ -1,4 +1,48 @@
 {
+    "1.7.14": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.7.13": [
+        {
+            "description": "Added command to clear application queue.",
+            "link": ""
+        }
+    ],
+    "1.7.12": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        },
+        {
+            "description": "Added more unit tests.",
+            "link": ""
+        },
+        {
+            "description": "Display date on failure graph in local format.",
+            "link": ""
+        }
+    ],
+    "1.7.11": [
+        {
+            "description": "Changed failure graph to a bar chart.",
+            "link": ""
+        }
+    ],
+    "1.7.10": [
+        {
+            "description": "Fixed notifications bug.",
+            "link": ""
+        }
+    ],
+    "1.7.9": [
+        {
+            "description": "Added ability to delete speedtests from the database.",
+            "link": ""
+        }
+    ],
     "1.7.8": [
         {
             "description": "Updated dependencies",

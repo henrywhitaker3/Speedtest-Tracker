@@ -171,7 +171,7 @@ trait EnumeratesValues
     {
         call_user_func_array([$this, 'dump'], $args);
 
-        die(1);
+        exit(1);
     }
 
     /**
@@ -732,7 +732,7 @@ trait EnumeratesValues
      *
      * This is an alias to the "takeUntil" method.
      *
-     * @param  mixed  $key
+     * @param  mixed  $value
      * @return static
      *
      * @deprecated Use the "takeUntil" method directly.

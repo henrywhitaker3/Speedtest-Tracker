@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Modal } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
+import Axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default class TableRow extends Component {
     constructor(props) {
@@ -23,6 +25,25 @@ export default class TableRow extends Component {
                 show: true
             });
         }
+    }
+
+    delete = (id) => {
+        var url = 'api/speedtest/delete/' + id;
+
+        Axios.delete(url)
+        .then((resp) => {
+            console.log(resp);
+            toast.success('Speedtest deleted');
+        })
+        .catch((err) => {
+            if(err.response.status == 404) {
+                toast.warning('Speedtest not found');
+            } else {
+                toast.error('Something went wrong');
+            }
+        })
+
+        this.toggleShow();
     }
 
     render() {
@@ -52,6 +73,7 @@ export default class TableRow extends Component {
                                     {e.scheduled != undefined &&
                                         <p>Type: {e.scheduled == true ? 'scheduled' : 'manual'}</p>
                                     }
+                                    <Button variant="danger" onClick={() => { this.delete(e.id) }}>Delete</Button>
                                 </Modal.Body>
                             </Modal>
                         </td>
