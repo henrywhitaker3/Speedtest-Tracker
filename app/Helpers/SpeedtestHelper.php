@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Speedtest;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -236,15 +237,10 @@ class SpeedtestHelper {
                 $success = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', false)->get()[0]['rate'];
                 $fail = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', true)->get()[0]['rate'];
 
-                if(( $success + $fail ) == 0) {
-                    $percentage = 0;
-                } else {
-                    $percentage = round(( $fail / ( $success + $fail ) * 100 ), 1);
-                }
-
                 array_push($rate, [
                     'date' => $day->toDateString(),
-                    'rate' => $percentage
+                    'success' => $success,
+                    'failure' => $fail,
                 ]);
             }
 
@@ -252,5 +248,56 @@ class SpeedtestHelper {
         });
 
         return $rate;
+    }
+
+    /**
+     * Create a backup of the SQLite database
+     *
+     * @return boolean
+     */
+    public static function dbBackup()
+    {
+        if(env('DB_CONNECTION') === 'sqlite') {
+            if(env('DB_DATABASE') !== null) {
+                $current = env('DB_DATABASE');
+                if(File::copy($current, $current . '.bak')) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return null;
+    }
+
+    /**
+     * Delete all speedtests from the database
+     *
+     * @return boolean|string
+     */
+    public static function deleteAll()
+    {
+        Cache::flush();
+
+        if(SpeedtestHelper::dbBackup() !== false) {
+            if(sizeof(Speedtest::whereNotNull('id')->get()) > 0) {
+                if(Speedtest::whereNotNull('id')->delete()) {
+                    return [
+                        'success' => true,
+                    ];
+                }
+
+            }
+
+            return [
+                'success' => true,
+            ];
+        }
+
+        return [
+            'success' => false,
+            'msg' => 'There was an error backing up the database. No speedtests have been deleted.'
+        ];
     }
 }

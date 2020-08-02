@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Card, Form, Button, Modal, Row, Col } from 'react-bootstrap';
 import Axios from 'axios';
 import { toast } from 'react-toastify';
+import SettingsModalCard from '../Settings/SettingsModalCard';
 
 export default class SettingWithModal extends Component {
     constructor(props) {
@@ -98,15 +99,7 @@ export default class SettingWithModal extends Component {
 
         return (
             <>
-                <Card className="m-2 setting-card">
-                    <Card.Body className="d-flex align-items-center">
-                        <div>
-                            <h4>{title}</h4>
-                            <p>{description}</p>
-                            <Button variant="primary" onClick={this.toggleShow}>Edit</Button>
-                        </div>
-                    </Card.Body>
-                </Card>
+                <SettingsModalCard title={title} description={description} toggleShow={this.toggleShow} />
                 <Modal show={show} onHide={this.toggleShow}>
                     <Modal.Header>
                         <Modal.Title>{title}</Modal.Title>
@@ -130,7 +123,15 @@ export default class SettingWithModal extends Component {
                                 readonly = true;
                             }
 
-                            if(e.type == 'checkbox') {
+                            if(e.type == 'info') {
+                                return (
+                                    <Row key={e.obj.id} className="d-flex align-items-center">
+                                        <Col md={md} sm={sm}>
+                                            <p>{e.obj.content}</p>
+                                        </Col>
+                                    </Row>
+                                )
+                            } else if(e.type == 'checkbox') {
                                 return (
                                     <Row key={e.obj.id} className="d-flex align-items-center">
                                         <Col  md={md} sm={sm}>
