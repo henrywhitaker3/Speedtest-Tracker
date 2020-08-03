@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class SpeedtestController extends Controller
 {
@@ -18,7 +19,7 @@ class SpeedtestController extends Controller
     /**
      * Returns paginated list of speedtests
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function index()
     {
@@ -35,7 +36,7 @@ class SpeedtestController extends Controller
      * Returns speedtest going back 'x' days
      *
      * @param   int     $days
-     * @return  void
+     * @return  JsonResponse
      */
     public function time($days)
     {
@@ -71,7 +72,7 @@ class SpeedtestController extends Controller
      * Returns speedtest failure rate going back 'x' days
      *
      * @param   int     $days
-     * @return  void
+     * @return  JsonResponse
      */
     public function fail($days)
     {
@@ -100,7 +101,7 @@ class SpeedtestController extends Controller
     /**
      * Return latest speedtest
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function latest()
     {
@@ -130,7 +131,7 @@ class SpeedtestController extends Controller
     /**
      * Queue a new speedtest
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function run()
     {
@@ -151,7 +152,7 @@ class SpeedtestController extends Controller
     /**
      * Delete all speedtests from db
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function deleteAll()
     {
@@ -175,7 +176,7 @@ class SpeedtestController extends Controller
      * Delete a specific speedtest from the database
      *
      * @param Speedtest $speedtest
-     * @return boolean
+     * @return JsonResponse
      */
     public function delete(Speedtest $speedtest)
     {
