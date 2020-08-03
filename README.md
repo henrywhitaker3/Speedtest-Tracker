@@ -38,6 +38,8 @@ docker create \
 ### Using Docker Compose
 
 ```yml
+version: '3.3'
+services:
     speedtest:
         container_name: speedtest
         image: henrywhitaker3/speedtest-tracker:dev
@@ -53,10 +55,10 @@ docker create \
             - BASE_PATH=/speedtest
             - OOKLA_EULA_GDPR=true
         logging:
-            driver: json-file
+            driver: "json-file"
             options:
-                max-file: 10
-                max-size: 200k
+                max-file: "10"
+                max-size: "200k"
         restart: unless-stopped
 ```
 
@@ -83,8 +85,7 @@ This program has some dependencies, to install them you need to run the followin
 
 ```bash
 sudo apt update
-sudo apt update
-sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 php-zip php-mbstring composer python3 python3-pip git
+sudo apt install php-common php7.3 php7.3-cli php7.3-common php7.3-json php7.3-opcache php7.3-readline php-xml php-sqlite3 php-zip php-mbstring composer python3 python3-pip git
 ```
 ```bash
 sudo apt install curl
@@ -92,14 +93,18 @@ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt install nodejs
 ```
 
-```bash
-sudo pip3 install speedtest-cli
-```
-
 Then, download the code by running:
 
 ```bash
 git clone https://github.com/henrywhitaker3/Speedtest-Tracker.git
+```
+
+Now you need to download Ookla's speedtest binary for your system from [here](https://www.speedtest.net/apps/cli). For a x86_64 system:
+
+```bash
+wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz
+tar zxvf speedtest.tgz
+mv speedtest Speedtest-Tracker/app/Bin/
 ```
 
 Install the composer and npm dependencies:
@@ -124,6 +129,12 @@ Finally, run the following to setup the tables in the database:
 ```bash
 php artisan key:generate
 php artisan migrate
+```
+
+Now you need to accept Ookla's EULA by running:
+
+```bash
+php artisan speedtest:eula
 ```
 
 Now run the following to make sure everything has been setup properly (it should output a speedtest result):
@@ -159,7 +170,7 @@ command=php /path/to/project/artisan queue:work
 autostart=true
 autorestart=true
 user=<user>
-numprocs=8
+numprocs=1
 redirect_stderr=true
 ```
 
