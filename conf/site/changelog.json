@@ -1,4 +1,10 @@
 {
+    "1.7.15": [
+        {
+            "description": "Updates for manual installs.",
+            "link": ""
+        }
+    ],
     "1.7.14": [
         {
             "description": "Updated dependencies.",

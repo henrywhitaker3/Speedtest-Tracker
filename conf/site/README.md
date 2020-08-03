@@ -1,6 +1,6 @@
 # Speedtest Tracker
 
-[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker?style=flat-square)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) [![commit_freq](https://img.shields.io/github/commit-activity/m/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) ![version](https://img.shields.io/badge/version-v1.7.14-success?style=flat-square) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
+[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker?style=flat-square)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker) [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues) [![commit_freq](https://img.shields.io/github/commit-activity/m/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits) ![version](https://img.shields.io/badge/version-v1.7.15-success?style=flat-square) [![license](https://img.shields.io/github/license/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/blob/master/LICENSE)
 
 This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [Ookla's speedtest cli](https://www.speedtest.net/apps/cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
 
@@ -27,9 +27,6 @@ docker create \
       --name=speedtest \
       -p 8765:80 \
       -v /path/to/data:/config \
-      -e SLACK_WEBHOOK=webhook `#optional` \
-      -e PUID=uid `#optional` \
-      -e PGID=gid `#optional` \
       -e OOKLA_EULA_GDPR=true \
       --restart unless-stopped \
       henrywhitaker3/speedtest-tracker
@@ -38,9 +35,11 @@ docker create \
 ### Using Docker Compose
 
 ```yml
+version: '3.3'
+services:
     speedtest:
         container_name: speedtest
-        image: henrywhitaker3/speedtest-tracker:dev
+        image: henrywhitaker3/speedtest-tracker
         ports:
             - 8765:80
         volumes:
@@ -49,16 +48,23 @@ docker create \
             - TZ=
             - PGID=
             - PUID=
-            - SLACK_WEBHOOK=
-            - BASE_PATH=/speedtest
             - OOKLA_EULA_GDPR=true
         logging:
-            driver: json-file
+            driver: "json-file"
             options:
-                max-file: 10
-                max-size: 200k
+                max-file: "10"
+                max-size: "200k"
         restart: unless-stopped
 ```
+
+#### Images
+
+There are 2 different docker images:
+
+| Tag | Description |
+| :----: | --- |
+| latest | This is the stable release of the app |
+| dev | This release has more features, although could have some bugs |
 
 #### Parameters
 
@@ -77,96 +83,4 @@ Container images are configured using parameters passed at runtime (such as thos
 
 ### Manual Install
 
-#### Installing Dependencies
-
-This program has some dependencies, to install them you need to run the following:
-
-```bash
-sudo apt update
-sudo apt update
-sudo apt install php-common php7.2 php7.2-cli php7.2-common php7.2-json php7.2-opcache php7.2-readline php-xml php-sqlite3 php-zip php-mbstring composer python3 python3-pip git
-```
-```bash
-sudo apt install curl
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt install nodejs
-```
-
-```bash
-sudo pip3 install speedtest-cli
-```
-
-Then, download the code by running:
-
-```bash
-git clone https://github.com/henrywhitaker3/Speedtest-Tracker.git
-```
-
-Install the composer and npm dependencies:
-
-```bash
-composer install
-npm install && npm run production
-```
-
-#### Setting up the database
-
-Run the following to set your database variables:
-
-```bash
-cp .env.example .env
-```
-
-Then update the `DB_DATABASE` value with the absolute path of your install, followed by `/database/speed.db`.
-
-Finally, run the following to setup the tables in the database:
-
-```bash
-php artisan key:generate
-php artisan migrate
-```
-
-Now run the following to make sure everything has been setup properly (it should output a speedtest result):
-
-```bash
-php artisan speedtest:run
-```
-
-#### Scheduling Setup
-
-To get speed test results every hour, you need to add a cronjob, run `sudo crontab -e` and add an entry with the following (with the path you your install):
-
-```bash
-* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
-```
-
-#### Queue Setup
-
-```bash
-sudo apt install supervisor
-```
-
-```bash
-sudo vim /etc/supervisor/conf.d/laravel-worker.conf
-```
-
-Add the following, updating the `command` and user `values`:
-
-```bash
-[program:laravel-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/project/artisan queue:work
-autostart=true
-autorestart=true
-user=<user>
-numprocs=8
-redirect_stderr=true
-```
-
-Then run:
-
-```bash
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl restart all
-```
+For manual installtions, please follow the instrucitons [here](https://github.com/henrywhitaker3/Speedtest-Tracker/wiki/Manual-Installation).
