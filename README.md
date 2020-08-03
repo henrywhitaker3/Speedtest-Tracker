@@ -27,9 +27,6 @@ docker create \
       --name=speedtest \
       -p 8765:80 \
       -v /path/to/data:/config \
-      -e SLACK_WEBHOOK=webhook `#optional` \
-      -e PUID=uid `#optional` \
-      -e PGID=gid `#optional` \
       -e OOKLA_EULA_GDPR=true \
       --restart unless-stopped \
       henrywhitaker3/speedtest-tracker
@@ -42,7 +39,7 @@ version: '3.3'
 services:
     speedtest:
         container_name: speedtest
-        image: henrywhitaker3/speedtest-tracker:dev
+        image: henrywhitaker3/speedtest-tracker
         ports:
             - 8765:80
         volumes:
@@ -51,8 +48,6 @@ services:
             - TZ=
             - PGID=
             - PUID=
-            - SLACK_WEBHOOK=
-            - BASE_PATH=/speedtest
             - OOKLA_EULA_GDPR=true
         logging:
             driver: "json-file"
@@ -61,6 +56,15 @@ services:
                 max-size: "200k"
         restart: unless-stopped
 ```
+
+#### Images
+
+There are 2 different docker images:
+
+| Tag | Description |
+| :----: | --- |
+| latest | This is the stable release of the app |
+| dev | This release has more features, although could have some bugs |
 
 #### Parameters
 
@@ -79,105 +83,4 @@ Container images are configured using parameters passed at runtime (such as thos
 
 ### Manual Install
 
-#### Installing Dependencies
-
-This program has some dependencies, to install them you need to run the following:
-
-```bash
-sudo apt update
-sudo apt install php-common php7.3 php7.3-cli php7.3-common php7.3-json php7.3-opcache php7.3-readline php-xml php-sqlite3 php-zip php-mbstring composer python3 python3-pip git
-```
-```bash
-sudo apt install curl
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt install nodejs
-```
-
-Then, download the code by running:
-
-```bash
-git clone https://github.com/henrywhitaker3/Speedtest-Tracker.git
-```
-
-Now you need to download Ookla's speedtest binary for your system from [here](https://www.speedtest.net/apps/cli). For a x86_64 system:
-
-```bash
-wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz
-tar zxvf speedtest.tgz
-mv speedtest Speedtest-Tracker/app/Bin/
-```
-
-Install the composer and npm dependencies:
-
-```bash
-composer install
-npm install && npm run production
-```
-
-#### Setting up the database
-
-Run the following to set your database variables:
-
-```bash
-cp .env.example .env
-```
-
-Then update the `DB_DATABASE` value with the absolute path of your install, followed by `/database/speed.db`.
-
-Finally, run the following to setup the tables in the database:
-
-```bash
-php artisan key:generate
-php artisan migrate
-```
-
-Now you need to accept Ookla's EULA by running:
-
-```bash
-php artisan speedtest:eula
-```
-
-Now run the following to make sure everything has been setup properly (it should output a speedtest result):
-
-```bash
-php artisan speedtest:run
-```
-
-#### Scheduling Setup
-
-To get speed test results every hour, you need to add a cronjob, run `sudo crontab -e` and add an entry with the following (with the path you your install):
-
-```bash
-* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
-```
-
-#### Queue Setup
-
-```bash
-sudo apt install supervisor
-```
-
-```bash
-sudo vim /etc/supervisor/conf.d/laravel-worker.conf
-```
-
-Add the following, updating the `command` and user `values`:
-
-```bash
-[program:laravel-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/project/artisan queue:work
-autostart=true
-autorestart=true
-user=<user>
-numprocs=1
-redirect_stderr=true
-```
-
-Then run:
-
-```bash
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl restart all
-```
+For manual installtions, please follow the instrucitons [here](https://github.com/henrywhitaker3/Speedtest-Tracker/wiki/Manual-Installation).

@@ -80,7 +80,7 @@ class SpeedtestHelper {
         $server = SettingsHelper::get('server')['value'];
 
         $binPath = app_path() . DIRECTORY_SEPARATOR . 'Bin' . DIRECTORY_SEPARATOR . 'speedtest';
-        $homePrefix = 'HOME=' . base_path() . '/ && ';
+        $homePrefix = config('speedtest.home') . ' && ';
 
         if($server != '' && $server != false) {
             $server = explode(',', $server);
