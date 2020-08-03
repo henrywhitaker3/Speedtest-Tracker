@@ -28,7 +28,9 @@ final class Intersection extends AggregatedType
     /**
      * Initializes a intersection type (i.e. `\A&\B`) and tests if the provided types all implement the Type interface.
      *
-     * @param array<Type> $types
+     * @param Type[] $types
+     *
+     * @phpstan-param list<Type> $types
      */
     public function __construct(array $types)
     {

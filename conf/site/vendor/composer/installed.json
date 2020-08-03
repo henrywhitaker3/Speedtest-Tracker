@@ -138,17 +138,17 @@
     },
     {
         "name": "doctrine/cache",
-        "version": "1.10.2",
-        "version_normalized": "1.10.2.0",
+        "version": "1.10.1",
+        "version_normalized": "1.10.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/doctrine/cache.git",
-            "reference": "13e3381b25847283a91948d04640543941309727"
+            "reference": "35a4a70cd94e09e2259dfae7488afc6b474ecbd3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/doctrine/cache/zipball/13e3381b25847283a91948d04640543941309727",
-            "reference": "13e3381b25847283a91948d04640543941309727",
+            "url": "https://api.github.com/repos/doctrine/cache/zipball/35a4a70cd94e09e2259dfae7488afc6b474ecbd3",
+            "reference": "35a4a70cd94e09e2259dfae7488afc6b474ecbd3",
             "shasum": ""
         },
         "require": {
@@ -167,7 +167,7 @@
         "suggest": {
             "alcaeus/mongo-php-adapter": "Required to use legacy MongoDB driver"
         },
-        "time": "2020-07-07T18:54:01+00:00",
+        "time": "2020-05-27T16:24:54+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1835,17 +1835,17 @@
     },
     {
         "name": "lcobucci/jwt",
-        "version": "3.3.2",
-        "version_normalized": "3.3.2.0",
+        "version": "3.3.1",
+        "version_normalized": "3.3.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/lcobucci/jwt.git",
-            "reference": "56f10808089e38623345e28af2f2d5e4eb579455"
+            "reference": "a11ec5f4b4d75d1fcd04e133dede4c317aac9e18"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/lcobucci/jwt/zipball/56f10808089e38623345e28af2f2d5e4eb579455",
-            "reference": "56f10808089e38623345e28af2f2d5e4eb579455",
+            "url": "https://api.github.com/repos/lcobucci/jwt/zipball/a11ec5f4b4d75d1fcd04e133dede4c317aac9e18",
+            "reference": "a11ec5f4b4d75d1fcd04e133dede4c317aac9e18",
             "shasum": ""
         },
         "require": {
@@ -1860,7 +1860,7 @@
             "phpunit/phpunit": "^5.7 || ^7.3",
             "squizlabs/php_codesniffer": "~2.3"
         },
-        "time": "2020-05-22T08:21:12+00:00",
+        "time": "2019-05-24T18:30:49+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1888,16 +1888,6 @@
         "keywords": [
             "JWS",
             "jwt"
-        ],
-        "funding": [
-            {
-                "url": "https://github.com/lcobucci",
-                "type": "github"
-            },
-            {
-                "url": "https://www.patreon.com/lcobucci",
-                "type": "patreon"
-            }
         ]
     },
     {
@@ -2091,35 +2081,32 @@
     },
     {
         "name": "mockery/mockery",
-        "version": "1.4.1",
-        "version_normalized": "1.4.1.0",
+        "version": "1.3.2",
+        "version_normalized": "1.3.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mockery/mockery.git",
-            "reference": "1404386ca3410b04fe58b9517e85d702ab33b2c6"
+            "reference": "9b6f117dd7d36dc3858d8d8ddf9b3d584fcae283"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mockery/mockery/zipball/1404386ca3410b04fe58b9517e85d702ab33b2c6",
-            "reference": "1404386ca3410b04fe58b9517e85d702ab33b2c6",
+            "url": "https://api.github.com/repos/mockery/mockery/zipball/9b6f117dd7d36dc3858d8d8ddf9b3d584fcae283",
+            "reference": "9b6f117dd7d36dc3858d8d8ddf9b3d584fcae283",
             "shasum": ""
         },
         "require": {
             "hamcrest/hamcrest-php": "^2.0.1",
             "lib-pcre": ">=7.0",
-            "php": "^7.3 || ^8.0"
-        },
-        "conflict": {
-            "phpunit/phpunit": "<8.0"
+            "php": ">=5.6.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "^8.5 || ^9.0"
+            "phpunit/phpunit": "~5.7.10|~6.5|~7.0|~8.0|~9.0"
         },
-        "time": "2020-07-09T08:31:54+00:00",
+        "time": "2020-07-09T08:23:05+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.4.x-dev"
+                "dev-master": "1.3.x-dev"
             }
         },
         "installation-source": "dist",
@@ -2254,21 +2241,21 @@
     },
     {
         "name": "myclabs/deep-copy",
-        "version": "1.10.1",
-        "version_normalized": "1.10.1.0",
+        "version": "1.9.5",
+        "version_normalized": "1.9.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/myclabs/DeepCopy.git",
-            "reference": "969b211f9a51aa1f6c01d1d2aef56d3bd91598e5"
+            "reference": "b2c28789e80a97badd14145fda39b545d83ca3ef"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/969b211f9a51aa1f6c01d1d2aef56d3bd91598e5",
-            "reference": "969b211f9a51aa1f6c01d1d2aef56d3bd91598e5",
+            "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/b2c28789e80a97badd14145fda39b545d83ca3ef",
+            "reference": "b2c28789e80a97badd14145fda39b545d83ca3ef",
             "shasum": ""
         },
         "require": {
-            "php": "^7.1 || ^8.0"
+            "php": "^7.1"
         },
         "replace": {
             "myclabs/deep-copy": "self.version"
@@ -2278,7 +2265,7 @@
             "doctrine/common": "^2.6",
             "phpunit/phpunit": "^7.1"
         },
-        "time": "2020-06-29T13:22:24+00:00",
+        "time": "2020-01-17T21:11:47+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -2300,12 +2287,6 @@
             "duplicate",
             "object",
             "object graph"
-        ],
-        "funding": [
-            {
-                "url": "https://tidelift.com/funding/github/packagist/myclabs/deep-copy",
-                "type": "tidelift"
-            }
         ]
     },
     {
@@ -2466,17 +2447,17 @@
     },
     {
         "name": "nikic/php-parser",
-        "version": "v4.7.0",
-        "version_normalized": "4.7.0.0",
+        "version": "v4.6.0",
+        "version_normalized": "4.6.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/nikic/PHP-Parser.git",
-            "reference": "21dce06dfbf0365c6a7cc8fdbdc995926c6a9300"
+            "reference": "c346bbfafe2ff60680258b631afb730d186ed864"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/21dce06dfbf0365c6a7cc8fdbdc995926c6a9300",
-            "reference": "21dce06dfbf0365c6a7cc8fdbdc995926c6a9300",
+            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/c346bbfafe2ff60680258b631afb730d186ed864",
+            "reference": "c346bbfafe2ff60680258b631afb730d186ed864",
             "shasum": ""
         },
         "require": {
@@ -2487,14 +2468,14 @@
             "ircmaxell/php-yacc": "0.0.5",
             "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0"
         },
-        "time": "2020-07-25T13:18:53+00:00",
+        "time": "2020-07-02T17:12:47+00:00",
         "bin": [
             "bin/php-parse"
         ],
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "4.7-dev"
+                "dev-master": "4.3-dev"
             }
         },
         "installation-source": "dist",
@@ -2808,27 +2789,27 @@
     },
     {
         "name": "phpdocumentor/reflection-common",
-        "version": "2.2.0",
-        "version_normalized": "2.2.0.0",
+        "version": "2.1.0",
+        "version_normalized": "2.1.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/phpDocumentor/ReflectionCommon.git",
-            "reference": "1d01c49d4ed62f25aa84a747ad35d5a16924662b"
+            "reference": "6568f4687e5b41b054365f9ae03fcb1ed5f2069b"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/phpDocumentor/ReflectionCommon/zipball/1d01c49d4ed62f25aa84a747ad35d5a16924662b",
-            "reference": "1d01c49d4ed62f25aa84a747ad35d5a16924662b",
+            "url": "https://api.github.com/repos/phpDocumentor/ReflectionCommon/zipball/6568f4687e5b41b054365f9ae03fcb1ed5f2069b",
+            "reference": "6568f4687e5b41b054365f9ae03fcb1ed5f2069b",
             "shasum": ""
         },
         "require": {
-            "php": "^7.2 || ^8.0"
+            "php": ">=7.1"
         },
-        "time": "2020-06-27T09:03:43+00:00",
+        "time": "2020-04-27T09:25:28+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-2.x": "2.x-dev"
+                "dev-master": "2.x-dev"
             }
         },
         "installation-source": "dist",
@@ -2859,30 +2840,31 @@
     },
     {
         "name": "phpdocumentor/reflection-docblock",
-        "version": "5.2.0",
-        "version_normalized": "5.2.0.0",
+        "version": "5.1.0",
+        "version_normalized": "5.1.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-            "reference": "3170448f5769fe19f456173d833734e0ff1b84df"
+            "reference": "cd72d394ca794d3466a3b2fc09d5a6c1dc86b47e"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/3170448f5769fe19f456173d833734e0ff1b84df",
-            "reference": "3170448f5769fe19f456173d833734e0ff1b84df",
+            "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/cd72d394ca794d3466a3b2fc09d5a6c1dc86b47e",
+            "reference": "cd72d394ca794d3466a3b2fc09d5a6c1dc86b47e",
             "shasum": ""
         },
         "require": {
-            "ext-filter": "*",
-            "php": "^7.2 || ^8.0",
-            "phpdocumentor/reflection-common": "^2.2",
-            "phpdocumentor/type-resolver": "^1.3",
-            "webmozart/assert": "^1.9.1"
+            "ext-filter": "^7.1",
+            "php": "^7.2",
+            "phpdocumentor/reflection-common": "^2.0",
+            "phpdocumentor/type-resolver": "^1.0",
+            "webmozart/assert": "^1"
         },
         "require-dev": {
-            "mockery/mockery": "~1.3.2"
+            "doctrine/instantiator": "^1",
+            "mockery/mockery": "^1"
         },
-        "time": "2020-07-20T20:05:34+00:00",
+        "time": "2020-02-22T12:28:44+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2913,27 +2895,28 @@
     },
     {
         "name": "phpdocumentor/type-resolver",
-        "version": "1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "1.2.0",
+        "version_normalized": "1.2.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/phpDocumentor/TypeResolver.git",
-            "reference": "e878a14a65245fbe78f8080eba03b47c3b705651"
+            "reference": "30441f2752e493c639526b215ed81d54f369d693"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/e878a14a65245fbe78f8080eba03b47c3b705651",
-            "reference": "e878a14a65245fbe78f8080eba03b47c3b705651",
+            "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/30441f2752e493c639526b215ed81d54f369d693",
+            "reference": "30441f2752e493c639526b215ed81d54f369d693",
             "shasum": ""
         },
         "require": {
-            "php": "^7.2 || ^8.0",
+            "php": "^7.2",
             "phpdocumentor/reflection-common": "^2.0"
         },
         "require-dev": {
-            "ext-tokenizer": "*"
+            "ext-tokenizer": "^7.2",
+            "mockery/mockery": "~1"
         },
-        "time": "2020-06-27T10:12:23+00:00",
+        "time": "2020-06-19T20:22:09+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -3027,35 +3010,35 @@
     },
     {
         "name": "phpspec/prophecy",
-        "version": "1.11.1",
-        "version_normalized": "1.11.1.0",
+        "version": "v1.10.3",
+        "version_normalized": "1.10.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/phpspec/prophecy.git",
-            "reference": "b20034be5efcdab4fb60ca3a29cba2949aead160"
+            "reference": "451c3cd1418cf640de218914901e51b064abb093"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/phpspec/prophecy/zipball/b20034be5efcdab4fb60ca3a29cba2949aead160",
-            "reference": "b20034be5efcdab4fb60ca3a29cba2949aead160",
+            "url": "https://api.github.com/repos/phpspec/prophecy/zipball/451c3cd1418cf640de218914901e51b064abb093",
+            "reference": "451c3cd1418cf640de218914901e51b064abb093",
             "shasum": ""
         },
         "require": {
-            "doctrine/instantiator": "^1.2",
-            "php": "^7.2",
-            "phpdocumentor/reflection-docblock": "^5.0",
-            "sebastian/comparator": "^3.0 || ^4.0",
-            "sebastian/recursion-context": "^3.0 || ^4.0"
+            "doctrine/instantiator": "^1.0.2",
+            "php": "^5.3|^7.0",
+            "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0|^5.0",
+            "sebastian/comparator": "^1.2.3|^2.0|^3.0|^4.0",
+            "sebastian/recursion-context": "^1.0|^2.0|^3.0|^4.0"
         },
         "require-dev": {
-            "phpspec/phpspec": "^6.0",
-            "phpunit/phpunit": "^8.0"
+            "phpspec/phpspec": "^2.5 || ^3.2",
+            "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5 || ^7.1"
         },
-        "time": "2020-07-08T12:44:21+00:00",
+        "time": "2020-03-05T15:02:03+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.11.x-dev"
+                "dev-master": "1.10.x-dev"
             }
         },
         "installation-source": "dist",
@@ -3929,17 +3912,17 @@
     },
     {
         "name": "ramsey/uuid",
-        "version": "4.1.0",
-        "version_normalized": "4.1.0.0",
+        "version": "4.0.1",
+        "version_normalized": "4.0.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/ramsey/uuid.git",
-            "reference": "988dbefc7878d0a35f12afb4df1f7dd0bd153c43"
+            "reference": "ba8fff1d3abb8bb4d35a135ed22a31c6ef3ede3d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/ramsey/uuid/zipball/988dbefc7878d0a35f12afb4df1f7dd0bd153c43",
-            "reference": "988dbefc7878d0a35f12afb4df1f7dd0bd153c43",
+            "url": "https://api.github.com/repos/ramsey/uuid/zipball/ba8fff1d3abb8bb4d35a135ed22a31c6ef3ede3d",
+            "reference": "ba8fff1d3abb8bb4d35a135ed22a31c6ef3ede3d",
             "shasum": ""
         },
         "require": {
@@ -3954,7 +3937,7 @@
         },
         "require-dev": {
             "codeception/aspect-mock": "^3",
-            "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2 || ^0.7.0",
+            "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2",
             "doctrine/annotations": "^1.8",
             "goaop/framework": "^2",
             "mockery/mockery": "^1.3",
@@ -3963,8 +3946,8 @@
             "php-mock/php-mock-mockery": "^1.3",
             "php-mock/php-mock-phpunit": "^2.5",
             "php-parallel-lint/php-parallel-lint": "^1.1",
-            "phpbench/phpbench": "^0.17.1",
             "phpstan/extension-installer": "^1.0",
+            "phpstan/phpdoc-parser": "0.4.3",
             "phpstan/phpstan": "^0.12",
             "phpstan/phpstan-mockery": "^0.12",
             "phpstan/phpstan-phpunit": "^0.12",
@@ -3982,7 +3965,7 @@
             "paragonie/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
             "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
         },
-        "time": "2020-07-28T16:51:01+00:00",
+        "time": "2020-03-29T20:13:32+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -6083,32 +6066,28 @@
     },
     {
         "name": "symfony/polyfill-php56",
-        "version": "v1.18.0",
-        "version_normalized": "1.18.0.0",
+        "version": "v1.15.0",
+        "version_normalized": "1.15.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-php56.git",
-            "reference": "13df84e91cd168f247c2f2ec82cc0fa24901c011"
+            "reference": "d51ec491c8ddceae7dca8dd6c7e30428f543f37d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/13df84e91cd168f247c2f2ec82cc0fa24901c011",
-            "reference": "13df84e91cd168f247c2f2ec82cc0fa24901c011",
+            "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/d51ec491c8ddceae7dca8dd6c7e30428f543f37d",
+            "reference": "d51ec491c8ddceae7dca8dd6c7e30428f543f37d",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3",
             "symfony/polyfill-util": "~1.0"
         },
-        "time": "2020-07-14T12:35:20+00:00",
+        "time": "2020-03-09T19:04:49+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.18-dev"
-            },
-            "thanks": {
-                "name": "symfony/polyfill",
-                "url": "https://github.com/symfony/polyfill"
+                "dev-master": "1.15-dev"
             }
         },
         "installation-source": "dist",
@@ -6473,31 +6452,27 @@
     },
     {
         "name": "symfony/polyfill-util",
-        "version": "v1.18.0",
-        "version_normalized": "1.18.0.0",
+        "version": "v1.15.0",
+        "version_normalized": "1.15.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-util.git",
-            "reference": "46b910c71e9828f8ec2aa7a0314de1130d9b295a"
+            "reference": "d8e76c104127675d0ea3df3be0f2ae24a8619027"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/46b910c71e9828f8ec2aa7a0314de1130d9b295a",
-            "reference": "46b910c71e9828f8ec2aa7a0314de1130d9b295a",
+            "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/d8e76c104127675d0ea3df3be0f2ae24a8619027",
+            "reference": "d8e76c104127675d0ea3df3be0f2ae24a8619027",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2020-07-14T12:35:20+00:00",
+        "time": "2020-03-02T11:55:35+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.18-dev"
-            },
-            "thanks": {
-                "name": "symfony/polyfill",
-                "url": "https://github.com/symfony/polyfill"
+                "dev-master": "1.15-dev"
             }
         },
         "installation-source": "dist",
@@ -7133,26 +7108,26 @@
     },
     {
         "name": "theseer/tokenizer",
-        "version": "1.2.0",
-        "version_normalized": "1.2.0.0",
+        "version": "1.1.3",
+        "version_normalized": "1.1.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/theseer/tokenizer.git",
-            "reference": "75a63c33a8577608444246075ea0af0d052e452a"
+            "reference": "11336f6f84e16a720dae9d8e6ed5019efa85a0f9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/theseer/tokenizer/zipball/75a63c33a8577608444246075ea0af0d052e452a",
-            "reference": "75a63c33a8577608444246075ea0af0d052e452a",
+            "url": "https://api.github.com/repos/theseer/tokenizer/zipball/11336f6f84e16a720dae9d8e6ed5019efa85a0f9",
+            "reference": "11336f6f84e16a720dae9d8e6ed5019efa85a0f9",
             "shasum": ""
         },
         "require": {
             "ext-dom": "*",
             "ext-tokenizer": "*",
             "ext-xmlwriter": "*",
-            "php": "^7.2 || ^8.0"
+            "php": "^7.0"
         },
-        "time": "2020-07-12T23:59:07+00:00",
+        "time": "2019-06-13T22:48:21+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -7171,13 +7146,7 @@
                 "role": "Developer"
             }
         ],
-        "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
-        "funding": [
-            {
-                "url": "https://github.com/theseer",
-                "type": "github"
-            }
-        ]
+        "description": "A small library for converting tokenized PHP source code into XML and potentially other formats"
     },
     {
         "name": "tijsverkoyen/css-to-inline-styles",
@@ -7456,21 +7425,21 @@
     },
     {
         "name": "webmozart/assert",
-        "version": "1.9.1",
-        "version_normalized": "1.9.1.0",
+        "version": "1.9.0",
+        "version_normalized": "1.9.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/webmozart/assert.git",
-            "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
+            "reference": "9dc4f203e36f2b486149058bade43c851dd97451"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
-            "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
+            "url": "https://api.github.com/repos/webmozart/assert/zipball/9dc4f203e36f2b486149058bade43c851dd97451",
+            "reference": "9dc4f203e36f2b486149058bade43c851dd97451",
             "shasum": ""
         },
         "require": {
-            "php": "^5.3.3 || ^7.0 || ^8.0",
+            "php": "^5.3.3 || ^7.0",
             "symfony/polyfill-ctype": "^1.8"
         },
         "conflict": {
@@ -7480,7 +7449,7 @@
         "require-dev": {
             "phpunit/phpunit": "^4.8.36 || ^7.5.13"
         },
-        "time": "2020-07-08T17:02:28+00:00",
+        "time": "2020-06-16T10:16:42+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

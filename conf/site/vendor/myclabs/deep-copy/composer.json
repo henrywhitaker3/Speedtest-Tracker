@@ -21,7 +21,7 @@
     },
 
     "require": {
-        "php": "^7.1 || ^8.0"
+        "php": "^7.1"
     },
     "require-dev": {
         "doctrine/collections": "^1.0",

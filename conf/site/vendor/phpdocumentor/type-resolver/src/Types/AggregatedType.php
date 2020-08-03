@@ -39,7 +39,9 @@ abstract class AggregatedType implements Type, IteratorAggregate
     private $token;
 
     /**
-     * @param array<Type> $types
+     * @param Type[] $types
+     *
+     * @phpstan-param list<Type> $types
      */
     public function __construct(array $types, string $token)
     {

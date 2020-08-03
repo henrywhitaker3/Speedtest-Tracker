@@ -10,11 +10,12 @@
         }
     ],
     "require": {
-        "php": "^7.2 || ^8.0",
+        "php": "^7.2",
         "phpdocumentor/reflection-common": "^2.0"
     },
     "require-dev": {
-        "ext-tokenizer": "*"
+        "mockery/mockery": "~1",
+        "ext-tokenizer": "^7.2"
     },
     "autoload": {
         "psr-4": {
