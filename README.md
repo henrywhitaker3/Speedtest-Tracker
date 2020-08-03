@@ -31,6 +31,8 @@ docker create \
 ### Docker compose
 
 ```yml
+version: '3.3'
+services:
     speedtest:
         container_name: speedtest
         image: henrywhitaker3/speedtest-tracker
