@@ -1,4 +1,4 @@
-name: Laravel
+name: Dev
 
 on:
   push:
