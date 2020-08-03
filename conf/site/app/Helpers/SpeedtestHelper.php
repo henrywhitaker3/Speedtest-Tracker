@@ -78,7 +78,10 @@ class SpeedtestHelper {
     public static function output()
     {
         $server = SettingsHelper::get('server')['value'];
+
         $binPath = app_path() . DIRECTORY_SEPARATOR . 'Bin' . DIRECTORY_SEPARATOR . 'speedtest';
+        $homePrefix = config('speedtest.home') . ' && ';
+
         if($server != '' && $server != false) {
             $server = explode(',', $server);
             $server = $server[array_rand($server)];
@@ -87,10 +90,10 @@ class SpeedtestHelper {
                 return false;
             }
 
-            return shell_exec('HOME=/config && ' . $binPath . ' -f json -s ' . $server);
+            return shell_exec($homePrefix . $binPath . ' -f json -s ' . $server);
         }
 
-        return shell_exec('HOME=/config && ' . $binPath . ' -f json');
+        return shell_exec($homePrefix . $binPath . ' -f json');
     }
 
     /**
