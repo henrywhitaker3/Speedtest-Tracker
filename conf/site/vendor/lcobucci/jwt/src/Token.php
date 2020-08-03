@@ -12,7 +12,6 @@ use DateTime;
 use DateTimeInterface;
 use Generator;
 use Lcobucci\JWT\Claim\Validatable;
-use Lcobucci\JWT\Signer\Key;
 use OutOfBoundsException;
 
 /**
@@ -183,7 +182,7 @@ class Token
      * Verify if the key matches with the one that created the signature
      *
      * @param Signer $signer
-     * @param Key|string $key
+     * @param string $key
      *
      * @return boolean
      *

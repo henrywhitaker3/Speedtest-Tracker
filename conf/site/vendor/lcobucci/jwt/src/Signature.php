@@ -7,8 +7,6 @@
 
 namespace Lcobucci\JWT;
 
-use Lcobucci\JWT\Signer\Key;
-
 /**
  * This class represents a token signature
  *
@@ -40,7 +38,7 @@ class Signature
      *
      * @param Signer $signer
      * @param string $payload
-     * @param Key|string $key
+     * @param string $key
      *
      * @return boolean
      */
