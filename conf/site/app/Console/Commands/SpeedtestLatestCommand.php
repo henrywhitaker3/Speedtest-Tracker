@@ -35,7 +35,7 @@ class SpeedtestLatestCommand extends Command
     /**
      * Prints the latest speedtest values.
      *
-     * @return null
+     * @return void
      */
     public function handle()
     {

@@ -8,6 +8,8 @@ use App\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 
 class SettingsController extends Controller
 {
@@ -15,7 +17,7 @@ class SettingsController extends Controller
     /**
      * Return all settings
      *
-     * @return  array
+     * @return  Collection
      */
     public function index()
     {
@@ -37,7 +39,7 @@ class SettingsController extends Controller
      * Store/update a setting
      *
      * @param   Request $request
-     * @return  Response
+     * @return  JsonResponse
      */
     public function store(Request $request)
     {
@@ -72,7 +74,7 @@ class SettingsController extends Controller
      * Bulk store/update a setting
      *
      * @param   Request $request
-     * @return  Response
+     * @return  JsonResponse
      */
     public function bulkStore(Request $request)
     {
@@ -92,11 +94,10 @@ class SettingsController extends Controller
         $settings = [];
         foreach($request->data as $d) {
             if(!isset($d['value']) || $d['value'] == null) {
-                $d['value'] = '';
+                    $d['value'] = '';
             }
 
             if($d['name'] == 'speedtest_overview_time') {
-
                 $ok = [ '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ];
                 if(!in_array($d['value'], $ok)) {
                     return response()->json([
@@ -135,6 +136,12 @@ class SettingsController extends Controller
         return SettingsHelper::getConfig();
     }
 
+
+    /**
+     * Trigger a test of all notification agents
+     *
+     * @return JsonResponse
+     */
     public function testNotification()
     {
         SettingsHelper::testNotification();
