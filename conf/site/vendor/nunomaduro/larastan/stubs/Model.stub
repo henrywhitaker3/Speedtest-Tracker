@@ -1,0 +1,12 @@
+<?php
+
+namespace Illuminate\Database\Eloquent;
+
+/**
+ * @implements \ArrayAccess<string, mixed>
+ */
+abstract class Model implements \JsonSerializable, \ArrayAccess
+{
+}
+
+class ModelNotFoundException extends \RuntimeException {}

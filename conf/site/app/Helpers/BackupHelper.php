@@ -55,7 +55,7 @@ class BackupHelper {
      *
      * @param   array|string    $array  Backup data
      * @param   string          $format json|csv
-     * @return  boolean
+     * @return  bool
      */
     public static function restore($array, $format)
     {
@@ -101,5 +101,7 @@ class BackupHelper {
 
             return true;
         }
+
+        return false;
     }
 }

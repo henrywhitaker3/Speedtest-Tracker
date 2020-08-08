@@ -7,6 +7,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class BackupController extends Controller
 {
@@ -15,7 +16,7 @@ class BackupController extends Controller
      * Get backup of speedtests
      *
      * @param   Request $request
-     * @return  file
+     * @return  mixed|JsonResponse
      */
     public function backup(Request $request)
     {
@@ -36,7 +37,7 @@ class BackupController extends Controller
      * Retore from a backup
      *
      * @param   Request $request
-     * @return  Response
+     * @return  JsonResponse
      */
     public function restore(Request $request)
     {
