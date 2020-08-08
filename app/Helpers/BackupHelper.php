@@ -29,10 +29,10 @@ class BackupHelper {
                 $csv = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix() . $name . '.csv';
                 $name = $name . '.csv';
                 $handle = fopen($csv, 'w+');
-                fputcsv($handle, array('id', 'ping', 'download', 'upload', 'created_at', 'updated_at'));
+                fputcsv($handle, array('id', 'ping', 'download', 'upload', 'created_at', 'updated_at', 'server_id', 'server_name', 'server_host', 'url', 'failed'));
 
-                foreach($data as $d) {
-                    fputcsv($handle, array($d->id, $d->ping, $d->download, $d->upload, $d->created_at, $d->updated_at));
+                foreach ($data as $d) {
+                    fputcsv($handle, array($d->id, $d->ping, $d->download, $d->upload, $d->created_at, $d->updated_at, $d->server_id, $d->server_name, $d->server_host, $d->url, $d->failed));
                 }
 
                 fclose($handle);
