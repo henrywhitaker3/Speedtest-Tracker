@@ -17,7 +17,7 @@ class SpeedtestHelper {
      * Runs/processes speedtest output to created a Speedtest object
      *
      * @param   boolean|string  $output If false, new speedtest runs. If anything else, will try to parse as JSON for speedtest results.
-     * @return \App\Speedtest|boolean
+     * @return \App\Speedtest|bool
      */
     public static function runSpeedtest($output = false, $scheduled = true)
     {
@@ -61,7 +61,7 @@ class SpeedtestHelper {
             ]);
         }
 
-        if(!isset($test) || $test == false) {
+        if($test == false) {
             return false;
         }
 
@@ -142,14 +142,14 @@ class SpeedtestHelper {
     /**
      * Parses network speeds and return converted to Mbps
      *
-     * @param   array  $input
+     * @param   string  $input
      * @return  array
      */
     public static function parseUnits($input)
     {
         $input = explode(' ', $input);
 
-        $val = $input[0];
+        $val = (float)$input[0];
         $unit = explode('/', $input[1])[0];
 
         switch($unit) {
@@ -256,7 +256,7 @@ class SpeedtestHelper {
     /**
      * Create a backup of the SQLite database
      *
-     * @return boolean
+     * @return null|boolean
      */
     public static function dbBackup()
     {
@@ -277,7 +277,7 @@ class SpeedtestHelper {
     /**
      * Delete all speedtests from the database
      *
-     * @return boolean|string
+     * @return array
      */
     public static function deleteAll()
     {
@@ -290,7 +290,6 @@ class SpeedtestHelper {
                         'success' => true,
                     ];
                 }
-
             }
 
             return [

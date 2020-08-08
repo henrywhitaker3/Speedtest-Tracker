@@ -34,7 +34,7 @@ class SpeedtestCommand extends Command
     /**
      * Runs a speedtest synchroonously and displays the results..
      *
-     * @return null
+     * @return void
      */
     public function handle()
     {

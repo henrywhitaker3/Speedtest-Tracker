@@ -12,7 +12,7 @@ class SettingsHelper {
      * Get a Setting object by name
      *
      * @param   String                  $name   The name field in the setting table
-     * @return  \App\Setting|boolean    $name   The Setting object. Returns false if no mathcing obj.
+     * @return  \App\Setting|bool|array    $name   The Setting object. Returns false if no mathcing obj.
      */
     public static function get(String $name)
     {
@@ -32,7 +32,7 @@ class SettingsHelper {
      * Create / update value for Setting object.
      *
      * @param   String  $name   Name of setting
-     * @param   String  $value  Value of setting
+     * @param   String|bool  $value  Value of setting
      * @return  \App\Setting
      */
     public static function set(String $name, $value)
@@ -153,7 +153,7 @@ class SettingsHelper {
      * Send test notification to agents
      *
      * @param boolean|string $agent
-     * @return void
+     * @return bool
      */
     public static function testNotification($agent = true)
     {
@@ -168,5 +168,7 @@ class SettingsHelper {
             event(new TestNotificationEvent([ $agent ]));
             return true;
         }
+
+        return false;
     }
 }
