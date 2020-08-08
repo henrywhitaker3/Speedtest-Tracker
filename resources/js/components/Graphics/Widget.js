@@ -18,14 +18,15 @@ export default class Widget extends Component {
     }
 
     componentDidUpdate = () => {
-        if(this.props.title != this.state.title || this.props.value != this.state.value || this.props.unit != this.state.unit || this.props.icon != this.state.icon || this.props.avg != this.state.avg || this.props.max != this.state.max) {
+        if(this.props.title != this.state.title || this.props.value != this.state.value || this.props.unit != this.state.unit || this.props.icon != this.state.icon || this.props.avg != this.state.avg || this.props.max != this.state.max || this.props.failed != this.state.failed) {
             this.setState({
                 title: this.props.title,
                 value: this.props.value,
                 unit: this.props.unit,
                 icon: this.props.icon,
                 avg: this.props.avg,
-                max: this.props.max
+                max: this.props.max,
+                failed: this.props.failed,
             });
         }
     }
