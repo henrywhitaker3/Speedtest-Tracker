@@ -12,6 +12,8 @@ class SpeedtestOverviewSlack extends Notification
 {
     use Queueable;
 
+    public $data;
+
     /**
      * Create a new notification instance.
      *

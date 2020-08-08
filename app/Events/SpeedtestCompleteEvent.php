@@ -15,6 +15,8 @@ class SpeedtestCompleteEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $speedtest;
+
     /**
      * Create a new event instance.
      *

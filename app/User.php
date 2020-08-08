@@ -78,7 +78,7 @@ class User extends Authenticatable implements JWTSubject
     /**
      * Returns a user's login sessions
      *
-     * @return  array
+     * @return  mixed
      */
     public function sessions()
     {

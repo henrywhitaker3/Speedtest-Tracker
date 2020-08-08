@@ -13,37 +13,51 @@ class UpdateHelper {
     /**
      * URL of updates
      *
-     * @var string
+     * @var string|bool
      */
     public $url;
 
     /**
      * Current app version number
      *
-     * @var string
+     * @var string|bool
      */
     public $currentVersion;
 
     /**
+     * Latest app version number
+     *
+     * @var string|bool
+     */
+    public $latestVersion;
+
+    /**
      * Username of GitHub repo
      *
-     * @var string
+     * @var string|bool
      */
     public $user;
 
     /**
      * Name of GitHub repo
      *
-     * @var string
+     * @var string|bool
      */
     public $repo;
 
     /**
      * Branch of GitHub repo
      *
-     * @var string
+     * @var string|bool
      */
     public $branch;
+
+    /**
+     * Store download
+     *
+     * @var string|null
+     */
+    public $download;
 
     function __construct() {
         $this->currentVersion = config('speedtest.version');
@@ -87,7 +101,7 @@ class UpdateHelper {
     /**
      * Gets the latest version number from GitHub
      *
-     * @return  array   [ repo, branch, version ]
+     * @return  array|bool   [ repo, branch, version ]
      */
     public function checkLatestVersion()
     {
@@ -256,7 +270,6 @@ class UpdateHelper {
         $zip->open($backupZip, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         // Create recursive directory iterator
-        /** @var SplFileInfo[] $files */
         $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($rootPath),
             RecursiveIteratorIterator::LEAVES_ONLY

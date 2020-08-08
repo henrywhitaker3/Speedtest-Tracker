@@ -36,7 +36,7 @@ class SetTelegramOptions extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
