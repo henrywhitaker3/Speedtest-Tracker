@@ -1,4 +1,14 @@
 {
+    "1.7.18": [
+        {
+            "description": "Fixed issue with widgets not updating when switching between failed/successful tests.",
+            "link": ""
+        },
+        {
+            "description": "Updated backup/restore functions to reflect new DB fields.",
+            "link": ""
+        }
+    ],
     "1.7.17": [
         {
             "description": "Updated dependencies.",

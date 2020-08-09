@@ -76,6 +76,36 @@ export default class Restore extends Component {
                             required: false,
                         },
                         {
+                            name: "server_id",
+                            inputName: 'server_id',
+                            required: false,
+                        },
+                        {
+                            name: "server_name",
+                            inputName: 'server_name',
+                            required: false,
+                        },
+                        {
+                            name: "server_host",
+                            inputName: 'server_host',
+                            required: false,
+                        },
+                        {
+                            name: "url",
+                            inputName: 'url',
+                            required: false,
+                        },
+                        {
+                            name: "scheduled",
+                            inputName: 'scheduled',
+                            required: false,
+                        },
+                        {
+                            name: "failed",
+                            inputName: 'failed',
+                            required: false,
+                        },
+                        {
                             name: "updated_at",
                             inputName: 'updated_at',
                             required: false,
