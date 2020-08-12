@@ -6,13 +6,13 @@ use PhpParser\Lexer\Emulative;
 
 final class CoaleseEqualTokenEmulator implements TokenEmulatorInterface
 {
-    public function isEmulationNeeded(string $code) : bool
+    public function getPhpVersion(): string
     {
-        // skip version where this is supported
-        if (version_compare(\PHP_VERSION, Emulative::PHP_7_4, '>=')) {
-            return false;
-        }
+        return Emulative::PHP_7_4;
+    }
 
+    public function isEmulationNeeded(string $code): bool
+    {
         return strpos($code, '??=') !== false;
     }
 
@@ -25,7 +25,7 @@ final class CoaleseEqualTokenEmulator implements TokenEmulatorInterface
             if (isset($tokens[$i + 1])) {
                 if ($tokens[$i][0] === T_COALESCE && $tokens[$i + 1] === '=') {
                     array_splice($tokens, $i, 2, [
-                        [Emulative::T_COALESCE_EQUAL, '??=', $line]
+                        [\T_COALESCE_EQUAL, '??=', $line]
                     ]);
                     $c--;
                     continue;
@@ -36,6 +36,12 @@ final class CoaleseEqualTokenEmulator implements TokenEmulatorInterface
             }
         }
 
+        return $tokens;
+    }
+
+    public function reverseEmulate(string $code, array $tokens): array
+    {
+        // ??= was not valid code previously, don't bother.
         return $tokens;
     }
 }
