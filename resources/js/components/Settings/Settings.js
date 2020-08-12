@@ -159,7 +159,7 @@ export default class Settings extends Component {
                     ]} />
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
-                    <SettingWithModal title="healthchecks.io settings" description="Control settings for healthchecks.io" autoClose={false} settings={[
+                    <SettingWithModal title="healthchecks.io settings" description="Control settings for healthchecks.io" autoClose={true} settings={[
                         {
                             obj: e.healthchecks_uuid,
                             type: 'text'
