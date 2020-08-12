@@ -159,6 +159,18 @@ export default class Settings extends Component {
                     ]} />
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
+                    <SettingWithModal title="healthchecks.io settings" description="Control settings for healthchecks.io" autoClose={true} settings={[
+                        {
+                            obj: e.healthchecks_uuid,
+                            type: 'text'
+                        },
+                        {
+                            obj: e.healthchecks_enabled,
+                            type: 'checkbox'
+                        }
+                    ]} />
+                </Col>
+                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
                     <ResetSettings />
                 </Col>
             </Row>
