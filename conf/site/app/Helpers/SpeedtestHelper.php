@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Speedtest;
 use Carbon\Carbon;
 use Exception;
+use Henrywhitaker3\Healthchecks\Healthchecks;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +52,7 @@ class SpeedtestHelper {
             $test = false;
         }
 
-        if(!$test) {
+        if($test == false) {
             Speedtest::create([
                 'ping' => 0,
                 'upload' => 0,
@@ -59,9 +60,7 @@ class SpeedtestHelper {
                 'failed' => true,
                 'scheduled' => $scheduled,
             ]);
-        }
 
-        if($test == false) {
             return false;
         }
 

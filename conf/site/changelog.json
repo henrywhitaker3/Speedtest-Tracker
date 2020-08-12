@@ -1,4 +1,10 @@
 {
+    "1.8.0": [
+        {
+            "description": "Added healthchecks.io integration.",
+            "link": ""
+        }
+    ],
     "1.7.19": [
         {
             "description": "Updated dependencies.",
