@@ -205,7 +205,6 @@ export default class HistoryGraph extends Component {
                 failData.datasets[1].data.push(fail);
                 failData.labels.push(new Date(e.date).toLocaleString([], {year: '2-digit', month:'2-digit', day:'2-digit'}));
             })
-            console.log(failData);
 
             this.setState({
                 failData: failData,
