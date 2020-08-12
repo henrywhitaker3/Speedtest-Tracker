@@ -284,14 +284,34 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
             throw new CollectionMismatchException('Collection must be of type ' . static::class);
         }
 
-        $comparator = function ($a, $b) {
-            return $a === $b ? 0 : -1;
+        // When using generics (Collection.php, Set.php, etc),
+        // we also need to make sure that the internal types match each other
+        if ($other->getType() !== $this->getType()) {
+            throw new CollectionMismatchException('Collection items must be of type ' . $this->getType());
+        }
+
+        $comparator = function ($a, $b): int {
+            // If the two values are object, we convert them to unique scalars.
+            // If the collection contains mixed values (unlikely) where some are objects
+            // and some are not, we leave them as they are.
+            // The comparator should still work and the result of $a < $b should
+            // be consistent but unpredictable since not documented.
+            if (is_object($a) && is_object($b)) {
+                $a = spl_object_id($a);
+                $b = spl_object_id($b);
+            }
+
+            return $a === $b ? 0 : ($a < $b ? 1 : -1);
         };
 
         $diffAtoB = array_udiff($this->data, $other->data, $comparator);
         $diffBtoA = array_udiff($other->data, $this->data, $comparator);
+        $diff = array_merge($diffAtoB, $diffBtoA);
 
-        return new static(array_merge($diffAtoB, $diffBtoA));
+        $collection = clone $this;
+        $collection->data = $diff;
+
+        return $collection;
     }
 
     /**
@@ -312,11 +332,32 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
             throw new CollectionMismatchException('Collection must be of type ' . static::class);
         }
 
-        $intersect = array_uintersect($this->data, $other->data, function ($a, $b) {
-            return $a === $b ? 0 : -1;
-        });
+        // When using generics (Collection.php, Set.php, etc),
+        // we also need to make sure that the internal types match each other
+        if ($other->getType() !== $this->getType()) {
+            throw new CollectionMismatchException('Collection items must be of type ' . $this->getType());
+        }
 
-        return new static($intersect);
+        $comparator = function ($a, $b): int {
+            // If the two values are object, we convert them to unique scalars.
+            // If the collection contains mixed values (unlikely) where some are objects
+            // and some are not, we leave them as they are.
+            // The comparator should still work and the result of $a < $b should
+            // be consistent but unpredictable since not documented.
+            if (is_object($a) && is_object($b)) {
+                $a = spl_object_id($a);
+                $b = spl_object_id($b);
+            }
+
+            return $a === $b ? 0 : ($a < $b ? 1 : -1);
+        };
+
+        $intersect = array_uintersect($this->data, $other->data, $comparator);
+
+        $collection = clone $this;
+        $collection->data = $intersect;
+
+        return $collection;
     }
 
     /**
@@ -339,10 +380,23 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
                 );
             }
 
+            // When using generics (Collection.php, Set.php, etc),
+            // we also need to make sure that the internal types match each other
+            if ($collection->getType() !== $this->getType()) {
+                throw new CollectionMismatchException(
+                    sprintf('Collection items in collection with index %d must be of type %s', $index, $this->getType())
+                );
+            }
+
             $temp[] = $collection->toArray();
         }
 
-        return new static(array_merge(...$temp));
+        $merge = array_merge(...$temp);
+
+        $collection = clone $this;
+        $collection->data = $merge;
+
+        return $collection;
     }
 
     /**

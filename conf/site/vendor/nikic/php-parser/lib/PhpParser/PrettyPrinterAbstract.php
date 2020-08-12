@@ -999,6 +999,7 @@ abstract class PrettyPrinterAbstract
             || $node instanceof Expr\ArrayDimFetch
             || $node instanceof Expr\FuncCall
             || $node instanceof Expr\MethodCall
+            || $node instanceof Expr\NullsafeMethodCall
             || $node instanceof Expr\StaticCall
             || $node instanceof Expr\Array_);
     }
@@ -1015,9 +1016,11 @@ abstract class PrettyPrinterAbstract
             || $node instanceof Node\Name
             || $node instanceof Expr\ArrayDimFetch
             || $node instanceof Expr\PropertyFetch
+            || $node instanceof Expr\NullsafePropertyFetch
             || $node instanceof Expr\StaticPropertyFetch
             || $node instanceof Expr\FuncCall
             || $node instanceof Expr\MethodCall
+            || $node instanceof Expr\NullsafeMethodCall
             || $node instanceof Expr\StaticCall
             || $node instanceof Expr\Array_
             || $node instanceof Scalar\String_
@@ -1138,11 +1141,19 @@ abstract class PrettyPrinterAbstract
                 'var' => self::FIXUP_DEREF_LHS,
                 'name' => self::FIXUP_BRACED_NAME,
             ],
+            Expr\NullsafeMethodCall::class => [
+                'var' => self::FIXUP_DEREF_LHS,
+                'name' => self::FIXUP_BRACED_NAME,
+            ],
             Expr\StaticPropertyFetch::class => [
                 'class' => self::FIXUP_DEREF_LHS,
                 'name' => self::FIXUP_VAR_BRACED_NAME,
             ],
             Expr\PropertyFetch::class => [
+                'var' => self::FIXUP_DEREF_LHS,
+                'name' => self::FIXUP_BRACED_NAME,
+            ],
+            Expr\NullsafePropertyFetch::class => [
                 'var' => self::FIXUP_DEREF_LHS,
                 'name' => self::FIXUP_BRACED_NAME,
             ],
@@ -1303,6 +1314,7 @@ abstract class PrettyPrinterAbstract
             'Expr_Isset->vars' => ', ',
             'Expr_List->items' => ', ',
             'Expr_MethodCall->args' => ', ',
+            'Expr_NullsafeMethodCall->args' => ', ',
             'Expr_New->args' => ', ',
             'Expr_PrintableNewAnonClass->args' => ', ',
             'Expr_StaticCall->args' => ', ',
@@ -1320,12 +1332,14 @@ abstract class PrettyPrinterAbstract
             'Stmt_Global->vars' => ', ',
             'Stmt_GroupUse->uses' => ', ',
             'Stmt_Interface->extends' => ', ',
+            'Stmt_Match->arms' => ', ',
             'Stmt_Property->props' => ', ',
             'Stmt_StaticVar->vars' => ', ',
             'Stmt_TraitUse->traits' => ', ',
             'Stmt_TraitUseAdaptation_Precedence->insteadof' => ', ',
             'Stmt_Unset->vars' => ', ',
             'Stmt_Use->uses' => ', ',
+            'MatchArm->conds' => ', ',
 
             // statement lists
             'Expr_Closure->stmts' => "\n",
@@ -1368,6 +1382,7 @@ abstract class PrettyPrinterAbstract
             'Expr_Closure->params' => ['(', '', ''],
             'Expr_FuncCall->args' => ['(', '', ''],
             'Expr_MethodCall->args' => ['(', '', ''],
+            'Expr_NullsafeMethodCall->args' => ['(', '', ''],
             'Expr_New->args' => ['(', '', ''],
             'Expr_PrintableNewAnonClass->args' => ['(', '', ''],
             'Expr_PrintableNewAnonClass->implements' => [null, ' implements ', ''],
