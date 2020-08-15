@@ -62,7 +62,7 @@ export default class TableRow extends Component {
                         <td>
                             <span onClick={this.toggleShow} className="ti-arrow-top-right mouse"></span>
                             <Modal show={show} onHide={this.toggleShow}>
-                                <Modal.Header>
+                                <Modal.Header closeButton>
                                     <Modal.Title>More info</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body className="text-center">

@@ -1,8 +1,8 @@
-name: Stable
+name: PR
 
 on:
-  push:
-    branches: [ master ]
+  pull_request:
+    branches: [ master, dev, alpha ]
 
 jobs:
   laravel-tests:

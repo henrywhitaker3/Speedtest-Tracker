@@ -1,65 +1,59 @@
 <?php
 
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Version numebr
-    |--------------------------------------------------------------------------
-    */
-
-    'version' => '1.8.1',
 
     /*
     |--------------------------------------------------------------------------
-    | Installation type
-    |--------------------------------------------------------------------------
-    */
-
-    'install' => 'manual',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Path for HOME variable
-    |--------------------------------------------------------------------------
-    */
-
-    'home' => 'HOME=' . base_path() . DIRECTORY_SEPARATOR,
-
-    /*
-    |--------------------------------------------------------------------------
-    | GitHub Repo Variables
-    |--------------------------------------------------------------------------
-    */
-
-    'user' => 'henrywhitaker3',
-    'repo' => 'Speedtest-Tracker',
-    'branch' => 'master',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Excluded Dirs
+    | Healthchecks enabled
     |--------------------------------------------------------------------------
     |
-    | Dirs excluded from the self-updating function
+    | This option defines whether healthchecks integrations are enabled
+    |
     */
 
-    'exclude_dirs' => [
-        'node_modules/',
-        'bootstrap/cache/',
-        'bower/',
-        'storage/',
-        'vendor/',
-    ],
+    'healthchecks_enabled' => false,
 
     /*
     |--------------------------------------------------------------------------
-    | Excluded Files
+    | Healthchecks UUID
     |--------------------------------------------------------------------------
     |
-    | Files excluded from the self-updating function
+    | This option defines the UUID for healthchecks
+    |
     */
 
-    'exclude_files' => [
-        'database/speed.db',
-    ],
+    'healthchecks_uuid' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Slack webhook
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the slack webhook url
+    |
+    */
+
+    'slack_webhook' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Telegram bot token
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the telegram bot token
+    |
+    */
+
+    'telegram_bot_token' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Telegram chat id
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the telegram chat id
+    |
+    */
+
+    'telegram_chat_id' => null,
 ];

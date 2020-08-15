@@ -136,7 +136,7 @@ class SpeedtestController extends Controller
     public function run()
     {
         try {
-            $data = SpeedtestJob::dispatch(false);
+            $data = SpeedtestJob::dispatch(false, config('integrations'));
             return response()->json([
                 'method' => 'run speedtest',
                 'data' => 'a new speedtest has been added to the queue'
