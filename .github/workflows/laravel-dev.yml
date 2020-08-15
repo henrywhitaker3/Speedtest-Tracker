@@ -3,8 +3,6 @@ name: Dev
 on:
   push:
     branches: [ dev ]
-  pull_request:
-    branches: [ ]
 
 jobs:
   laravel-tests:
