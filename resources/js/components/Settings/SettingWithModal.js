@@ -253,7 +253,7 @@ export default class SettingWithModal extends Component {
                                     <div key={e.obj.id}>
                                         <Row>
                                             <Col md={md} sm={sm}>
-                                                <p>{name}</p>
+                                                <p className="mb-0">{name}</p>
                                             </Col>
                                             {e.description == null &&
                                                 <Col md={md} sm={sm}>
