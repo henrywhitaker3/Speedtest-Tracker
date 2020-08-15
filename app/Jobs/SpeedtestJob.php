@@ -7,6 +7,7 @@ use App\Events\SpeedtestFailedEvent;
 use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
 use Exception;
+use Healthcheck;
 use Henrywhitaker3\Healthchecks\Healthchecks;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,16 +20,29 @@ class SpeedtestJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Scheduled bool
+     *
+     * @var bool
+     */
     private $scheduled;
+
+    /**
+     * Integrations config array
+     *
+     * @var array
+     */
+    private $config;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($scheduled = true)
+    public function __construct($scheduled = true, $config = [])
     {
         $this->scheduled = $scheduled;
+        $this->config = $config;
     }
 
     /**
@@ -38,38 +52,49 @@ class SpeedtestJob implements ShouldQueue
      */
     public function handle()
     {
-        $healthchecksEnabled = (bool)SettingsHelper::get('healthchecks_enabled')->value;
-        $healthchecksUuid = SettingsHelper::get('healthchecks_uuid')->value;
-
-        if($healthchecksEnabled === true) {
-            try {
-                $hc = new Healthchecks($healthchecksUuid);
-                $hc->start();
-            } catch(Exception $e) {
-                Log::error($e->getMessage());
-            }
+        if($this->config['healthchecks_enabled'] === true) {
+            $this->healthcheck('start');
         }
         $output = SpeedtestHelper::output();
         $speedtest = SpeedtestHelper::runSpeedtest($output, $this->scheduled);
         if($speedtest == false) {
-            if(isset($hc)) {
-                try {
-                    $hc->fail();
-                } catch(Exception $e) {
-                    //
-                }
+            if($this->config['healthchecks_enabled'] === true) {
+                $this->healthcheck('fail');
             }
+
             event(new SpeedtestFailedEvent());
         } else {
-            if(isset($hc)) {
-                try {
-                    $hc->success();
-                } catch(Exception $e) {
-                    //
-                }
+            if($this->config['healthchecks_enabled'] === true) {
+                $this->healthcheck('success');
             }
+
             event(new SpeedtestCompleteEvent($speedtest));
         }
         return $speedtest;
+    }
+
+    /**
+     * Wrapper to reduce duplication of try/catch for hc
+     *
+     * @param String $method
+     * @return void
+     */
+    private function healthcheck(String $method)
+    {
+        try {
+            if($method === 'start') {
+                Healthcheck::start();
+            }
+
+            if($method === 'success') {
+                Healthcheck::success();
+            }
+
+            if($method === 'fail') {
+                Healthcheck::fail();
+            }
+        } catch(Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 }
