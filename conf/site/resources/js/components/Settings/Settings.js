@@ -159,7 +159,7 @@ export default class Settings extends Component {
                     ]} />
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
-                    <SettingWithModal title="healthchecks.io settings" description="Control settings for healthchecks.io" autoClose={true} settings={[
+                    <SettingWithModal title="healthchecks.io settings" description="Control settings for healthchecks.io" autoClose={false} settings={[
                         {
                             obj: e.healthchecks_uuid,
                             type: 'text'
@@ -167,7 +167,38 @@ export default class Settings extends Component {
                         {
                             obj: e.healthchecks_enabled,
                             type: 'checkbox'
-                        }
+                        },
+                        {
+                            obj: {
+                                id: (Math.floor(Math.random() * 10000) + 1),
+                                name: "Test healthchecks (after saving)",
+                                description: ""
+                            },
+                            type: 'group',
+                            children: [
+                                {
+                                    type: 'button-get',
+                                    url: 'api/settings/test-healthchecks/start',
+                                    btnType: 'outline-success',
+                                    text: 'Start',
+                                    inline: true,
+                                },
+                                {
+                                    type: 'button-get',
+                                    url: 'api/settings/test-healthchecks/success',
+                                    btnType: 'success',
+                                    text: 'Success',
+                                    inline: true,
+                                },
+                                {
+                                    type: 'button-get',
+                                    url: 'api/settings/test-healthchecks/fail',
+                                    btnType: 'danger',
+                                    text: 'Fail',
+                                    inline: true,
+                                },
+                            ]
+                        },
                     ]} />
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>

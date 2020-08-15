@@ -1,4 +1,18 @@
 {
+    "1.8.1": [
+        {
+            "description": "Added healthchecks.io test buttons.",
+            "link": ""
+        },
+        {
+            "description": "Added close buttons to modals.",
+            "link": ""
+        },
+        {
+            "description": "Back-end config handling changes.",
+            "link": ""
+        }
+    ],
     "1.8.0": [
         {
             "description": "Added healthchecks.io integration.",
