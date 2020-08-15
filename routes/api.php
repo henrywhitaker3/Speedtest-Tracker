@@ -70,7 +70,9 @@ Route::group([
 ], function () {
     Route::get('/config', 'SettingsController@config')
          ->name('settings.config');
-    Route::get('/test-notification', 'SettingsController@testNotification')
+    Route::get('/test-notification', 'IntegrationsController@testNotification')
+         ->name('settings.test_notification');
+    Route::get('/test-healthchecks/{method}', 'IntegrationsController@testHealthchecks')
          ->name('settings.test_notification');
     Route::get('/', 'SettingsController@index')
          ->name('settings.index');
