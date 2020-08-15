@@ -36,6 +36,9 @@ jobs:
     - name: Download Speedtest binary
       run: wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz && tar zxvf speedtest.tgz && mv speedtest app/Bin/
     - name: Accept EULA
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
       run: php artisan speedtest:eula
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
