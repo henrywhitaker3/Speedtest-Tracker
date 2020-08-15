@@ -135,19 +135,4 @@ class SettingsController extends Controller
     {
         return SettingsHelper::getConfig();
     }
-
-
-    /**
-     * Trigger a test of all notification agents
-     *
-     * @return JsonResponse
-     */
-    public function testNotification()
-    {
-        SettingsHelper::testNotification();
-
-        return response()->json([
-            'method' => 'test notificaiton agents'
-        ], 200);
-    }
 }

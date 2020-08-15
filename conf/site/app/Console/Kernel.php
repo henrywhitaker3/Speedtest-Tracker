@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(new SpeedtestJob)->cron(SettingsHelper::get('schedule')['value']);
+        $schedule->job(new SpeedtestJob(true, config('integrations')))->cron(SettingsHelper::get('schedule')['value']);
         $schedule->command('speedtest:overview')->cron('0 ' . SettingsHelper::get('speedtest_overview_time')->value . ' * * *');
     }
 
