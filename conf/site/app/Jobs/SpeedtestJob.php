@@ -82,16 +82,17 @@ class SpeedtestJob implements ShouldQueue
     private function healthcheck(String $method)
     {
         try {
+            $hc = new Healthchecks(SettingsHelper::get('healthchecks_uuid')->value);
             if($method === 'start') {
-                Healthcheck::start();
+                $hc->start();
             }
 
             if($method === 'success') {
-                Healthcheck::success();
+                $hc->success();
             }
 
             if($method === 'fail') {
-                Healthcheck::fail();
+                $hc->fail();
             }
         } catch(Exception $e) {
             Log::error($e->getMessage());
