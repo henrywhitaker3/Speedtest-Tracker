@@ -81,7 +81,21 @@ Container images are configured using parameters passed at runtime (such as thos
 |     `-e TELEGRAM_CHAT_ID`    |   Optional. Telegram chat ID.   |
 |     `-e PUID`             |   Optional. Supply a local user ID for volume permissions   |
 |     `-e PGID`             |   Optional. Supply a local group ID for volume permissions  |
+|     `-e AUTH`             |   Optional. Set to 'true' to enable authentication for the app |
 
+### Authentication
+
+Authentication is optional. When enabled, unauthenticated users will only be able to see the graphs and tests table. To be able to queue a new speedtest, backup/restore data and update instance settings you will need to log in. To enable authentication, pass the `AUTH=true` environment variable in docker or run `php artisan speedtest:auth --enable` for manual installs (same command with `--disable` to turn it off).
+
+The default credentials are:
+
+|   Field       |   Function        |
+|   ---         |   ---             |
+|   username    |   admin@admin.com |
+|   password    |   password        |
+    
+After enabling, you should change the password through the web UI.
+    
 ### Manual Install
 
 For manual installtions, please follow the instrucitons [here](https://github.com/henrywhitaker3/Speedtest-Tracker/wiki/Manual-Installation).
