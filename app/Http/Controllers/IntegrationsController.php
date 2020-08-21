@@ -13,6 +13,13 @@ use Ramsey\Uuid\Exception\InvalidUuidStringException;
 
 class IntegrationsController extends Controller
 {
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api');
+        }
+    }
+
     /**
      * Test the healthchecks config
      *

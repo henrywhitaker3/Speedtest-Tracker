@@ -8,11 +8,14 @@ use App\Helpers\EmailVerificationHelper;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\LoginSession;
+use App\Rules\CurrentPasswordMatches;
 use App\User;
 use DateTime;
+use Hash;
 use Illuminate\Support\Facades\Request as RequestFacade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Log;
 use Ramsey\Uuid\Uuid;
 
 class AuthController extends Controller
@@ -164,6 +167,10 @@ class AuthController extends Controller
             [ 'expires', '>', time() ]
         ])->get();
 
+        $sessions = $sessions->map(function ($item) {
+            return collect($item)->forget(['token']);
+        });
+
         return response()->json([
             'method' => 'get auth sessions',
             'response' => $sessions
@@ -209,6 +216,38 @@ class AuthController extends Controller
         return response()->json([
             'method' => 'verify email address',
             'success' => true,
+        ], 200);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $rules = [
+            'currentPassword' => [ 'string', 'required', new CurrentPasswordMatches() ],
+            'newPassword' => [ 'required', 'string', 'confirmed', 'min:8' ],
+            'logoutDevices' => [ 'required', 'bool' ]
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if($validator->fails()) {
+            return response()->json([
+                'method' => 'reset password',
+                'success' => false,
+                'error' => $validator->errors()
+            ], 403);
+        }
+
+        $user = Auth::user();
+
+        $user->password = $request->newPassword;
+        $user->save();
+
+        if($request->logoutDevices == true) {
+            AuthLoginSession::where('user_id', $user->id)->update([ 'active' => false ]);
+        }
+
+        return response()->json([
+            'method' => 'reset password',
+            'success' => true
         ], 200);
     }
 }
