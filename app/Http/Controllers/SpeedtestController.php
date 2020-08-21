@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
 use App\Jobs\SpeedtestJob;
 use App\Speedtest;
@@ -15,6 +16,13 @@ use Illuminate\Http\JsonResponse;
 
 class SpeedtestController extends Controller
 {
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api')
+                 ->only([ 'run', 'delete', 'deleteAll' ]);
+        }
+    }
 
     /**
      * Returns paginated list of speedtests

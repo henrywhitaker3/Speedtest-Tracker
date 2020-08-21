@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\BackupHelper;
+use App\Helpers\SettingsHelper;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -11,6 +12,13 @@ use Illuminate\Http\JsonResponse;
 
 class BackupController extends Controller
 {
+
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api');
+        }
+    }
 
     /**
      * Get backup of speedtests

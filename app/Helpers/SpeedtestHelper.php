@@ -227,7 +227,7 @@ class SpeedtestHelper {
             $range = [
                 Carbon::today()
             ];
-            for($i = 0; $i < $days; $i++) {
+            for($i = 0; $i < ($days - 1); $i++) {
                 $prev = end($range);
                 $new = $prev->copy()->subDays(1);
                 array_push($range, $new);

@@ -2,6 +2,7 @@
 
 use App\Helpers\SpeedtestHelper;
 use App\Http\Controllers\SpeedtestController;
+use App\Speedtest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -83,3 +84,29 @@ Route::group([
     Route::post('/bulk', 'SettingsController@bulkStore')
          ->name('settings.bulk.update');
 });
+
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'auth'
+    ],
+    function ($router) {
+        Route::post('register', 'AuthController@register')->name('auth.register');
+        Route::post('login', 'AuthController@login')->middleware('throttle:60,1')->name('auth.login');
+        Route::get('logout', 'AuthController@logout')->name('auth.logout');
+        Route::get('refresh', 'AuthController@refresh')->middleware('throttle:60,1')->name('auth.refresh');
+        Route::get('me', 'AuthController@me')->middleware('session_active')->name('auth.me');
+        Route::post('change-password', 'AuthController@changePassword')->middleware('session_active')->name('auth.change_password');
+
+        Route::group(
+            [
+                'middleware' => ['api', 'session_active'],
+                'prefix' => 'sessions'
+            ],
+            function($router) {
+                Route::get('/', 'AuthController@getSessions')->name('auth.sessions.all');
+                Route::delete('/{id}', 'AuthController@deleteSession')->name('auth.sessions.delete');
+            }
+        );
+    }
+);

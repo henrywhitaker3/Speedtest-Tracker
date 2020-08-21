@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SettingsHelper;
 use Exception;
 use Updater;
 use Illuminate\Http\Request;
@@ -9,6 +10,12 @@ use Illuminate\Http\JsonResponse;
 
 class UpdateController extends Controller
 {
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api');
+        }
+    }
 
     /**
      * Check for new update
