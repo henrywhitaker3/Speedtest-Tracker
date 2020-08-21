@@ -108,7 +108,7 @@ if [ -z ${AUTH+x} ]; then
     echo "AUTH variable not set. Disabling authentication"
     php /config/www/artisan speedtest:auth --disable
 else
-    if [ $AUTH == 'true ']; then
+    if [ $AUTH == 'true' ]; then
         echo "AUTH variable set. Enabling authentication"
         php /config/www/artisan speedtest:auth --enable
     else
