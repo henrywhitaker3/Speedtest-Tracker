@@ -57,6 +57,9 @@ export default class ResetPassword extends Component {
         .then((resp) => {
             toast.success('Password updated');
             this.toggleModal();
+            if(this.state.logoutDevices == true) {
+                location.reload(true);
+            }
         })
         .catch((err) => {
             if(err.response) {

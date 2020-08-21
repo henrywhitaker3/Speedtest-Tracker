@@ -20,7 +20,7 @@ export default class Setting extends Component {
     }
 
     update = () => {
-        var url = 'api/settings';
+        var url = 'api/settings?token=' + window.token;
         var data = {
             name: this.state.name,
             value: this.state.value
