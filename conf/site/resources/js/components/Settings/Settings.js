@@ -143,7 +143,7 @@ export default class Settings extends Component {
                                 description: "After saving your updated notification settings, use this to check your settings are correct."
                             },
                             type: 'button-get',
-                            url: 'api/settings/test-notification'
+                            url: 'api/settings/test-notification?token=' + window.token
                         },
                         {
                             obj: e.speedtest_notifications,
@@ -218,21 +218,21 @@ export default class Settings extends Component {
                             children: [
                                 {
                                     type: 'button-get',
-                                    url: 'api/settings/test-healthchecks/start',
+                                    url: 'api/settings/test-healthchecks/start?token=' + window.token,
                                     btnType: 'outline-success',
                                     text: 'Start',
                                     inline: true,
                                 },
                                 {
                                     type: 'button-get',
-                                    url: 'api/settings/test-healthchecks/success',
+                                    url: 'api/settings/test-healthchecks/success?token=' + window.token,
                                     btnType: 'success',
                                     text: 'Success',
                                     inline: true,
                                 },
                                 {
                                     type: 'button-get',
-                                    url: 'api/settings/test-healthchecks/fail',
+                                    url: 'api/settings/test-healthchecks/fail?token=' + window.token,
                                     btnType: 'danger',
                                     text: 'Fail',
                                     inline: true,
