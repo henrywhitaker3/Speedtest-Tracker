@@ -3,8 +3,11 @@
 namespace App\Listeners;
 
 use App\Helpers\SettingsHelper;
+use App\Helpers\SpeedtestHelper;
+use App\Notifications\SpeedtestAbsoluteThresholdNotificationSlack;
 use App\Notifications\SpeedtestCompleteSlack;
 use App\Notifications\SpeedtestCompleteTelegram;
+use App\Notifications\SpeedtestPercentageThresholdNotificationSlack;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -32,9 +35,40 @@ class SpeedtestCompleteListener
      */
     public function handle($event)
     {
+        Log::info('handling event');
+        Log::info(SettingsHelper::get('threshold_alert_percentage_notifications')->value);
+        if((bool)SettingsHelper::get('threshold_alert_percentage_notifications')->value == true) {
+            $data = $event->speedtest;
+            $errors = SpeedtestHelper::testIsLowerThanThreshold('percentage', $data);
+            if(sizeof($errors) > 0) {
+                try {
+                    Notification::route('slack', SettingsHelper::get('slack_webhook')->value)
+                            ->notify(new SpeedtestPercentageThresholdNotificationSlack($errors));
+                } catch(Exception $e) {
+                    //
+                }
+            }
+        }
+
+        if((bool)SettingsHelper::get('threshold_alert_absolute_notifications')->value == true) {
+            $data = $event->speedtest;
+            Log::info('absolute nots enabled');
+            Log::info($data);
+            $errors = SpeedtestHelper::testIsLowerThanThreshold('absolute', $data);
+            Log::info($errors);
+            if(sizeof($errors) > 0) {
+                try {
+                    Notification::route('slack', SettingsHelper::get('slack_webhook')->value)
+                            ->notify(new SpeedtestAbsoluteThresholdNotificationSlack($errors));
+                } catch(Exception $e) {
+                    //
+                }
+            }
+        }
+
         if(SettingsHelper::get('speedtest_notifications')->value == true) {
             $data = $event->speedtest;
-            if(SettingsHelper::get('slack_webhook')) {
+            if(SettingsHelper::get('slack_webhook')->value) {
                 try {
                     Notification::route('slack', SettingsHelper::get('slack_webhook')->value)
                                 ->notify(new SpeedtestCompleteSlack($data));
