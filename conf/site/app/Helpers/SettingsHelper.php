@@ -145,7 +145,8 @@ class SettingsHelper {
                 'slack_webhook' => SettingsHelper::settingIsEditable('slack_webhook'),
                 'telegram_bot_token' => SettingsHelper::settingIsEditable('telegram_bot_token'),
                 'telegram_chat_id' => SettingsHelper::settingIsEditable('telegram_chat_id'),
-            ]
+            ],
+            'auth' => (bool)SettingsHelper::get('auth')->value
         ];
     }
 

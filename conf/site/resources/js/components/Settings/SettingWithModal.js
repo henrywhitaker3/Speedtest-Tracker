@@ -23,7 +23,7 @@ export default class SettingWithModal extends Component {
     }
 
     update = () => {
-        var url = 'api/settings/bulk';
+        var url = 'api/settings/bulk?token=' + window.token;
         var data = [];
         var settings = this.state.settings;
 

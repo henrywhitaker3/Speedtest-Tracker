@@ -13,6 +13,13 @@ use Illuminate\Support\Collection;
 
 class SettingsController extends Controller
 {
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api')
+                 ->except([ 'config' ]);
+        }
+    }
 
     /**
      * Return all settings

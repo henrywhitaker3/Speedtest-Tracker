@@ -16,11 +16,13 @@ export default class Changelog extends Component {
     }
 
     componentDidMount = () => {
-        this.getChangelog();
+        if( (window.config.auth == true && window.authenticated == true) || window.config.auth == false) {
+            this.getChangelog();
+        }
     }
 
     getChangelog = () => {
-        Axios.get('api/update/changelog')
+        Axios.get('api/update/changelog?token=' + window.token)
         .then((resp) => {
             this.setState({
                 changelog: resp.data.data,

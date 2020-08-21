@@ -1,4 +1,10 @@
 {
+    "1.9.0": [
+        {
+            "description": "Added optional authentication.",
+            "link": ""
+        }
+    ],
     "1.8.1": [
         {
             "description": "Added healthchecks.io test buttons.",
