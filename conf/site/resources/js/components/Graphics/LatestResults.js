@@ -45,7 +45,7 @@ export default class LatestResults extends Component {
     }
 
     newScan = () => {
-        var url = 'api/speedtest/run';
+        var url = 'api/speedtest/run?token=' + window.token;
 
         Axios.get(url)
         .then((resp) => {
@@ -78,25 +78,47 @@ export default class LatestResults extends Component {
                 </Container>
             );
         } else if(data === false) {
-            return (
-                <Container fluid>
-                    <Row>
-                        <Col sm={{ span: 12 }} className="text-center">
-                            <div>
-                                <Button variant="primary" onClick={this.newScan}>Start your first test!</Button>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container>
-            );
+            if( (window.config.auth == true && window.authenticated == true) || window.config.auth == false) {
+                return (
+                    <Container fluid>
+                        <Row>
+                            <Col sm={{ span: 12 }} className="text-center">
+                                <div>
+                                    <Button variant="primary" onClick={this.newScan}>Start your first test!</Button>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Container>
+                );
+            } else if(window.config.auth == true && window.authenticated == false) {
+                return (
+                    <Container fluid>
+                        <Row>
+                            <Col sm={{ span: 12 }} className="text-center">
+                                <div>
+                                    <p>Please login to run the first test</p>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Container>
+                );
+            }
         } else {
             return (
                 <Container fluid>
                     <Row>
                         <Col sm={{ span: 12 }} className="text-center mb-2">
                             <div>
-                                <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newScan}>Test again</Button>
-                                <p className="text-muted mb-0 d-inline-block">Last test performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                                {(window.config.auth == true && window.authenticated == true) || window.config.auth == false ?
+                                    <div>
+                                        <Button className="d-inline-block mx-3 mb-2" variant="primary" onClick={this.newScan}>Test again</Button>
+                                        <p className="text-muted mb-0 d-inline-block">Last test performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                                    </div>
+                                :
+                                    <div>
+                                        <p className="text-muted mb-0 d-inline-block">Last test performed at: {new Date(data.data.created_at).toLocaleString()}</p>
+                                    </div>
+                                }
                             </div>
                         </Col>
                     </Row>

@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->job(new SpeedtestJob(true, config('integrations')))->cron(SettingsHelper::get('schedule')['value']);
         $schedule->command('speedtest:overview')->cron('0 ' . SettingsHelper::get('speedtest_overview_time')->value . ' * * *');
+        $schedule->command('speedtest:clear-sessions')->everyMinute();
     }
 
     /**

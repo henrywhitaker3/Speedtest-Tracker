@@ -104,6 +104,19 @@ else
     sed "s,BASE_PATH=.*,BASE_PATH=$BASE_PATH," -i.bak /config/www/.env
 fi
 
+if [ -z ${AUTH+x} ]; then
+    echo "AUTH variable not set. Disabling authentication"
+    php /config/www/artisan speedtest:auth --disable
+else
+    if [ $AUTH == 'true ']; then
+        echo "AUTH variable set. Enabling authentication"
+        php /config/www/artisan speedtest:auth --enable
+    else
+        echo "AUTH variable set, but not to 'true'. Disabling authentication"
+        php /config/www/artisan speedtest:auth --disable
+    fi
+fi
+
 echo "Clearing old jobs from queue"
 php /config/www/artisan queue:clear
 

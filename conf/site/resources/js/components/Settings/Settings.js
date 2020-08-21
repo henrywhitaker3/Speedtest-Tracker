@@ -19,7 +19,9 @@ export default class Settings extends Component {
     }
 
     componentDidMount = () => {
-        this.getData();
+        if( (window.config.auth == true && window.authenticated == true) || window.config.auth == false) {
+            this.getData();
+        }
     }
 
     toggleShow = () => {
@@ -35,7 +37,7 @@ export default class Settings extends Component {
     }
 
     getData = () => {
-        var url = 'api/settings/';
+        var url = 'api/settings/?token=' + window.token;
 
         Axios.get(url)
         .then((resp) => {
@@ -53,6 +55,7 @@ export default class Settings extends Component {
 
     buildSettingsCards = () => {
         var e = this.state.data;
+
         return (
             <Row>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
@@ -215,39 +218,44 @@ export default class Settings extends Component {
         if(!loading) {
             var cards = this.buildSettingsCards();
         }
-
-        return (
-            <div>
-                <Container className="my-4">
-                    <Row>
-                        <Col sm={{ span: 12 }} className="mb-3 text-center">
-                            <div className="mouse" onClick={this.toggleShow}>
-                                <h4 className="mb-0 mr-2 d-inline">Settings</h4>
-                                {(show) ?
-                                    <span className="ti-angle-up"></span>
-                                :
-                                    <span className="ti-angle-down"></span>
-                                }
-                            </div>
-                        </Col>
-                    </Row>
-                    <Collapse in={show}>
-                        <div>
-                            <Row>
-                                <Col sm={{ span: 12 }}>
-                                    {loading ?
-                                        <Loader small />
+        if( (window.config.auth == true && window.authenticated == true) || window.config.auth == false) {
+            return (
+                <div>
+                    <Container className="my-4">
+                        <Row>
+                            <Col sm={{ span: 12 }} className="mb-3 text-center">
+                                <div className="mouse" onClick={this.toggleShow}>
+                                    <h4 className="mb-0 mr-2 d-inline">Settings</h4>
+                                    {(show) ?
+                                        <span className="ti-angle-up"></span>
                                     :
-                                        cards
+                                        <span className="ti-angle-down"></span>
                                     }
-                                </Col>
-                            </Row>
-                        </div>
-                    </Collapse>
-                </Container>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Collapse in={show}>
+                            <div>
+                                <Row>
+                                    <Col sm={{ span: 12 }}>
+                                        {loading ?
+                                            <Loader small />
+                                        :
+                                            cards
+                                        }
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Collapse>
+                    </Container>
 
-            </div>
-        );
+                </div>
+            );
+        } else {
+            return(
+                <></>
+            )
+        }
     }
 }
 
