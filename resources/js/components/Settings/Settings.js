@@ -158,6 +158,43 @@ export default class Settings extends Component {
                             type: 'number',
                             min: 0,
                             max: 23
+                        },
+                        {
+                            obj: {
+                                id: (Math.floor(Math.random() * 10000) + 1),
+                                name: "Conditional Notifications",
+                                description: ""
+                            },
+                            type: 'group',
+                            children: [
+
+                            ]
+                        },
+                        {
+                            obj: e.threshold_alert_percentage_notifications,
+                            type: 'checkbox',
+                        },
+                        {
+                            obj: e.threshold_alert_percentage,
+                            type: 'number',
+                            min: 0,
+                            max: 100
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_notifications,
+                            type: 'checkbox',
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_download,
+                            type: 'number',
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_upload,
+                            type: 'number',
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_ping,
+                            type: 'number',
                         }
                     ]} />
                 </Col>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 use JsonException;
 
 class SpeedtestHelper {
@@ -300,5 +301,78 @@ class SpeedtestHelper {
             'success' => false,
             'msg' => 'There was an error backing up the database. No speedtests have been deleted.'
         ];
+    }
+
+    /**
+     * Work out if a test is lower than the threshold for historic tests
+     *
+     * @param String $type
+     * @param Speedtest $test
+     * @return array
+     */
+    public static function testIsLowerThanThreshold(String $type, Speedtest $test)
+    {
+        if($type == 'percentage') {
+            $avg = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
+                        ->where('failed', false)
+                        ->get()
+                        ->toArray()[0];
+
+            $threshold = SettingsHelper::get('threshold_alert_percentage')->value;
+
+            if($threshold == '') {
+                return [];
+            }
+
+            $errors = [];
+
+            foreach($avg as $key => $value) {
+                if($key == 'ping') {
+                    $threshold = (float)$value * (1 + ( $threshold / 100 ));
+
+                    if($test->$key > $threshold) {
+                        array_push($errors, $key);
+                    }
+                } else  {
+                    $threshold = (float)$value * (1 - ( $threshold / 100 ));
+
+                    if($test->$key < $threshold) {
+                        array_push($errors, $key);
+                    }
+                }
+            }
+
+            return $errors;
+        }
+
+        if($type == 'absolute') {
+            $thresholds = [
+                'download' => SettingsHelper::get('threshold_alert_absolute_download')->value,
+                'upload' => SettingsHelper::get('threshold_alert_absolute_upload')->value,
+                'ping' => SettingsHelper::get('threshold_alert_absolute_ping')->value,
+            ];
+
+            $errors = [];
+
+            foreach($thresholds as $key => $value) {
+                if($value == '') {
+                    continue;
+                }
+
+                if($key == 'ping') {
+                    if($test->$key > $value) {
+                        array_push($errors, $key);
+                    }
+                } else {
+                    if($test->$key < $value) {
+                        array_push($errors, $key);
+                    }
+                }
+            }
+
+            return $errors;
+        }
+
+        throw new InvalidArgumentException();
     }
 }
