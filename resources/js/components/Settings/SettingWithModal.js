@@ -239,7 +239,7 @@ export default class SettingWithModal extends Component {
                                     <Row key={e.obj.id}>
                                         <Col md={md} sm={sm}>
                                             <p>{name}</p>
-                                            <Button onClick={() => { Axios.get(e.url) }} >{name}</Button>
+                                            <Button onClick={() => { Axios.get(e.url + '?token=' + window.token) }} >{name}</Button>
                                         </Col>
                                         {e.description == null &&
                                             <Col md={md} sm={sm}>
@@ -266,7 +266,7 @@ export default class SettingWithModal extends Component {
                                                 {e.children.map((ee,ii) => {
                                                     if(ee.type == 'button-get') {
                                                         return (
-                                                            <Button key={ii} variant={ee.btnType} className={'mr-2 mb-3'} onClick={() => { Axios.get(ee.url)
+                                                            <Button key={ii} variant={ee.btnType} className={'mr-2 mb-3'} onClick={() => { Axios.get(ee.url + '?token=' + window.token)
                                                                                                                                                 .then((resp) => { toast.success('Healthcheck sent') })
                                                                                                                                                 .catch((resp) => { resp = resp.response; toast.error(resp.data.error) })
                                                             }} >{ee.text}</Button>
