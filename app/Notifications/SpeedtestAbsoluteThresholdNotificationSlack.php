@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Helpers\NotificationsHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -44,43 +45,13 @@ class SpeedtestAbsoluteThresholdNotificationSlack extends Notification
      */
     public function toSlack($notifiable)
     {
+        $msg = NotificationsHelper::formatAbsoluteThresholdMessage($this->errors);
+
         return (new SlackMessage)
                 ->warning()
-                ->attachment(function ($attachment) {
+                ->attachment(function ($attachment) use ($msg) {
                     $attachment->title('Speedtest absolute threshold error')
-                               ->content($this->formatMessage());
+                               ->content($msg);
                 });
-    }
-
-    /**
-     * Parse $this->errors and format message
-     *
-     * @return String
-     */
-    public function formatMessage()
-    {
-        $msg = 'For the latest speedtest, the ';
-
-        for($i = 0; $i < sizeof($this->errors); $i++) {
-            $key = $this->errors[$i];
-            $msg = $msg . $key;
-            if(sizeof($this->errors) > 1 && $i < (sizeof($this->errors) - 1)) {
-                $msg = $msg . ', ';
-            }
-        }
-
-        if($msg[-1] != '') {
-            $msg = $msg . ' ';
-        }
-
-        if(sizeof($this->errors) > 1) {
-            $msg = $msg . 'values ';
-        } else {
-            $msg = $msg . 'value ';
-        }
-
-        $msg = $msg . 'exceeded the absolute threshold';
-
-        return $msg;
     }
 }
