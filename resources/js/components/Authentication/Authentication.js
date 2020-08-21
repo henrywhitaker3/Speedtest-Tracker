@@ -15,7 +15,7 @@ export default class Authentication extends Component {
     }
 
     toggleCollapse = () => {
-        if(this.state.show) {
+        if(this.state.showCollapse) {
             this.setState({
                 showCollapse: false
             });
@@ -27,7 +27,7 @@ export default class Authentication extends Component {
     }
 
     toggleModal = () => {
-        if(this.state.show) {
+        if(this.state.showModal) {
             this.setState({
                 showModal: false
             });
