@@ -1,3 +1,7 @@
+# 7.0.3
+
+- Fixed: substracted css-variable from zero ([#111](https://github.com/postcss/postcss-calc/issues/111))
+
 # 7.0.2
 
 - Fixed: incorrect reduction of subtraction from zero ([#88](https://github.com/postcss/postcss-calc/issues/88))

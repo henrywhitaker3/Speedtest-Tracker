@@ -3,6 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "convertFunctionParams", {
+  enumerable: true,
+  get: function () {
+    return _params.default;
+  }
+});
 exports.default = void 0;
 
 var _helperPluginUtils = require("@babel/helper-plugin-utils");
