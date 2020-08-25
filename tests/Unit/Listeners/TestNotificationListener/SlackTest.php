@@ -1,11 +1,10 @@
 <?php
 
-namespace Tests\Unit\Listeners\SpeedtestOverviewListener;
+namespace Tests\Unit\Listeners\TestNotificationListener;
 
+use App\Events\TestNotificationEvent;
 use App\Helpers\SettingsHelper;
-use App\Listeners\SpeedtestOverviewListener;
-use App\Speedtest;
-use Exception;
+use App\Listeners\TestNotificationListener;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use stdClass;
 use Tests\TestCase;
@@ -19,14 +18,14 @@ class SlackTest extends TestCase
      *
      * @return void
      */
-    public function testSlackOverviewNotification()
+    public function testSlackTest()
     {
-        SettingsHelper::set('speedtest_overview_notification', true);
         SettingsHelper::set('slack_webhook', env('SLACK_WEBHOOK'));
 
-        $l = new SpeedtestOverviewListener();
+        $l = new TestNotificationListener();
 
         $event = new stdClass();
+        $event->agents = [ 'slack' ];
 
         try {
             $l->handle($event);
