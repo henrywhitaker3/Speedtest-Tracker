@@ -78,7 +78,7 @@ class IntegrationsController extends Controller
         SettingsHelper::testNotification();
 
         return response()->json([
-            'method' => 'test notificaiton agents'
+            'method' => 'test notification agents'
         ], 200);
     }
 }
