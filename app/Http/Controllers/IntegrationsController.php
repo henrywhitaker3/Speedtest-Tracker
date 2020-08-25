@@ -30,17 +30,17 @@ class IntegrationsController extends Controller
         $methodResp = 'test healthchecks \'' . $method . '\' endpoint';
 
         try {
-            $hc = new Healthchecks(config('integrations.healthchecks_uuid'));
+            // SettingsHelper::loadIntegrationConfig();
             if($method == 'success') {
-                $hc->success();
+                Healthcheck::success();
             }
 
             if($method == 'fail') {
-                $hc->fail();
+                Healthcheck::fail();
             }
 
             if($method == 'start') {
-                $hc->start();
+                Healthcheck::start();
             }
 
             return response()->json([
