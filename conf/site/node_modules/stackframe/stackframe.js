@@ -30,8 +30,9 @@
     var numericProps = ['columnNumber', 'lineNumber'];
     var stringProps = ['fileName', 'functionName', 'source'];
     var arrayProps = ['args'];
+    var objectProps = ['evalOrigin'];
 
-    var props = booleanProps.concat(numericProps, stringProps, arrayProps);
+    var props = booleanProps.concat(numericProps, stringProps, arrayProps, objectProps);
 
     function StackFrame(obj) {
         if (!obj) return;

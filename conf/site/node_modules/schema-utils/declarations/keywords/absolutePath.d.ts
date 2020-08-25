@@ -9,6 +9,4 @@ export type SchemaUtilErrorObject = import('ajv').ErrorObject & {
  * @param {Ajv} ajv
  * @returns {Ajv}
  */
-declare function addAbsolutePathKeyword(
-  ajv: import('ajv').Ajv
-): import('ajv').Ajv;
+declare function addAbsolutePathKeyword(ajv: Ajv): Ajv;

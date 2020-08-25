@@ -1,3 +1,9 @@
+# 3.2.0
+
+ - Add `events.once` from Node.js 11.13.0.
+
+   To use this function, Promises must be supported in the environment. Use a polyfill like `es6-promise` if you support older browsers.
+
 # 3.1.0 (2020-01-08)
 
 `events` now matches the Node.js 11.12.0 API.

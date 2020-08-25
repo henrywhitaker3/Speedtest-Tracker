@@ -150,7 +150,9 @@ function _default({
         return;
       }
     }
-  } else if (t.isAssignmentExpression(parent)) {
+  } else if (t.isAssignmentExpression(parent, {
+    operator: "="
+  })) {
     id = parent.left;
   } else if (!id) {
     return;
