@@ -144,6 +144,7 @@ class SpeedtestController extends Controller
     public function run()
     {
         try {
+            SettingsHelper::loadIntegrationConfig();
             $data = SpeedtestJob::dispatch(false, config('integrations'));
             return response()->json([
                 'method' => 'run speedtest',

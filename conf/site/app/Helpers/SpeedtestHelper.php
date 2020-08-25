@@ -263,8 +263,12 @@ class SpeedtestHelper {
         if(env('DB_CONNECTION') === 'sqlite') {
             if(env('DB_DATABASE') !== null) {
                 $current = env('DB_DATABASE');
-                if(File::copy($current, $current . '.bak')) {
-                    return true;
+                try {
+                    if(File::copy($current, $current . '.bak')) {
+                        return true;
+                    }
+                }catch(Exception $e) {
+                    return false;
                 }
             }
 
@@ -283,23 +287,18 @@ class SpeedtestHelper {
     {
         Cache::flush();
 
-        if(SpeedtestHelper::dbBackup() !== false) {
-            if(sizeof(Speedtest::whereNotNull('id')->get()) > 0) {
-                if(Speedtest::whereNotNull('id')->delete()) {
-                    return [
-                        'success' => true,
-                    ];
-                }
-            }
+        SpeedtestHelper::dbBackup();
 
-            return [
-                'success' => true,
-            ];
+        if(sizeof(Speedtest::whereNotNull('id')->get()) > 0) {
+            if(Speedtest::whereNotNull('id')->delete()) {
+                return [
+                    'success' => true,
+                ];
+            }
         }
 
         return [
-            'success' => false,
-            'msg' => 'There was an error backing up the database. No speedtests have been deleted.'
+            'success' => true,
         ];
     }
 

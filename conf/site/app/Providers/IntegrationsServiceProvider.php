@@ -37,28 +37,12 @@ class IntegrationsServiceProvider extends ServiceProvider
     {
         if(File::exists(env('DB_DATABASE'))) {
             if(Schema::hasTable('settings')) {
-                $settings = [
-                    'healthchecks_enabled' => (bool)SettingsHelper::get('healthchecks_enabled')->value,
-                    'healthchecks_uuid' => SettingsHelper::get('healthchecks_uuid')->value,
-                    'slack_webhook' => SettingsHelper::get('slack_webhook')->value,
-                    'telegram_bot_token' => SettingsHelper::get('telegram_bot_token')->value,
-                    'telegram_chat_id' => SettingsHelper::get('telegram_chat_id')->value,
-                ];
+                $setting = SettingsHelper::get('healthchecks_uuid');
 
-                foreach($settings as $key => $value) {
-                    $key = 'integrations.' . $key;
-
-                    if($value === "") {
-                        $value = null;
-                    }
-
-                    config()->set([ $key => $value ]);
-                }
-
-                if($settings['healthchecks_enabled']) {
+                if($setting !== false) {
                     try {
-                        App::bind('healthcheck', function() use ($settings) {
-                            return new Healthchecks($settings['healthchecks_uuid']);
+                        App::bind('healthcheck', function() use ($setting) {
+                            return new Healthchecks($setting->value);
                         });
                     } catch(InvalidUuidStringException $e) {
                         Log::error('Invalid healthchecks UUID');
