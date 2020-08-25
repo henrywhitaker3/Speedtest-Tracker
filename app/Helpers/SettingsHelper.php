@@ -172,4 +172,25 @@ class SettingsHelper {
 
         return false;
     }
+
+    public static function loadIntegrationConfig()
+    {
+        $settings = [
+            'healthchecks_enabled' => (bool)SettingsHelper::get('healthchecks_enabled')->value,
+            'healthchecks_uuid' => SettingsHelper::get('healthchecks_uuid')->value,
+            'slack_webhook' => SettingsHelper::get('slack_webhook')->value,
+            'telegram_bot_token' => SettingsHelper::get('telegram_bot_token')->value,
+            'telegram_chat_id' => SettingsHelper::get('telegram_chat_id')->value,
+        ];
+
+        foreach($settings as $key => $value) {
+            $key = 'integrations.' . $key;
+
+            if($value === "") {
+                $value = null;
+            }
+
+            config()->set([ $key => $value ]);
+        }
+    }
 }
