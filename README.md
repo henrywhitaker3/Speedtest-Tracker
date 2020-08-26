@@ -4,6 +4,8 @@
 
 This program runs a speedtest check every hour and graphs the results. The back-end is written in [Laravel](https://laravel.com/) and the front-end uses [React](https://reactjs.org/). It uses the [Ookla's speedtest cli](https://www.speedtest.net/apps/cli) package to get the data and uses [Chart.js](https://www.chartjs.org/) to plot the results.
 
+A demo can be found [here](https://speedtest.plexmox.com)
+
 Disclaimer: You will need to accept Ookla's EULA and privacy agreements in order to use this container.
 
 ![speedtest](https://user-images.githubusercontent.com/36062479/78822484-a82b8300-79ca-11ea-8525-fdeae496a0bd.gif)
