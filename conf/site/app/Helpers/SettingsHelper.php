@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Events\TestNotificationEvent;
 use App\Setting;
+use Cache;
 use Carbon\Carbon;
 
 class SettingsHelper {
@@ -51,6 +52,10 @@ class SettingsHelper {
                 'name' => $name,
                 'value' => $value,
             ]);
+        }
+
+        if($name == 'show_failed_tests_on_graph') {
+            Cache::flush();
         }
 
         return $setting;
