@@ -63,6 +63,14 @@ class SpeedtestController extends Controller
 
         $ttl = Carbon::now()->addDays(1);
         $data = Cache::remember('speedtest-days-' . $days, $ttl, function () use ($days) {
+            $showFailed = (bool)SettingsHelper::get('show_failed_tests_on_graph')->value;
+
+            if($showFailed === true) {
+                return Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
+                                ->orderBy('created_at', 'asc')
+                                ->get();
+            }
+
             return Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
                              ->where('failed', false)
                              ->orderBy('created_at', 'asc')

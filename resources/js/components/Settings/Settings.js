@@ -119,6 +119,10 @@ export default class Settings extends Component {
                                     'value': 6
                                 }
                             ],
+                        },
+                        {
+                            obj: e.show_failed_tests_on_graph,
+                            type: 'checkbox'
                         }
                     ]} />
                 </Col>
