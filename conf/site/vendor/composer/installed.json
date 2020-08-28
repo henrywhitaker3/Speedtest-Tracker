@@ -2117,17 +2117,17 @@
     },
     {
         "name": "laravel/framework",
-        "version": "v7.25.0",
-        "version_normalized": "7.25.0.0",
+        "version": "v7.26.0",
+        "version_normalized": "7.26.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/laravel/framework.git",
-            "reference": "fdf3d4a40447eb286ba3820768306cae64bcc0b3"
+            "reference": "f64299a11dedaaadf1cfff07b2b3220a9b791837"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel/framework/zipball/fdf3d4a40447eb286ba3820768306cae64bcc0b3",
-            "reference": "fdf3d4a40447eb286ba3820768306cae64bcc0b3",
+            "url": "https://api.github.com/repos/laravel/framework/zipball/f64299a11dedaaadf1cfff07b2b3220a9b791837",
+            "reference": "f64299a11dedaaadf1cfff07b2b3220a9b791837",
             "shasum": ""
         },
         "require": {
@@ -2233,6 +2233,7 @@
             "nyholm/psr7": "Required to use PSR-7 bridging features (^1.2).",
             "pda/pheanstalk": "Required to use the beanstalk queue driver (^4.0).",
             "phpunit/phpunit": "Required to use assertions and run tests (^8.4|^9.0).",
+            "predis/predis": "Required to use the predis connector (^1.1.2).",
             "psr/http-message": "Required to allow Storage::put to accept a StreamInterface (^1.0).",
             "pusher/pusher-php-server": "Required to use the Pusher broadcast driver (^4.0).",
             "symfony/cache": "Required to PSR-6 cache bridge (^5.0).",
@@ -2240,7 +2241,7 @@
             "symfony/psr-http-message-bridge": "Required to use PSR-7 bridging features (^2.0).",
             "wildbit/swiftmailer-postmark": "Required to use Postmark mail driver (^3.0)."
         },
-        "time": "2020-08-11T13:43:10+00:00",
+        "time": "2020-08-25T13:44:44+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2276,29 +2277,29 @@
     },
     {
         "name": "laravel/slack-notification-channel",
-        "version": "v2.1.0",
-        "version_normalized": "2.1.0.0",
+        "version": "v2.2.0",
+        "version_normalized": "2.2.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/laravel/slack-notification-channel.git",
-            "reference": "d0a7f53342a5daa74e43e1b08dc8a7e83db152d8"
+            "reference": "98e0fe5c8dda645e6af914285af7b742e167462a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel/slack-notification-channel/zipball/d0a7f53342a5daa74e43e1b08dc8a7e83db152d8",
-            "reference": "d0a7f53342a5daa74e43e1b08dc8a7e83db152d8",
+            "url": "https://api.github.com/repos/laravel/slack-notification-channel/zipball/98e0fe5c8dda645e6af914285af7b742e167462a",
+            "reference": "98e0fe5c8dda645e6af914285af7b742e167462a",
             "shasum": ""
         },
         "require": {
             "guzzlehttp/guzzle": "^6.0|^7.0",
-            "illuminate/notifications": "~5.8.0|^6.0|^7.0",
+            "illuminate/notifications": "~5.8.0|^6.0|^7.0|^8.0",
             "php": "^7.1.3"
         },
         "require-dev": {
             "mockery/mockery": "^1.0",
-            "phpunit/phpunit": "^7.0|^8.0"
+            "phpunit/phpunit": "^7.0|^8.0|^9.0"
         },
-        "time": "2020-06-30T20:34:53+00:00",
+        "time": "2020-08-25T18:21:34+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2401,30 +2402,30 @@
     },
     {
         "name": "laravel/ui",
-        "version": "v2.1.0",
-        "version_normalized": "2.1.0.0",
+        "version": "v2.2.0",
+        "version_normalized": "2.2.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/laravel/ui.git",
-            "reference": "da9350533d0da60d5dc42fb7de9c561c72129bba"
+            "reference": "fb1404f04ece6eee128e3fb750d3a1e064238b33"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel/ui/zipball/da9350533d0da60d5dc42fb7de9c561c72129bba",
-            "reference": "da9350533d0da60d5dc42fb7de9c561c72129bba",
+            "url": "https://api.github.com/repos/laravel/ui/zipball/fb1404f04ece6eee128e3fb750d3a1e064238b33",
+            "reference": "fb1404f04ece6eee128e3fb750d3a1e064238b33",
             "shasum": ""
         },
         "require": {
-            "illuminate/console": "^7.0",
-            "illuminate/filesystem": "^7.0",
-            "illuminate/support": "^7.0",
+            "illuminate/console": "^7.0|^8.0",
+            "illuminate/filesystem": "^7.0|^8.0",
+            "illuminate/support": "^7.0|^8.0",
             "php": "^7.2.5"
         },
         "require-dev": {
             "mockery/mockery": "^1.0",
-            "phpunit/phpunit": "^8.0"
+            "phpunit/phpunit": "^8.0|^9.0"
         },
-        "time": "2020-06-30T20:56:33+00:00",
+        "time": "2020-08-25T18:30:43+00:00",
         "type": "library",
         "extra": {
             "laravel": {
@@ -2515,17 +2516,17 @@
     },
     {
         "name": "league/commonmark",
-        "version": "1.5.3",
-        "version_normalized": "1.5.3.0",
+        "version": "1.5.4",
+        "version_normalized": "1.5.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/thephpleague/commonmark.git",
-            "reference": "2574454b97e4103dc4e36917bd783b25624aefcd"
+            "reference": "21819c989e69bab07e933866ad30c7e3f32984ba"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/2574454b97e4103dc4e36917bd783b25624aefcd",
-            "reference": "2574454b97e4103dc4e36917bd783b25624aefcd",
+            "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/21819c989e69bab07e933866ad30c7e3f32984ba",
+            "reference": "21819c989e69bab07e933866ad30c7e3f32984ba",
             "shasum": ""
         },
         "require": {
@@ -2548,7 +2549,7 @@
             "scrutinizer/ocular": "^1.5",
             "symfony/finder": "^4.2"
         },
-        "time": "2020-07-19T22:47:30+00:00",
+        "time": "2020-08-18T01:19:12+00:00",
         "bin": [
             "bin/commonmark"
         ],
@@ -2612,17 +2613,17 @@
     },
     {
         "name": "league/flysystem",
-        "version": "1.1.0",
-        "version_normalized": "1.1.0.0",
+        "version": "1.1.3",
+        "version_normalized": "1.1.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/thephpleague/flysystem.git",
-            "reference": "481c0174b9c99b189959e2bb9d6f52188ed1f692"
+            "reference": "9be3b16c877d477357c015cec057548cf9b2a14a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/481c0174b9c99b189959e2bb9d6f52188ed1f692",
-            "reference": "481c0174b9c99b189959e2bb9d6f52188ed1f692",
+            "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/9be3b16c877d477357c015cec057548cf9b2a14a",
+            "reference": "9be3b16c877d477357c015cec057548cf9b2a14a",
             "shasum": ""
         },
         "require": {
@@ -2653,7 +2654,7 @@
             "spatie/flysystem-dropbox": "Allows you to use Dropbox storage",
             "srmklive/flysystem-dropbox-v2": "Allows you to use Dropbox storage for PHP 5 applications"
         },
-        "time": "2020-08-09T15:57:10+00:00",
+        "time": "2020-08-23T07:39:11+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -3033,17 +3034,17 @@
     },
     {
         "name": "nesbot/carbon",
-        "version": "2.38.0",
-        "version_normalized": "2.38.0.0",
+        "version": "2.39.0",
+        "version_normalized": "2.39.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/briannesbitt/Carbon.git",
-            "reference": "d8f6a6a91d1eb9304527b040500f61923e97674b"
+            "reference": "0a41ea7f7fedacf307b7a339800e10356a042918"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/d8f6a6a91d1eb9304527b040500f61923e97674b",
-            "reference": "d8f6a6a91d1eb9304527b040500f61923e97674b",
+            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/0a41ea7f7fedacf307b7a339800e10356a042918",
+            "reference": "0a41ea7f7fedacf307b7a339800e10356a042918",
             "shasum": ""
         },
         "require": {
@@ -3062,7 +3063,7 @@
             "phpunit/phpunit": "^7.5 || ^8.0",
             "squizlabs/php_codesniffer": "^3.4"
         },
-        "time": "2020-08-04T19:12:46+00:00",
+        "time": "2020-08-24T12:35:58+00:00",
         "bin": [
             "bin/carbon"
         ],
