@@ -125,3 +125,4 @@ mkdir -p /config/log/speedtest
 cp /defaults/crontab /etc/crontabs/root
 
 chown -R abc:abc /config
+chmod +x /config/www/app/Bin/speedtest
