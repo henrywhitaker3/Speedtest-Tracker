@@ -38,6 +38,7 @@ class AcceptEULACommand extends Command
      */
     public function handle()
     {
+        shell_exec('chmod +x ' . app_path() . '/Bin/speedtest');
         shell_exec(config('speedtest.home') . ' && ' . app_path() . '/Bin/speedtest --accept-license --accept-gdpr');
     }
 }
