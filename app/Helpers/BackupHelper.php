@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Speedtest;
+use Cache;
 use DateTime;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -59,6 +60,7 @@ class BackupHelper {
      */
     public static function restore($array, $format)
     {
+        Cache::flush();
         if($format == 'json') {
             foreach($array as $test) {
                 try {
