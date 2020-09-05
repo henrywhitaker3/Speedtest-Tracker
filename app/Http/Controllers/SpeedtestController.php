@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
 use App\Jobs\SpeedtestJob;
 use App\Speedtest;
@@ -11,14 +12,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class SpeedtestController extends Controller
 {
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api')
+                 ->only([ 'run', 'delete', 'deleteAll' ]);
+        }
+    }
 
     /**
      * Returns paginated list of speedtests
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function index()
     {
@@ -35,7 +44,7 @@ class SpeedtestController extends Controller
      * Returns speedtest going back 'x' days
      *
      * @param   int     $days
-     * @return  void
+     * @return  JsonResponse
      */
     public function time($days)
     {
@@ -54,6 +63,14 @@ class SpeedtestController extends Controller
 
         $ttl = Carbon::now()->addDays(1);
         $data = Cache::remember('speedtest-days-' . $days, $ttl, function () use ($days) {
+            $showFailed = (bool)SettingsHelper::get('show_failed_tests_on_graph')->value;
+
+            if($showFailed === true) {
+                return Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
+                                ->orderBy('created_at', 'asc')
+                                ->get();
+            }
+
             return Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
                              ->where('failed', false)
                              ->orderBy('created_at', 'asc')
@@ -71,7 +88,7 @@ class SpeedtestController extends Controller
      * Returns speedtest failure rate going back 'x' days
      *
      * @param   int     $days
-     * @return  void
+     * @return  JsonResponse
      */
     public function fail($days)
     {
@@ -100,7 +117,7 @@ class SpeedtestController extends Controller
     /**
      * Return latest speedtest
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function latest()
     {
@@ -130,12 +147,13 @@ class SpeedtestController extends Controller
     /**
      * Queue a new speedtest
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function run()
     {
         try {
-            $data = SpeedtestJob::dispatch(false);
+            SettingsHelper::loadIntegrationConfig();
+            $data = SpeedtestJob::dispatch(false, config('integrations'));
             return response()->json([
                 'method' => 'run speedtest',
                 'data' => 'a new speedtest has been added to the queue'
@@ -151,7 +169,7 @@ class SpeedtestController extends Controller
     /**
      * Delete all speedtests from db
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function deleteAll()
     {
@@ -175,7 +193,7 @@ class SpeedtestController extends Controller
      * Delete a specific speedtest from the database
      *
      * @param Speedtest $speedtest
-     * @return boolean
+     * @return JsonResponse
      */
     public function delete(Speedtest $speedtest)
     {

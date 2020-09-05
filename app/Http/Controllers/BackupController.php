@@ -3,19 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\BackupHelper;
+use App\Helpers\SettingsHelper;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class BackupController extends Controller
 {
+
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api');
+        }
+    }
 
     /**
      * Get backup of speedtests
      *
      * @param   Request $request
-     * @return  file
+     * @return  mixed|JsonResponse
      */
     public function backup(Request $request)
     {
@@ -36,7 +45,7 @@ class BackupController extends Controller
      * Retore from a backup
      *
      * @param   Request $request
-     * @return  Response
+     * @return  JsonResponse
      */
     public function restore(Request $request)
     {

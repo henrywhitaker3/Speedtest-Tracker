@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Events\TestNotificationEvent;
 use App\Setting;
+use Cache;
 use Carbon\Carbon;
 
 class SettingsHelper {
@@ -12,7 +13,7 @@ class SettingsHelper {
      * Get a Setting object by name
      *
      * @param   String                  $name   The name field in the setting table
-     * @return  \App\Setting|boolean    $name   The Setting object. Returns false if no mathcing obj.
+     * @return  \App\Setting|bool|array    $name   The Setting object. Returns false if no mathcing obj.
      */
     public static function get(String $name)
     {
@@ -32,7 +33,7 @@ class SettingsHelper {
      * Create / update value for Setting object.
      *
      * @param   String  $name   Name of setting
-     * @param   String  $value  Value of setting
+     * @param   String|bool  $value  Value of setting
      * @return  \App\Setting
      */
     public static function set(String $name, $value)
@@ -51,6 +52,10 @@ class SettingsHelper {
                 'name' => $name,
                 'value' => $value,
             ]);
+        }
+
+        if($name == 'show_failed_tests_on_graph') {
+            Cache::flush();
         }
 
         return $setting;
@@ -145,7 +150,8 @@ class SettingsHelper {
                 'slack_webhook' => SettingsHelper::settingIsEditable('slack_webhook'),
                 'telegram_bot_token' => SettingsHelper::settingIsEditable('telegram_bot_token'),
                 'telegram_chat_id' => SettingsHelper::settingIsEditable('telegram_chat_id'),
-            ]
+            ],
+            'auth' => (bool)SettingsHelper::get('auth')->value
         ];
     }
 
@@ -153,7 +159,7 @@ class SettingsHelper {
      * Send test notification to agents
      *
      * @param boolean|string $agent
-     * @return void
+     * @return bool
      */
     public static function testNotification($agent = true)
     {
@@ -167,6 +173,29 @@ class SettingsHelper {
         if(in_array($agent, $agents)) {
             event(new TestNotificationEvent([ $agent ]));
             return true;
+        }
+
+        return false;
+    }
+
+    public static function loadIntegrationConfig()
+    {
+        $settings = [
+            'healthchecks_enabled' => (bool)SettingsHelper::get('healthchecks_enabled')->value,
+            'healthchecks_uuid' => SettingsHelper::get('healthchecks_uuid')->value,
+            'slack_webhook' => SettingsHelper::get('slack_webhook')->value,
+            'telegram_bot_token' => SettingsHelper::get('telegram_bot_token')->value,
+            'telegram_chat_id' => SettingsHelper::get('telegram_chat_id')->value,
+        ];
+
+        foreach($settings as $key => $value) {
+            $key = 'integrations.' . $key;
+
+            if($value === "") {
+                $value = null;
+            }
+
+            config()->set([ $key => $value ]);
         }
     }
 }

@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SettingsHelper;
 use Exception;
 use Updater;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class UpdateController extends Controller
 {
+    public function __construct()
+    {
+        if((bool)SettingsHelper::get('auth')->value === true) {
+            $this->middleware('auth:api');
+        }
+    }
 
     /**
      * Check for new update
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function checkForUpdate()
     {
@@ -25,7 +33,7 @@ class UpdateController extends Controller
     /**
      * Download new update
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function downloadUpdate()
     {
@@ -47,7 +55,7 @@ class UpdateController extends Controller
     /**
      * Trigger update extraction
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function extractUpdate()
     {
@@ -69,22 +77,22 @@ class UpdateController extends Controller
     /**
      * Trigger update file move
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function moveUpdate()
     {
-        $cp = Updater::updateFiles();
+        Updater::updateFiles();
 
         return response()->json([
             'method' => 'copy latest version',
-            'success' => $cp,
+            'success' => null,
         ], 200);
     }
 
     /**
      * Get local changelog
      *
-     * @return  Response
+     * @return  JsonResponse
      */
     public function changelog()
     {

@@ -19,7 +19,9 @@ export default class Settings extends Component {
     }
 
     componentDidMount = () => {
-        this.getData();
+        if( (window.config.auth == true && window.authenticated == true) || window.config.auth == false) {
+            this.getData();
+        }
     }
 
     toggleShow = () => {
@@ -35,7 +37,7 @@ export default class Settings extends Component {
     }
 
     getData = () => {
-        var url = 'api/settings/';
+        var url = 'api/settings/?token=' + window.token;
 
         Axios.get(url)
         .then((resp) => {
@@ -53,6 +55,7 @@ export default class Settings extends Component {
 
     buildSettingsCards = () => {
         var e = this.state.data;
+
         return (
             <Row>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
@@ -116,6 +119,10 @@ export default class Settings extends Component {
                                     'value': 6
                                 }
                             ],
+                        },
+                        {
+                            obj: e.show_failed_tests_on_graph,
+                            type: 'checkbox'
                         }
                     ]} />
                 </Col>
@@ -140,7 +147,7 @@ export default class Settings extends Component {
                                 description: "After saving your updated notification settings, use this to check your settings are correct."
                             },
                             type: 'button-get',
-                            url: 'api/settings/test-notification'
+                            url: 'api/settings/test-notification?token=' + window.token
                         },
                         {
                             obj: e.speedtest_notifications,
@@ -155,7 +162,87 @@ export default class Settings extends Component {
                             type: 'number',
                             min: 0,
                             max: 23
+                        },
+                        {
+                            obj: {
+                                id: (Math.floor(Math.random() * 10000) + 1),
+                                name: "Conditional Notifications",
+                                description: ""
+                            },
+                            type: 'group',
+                            children: [
+
+                            ]
+                        },
+                        {
+                            obj: e.threshold_alert_percentage_notifications,
+                            type: 'checkbox',
+                        },
+                        {
+                            obj: e.threshold_alert_percentage,
+                            type: 'number',
+                            min: 0,
+                            max: 100
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_notifications,
+                            type: 'checkbox',
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_download,
+                            type: 'number',
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_upload,
+                            type: 'number',
+                        },
+                        {
+                            obj: e.threshold_alert_absolute_ping,
+                            type: 'number',
                         }
+                    ]} />
+                </Col>
+                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
+                    <SettingWithModal title="healthchecks.io settings" description="Control settings for healthchecks.io" autoClose={false} settings={[
+                        {
+                            obj: e.healthchecks_uuid,
+                            type: 'text'
+                        },
+                        {
+                            obj: e.healthchecks_enabled,
+                            type: 'checkbox'
+                        },
+                        {
+                            obj: {
+                                id: (Math.floor(Math.random() * 10000) + 1),
+                                name: "Test healthchecks (after saving)",
+                                description: ""
+                            },
+                            type: 'group',
+                            children: [
+                                {
+                                    type: 'button-get',
+                                    url: 'api/settings/test-healthchecks/start?token=' + window.token,
+                                    btnType: 'outline-success',
+                                    text: 'Start',
+                                    inline: true,
+                                },
+                                {
+                                    type: 'button-get',
+                                    url: 'api/settings/test-healthchecks/success?token=' + window.token,
+                                    btnType: 'success',
+                                    text: 'Success',
+                                    inline: true,
+                                },
+                                {
+                                    type: 'button-get',
+                                    url: 'api/settings/test-healthchecks/fail?token=' + window.token,
+                                    btnType: 'danger',
+                                    text: 'Fail',
+                                    inline: true,
+                                },
+                            ]
+                        },
                     ]} />
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
@@ -172,39 +259,44 @@ export default class Settings extends Component {
         if(!loading) {
             var cards = this.buildSettingsCards();
         }
-
-        return (
-            <div>
-                <Container className="my-4">
-                    <Row>
-                        <Col sm={{ span: 12 }} className="mb-3 text-center">
-                            <div className="mouse" onClick={this.toggleShow}>
-                                <h4 className="mb-0 mr-2 d-inline">Settings</h4>
-                                {(show) ?
-                                    <span className="ti-angle-up"></span>
-                                :
-                                    <span className="ti-angle-down"></span>
-                                }
-                            </div>
-                        </Col>
-                    </Row>
-                    <Collapse in={show}>
-                        <div>
-                            <Row>
-                                <Col sm={{ span: 12 }}>
-                                    {loading ?
-                                        <Loader small />
+        if( (window.config.auth == true && window.authenticated == true) || window.config.auth == false) {
+            return (
+                <div>
+                    <Container className="my-4">
+                        <Row>
+                            <Col sm={{ span: 12 }} className="mb-3 text-center">
+                                <div className="mouse" onClick={this.toggleShow}>
+                                    <h4 className="mb-0 mr-2 d-inline">Settings</h4>
+                                    {(show) ?
+                                        <span className="ti-angle-up"></span>
                                     :
-                                        cards
+                                        <span className="ti-angle-down"></span>
                                     }
-                                </Col>
-                            </Row>
-                        </div>
-                    </Collapse>
-                </Container>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Collapse in={show}>
+                            <div>
+                                <Row>
+                                    <Col sm={{ span: 12 }}>
+                                        {loading ?
+                                            <Loader small />
+                                        :
+                                            cards
+                                        }
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Collapse>
+                    </Container>
 
-            </div>
-        );
+                </div>
+            );
+        } else {
+            return(
+                <></>
+            )
+        }
     }
 }
 

@@ -14,6 +14,8 @@ class SpeedtestCompleteTelegram extends Notification
 {
     use Queueable;
 
+    public $speedtest;
+
     /**
      * Create a new notification instance.
      *

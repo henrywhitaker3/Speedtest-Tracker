@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Speedtest;
+use Cache;
 use DateTime;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -26,13 +27,13 @@ class BackupHelper {
             case 'csv':
                 $data = Speedtest::get();
 
-                $csv = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix() . $name . '.csv';
+                $csv = storage_path() . '/app/' . $name . '.csv';
                 $name = $name . '.csv';
                 $handle = fopen($csv, 'w+');
-                fputcsv($handle, array('id', 'ping', 'download', 'upload', 'created_at', 'updated_at'));
+                fputcsv($handle, array('id', 'ping', 'download', 'upload', 'server_id', 'server_name', 'server_host', 'url', 'scheduled', 'failed', 'created_at', 'updated_at'));
 
                 foreach($data as $d) {
-                    fputcsv($handle, array($d->id, $d->ping, $d->download, $d->upload, $d->created_at, $d->updated_at));
+                    fputcsv($handle, BackupHelper::createCSVBackupArray($d));
                 }
 
                 fclose($handle);
@@ -55,29 +56,32 @@ class BackupHelper {
      *
      * @param   array|string    $array  Backup data
      * @param   string          $format json|csv
-     * @return  boolean
+     * @return  bool
      */
     public static function restore($array, $format)
     {
+        Cache::flush();
         if($format == 'json') {
             foreach($array as $test) {
                 try {
-                    $st = Speedtest::create([
-                        'ping' => $test['ping'],
-                        'download' => $test['download'],
-                        'upload' => $test['upload'],
-                        'created_at' => $test['created_at'],
-                    ]);
+                    $data = BackupHelper::backupJSONToArray($test);
+
+                    if($data === false) {
+                        continue;
+                    }
+
+                    Speedtest::create($data);
                 } catch(Exception $e) {
+                    Log::error($e);
                     continue;
                 }
             }
             return true;
         } else if($format == 'csv') {
             $csv = explode(PHP_EOL, $array);
-            $headers = 'id,ping,download,upload,created_at,updated_at';
-            if($csv[0] != $headers) {
-                Log::error('Incorrect CSV format');
+
+            $headers = BackupHelper::validateCSV($csv[0]);
+            if($headers === false) {
                 return false;
             }
 
@@ -85,14 +89,14 @@ class BackupHelper {
             $csv = array_values($csv);
 
             for($i = 0; $i < sizeof($csv); $i++) {
-                $e = explode(',', $csv[$i]);
+                $data = BackupHelper::backupCSVToArray($csv[$i]);
+
+                if($data === false) {
+                    continue;
+                }
+
                 try {
-                    $st = Speedtest::create([
-                        'ping' => $e[1],
-                        'download' => $e[2],
-                        'upload' => $e[3],
-                        'created_at' => substr($e[4], 1, -1),
-                    ]);
+                    Speedtest::create($data);
                 } catch(Exception $e) {
                     Log::error($e);
                     continue;
@@ -101,5 +105,182 @@ class BackupHelper {
 
             return true;
         }
+
+        return false;
+    }
+
+    /**
+     * Validate a CSV file passed for restore
+     *
+     * @param String $csv The line containing the CSV headers
+     * @return bool|string
+     */
+    public static function validateCSV(String $csv)
+    {
+        $headers = [
+            'old' => 'id,ping,download,upload,created_at,updated_at',
+            'new' => 'id,ping,download,upload,server_id,server_name,server_host,url,scheduled,failed,created_at,updated_at',
+        ];
+        $backupHeaders = null;
+
+        foreach($headers as $key => $h) {
+            if($csv == $h) {
+                $backupHeaders = $key;
+            }
+        }
+
+        if($backupHeaders === null) {
+            Log::info('Incorrect CSV format');
+            return false;
+        }
+
+        return $backupHeaders;
+    }
+
+    /**
+     * Return an array from the raw CSV data
+     *
+     * @param String $line The line of CSV data
+     * @param String $header The type of backup header
+     * @return array|bool
+     */
+    public static function backupCSVToArray(String $line, String $header = 'new')
+    {
+        $basic = explode(',', $line);
+
+        if($header == 'old') {
+            $array = [
+                'ping' => $basic[1],
+                'download' => $basic[2],
+                'upload' => $basic[3],
+                'created_at' => substr($basic[4], 1, -1),
+            ];
+        }
+
+        if($header == 'new') {
+            $array = [
+                'ping' => $basic[1],
+                'download' => $basic[2],
+                'upload' => $basic[3],
+                'server_id' => $basic[4],
+                'server_name' => $basic[5],
+                'server_host' => $basic[6],
+                'url' => $basic[7],
+                'scheduled' => $basic[8],
+                'failed' => $basic[9],
+                'created_at' => substr($basic[10], 1, -1),
+            ];
+        }
+
+        if(!isset($array)) {
+            return false;
+        }
+
+        return BackupHelper::cleanRestoreDataArray($array);
+    }
+
+    /**
+     * Clean an array, setting values with '' to null
+     *
+     * @param array $array
+     * @return array
+     */
+    public static function cleanRestoreDataArray(array $array)
+    {
+        foreach($array as $key => $val) {
+            if($val === '') {
+                $array[$key] = null;
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * Return an array from the JSON data
+     *
+     * @param array $json json_decoded data
+     * @return array|bool
+     */
+    public static function backupJSONToArray($json)
+    {
+        $required = [
+            'ping',
+            'upload',
+            'download',
+            'created_at',
+        ];
+
+        $extras = [
+            'server_id',
+            'server_name',
+            'server_host',
+            'url',
+            'failed',
+            'scheduled'
+        ];
+
+        $array = [];
+
+        foreach($required as $req) {
+            if(!array_key_exists($req, $json)) {
+                return false;
+            }
+
+            $val = $json[$req];
+
+            if($val === '') {
+                $val = null;
+            }
+
+            $array[$req] = $val;
+        }
+
+        foreach($extras as $extra) {
+            if(array_key_exists($extra, $json)) {
+                $val = $json[$extra];
+
+                if($val === '') {
+                    $val = null;
+                }
+                $array[$extra] = $val;
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * Return an array to store in CSV
+     *
+     * @param Speedtest $test
+     * @return array
+     */
+    public static function createCSVBackupArray(Speedtest $test)
+    {
+        $data = [
+            $test->id,
+            $test->ping,
+            $test->download,
+            $test->upload,
+            $test->server_id,
+            $test->server_name,
+            $test->server_host,
+            $test->url,
+            $test->scheduled,
+            $test->failed,
+            $test->created_at,
+            $test->updated_at
+        ];
+
+        foreach($data as $key => $val) {
+            if(strpos($val, ',') !== false) {
+                $val = str_replace(',', ' -', $val);
+            }
+
+            $data[$key] = $val;
+        }
+
+        return $data;
     }
 }
