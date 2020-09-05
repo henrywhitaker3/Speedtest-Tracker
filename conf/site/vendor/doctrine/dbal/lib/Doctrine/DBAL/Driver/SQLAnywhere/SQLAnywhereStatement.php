@@ -11,8 +11,9 @@ use PDO;
 use ReflectionClass;
 use ReflectionObject;
 use stdClass;
-use const SASQL_BOTH;
+
 use function array_key_exists;
+use function assert;
 use function func_get_args;
 use function func_num_args;
 use function gettype;
@@ -35,6 +36,8 @@ use function sasql_stmt_field_count;
 use function sasql_stmt_reset;
 use function sasql_stmt_result_metadata;
 use function sprintf;
+
+use const SASQL_BOTH;
 
 /**
  * SAP SQL Anywhere implementation of the Statement interface.
@@ -89,8 +92,10 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      *
      * @throws SQLAnywhereException
      */
-    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null)
+    public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null)
     {
+        assert(is_int($param));
+
         switch ($type) {
             case ParameterType::INTEGER:
             case ParameterType::BOOLEAN:
@@ -111,9 +116,9 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
                 throw new SQLAnywhereException('Unknown type: ' . $type);
         }
 
-        $this->boundValues[$column] =& $variable;
+        $this->boundValues[$param] =& $variable;
 
-        if (! sasql_stmt_bind_param_ex($this->stmt, $column - 1, $variable, $type, $variable === null)) {
+        if (! sasql_stmt_bind_param_ex($this->stmt, $param - 1, $variable, $type, $variable === null)) {
             throw SQLAnywhereException::fromSQLAnywhereError($this->conn, $this->stmt);
         }
 
@@ -125,6 +130,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      */
     public function bindValue($param, $value, $type = ParameterType::STRING)
     {
+        assert(is_int($param));
+
         return $this->bindParam($param, $value, $type);
     }
 
@@ -258,12 +265,14 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
                 while (($row = $this->fetch(...func_get_args())) !== false) {
                     $rows[] = $row;
                 }
+
                 break;
 
             case FetchMode::COLUMN:
                 while (($row = $this->fetchColumn()) !== false) {
                     $rows[] = $row;
                 }
+
                 break;
 
             default:

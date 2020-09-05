@@ -266,8 +266,8 @@ Please take a moment to read our contributing guidelines if you haven't yet done
 [node-url]: https://nodejs.org
 [deps]: https://david-dm.org/webpack/schema-utils.svg
 [deps-url]: https://david-dm.org/webpack/schema-utils
-[tests]: https://dev.azure.com/webpack/schema-utils/_apis/build/status/webpack.schema-utils?branchName=master
-[tests-url]: https://dev.azure.com/webpack/schema-utils/_build/latest?definitionId=9&branchName=master
+[tests]: https://github.com/webpack/schema-utils/workflows/schema-utils/badge.svg
+[tests-url]: https://github.com/webpack/schema-utils/actions
 [cover]: https://codecov.io/gh/webpack/schema-utils/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/webpack/schema-utils
 [chat]: https://badges.gitter.im/webpack/webpack.svg

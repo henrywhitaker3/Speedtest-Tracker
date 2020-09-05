@@ -1,10 +1,7 @@
 "use strict";
 
-var regexpu = require("regexpu-core");
-var identifierEscapeRegexp = new RegExp(
-	regexpu("(^[^A-Za-z_\\-\\u{00a0}-\\u{10ffff}]|^--|[^A-Za-z_0-9\\-\\u{00a0}-\\u{10ffff}])", "ug"),
-	"g"
-);
+var uniRegexp = require("./uni-regexp");
+var identifierEscapeRegexp = new RegExp(uniRegexp.identifierEscapeRegexp, "g");
 
 function escape(str, identifier) {
 	if(str === "*") {

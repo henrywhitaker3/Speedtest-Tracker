@@ -3,6 +3,7 @@
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\DBALException;
+
 use function implode;
 use function sprintf;
 
@@ -26,7 +27,7 @@ class SchemaException extends DBALException
     /**
      * @param string $tableName
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function tableDoesNotExist($tableName)
     {
@@ -36,7 +37,7 @@ class SchemaException extends DBALException
     /**
      * @param string $indexName
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function indexNameInvalid($indexName)
     {
@@ -50,7 +51,7 @@ class SchemaException extends DBALException
      * @param string $indexName
      * @param string $table
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function indexDoesNotExist($indexName, $table)
     {
@@ -64,7 +65,7 @@ class SchemaException extends DBALException
      * @param string $indexName
      * @param string $table
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function indexAlreadyExists($indexName, $table)
     {
@@ -78,7 +79,7 @@ class SchemaException extends DBALException
      * @param string $columnName
      * @param string $table
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function columnDoesNotExist($columnName, $table)
     {
@@ -91,7 +92,7 @@ class SchemaException extends DBALException
     /**
      * @param string $namespaceName
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function namespaceAlreadyExists($namespaceName)
     {
@@ -104,7 +105,7 @@ class SchemaException extends DBALException
     /**
      * @param string $tableName
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function tableAlreadyExists($tableName)
     {
@@ -115,7 +116,7 @@ class SchemaException extends DBALException
      * @param string $tableName
      * @param string $columnName
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function columnAlreadyExists($tableName, $columnName)
     {
@@ -126,30 +127,30 @@ class SchemaException extends DBALException
     }
 
     /**
-     * @param string $sequenceName
+     * @param string $name
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
-    public static function sequenceAlreadyExists($sequenceName)
+    public static function sequenceAlreadyExists($name)
     {
-        return new self("The sequence '" . $sequenceName . "' already exists.", self::SEQUENCE_ALREADY_EXISTS);
+        return new self("The sequence '" . $name . "' already exists.", self::SEQUENCE_ALREADY_EXISTS);
     }
 
     /**
-     * @param string $sequenceName
+     * @param string $name
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
-    public static function sequenceDoesNotExist($sequenceName)
+    public static function sequenceDoesNotExist($name)
     {
-        return new self("There exists no sequence with the name '" . $sequenceName . "'.", self::SEQUENCE_DOENST_EXIST);
+        return new self("There exists no sequence with the name '" . $name . "'.", self::SEQUENCE_DOENST_EXIST);
     }
 
     /**
      * @param string $fkName
      * @param string $table
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function foreignKeyDoesNotExist($fkName, $table)
     {
@@ -160,22 +161,22 @@ class SchemaException extends DBALException
     }
 
     /**
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function namedForeignKeyRequired(Table $localTable, ForeignKeyConstraint $foreignKey)
     {
         return new self(
             'The performed schema operation on ' . $localTable->getName() . ' requires a named foreign key, ' .
             'but the given foreign key from (' . implode(', ', $foreignKey->getColumns()) . ') onto foreign table ' .
-            "'" . $foreignKey->getForeignTableName() . "' (" . implode(', ', $foreignKey->getForeignColumns()) . ') is currently ' .
-            'unnamed.'
+            "'" . $foreignKey->getForeignTableName() . "' (" . implode(', ', $foreignKey->getForeignColumns()) . ')' .
+            ' is currently unnamed.'
         );
     }
 
     /**
      * @param string $changeName
      *
-     * @return \Doctrine\DBAL\Schema\SchemaException
+     * @return SchemaException
      */
     public static function alterTableChangeNotSupported($changeName)
     {

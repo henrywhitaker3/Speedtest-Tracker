@@ -12,6 +12,7 @@ use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\TransactionIsolationLevel;
 use Doctrine\DBAL\Types\BinaryType;
 use InvalidArgumentException;
+
 use function array_merge;
 use function count;
 use function explode;
@@ -51,13 +52,13 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getSubstringExpression($value, $position, $length = null)
+    public function getSubstringExpression($string, $start, $length = null)
     {
         if ($length !== null) {
-            return sprintf('SUBSTR(%s, %d, %d)', $value, $position, $length);
+            return sprintf('SUBSTR(%s, %d, %d)', $string, $start, $length);
         }
 
-        return sprintf('SUBSTR(%s, %d)', $value, $position);
+        return sprintf('SUBSTR(%s, %d)', $string, $start);
     }
 
     /**
@@ -221,9 +222,9 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getSequenceNextValSQL($sequenceName)
+    public function getSequenceNextValSQL($sequence)
     {
-        return 'SELECT ' . $sequenceName . '.nextval FROM DUAL';
+        return 'SELECT ' . $sequence . '.nextval FROM DUAL';
     }
 
     /**
@@ -242,11 +243,14 @@ class OraclePlatform extends AbstractPlatform
         switch ($level) {
             case TransactionIsolationLevel::READ_UNCOMMITTED:
                 return 'READ UNCOMMITTED';
+
             case TransactionIsolationLevel::READ_COMMITTED:
                 return 'READ COMMITTED';
+
             case TransactionIsolationLevel::REPEATABLE_READ:
             case TransactionIsolationLevel::SERIALIZABLE:
                 return 'SERIALIZABLE';
+
             default:
                 return parent::_getTransactionIsolationLevelSQL($level);
         }
@@ -255,7 +259,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getBooleanTypeDeclarationSQL(array $field)
+    public function getBooleanTypeDeclarationSQL(array $column)
     {
         return 'NUMBER(1)';
     }
@@ -263,7 +267,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getIntegerTypeDeclarationSQL(array $field)
+    public function getIntegerTypeDeclarationSQL(array $column)
     {
         return 'NUMBER(10)';
     }
@@ -271,7 +275,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getBigIntTypeDeclarationSQL(array $field)
+    public function getBigIntTypeDeclarationSQL(array $column)
     {
         return 'NUMBER(20)';
     }
@@ -279,7 +283,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getSmallIntTypeDeclarationSQL(array $field)
+    public function getSmallIntTypeDeclarationSQL(array $column)
     {
         return 'NUMBER(5)';
     }
@@ -287,7 +291,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTimeTypeDeclarationSQL(array $column)
     {
         return 'TIMESTAMP(0)';
     }
@@ -295,7 +299,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeTzTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTimeTzTypeDeclarationSQL(array $column)
     {
         return 'TIMESTAMP(0) WITH TIME ZONE';
     }
@@ -303,7 +307,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getDateTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTypeDeclarationSQL(array $column)
     {
         return 'DATE';
     }
@@ -311,7 +315,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getTimeTypeDeclarationSQL(array $fieldDeclaration)
+    public function getTimeTypeDeclarationSQL(array $column)
     {
         return 'DATE';
     }
@@ -319,7 +323,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
+    protected function _getCommonIntegerTypeDeclarationSQL(array $column)
     {
         return '';
     }
@@ -352,7 +356,7 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getClobTypeDeclarationSQL(array $field)
+    public function getClobTypeDeclarationSQL(array $column)
     {
         return 'CLOB';
     }
@@ -380,28 +384,30 @@ class OraclePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    protected function _getCreateTableSQL($table, array $columns, array $options = [])
+    protected function _getCreateTableSQL($name, array $columns, array $options = [])
     {
         $indexes            = $options['indexes'] ?? [];
         $options['indexes'] = [];
-        $sql                = parent::_getCreateTableSQL($table, $columns, $options);
+        $sql                = parent::_getCreateTableSQL($name, $columns, $options);
 
-        foreach ($columns as $name => $column) {
+        foreach ($columns as $columnName => $column) {
             if (isset($column['sequence'])) {
                 $sql[] = $this->getCreateSequenceSQL($column['sequence']);
             }
 
-            if (! isset($column['autoincrement']) || ! $column['autoincrement'] &&
-               (! isset($column['autoinc']) || ! $column['autoinc'])) {
+            if (
+                ! isset($column['autoincrement']) || ! $column['autoincrement'] &&
+                (! isset($column['autoinc']) || ! $column['autoinc'])
+            ) {
                 continue;
             }
 
-            $sql = array_merge($sql, $this->getCreateAutoincrementSql($name, $table));
+            $sql = array_merge($sql, $this->getCreateAutoincrementSql($columnName, $name));
         }
 
         if (isset($indexes) && ! empty($indexes)) {
             foreach ($indexes as $index) {
-                $sql[] = $this->getCreateIndexSQL($index, $table);
+                $sql[] = $this->getCreateIndexSQL($index, $name);
             }
         }
 
@@ -413,7 +419,7 @@ class OraclePlatform extends AbstractPlatform
      *
      * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaOracleReader.html
      */
-    public function getListTableIndexesSQL($table, $currentDatabase = null)
+    public function getListTableIndexesSQL($table, $database = null)
     {
         $table = $this->normalizeIdentifier($table);
         $table = $this->quoteStringLiteral($table->getName());
@@ -502,14 +508,15 @@ class OraclePlatform extends AbstractPlatform
 
         $idx = new Index($autoincrementIdentifierName, [$quotedName], true, true);
 
-        $sql[] = 'DECLARE
+        $sql[] = "DECLARE
   constraints_Count NUMBER;
 BEGIN
-  SELECT COUNT(CONSTRAINT_NAME) INTO constraints_Count FROM USER_CONSTRAINTS WHERE TABLE_NAME = \'' . $unquotedTableName . '\' AND CONSTRAINT_TYPE = \'P\';
-  IF constraints_Count = 0 OR constraints_Count = \'\' THEN
-    EXECUTE IMMEDIATE \'' . $this->getCreateConstraintSQL($idx, $quotedTableName) . '\';
+  SELECT COUNT(CONSTRAINT_NAME) INTO constraints_Count FROM USER_CONSTRAINTS WHERE TABLE_NAME = '" . $unquotedTableName
+            . "' AND CONSTRAINT_TYPE = 'P';
+  IF constraints_Count = 0 OR constraints_Count = '' THEN
+    EXECUTE IMMEDIATE '" . $this->getCreateConstraintSQL($idx, $quotedTableName) . "';
   END IF;
-END;';
+END;";
 
         $sequenceName = $this->getIdentitySequenceName(
             $tableIdentifier->isQuoted() ? $quotedTableName : $unquotedTableName,
@@ -584,6 +591,22 @@ END;';
     }
 
     /**
+     * Adds suffix to identifier,
+     *
+     * if the new string exceeds max identifier length,
+     * keeps $suffix, cuts from $identifier as much as the part exceeding.
+     */
+    private function addSuffix(string $identifier, string $suffix): string
+    {
+        $maxPossibleLengthWithoutSuffix = $this->getMaxIdentifierLength() - strlen($suffix);
+        if (strlen($identifier) > $maxPossibleLengthWithoutSuffix) {
+            $identifier = substr($identifier, 0, $maxPossibleLengthWithoutSuffix);
+        }
+
+        return $identifier . $suffix;
+    }
+
+    /**
      * Returns the autoincrement primary key identifier name for the given table identifier.
      *
      * Quotes the autoincrement primary key identifier name
@@ -595,7 +618,7 @@ END;';
      */
     private function getAutoincrementIdentifierName(Identifier $table)
     {
-        $identifierName = $table->getName() . '_AI_PK';
+        $identifierName = $this->addSuffix($table->getName(), '_AI_PK');
 
         return $table->isQuoted()
             ? $this->quoteSingleIdentifier($identifierName)
@@ -797,7 +820,8 @@ SQL
         }
 
         if (count($fields)) {
-            $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this) . ' ADD (' . implode(', ', $fields) . ')';
+            $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this)
+                . ' ADD (' . implode(', ', $fields) . ')';
         }
 
         $fields = [];
@@ -811,7 +835,8 @@ SQL
             // Do not generate column alteration clause if type is binary and only fixed property has changed.
             // Oracle only supports binary type columns with variable length.
             // Avoids unnecessary table alteration statements.
-            if ($column->getType() instanceof BinaryType &&
+            if (
+                $column->getType() instanceof BinaryType &&
                 $columnDiff->hasChanged('fixed') &&
                 count($columnDiff->changedProperties) === 1
             ) {
@@ -845,7 +870,8 @@ SQL
         }
 
         if (count($fields)) {
-            $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this) . ' MODIFY (' . implode(', ', $fields) . ')';
+            $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this)
+                . ' MODIFY (' . implode(', ', $fields) . ')';
         }
 
         foreach ($diff->renamedColumns as $oldColumnName => $column) {
@@ -869,7 +895,8 @@ SQL
         }
 
         if (count($fields)) {
-            $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this) . ' DROP (' . implode(', ', $fields) . ')';
+            $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this)
+                . ' DROP (' . implode(', ', $fields) . ')';
         }
 
         $tableSql = [];
@@ -900,26 +927,26 @@ SQL
     /**
      * {@inheritdoc}
      */
-    public function getColumnDeclarationSQL($name, array $field)
+    public function getColumnDeclarationSQL($name, array $column)
     {
-        if (isset($field['columnDefinition'])) {
-            $columnDef = $this->getCustomTypeDeclarationSQL($field);
+        if (isset($column['columnDefinition'])) {
+            $columnDef = $this->getCustomTypeDeclarationSQL($column);
         } else {
-            $default = $this->getDefaultValueDeclarationSQL($field);
+            $default = $this->getDefaultValueDeclarationSQL($column);
 
             $notnull = '';
 
-            if (isset($field['notnull'])) {
-                $notnull = $field['notnull'] ? ' NOT NULL' : ' NULL';
+            if (isset($column['notnull'])) {
+                $notnull = $column['notnull'] ? ' NOT NULL' : ' NULL';
             }
 
-            $unique = isset($field['unique']) && $field['unique'] ?
+            $unique = isset($column['unique']) && $column['unique'] ?
                 ' ' . $this->getUniqueFieldDeclarationSQL() : '';
 
-            $check = isset($field['check']) && $field['check'] ?
-                ' ' . $field['check'] : '';
+            $check = isset($column['check']) && $column['check'] ?
+                ' ' . $column['check'] : '';
 
-            $typeDecl  = $field['type']->getSQLDeclaration($field, $this);
+            $typeDecl  = $column['type']->getSQLDeclaration($column, $this);
             $columnDef = $typeDecl . $default . $notnull . $unique . $check;
         }
 
@@ -963,7 +990,7 @@ SQL
         $table = new Identifier($tableName);
 
         // No usage of column name to preserve BC compatibility with <2.5
-        $identitySequenceName = $table->getName() . '_SEQ';
+        $identitySequenceName = $this->addSuffix($table->getName(), '_SEQ');
 
         if ($table->isQuoted()) {
             $identitySequenceName = '"' . $identitySequenceName . '"';
@@ -1182,19 +1209,21 @@ SQL
     /**
      * {@inheritDoc}
      */
-    public function getBlobTypeDeclarationSQL(array $field)
+    public function getBlobTypeDeclarationSQL(array $column)
     {
         return 'BLOB';
     }
 
-    public function getListTableCommentsSQL(string $table, ?string $database = null) : string
+    public function getListTableCommentsSQL(string $table, ?string $database = null): string
     {
         $tableCommentsName = 'user_tab_comments';
         $ownerCondition    = '';
 
         if ($database !== null && $database !== '/') {
             $tableCommentsName = 'all_tab_comments';
-            $ownerCondition    = ' AND owner = ' . $this->quoteStringLiteral($this->normalizeIdentifier($database)->getName());
+            $ownerCondition    = ' AND owner = ' . $this->quoteStringLiteral(
+                $this->normalizeIdentifier($database)->getName()
+            );
         }
 
         return sprintf(

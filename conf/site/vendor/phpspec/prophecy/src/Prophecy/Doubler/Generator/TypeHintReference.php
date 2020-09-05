@@ -13,17 +13,22 @@ final class TypeHintReference
         switch ($type) {
             case 'self':
             case 'array':
+                return true;
+
             case 'callable':
+                return PHP_VERSION_ID >= 50400;
+
             case 'bool':
             case 'float':
             case 'int':
             case 'string':
-            case 'iterable':
-            case 'object':
-                return true;
+                return PHP_VERSION_ID >= 70000;
 
-            case 'mixed':
-                return PHP_VERSION_ID >= 80000;
+            case 'iterable':
+                return PHP_VERSION_ID >= 70100;
+
+            case 'object':
+                return PHP_VERSION_ID >= 70200;
 
             default:
                 return false;
@@ -33,7 +38,7 @@ final class TypeHintReference
     public function isBuiltInReturnTypeHint($type)
     {
         if ($type === 'void') {
-            return true;
+            return PHP_VERSION_ID >= 70100;
         }
 
         return $this->isBuiltInParamTypeHint($type);

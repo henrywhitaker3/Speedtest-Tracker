@@ -4,14 +4,17 @@ namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Types\Type;
-use const CASE_LOWER;
+
 use function array_change_key_case;
+use function assert;
 use function is_resource;
 use function preg_match;
 use function str_replace;
 use function strpos;
 use function strtolower;
 use function substr;
+
+use const CASE_LOWER;
 
 /**
  * IBM Db2 Schema Manager.
@@ -68,13 +71,16 @@ class DB2SchemaManager extends AbstractSchemaManager
                 $length = $tableColumn['length'];
                 $fixed  = false;
                 break;
+
             case 'character':
                 $length = $tableColumn['length'];
                 $fixed  = true;
                 break;
+
             case 'clob':
                 $length = $tableColumn['length'];
                 break;
+
             case 'decimal':
             case 'double':
             case 'real':
@@ -123,14 +129,14 @@ class DB2SchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTableIndexesList($tableIndexRows, $tableName = null)
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName = null)
     {
-        foreach ($tableIndexRows as &$tableIndexRow) {
+        foreach ($tableIndexes as &$tableIndexRow) {
             $tableIndexRow            = array_change_key_case($tableIndexRow, CASE_LOWER);
             $tableIndexRow['primary'] = (bool) $tableIndexRow['primary'];
         }
 
-        return parent::_getPortableTableIndexesList($tableIndexRows, $tableName);
+        return parent::_getPortableTableIndexesList($tableIndexes, $tableName);
     }
 
     /**
@@ -205,7 +211,7 @@ class DB2SchemaManager extends AbstractSchemaManager
         //$view['text'] = (is_resource($view['text']) ? stream_get_contents($view['text']) : $view['text']);
         if (! is_resource($view['text'])) {
             $pos = strpos($view['text'], ' AS ');
-            $sql = substr($view['text'], $pos+4);
+            $sql = substr($view['text'], $pos + 4);
         } else {
             $sql = '';
         }
@@ -213,13 +219,16 @@ class DB2SchemaManager extends AbstractSchemaManager
         return new View($view['name'], $sql);
     }
 
-    public function listTableDetails($tableName) : Table
+    /**
+     * {@inheritdoc}
+     */
+    public function listTableDetails($name): Table
     {
-        $table = parent::listTableDetails($tableName);
+        $table = parent::listTableDetails($name);
 
-        /** @var DB2Platform $platform */
         $platform = $this->_platform;
-        $sql      = $platform->getListTableCommentsSQL($tableName);
+        assert($platform instanceof DB2Platform);
+        $sql = $platform->getListTableCommentsSQL($name);
 
         $tableOptions = $this->_conn->fetchAssoc($sql);
 

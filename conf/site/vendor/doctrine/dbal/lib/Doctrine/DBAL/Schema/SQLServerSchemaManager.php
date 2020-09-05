@@ -8,6 +8,7 @@ use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type;
 use PDOException;
 use Throwable;
+
 use function assert;
 use function count;
 use function in_array;
@@ -87,11 +88,13 @@ class SQLServerSchemaManager extends AbstractSchemaManager
                 // Unicode data requires 2 bytes per character
                 $length /= 2;
                 break;
+
             case 'varchar':
                 // TEXT type is returned as VARCHAR(MAX) with a length of -1
                 if ($length === -1) {
                     $dbType = 'text';
                 }
+
                 break;
         }
 
@@ -124,7 +127,7 @@ class SQLServerSchemaManager extends AbstractSchemaManager
         return $column;
     }
 
-    private function parseDefaultExpression(string $value) : ?string
+    private function parseDefaultExpression(string $value): ?string
     {
         while (preg_match('/^\((.*)\)$/s', $value, $matches)) {
             $value = $matches[1];
@@ -153,20 +156,22 @@ class SQLServerSchemaManager extends AbstractSchemaManager
         $foreignKeys = [];
 
         foreach ($tableForeignKeys as $tableForeignKey) {
-            if (! isset($foreignKeys[$tableForeignKey['ForeignKey']])) {
-                $foreignKeys[$tableForeignKey['ForeignKey']] = [
+            $name = $tableForeignKey['ForeignKey'];
+
+            if (! isset($foreignKeys[$name])) {
+                $foreignKeys[$name] = [
                     'local_columns' => [$tableForeignKey['ColumnName']],
                     'foreign_table' => $tableForeignKey['ReferenceTableName'],
                     'foreign_columns' => [$tableForeignKey['ReferenceColumnName']],
-                    'name' => $tableForeignKey['ForeignKey'],
+                    'name' => $name,
                     'options' => [
                         'onUpdate' => str_replace('_', ' ', $tableForeignKey['update_referential_action_desc']),
                         'onDelete' => str_replace('_', ' ', $tableForeignKey['delete_referential_action_desc']),
                     ],
                 ];
             } else {
-                $foreignKeys[$tableForeignKey['ForeignKey']]['local_columns'][]   = $tableForeignKey['ColumnName'];
-                $foreignKeys[$tableForeignKey['ForeignKey']]['foreign_columns'][] = $tableForeignKey['ReferenceColumnName'];
+                $foreignKeys[$name]['local_columns'][]   = $tableForeignKey['ColumnName'];
+                $foreignKeys[$name]['foreign_columns'][] = $tableForeignKey['ReferenceColumnName'];
             }
         }
 
@@ -176,15 +181,15 @@ class SQLServerSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTableIndexesList($tableIndexRows, $tableName = null)
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName = null)
     {
-        foreach ($tableIndexRows as &$tableIndex) {
+        foreach ($tableIndexes as &$tableIndex) {
             $tableIndex['non_unique'] = (bool) $tableIndex['non_unique'];
             $tableIndex['primary']    = (bool) $tableIndex['primary'];
             $tableIndex['flags']      = $tableIndex['flags'] ? [$tableIndex['flags']] : null;
         }
 
-        return parent::_getPortableTableIndexesList($tableIndexRows, $tableName);
+        return parent::_getPortableTableIndexesList($tableIndexes, $tableName);
     }
 
     /**
@@ -297,11 +302,11 @@ class SQLServerSchemaManager extends AbstractSchemaManager
      */
     private function getColumnConstraintSQL($table, $column)
     {
-        return "SELECT SysObjects.[Name]
-            FROM SysObjects INNER JOIN (SELECT [Name],[ID] FROM SysObjects WHERE XType = 'U') AS Tab
-            ON Tab.[ID] = Sysobjects.[Parent_Obj]
-            INNER JOIN sys.default_constraints DefCons ON DefCons.[object_id] = Sysobjects.[ID]
-            INNER JOIN SysColumns Col ON Col.[ColID] = DefCons.[parent_column_id] AND Col.[ID] = Tab.[ID]
+        return "SELECT sysobjects.[Name]
+            FROM sysobjects INNER JOIN (SELECT [Name],[ID] FROM sysobjects WHERE XType = 'U') AS Tab
+            ON Tab.[ID] = sysobjects.[Parent_Obj]
+            INNER JOIN sys.default_constraints DefCons ON DefCons.[object_id] = sysobjects.[ID]
+            INNER JOIN syscolumns Col ON Col.[ColID] = DefCons.[parent_column_id] AND Col.[ID] = Tab.[ID]
             WHERE Col.[Name] = " . $this->_conn->quote($column) . ' AND Tab.[Name] = ' . $this->_conn->quote($table) . '
             ORDER BY Col.[Name]';
     }
@@ -328,15 +333,15 @@ class SQLServerSchemaManager extends AbstractSchemaManager
     }
 
     /**
-     * @param string $tableName
+     * @param string $name
      */
-    public function listTableDetails($tableName) : Table
+    public function listTableDetails($name): Table
     {
-        $table = parent::listTableDetails($tableName);
+        $table = parent::listTableDetails($name);
 
-        /** @var SQLServerPlatform $platform */
         $platform = $this->_platform;
-        $sql      = $platform->getListTableMetadataSQL($tableName);
+        assert($platform instanceof SQLServerPlatform);
+        $sql = $platform->getListTableMetadataSQL($name);
 
         $tableOptions = $this->_conn->fetchAssoc($sql);
 

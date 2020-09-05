@@ -107,6 +107,22 @@ trait InteractsWithInput
     }
 
     /**
+     * Apply the callback if the request contains the given input item key.
+     *
+     * @param  string  $key
+     * @param  callable  $callback
+     * @return $this|mixed
+     */
+    public function whenHas($key, callable $callback)
+    {
+        if ($this->has($key)) {
+            return $callback(data_get($this->all(), $key)) ?: $this;
+        }
+
+        return $this;
+    }
+
+    /**
      * Determine if the request contains a non-empty value for an input item.
      *
      * @param  string|array  $key
@@ -118,6 +134,25 @@ trait InteractsWithInput
 
         foreach ($keys as $value) {
             if ($this->isEmptyString($value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Determine if the request contains an empty value for an input item.
+     *
+     * @param  string|array  $key
+     * @return bool
+     */
+    public function isNotFilled($key)
+    {
+        $keys = is_array($key) ? $key : func_get_args();
+
+        foreach ($keys as $value) {
+            if (! $this->isEmptyString($value)) {
                 return false;
             }
         }
@@ -142,6 +177,22 @@ trait InteractsWithInput
         }
 
         return false;
+    }
+
+    /**
+     * Apply the callback if the request contains a non-empty value for the given input item key.
+     *
+     * @param  string  $key
+     * @param  callable  $callback
+     * @return $this|mixed
+     */
+    public function whenFilled($key, callable $callback)
+    {
+        if ($this->filled($key)) {
+            return $callback(data_get($this->all(), $key)) ?: $this;
+        }
+
+        return $this;
     }
 
     /**

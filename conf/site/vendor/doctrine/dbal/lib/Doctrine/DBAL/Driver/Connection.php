@@ -15,11 +15,11 @@ interface Connection
     /**
      * Prepares a statement for execution and returns a Statement object.
      *
-     * @param string $prepareString
+     * @param string $sql
      *
      * @return Statement
      */
-    public function prepare($prepareString);
+    public function prepare($sql);
 
     /**
      * Executes an SQL statement, returning a result set as a Statement object.
@@ -31,21 +31,21 @@ interface Connection
     /**
      * Quotes a string for use in a query.
      *
-     * @param mixed $input
+     * @param mixed $value
      * @param int   $type
      *
      * @return mixed
      */
-    public function quote($input, $type = ParameterType::STRING);
+    public function quote($value, $type = ParameterType::STRING);
 
     /**
      * Executes an SQL statement and return the number of affected rows.
      *
-     * @param string $statement
+     * @param string $sql
      *
      * @return int
      */
-    public function exec($statement);
+    public function exec($sql);
 
     /**
      * Returns the ID of the last inserted row or sequence value.

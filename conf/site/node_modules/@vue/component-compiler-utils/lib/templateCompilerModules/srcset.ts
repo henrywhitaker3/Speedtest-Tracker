@@ -1,22 +1,26 @@
 // vue compiler module for transforming `img:srcset` to a number of `require`s
 
 import { urlToRequire, ASTNode } from './utils'
+import { TransformAssetUrlsOptions } from './assetUrl'
 
 interface ImageCandidate {
   require: string
   descriptor: string
 }
 
-export default () => ({
+export default (transformAssetUrlsOptions?: TransformAssetUrlsOptions) => ({
   postTransformNode: (node: ASTNode) => {
-    transform(node)
+    transform(node, transformAssetUrlsOptions)
   }
 })
 
 // http://w3c.github.io/html/semantics-embedded-content.html#ref-for-image-candidate-string-5
 const escapedSpaceCharacters = /( |\\t|\\n|\\f|\\r)+/g
 
-function transform(node: ASTNode) {
+function transform(
+  node: ASTNode,
+  transformAssetUrlsOptions?: TransformAssetUrlsOptions
+) {
   const tags = ['img', 'source']
 
   if (tags.indexOf(node.tag) !== -1 && node.attrs) {
@@ -40,7 +44,10 @@ function transform(node: ASTNode) {
               .replace(escapedSpaceCharacters, ' ')
               .trim()
               .split(' ', 2)
-            return { require: urlToRequire(url), descriptor }
+            return {
+              require: urlToRequire(url, transformAssetUrlsOptions),
+              descriptor
+            }
           })
 
         // "require(url1)"

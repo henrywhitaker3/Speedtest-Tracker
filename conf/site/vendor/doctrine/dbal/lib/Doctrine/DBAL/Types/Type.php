@@ -5,6 +5,7 @@ namespace Doctrine\DBAL\Types;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 use function array_map;
 use function get_class;
 use function str_replace;
@@ -175,14 +176,14 @@ abstract class Type
     }
 
     /**
-     * Gets the SQL declaration snippet for a field of this type.
+     * Gets the SQL declaration snippet for a column of this type.
      *
-     * @param mixed[]          $fieldDeclaration The field declaration.
-     * @param AbstractPlatform $platform         The currently used database platform.
+     * @param mixed[]          $column   The column definition
+     * @param AbstractPlatform $platform The currently used database platform.
      *
      * @return string
      */
-    abstract public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform);
+    abstract public function getSQLDeclaration(array $column, AbstractPlatform $platform);
 
     /**
      * Gets the name of this type.
@@ -196,7 +197,7 @@ abstract class Type
     /**
      * @internal This method is only to be used within DBAL for forward compatibility purposes. Do not use directly.
      */
-    final public static function getTypeRegistry() : TypeRegistry
+    final public static function getTypeRegistry(): TypeRegistry
     {
         if (self::$typeRegistry === null) {
             self::$typeRegistry = self::createTypeRegistry();
@@ -205,7 +206,7 @@ abstract class Type
         return self::$typeRegistry;
     }
 
-    private static function createTypeRegistry() : TypeRegistry
+    private static function createTypeRegistry(): TypeRegistry
     {
         $registry = new TypeRegistry();
 
@@ -222,7 +223,7 @@ abstract class Type
      *
      * @param string $name The name of the type (as returned by getName()).
      *
-     * @return \Doctrine\DBAL\Types\Type
+     * @return Type
      *
      * @throws DBALException
      */
@@ -277,7 +278,7 @@ abstract class Type
      * Gets the (preferred) binding type for values of this type that
      * can be used when binding parameters to prepared statements.
      *
-     * This method should return one of the {@link \Doctrine\DBAL\ParameterType} constants.
+     * This method should return one of the {@link ParameterType} constants.
      *
      * @return int
      */
@@ -295,7 +296,7 @@ abstract class Type
     public static function getTypesMap()
     {
         return array_map(
-            static function (Type $type) : string {
+            static function (Type $type): string {
                 return get_class($type);
             },
             self::getTypeRegistry()->getMap()

@@ -4,10 +4,10 @@ import { BrowserRouter, Switch, Route, Redirect, useHistory } from 'react-router
 import Axios from 'axios';
 import ErrorPage from './components/ErrorPage';
 import Loader from './components/Loader';
-import Login from './components/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import HomePage from './components/Home/HomePage';
+import Cookies from 'js-cookie';
 
 export default class Index extends Component {
     constructor(props) {
@@ -15,7 +15,7 @@ export default class Index extends Component {
 
         this.state = {
             loading: true,
-            redirect: false
+            redirect: false,
         }
     }
 
@@ -29,10 +29,38 @@ export default class Index extends Component {
         Axios.get(url)
         .then((resp) => {
             window.config = resp.data;
-            this.setState({
-                loading: false,
-                redirect: true,
-            });
+            if(window.config.auth === true) {
+                var authCookie = Cookies.get('auth');
+                if(authCookie == undefined) {
+                    window.authenticated = false;
+                    this.setState({
+                        loading: false,
+                        redirect: true,
+                    });
+                } else {
+                    var url = 'api/auth/me?token=' + authCookie;
+                    Axios.get(url)
+                    .then((resp) => {
+                        window.authenticated = true;
+                        window.token = authCookie;
+                    })
+                    .catch((err) => {
+                        Cookies.remove('auth');
+                        window.authenticated = false;
+                    })
+                    .finally(() => {
+                        this.setState({
+                            loading: false,
+                            redirect: true,
+                        });
+                    })
+                }
+            } else {
+                this.setState({
+                    loading: false,
+                    redirect: true,
+                });
+            }
         })
     }
 

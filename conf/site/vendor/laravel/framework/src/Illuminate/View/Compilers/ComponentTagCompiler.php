@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Illuminate\View\AnonymousComponent;
+use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
 use ReflectionClass;
 
@@ -237,7 +238,7 @@ class ComponentTagCompiler
             return $class;
         }
 
-        if ($viewFactory->exists($view = "components.{$component}")) {
+        if ($viewFactory->exists($view = $this->guessViewName($component))) {
             return $view;
         }
 
@@ -266,6 +267,25 @@ class ComponentTagCompiler
     }
 
     /**
+     * Guess the view name for the given component.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    public function guessViewName($name)
+    {
+        $prefix = 'components.';
+
+        $delimiter = ViewFinderInterface::HINT_PATH_DELIMITER;
+
+        if (Str::contains($name, $delimiter)) {
+            return Str::replaceFirst($delimiter, $delimiter.$prefix, $name);
+        }
+
+        return $prefix.$name;
+    }
+
+    /**
      * Partition the data and extra attributes from the given array of attributes.
      *
      * @param  string  $class
@@ -289,7 +309,7 @@ class ComponentTagCompiler
 
         return collect($attributes)->partition(function ($value, $key) use ($parameterNames) {
             return in_array(Str::camel($key), $parameterNames);
-        });
+        })->all();
     }
 
     /**
@@ -311,8 +331,14 @@ class ComponentTagCompiler
      */
     public function compileSlots(string $value)
     {
-        $value = preg_replace_callback('/<\s*x[\-\:]slot\s+name=(?<name>(\"[^\"]+\"|\\\'[^\\\']+\\\'|[^\s>]+))\s*>/', function ($matches) {
-            return " @slot('".$this->stripQuotes($matches['name'])."') ";
+        $value = preg_replace_callback('/<\s*x[\-\:]slot\s+(:?)name=(?<name>(\"[^\"]+\"|\\\'[^\\\']+\\\'|[^\s>]+))\s*>/', function ($matches) {
+            $name = $this->stripQuotes($matches['name']);
+
+            if ($matches[1] !== ':') {
+                $name = "'{$name}'";
+            }
+
+            return " @slot({$name}) ";
         }, $value);
 
         return preg_replace('/<\/\s*x[\-\:]slot[^>]*>/', ' @endslot', $value);

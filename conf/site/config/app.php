@@ -178,6 +178,11 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\UpdaterServiceProvider::class,
 
+        /*
+         * Custom providers...
+         */
+        App\Providers\IntegrationsServiceProvider::class,
+
     ],
 
     /*
@@ -230,6 +235,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Updater' => App\Facades\UpdaterFacade::class,
+        'Healthcheck' => App\Facades\HealthchecksFacade::class,
     ],
 
 ];

@@ -4,48 +4,20 @@ namespace PhpParser\Lexer\TokenEmulator;
 
 use PhpParser\Lexer\Emulative;
 
-final class MatchTokenEmulator implements TokenEmulatorInterface
+final class MatchTokenEmulator extends KeywordEmulator
 {
-    public function isEmulationNeeded(string $code) : bool
+    public function getPhpVersion(): string
     {
-        // skip version where this is supported
-        if (version_compare(\PHP_VERSION, Emulative::PHP_8_0, '>=')) {
-            return false;
-        }
-
-        return strpos($code, 'match') !== false;
+        return Emulative::PHP_8_0;
     }
 
-    public function emulate(string $code, array $tokens): array
+    public function getKeywordString(): string
     {
-        foreach ($tokens as $i => $token) {
-            if ($token[0] === T_STRING && strtolower($token[1]) === 'match') {
-                $previousNonSpaceToken = $this->getPreviousNonSpaceToken($tokens, $i);
-                if ($previousNonSpaceToken !== null && $previousNonSpaceToken[0] === T_OBJECT_OPERATOR) {
-                    continue;
-                }
-
-                $tokens[$i][0] = Emulative::T_MATCH;
-            }
-        }
-
-        return $tokens;
+        return 'match';
     }
 
-    /**
-     * @param mixed[] $tokens
-     * @return mixed[]|null
-     */
-    private function getPreviousNonSpaceToken(array $tokens, int $start)
+    public function getKeywordToken(): int
     {
-        for ($i = $start - 1; $i >= 0; --$i) {
-            if ($tokens[$i][0] === T_WHITESPACE) {
-                continue;
-            }
-
-            return $tokens[$i];
-        }
-
-        return null;
+        return \T_MATCH;
     }
 }

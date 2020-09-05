@@ -79,7 +79,21 @@ class GmpCalculator extends Calculator
     /**
      * {@inheritdoc}
      */
-    public function powmod(string $base, string $exp, string $mod) : string
+    public function modInverse(string $x, string $m) : ?string
+    {
+        $result = \gmp_invert($x, $m);
+
+        if ($result === false) {
+            return null;
+        }
+
+        return \gmp_strval($result);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function modPow(string $base, string $exp, string $mod) : string
     {
         return \gmp_strval(\gmp_powm($base, $exp, $mod));
     }

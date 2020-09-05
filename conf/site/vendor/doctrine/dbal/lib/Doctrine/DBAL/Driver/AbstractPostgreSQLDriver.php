@@ -13,12 +13,14 @@ use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Schema\PostgreSqlSchemaManager;
 use Doctrine\DBAL\VersionAwarePlatformDriver;
+
+use function assert;
 use function preg_match;
 use function strpos;
 use function version_compare;
 
 /**
- * Abstract base implementation of the {@link Doctrine\DBAL\Driver} interface for PostgreSQL based drivers.
+ * Abstract base implementation of the {@link Driver} interface for PostgreSQL based drivers.
  */
 abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDriver, VersionAwarePlatformDriver
 {
@@ -33,6 +35,7 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
             case '40001':
             case '40P01':
                 return new Exception\DeadlockException($message, $exception);
+
             case '0A000':
                 // Foreign key constraint violations during a TRUNCATE operation
                 // are considered "feature not supported" in PostgreSQL.
@@ -41,6 +44,7 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
                 }
 
                 break;
+
             case '23502':
                 return new Exception\NotNullConstraintViolationException($message, $exception);
 
@@ -117,7 +121,15 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
     {
         $params = $conn->getParams();
 
-        return $params['dbname'] ?? $conn->query('SELECT CURRENT_DATABASE()')->fetchColumn();
+        if (isset($params['dbname'])) {
+            return $params['dbname'];
+        }
+
+        $database = $conn->query('SELECT CURRENT_DATABASE()')->fetchColumn();
+
+        assert($database !== false);
+
+        return $database;
     }
 
     /**

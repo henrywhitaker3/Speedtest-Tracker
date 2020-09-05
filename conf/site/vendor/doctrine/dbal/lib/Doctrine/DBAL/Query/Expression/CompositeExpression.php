@@ -3,6 +3,7 @@
 namespace Doctrine\DBAL\Query\Expression;
 
 use Countable;
+
 use function count;
 use function implode;
 
@@ -51,7 +52,7 @@ class CompositeExpression implements Countable
      *
      * @param self[]|string[] $parts
      *
-     * @return \Doctrine\DBAL\Query\Expression\CompositeExpression
+     * @return CompositeExpression
      */
     public function addMultiple(array $parts = [])
     {
@@ -67,7 +68,7 @@ class CompositeExpression implements Countable
      *
      * @param mixed $part
      *
-     * @return \Doctrine\DBAL\Query\Expression\CompositeExpression
+     * @return CompositeExpression
      */
     public function add($part)
     {

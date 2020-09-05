@@ -6,34 +6,34 @@
 ## Install
 
 ```
-$ npm install --save is-fullwidth-code-point
+$ npm install is-fullwidth-code-point
 ```
 
 
 ## Usage
 
 ```js
-var isFullwidthCodePoint = require('is-fullwidth-code-point');
+const isFullwidthCodePoint = require('is-fullwidth-code-point');
 
-isFullwidthCodePoint('谢'.codePointAt());
+isFullwidthCodePoint('谢'.codePointAt(0));
 //=> true
 
-isFullwidthCodePoint('a'.codePointAt());
+isFullwidthCodePoint('a'.codePointAt(0));
 //=> false
 ```
 
 
 ## API
 
-### isFullwidthCodePoint(input)
+### isFullwidthCodePoint(codePoint)
 
-#### input
+#### codePoint
 
 Type: `number`
 
-[Code point](https://en.wikipedia.org/wiki/Code_point) of a character.
+The [code point](https://en.wikipedia.org/wiki/Code_point) of a character.
 
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)

@@ -3,6 +3,7 @@
 namespace Doctrine\DBAL\Platforms;
 
 use Doctrine\DBAL\Types\Types;
+
 use function sprintf;
 
 /**
@@ -13,7 +14,7 @@ class PostgreSQL92Platform extends PostgreSQL91Platform
     /**
      * {@inheritdoc}
      */
-    public function getJsonTypeDeclarationSQL(array $field)
+    public function getJsonTypeDeclarationSQL(array $column)
     {
         return 'JSON';
     }
@@ -21,13 +22,13 @@ class PostgreSQL92Platform extends PostgreSQL91Platform
     /**
      * {@inheritdoc}
      */
-    public function getSmallIntTypeDeclarationSQL(array $field)
+    public function getSmallIntTypeDeclarationSQL(array $column)
     {
-        if (! empty($field['autoincrement'])) {
+        if (! empty($column['autoincrement'])) {
             return 'SMALLSERIAL';
         }
 
-        return parent::getSmallIntTypeDeclarationSQL($field);
+        return parent::getSmallIntTypeDeclarationSQL($column);
     }
 
     /**

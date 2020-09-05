@@ -169,6 +169,129 @@ final class BigInteger extends BigNumber
     }
 
     /**
+     * Translates a string of bytes containing the binary representation of a BigInteger into a BigInteger.
+     *
+     * The input string is assumed to be in big-endian byte-order: the most significant byte is in the zeroth element.
+     *
+     * If `$signed` is true, the input is assumed to be in two's-complement representation, and the leading bit is
+     * interpreted as a sign bit. If `$signed` is false, the input is interpreted as an unsigned number, and the
+     * resulting BigInteger will always be positive or zero.
+     *
+     * This method can be used to retrieve a number exported by `toBytes()`, as long as the `$signed` flags match.
+     *
+     * @param string $value  The byte string.
+     * @param bool   $signed Whether to interpret as a signed number in two's-complement representation with a leading
+     *                       sign bit.
+     *
+     * @return BigInteger
+     *
+     * @throws NumberFormatException If the string is empty.
+     */
+    public static function fromBytes(string $value, bool $signed = true) : BigInteger
+    {
+        if ($value === '') {
+            throw new NumberFormatException('The byte string must not be empty.');
+        }
+
+        $twosComplement = false;
+
+        if ($signed) {
+            $x = \ord($value[0]);
+
+            if (($twosComplement = ($x >= 0x80))) {
+                $value = ~$value;
+            }
+        }
+
+        $number = self::fromBase(\bin2hex($value), 16);
+
+        if ($twosComplement) {
+            return $number->plus(1)->negated();
+        }
+
+        return $number;
+    }
+
+    /**
+     * Generates a pseudo-random number in the range 0 to 2^numBits - 1.
+     *
+     * Using the default random bytes generator, this method is suitable for cryptographic use.
+     *
+     * @param int           $numBits              The number of bits.
+     * @param callable|null $randomBytesGenerator A function that accepts a number of bytes as an integer, and returns a
+     *                                            string of random bytes of the given length. Defaults to the
+     *                                            `random_bytes()` function.
+     *
+     * @return BigInteger
+     *
+     * @throws \InvalidArgumentException If $numBits is negative.
+     */
+    public static function randomBits(int $numBits, ?callable $randomBytesGenerator = null) : BigInteger
+    {
+        if ($numBits < 0) {
+            throw new \InvalidArgumentException('The number of bits cannot be negative.');
+        }
+
+        if ($numBits === 0) {
+            return BigInteger::zero();
+        }
+
+        if ($randomBytesGenerator === null) {
+            $randomBytesGenerator = 'random_bytes';
+        }
+
+        $byteLength = \intdiv($numBits - 1, 8) + 1;
+
+        $extraBits = ($byteLength * 8 - $numBits);
+        $bitmask   = \chr(0xFF >> $extraBits);
+
+        $randomBytes    = $randomBytesGenerator($byteLength);
+        $randomBytes[0] = $randomBytes[0] & $bitmask;
+
+        return self::fromBytes($randomBytes, false);
+    }
+
+    /**
+     * Generates a pseudo-random number between `$min` and `$max`.
+     *
+     * Using the default random bytes generator, this method is suitable for cryptographic use.
+     *
+     * @param BigNumber|int|float|string $min                  The lower bound. Must be convertible to a BigInteger.
+     * @param BigNumber|int|float|string $max                  The upper bound. Must be convertible to a BigInteger.
+     * @param callable|null              $randomBytesGenerator A function that accepts a number of bytes as an integer,
+     *                                                         and returns a string of random bytes of the given length.
+     *                                                         Defaults to the `random_bytes()` function.
+     *
+     * @return BigInteger
+     *
+     * @throws MathException If one of the parameters cannot be converted to a BigInteger,
+     *                       or `$min` is greater than `$max`.
+     */
+    public static function randomRange($min, $max, ?callable $randomBytesGenerator = null) : BigInteger
+    {
+        $min = BigInteger::of($min);
+        $max = BigInteger::of($max);
+
+        if ($min->isGreaterThan($max)) {
+            throw new MathException('$min cannot be greater than $max.');
+        }
+
+        if ($min->isEqualTo($max)) {
+            return $min;
+        }
+
+        $diff      = $max->minus($min);
+        $bitLength = $diff->getBitLength();
+
+        // try until the number is in range (50% to 100% chance of success)
+        do {
+            $randomNumber = self::randomBits($bitLength, $randomBytesGenerator);
+        } while ($randomNumber->isGreaterThan($diff));
+
+        return $randomNumber->plus($min);
+    }
+
+    /**
      * Returns a BigInteger representing zero.
      *
      * @return BigInteger
@@ -455,10 +578,47 @@ final class BigInteger extends BigNumber
         $that = BigInteger::of($that);
 
         if ($that->value === '0') {
-            throw DivisionByZeroException::divisionByZero();
+            throw DivisionByZeroException::modulusMustNotBeZero();
         }
 
-        return $this->remainder($that)->plus($that)->remainder($that);
+        $value = Calculator::get()->mod($this->value, $that->value);
+
+        return new BigInteger($value);
+    }
+
+    /**
+     * Returns the modular multiplicative inverse of this BigInteger modulo $m.
+     *
+     * @param BigInteger $m
+     *
+     * @return BigInteger
+     *
+     * @throws DivisionByZeroException If $m is zero.
+     * @throws NegativeNumberException If $m is negative.
+     * @throws MathException           If this BigInteger has no multiplicative inverse mod m (that is, this BigInteger
+     *                                 is not relatively prime to m).
+     */
+    public function modInverse(BigInteger $m) : BigInteger
+    {
+        if ($m->value === '0') {
+            throw DivisionByZeroException::modulusMustNotBeZero();
+        }
+
+        if ($m->isNegative()) {
+            throw new NegativeNumberException('Modulus must not be negative.');
+        }
+
+        if ($m->value === '1') {
+            return BigInteger::zero();
+        }
+
+        $value = Calculator::get()->modInverse($this->value, $m->value);
+
+        if ($value === null) {
+            throw new MathException('Unable to compute the modInverse for the given modulus.');
+        }
+
+        return new BigInteger($value);
     }
 
     /**
@@ -466,15 +626,15 @@ final class BigInteger extends BigNumber
      *
      * This operation only works on positive numbers.
      *
-     * @param BigNumber|int|float|string $exp The positive exponent.
-     * @param BigNumber|int|float|string $mod The modulo. Must not be zero.
+     * @param BigNumber|int|float|string $exp The exponent. Must be positive or zero.
+     * @param BigNumber|int|float|string $mod The modulus. Must be strictly positive.
      *
      * @return BigInteger
      *
      * @throws NegativeNumberException If any of the operands is negative.
-     * @throws DivisionByZeroException If the modulo is zero.
+     * @throws DivisionByZeroException If the modulus is zero.
      */
-    public function powerMod($exp, $mod) : BigInteger
+    public function modPow($exp, $mod) : BigInteger
     {
         $exp = BigInteger::of($exp);
         $mod = BigInteger::of($mod);
@@ -484,10 +644,10 @@ final class BigInteger extends BigNumber
         }
 
         if ($mod->isZero()) {
-            throw DivisionByZeroException::divisionByZero();
+            throw DivisionByZeroException::modulusMustNotBeZero();
         }
 
-        $result = Calculator::get()->powmod($this->value, $exp->value, $mod->value);
+        $result = Calculator::get()->modPow($this->value, $exp->value, $mod->value);
 
         return new BigInteger($result);
     }
@@ -607,6 +767,16 @@ final class BigInteger extends BigNumber
     }
 
     /**
+     * Returns the bitwise-not of this BigInteger.
+     *
+     * @return BigInteger
+     */
+    public function not() : BigInteger
+    {
+        return $this->negated()->minus(1);
+    }
+
+    /**
      * Returns the integer left shifted by a given number of bits.
      *
      * @param int $distance The distance to shift.
@@ -670,7 +840,7 @@ final class BigInteger extends BigNumber
             return $this->abs()->minus(1)->getBitLength();
         }
 
-        return strlen($this->toBase(2));
+        return \strlen($this->toBase(2));
     }
 
     /**
@@ -703,7 +873,7 @@ final class BigInteger extends BigNumber
      */
     public function isEven() : bool
     {
-        return in_array($this->value[-1], ['0', '2', '4', '6', '8'], true);
+        return \in_array($this->value[-1], ['0', '2', '4', '6', '8'], true);
     }
 
     /**
@@ -713,7 +883,7 @@ final class BigInteger extends BigNumber
      */
     public function isOdd() : bool
     {
-        return in_array($this->value[-1], ['1', '3', '5', '7', '9'], true);
+        return \in_array($this->value[-1], ['1', '3', '5', '7', '9'], true);
     }
 
     /**
@@ -724,6 +894,8 @@ final class BigInteger extends BigNumber
      * @param int $n The bit to test, 0-based.
      *
      * @return bool
+     *
+     * @throws \InvalidArgumentException If the bit to test is negative.
      */
     public function testBit(int $n) : bool
     {
@@ -860,6 +1032,64 @@ final class BigInteger extends BigNumber
         }
 
         return Calculator::get()->toArbitraryBase($this->value, $alphabet, $base);
+    }
+
+    /**
+     * Returns a string of bytes containing the binary representation of this BigInteger.
+     *
+     * The string is in big-endian byte-order: the most significant byte is in the zeroth element.
+     *
+     * If `$signed` is true, the output will be in two's-complement representation, and a sign bit will be prepended to
+     * the output. If `$signed` is false, no sign bit will be prepended, and this method will throw an exception if the
+     * number is negative.
+     *
+     * The string will contain the minimum number of bytes required to represent this BigInteger, including a sign bit
+     * if `$signed` is true.
+     *
+     * This representation is compatible with the `fromBytes()` factory method, as long as the `$signed` flags match.
+     *
+     * @param bool $signed Whether to output a signed number in two's-complement representation with a leading sign bit.
+     *
+     * @return string
+     *
+     * @throws NegativeNumberException If $signed is false, and the number is negative.
+     */
+    public function toBytes(bool $signed = true) : string
+    {
+        if (! $signed && $this->isNegative()) {
+            throw new NegativeNumberException('Cannot convert a negative number to a byte string when $signed is false.');
+        }
+
+        $hex = $this->abs()->toBase(16);
+
+        if (\strlen($hex) % 2 !== 0) {
+            $hex = '0' . $hex;
+        }
+
+        $baseHexLength = \strlen($hex);
+
+        if ($signed) {
+            if ($this->isNegative()) {
+                $hex = \bin2hex(~\hex2bin($hex));
+                $hex = self::fromBase($hex, 16)->plus(1)->toBase(16);
+
+                $hexLength = \strlen($hex);
+
+                if ($hexLength < $baseHexLength) {
+                    $hex = \str_repeat('0', $baseHexLength - $hexLength) . $hex;
+                }
+
+                if ($hex[0] < '8') {
+                    $hex = 'FF' . $hex;
+                }
+            } else {
+                if ($hex[0] >= '8') {
+                    $hex = '00' . $hex;
+                }
+            }
+        }
+
+        return \hex2bin($hex);
     }
 
     /**

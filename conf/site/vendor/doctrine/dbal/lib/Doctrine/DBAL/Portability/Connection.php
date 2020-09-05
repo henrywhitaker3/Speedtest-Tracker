@@ -6,9 +6,11 @@ use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\ColumnCase;
 use Doctrine\DBAL\Driver\PDOConnection;
 use PDO;
+
+use function func_get_args;
+
 use const CASE_LOWER;
 use const CASE_UPPER;
-use function func_get_args;
 
 /**
  * Portability wrapper for a Connection.
@@ -62,6 +64,7 @@ class Connection extends \Doctrine\DBAL\Connection
                 } else {
                     $params['portability'] &= self::PORTABILITY_OTHERVENDORS;
                 }
+
                 $this->portability = $params['portability'];
             }
 
@@ -97,9 +100,9 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * {@inheritdoc}
      */
-    public function executeQuery($query, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
+    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
     {
-        $stmt = new Statement(parent::executeQuery($query, $params, $types, $qcp), $this);
+        $stmt = new Statement(parent::executeQuery($sql, $params, $types, $qcp), $this);
         $stmt->setFetchMode($this->defaultFetchMode);
 
         return $stmt;
@@ -107,10 +110,12 @@ class Connection extends \Doctrine\DBAL\Connection
 
     /**
      * {@inheritdoc}
+     *
+     * @return Statement
      */
-    public function prepare($statement)
+    public function prepare($sql)
     {
-        $stmt = new Statement(parent::prepare($statement), $this);
+        $stmt = new Statement(parent::prepare($sql), $this);
         $stmt->setFetchMode($this->defaultFetchMode);
 
         return $stmt;

@@ -82,10 +82,18 @@ class ClassCodeGenerator
      */
     private function getReturnType(Node\MethodNode $method)
     {
-        if ($method->hasReturnType()) {
-            return $method->hasNullableReturnType()
-                ? sprintf(': ?%s', $method->getReturnType())
-                : sprintf(': %s', $method->getReturnType());
+        if (version_compare(PHP_VERSION, '7.1', '>=')) {
+            if ($method->hasReturnType()) {
+                return $method->hasNullableReturnType()
+                    ? sprintf(': ?%s', $method->getReturnType())
+                    : sprintf(': %s', $method->getReturnType());
+            }
+        }
+
+        if (version_compare(PHP_VERSION, '7.0', '>=')) {
+            return $method->hasReturnType() && $method->getReturnType() !== 'void'
+                ? sprintf(': %s', $method->getReturnType())
+                : '';
         }
 
         return '';
@@ -95,7 +103,11 @@ class ClassCodeGenerator
     {
         $typeHintReference = $this->typeHintReference;
         return array_map(function (Node\ArgumentNode $argument) use ($typeHintReference) {
-            $php = $argument->isNullable() ? '?' : '';
+            $php = '';
+
+            if (version_compare(PHP_VERSION, '7.1', '>=')) {
+                $php .= $argument->isNullable() ? '?' : '';
+            }
 
             if ($hint = $argument->getTypeHint()) {
                 $php .= $typeHintReference->isBuiltInParamTypeHint($hint) ? $hint : '\\'.$hint;

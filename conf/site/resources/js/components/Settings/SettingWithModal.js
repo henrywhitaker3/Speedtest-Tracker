@@ -23,7 +23,7 @@ export default class SettingWithModal extends Component {
     }
 
     update = () => {
-        var url = 'api/settings/bulk';
+        var url = 'api/settings/bulk?token=' + window.token;
         var data = [];
         var settings = this.state.settings;
 
@@ -101,7 +101,7 @@ export default class SettingWithModal extends Component {
             <>
                 <SettingsModalCard title={title} description={description} toggleShow={this.toggleShow} />
                 <Modal show={show} onHide={this.toggleShow}>
-                    <Modal.Header>
+                    <Modal.Header closeButton>
                         <Modal.Title>{title}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -247,6 +247,35 @@ export default class SettingWithModal extends Component {
                                             </Col>
                                         }
                                     </Row>
+                                )
+                            } else if(e.type == 'group') {
+                                return (
+                                    <div key={e.obj.id}>
+                                        <Row>
+                                            <Col md={md} sm={sm}>
+                                                <p className="mb-0">{name}</p>
+                                            </Col>
+                                            {e.description == null &&
+                                                <Col md={md} sm={sm}>
+                                                    <p>{e.obj.description}</p>
+                                                </Col>
+                                            }
+                                        </Row>
+                                        <Row>
+                                            <Col sm={{ span: 12 }}>
+                                                {e.children.map((ee,ii) => {
+                                                    if(ee.type == 'button-get') {
+                                                        return (
+                                                            <Button key={ii} variant={ee.btnType} className={'mr-2 mb-3'} onClick={() => { Axios.get(ee.url)
+                                                                                                                                                .then((resp) => { toast.success('Healthcheck sent') })
+                                                                                                                                                .catch((resp) => { resp = resp.response; toast.error(resp.data.error) })
+                                                            }} >{ee.text}</Button>
+                                                        )
+                                                    }
+                                                })}
+                                            </Col>
+                                        </Row>
+                                    </div>
                                 )
                             }
                         })}

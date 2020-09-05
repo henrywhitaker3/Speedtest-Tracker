@@ -1,0 +1,7 @@
+parameters:
+    level: max
+    paths:
+        - src
+    ignoreErrors:
+        - '#Call to an undefined method Mockery\\ExpectationInterface#'
+        - '#Mockery\\(?:Legacy)?MockInterface#'

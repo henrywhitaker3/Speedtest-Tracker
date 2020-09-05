@@ -15,7 +15,6 @@ use Prophecy\Exception\InvalidArgumentException;
 use Prophecy\Exception\Doubler\ClassMirrorException;
 use ReflectionClass;
 use ReflectionMethod;
-use ReflectionNamedType;
 use ReflectionParameter;
 
 /**
@@ -39,13 +38,14 @@ class ClassMirror
     /**
      * Reflects provided arguments into class node.
      *
-     * @param ReflectionClass|null $class
+     * @param ReflectionClass   $class
      * @param ReflectionClass[] $interfaces
      *
      * @return Node\ClassNode
      *
+     * @throws \Prophecy\Exception\InvalidArgumentException
      */
-    public function reflect(?ReflectionClass $class, array $interfaces)
+    public function reflect(ReflectionClass $class = null, array $interfaces)
     {
         $node = new Node\ClassNode;
 
@@ -143,8 +143,8 @@ class ClassMirror
             $node->setReturnsReference();
         }
 
-        if ($method->hasReturnType()) {
-            $returnType = $method->getReturnType()->getName();
+        if (version_compare(PHP_VERSION, '7.0', '>=') && $method->hasReturnType()) {
+            $returnType = PHP_VERSION_ID >= 70100 ? $method->getReturnType()->getName() : (string) $method->getReturnType();
             $returnTypeLower = strtolower($returnType);
 
             if ('self' === $returnTypeLower) {
@@ -156,7 +156,7 @@ class ClassMirror
 
             $node->setReturnType($returnType);
 
-            if ($method->getReturnType()->allowsNull()) {
+            if (version_compare(PHP_VERSION, '7.1', '>=') && $method->getReturnType()->allowsNull()) {
                 $node->setNullableReturnType(true);
             }
         }
@@ -177,7 +177,7 @@ class ClassMirror
 
         $node->setTypeHint($this->getTypeHint($parameter));
 
-        if ($parameter->isVariadic()) {
+        if ($this->isVariadic($parameter)) {
             $node->setAsVariadic();
         }
 
@@ -196,7 +196,7 @@ class ClassMirror
 
     private function hasDefaultValue(ReflectionParameter $parameter)
     {
-        if ($parameter->isVariadic()) {
+        if ($this->isVariadic($parameter)) {
             return false;
         }
 
@@ -222,11 +222,24 @@ class ClassMirror
             return $className;
         }
 
-        if (true === $parameter->hasType()) {
-            return $parameter->getType()->getName();
+        if (true === $parameter->isArray()) {
+            return 'array';
+        }
+
+        if (version_compare(PHP_VERSION, '5.4', '>=') && true === $parameter->isCallable()) {
+            return 'callable';
+        }
+
+        if (version_compare(PHP_VERSION, '7.0', '>=') && true === $parameter->hasType()) {
+            return PHP_VERSION_ID >= 70100 ? $parameter->getType()->getName() : (string) $parameter->getType();
         }
 
         return null;
+    }
+
+    private function isVariadic(ReflectionParameter $parameter)
+    {
+        return PHP_VERSION_ID >= 50600 && $parameter->isVariadic();
     }
 
     private function isNullable(ReflectionParameter $parameter)
@@ -236,18 +249,12 @@ class ClassMirror
 
     private function getParameterClassName(ReflectionParameter $parameter)
     {
-        $type = $parameter->getType();
-        if (!$type) {
-            return null;
-        }
-        if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
-            if ($type->getName() === 'self') {
-                return $parameter->getDeclaringClass()->getName();
-            }
+        try {
+            return $parameter->getClass() ? $parameter->getClass()->getName() : null;
+        } catch (\ReflectionException $e) {
+            preg_match('/\[\s\<\w+?>\s([\w,\\\]+)/s', $parameter, $matches);
 
-            return $type->getName();
+            return isset($matches[1]) ? $matches[1] : null;
         }
-
-        return null;
     }
 }

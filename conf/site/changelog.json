@@ -1,4 +1,106 @@
 {
+    "1.9.6": [
+        {
+            "description": "Clear the cache on restore.",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.9.5": [
+        {
+            "description": "Added toggle to show failed tests on graphs.",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.9.4": [
+        {
+            "description": "Changed integration config loading.",
+            "link": ""
+        },
+        {
+            "description": "Added more tests.",
+            "link": ""
+        }
+    ],
+    "1.9.3": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.9.2": [
+        {
+            "description": "Authentication bugfixes.",
+            "link": ""
+        }
+    ],
+    "1.9.1": [
+        {
+            "description": "Added conditional notifications.",
+            "link": ""
+        }
+    ],
+    "1.9.0": [
+        {
+            "description": "Added optional authentication.",
+            "link": ""
+        }
+    ],
+    "1.8.1": [
+        {
+            "description": "Added healthchecks.io test buttons.",
+            "link": ""
+        },
+        {
+            "description": "Added close buttons to modals.",
+            "link": ""
+        },
+        {
+            "description": "Back-end config handling changes.",
+            "link": ""
+        }
+    ],
+    "1.8.0": [
+        {
+            "description": "Added healthchecks.io integration.",
+            "link": ""
+        }
+    ],
+    "1.7.19": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.7.18": [
+        {
+            "description": "Fixed issue with widgets not updating when switching between failed/successful tests.",
+            "link": ""
+        },
+        {
+            "description": "Updated backup/restore functions to reflect new DB fields.",
+            "link": ""
+        }
+    ],
+    "1.7.17": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.7.16": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
     "1.7.15": [
         {
             "description": "Updates for manual installs.",

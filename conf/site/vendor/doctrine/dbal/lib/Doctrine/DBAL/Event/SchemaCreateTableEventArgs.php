@@ -4,12 +4,13 @@ namespace Doctrine\DBAL\Event;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Table;
+
 use function array_merge;
 use function func_get_args;
 use function is_array;
 
 /**
- * Event Arguments used when SQL queries for creating tables are generated inside Doctrine\DBAL\Platform\AbstractPlatform.
+ * Event Arguments used when SQL queries for creating tables are generated inside {@link AbstractPlatform}.
  */
 class SchemaCreateTableEventArgs extends SchemaEventArgs
 {
@@ -77,7 +78,7 @@ class SchemaCreateTableEventArgs extends SchemaEventArgs
      *
      * @param string|string[] $sql
      *
-     * @return \Doctrine\DBAL\Event\SchemaCreateTableEventArgs
+     * @return SchemaCreateTableEventArgs
      */
     public function addSql($sql)
     {

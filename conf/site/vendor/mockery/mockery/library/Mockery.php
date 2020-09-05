@@ -80,18 +80,24 @@ class Mockery
      */
     public static function builtInTypes()
     {
-        return array(
+        $builtInTypes = array(
+            'self',
             'array',
-            'bool',
             'callable',
+            // Up to php 7
+            'bool',
             'float',
             'int',
-            'iterable',
-            'object',
-            'self',
             'string',
+            'iterable',
             'void',
         );
+
+        if (\PHP_VERSION_ID >= 70200) {
+            $builtInTypes[] = 'object';
+        }
+
+        return $builtInTypes;
     }
 
     /**
@@ -857,26 +863,28 @@ class Mockery
     ) {
         $newMockName = 'demeter_' . md5($parent) . '_' . $method;
 
-        $parRef = null;
-        $parRefMethod = null;
-        $parRefMethodRetType = null;
+        if (\PHP_VERSION_ID >= 70000) {
+            $parRef = null;
+            $parRefMethod = null;
+            $parRefMethodRetType = null;
 
-        $parentMock = $exp->getMock();
-        if ($parentMock !== null) {
-            $parRef = new ReflectionObject($parentMock);
-        }
+            $parentMock = $exp->getMock();
+            if ($parentMock !== null) {
+                $parRef = new ReflectionObject($parentMock);
+            }
 
-        if ($parRef !== null && $parRef->hasMethod($method)) {
-            $parRefMethod = $parRef->getMethod($method);
-            $parRefMethodRetType = Reflector::getReturnType($parRefMethod, true);
+            if ($parRef !== null && $parRef->hasMethod($method)) {
+                $parRefMethod = $parRef->getMethod($method);
+                $parRefMethodRetType = Reflector::getReturnType($parRefMethod, true);
 
-            if ($parRefMethodRetType !== null) {
-                $nameBuilder = new MockNameBuilder();
-                $nameBuilder->addPart('\\' . $newMockName);
-                $mock = self::namedMock($nameBuilder->build(), $parRefMethodRetType);
-                $exp->andReturn($mock);
+                if ($parRefMethodRetType !== null) {
+                    $nameBuilder = new MockNameBuilder();
+                    $nameBuilder->addPart('\\' . $newMockName);
+                    $mock = self::namedMock($nameBuilder->build(), $parRefMethodRetType);
+                    $exp->andReturn($mock);
 
-                return $mock;
+                    return $mock;
+                }
             }
         }
 
