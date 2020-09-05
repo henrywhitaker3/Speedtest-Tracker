@@ -48,7 +48,7 @@ parametersSchema:
 
 conditionalTags:
     NunoMaduro\Larastan\Rules\NoUnnecessaryCollectionCallRule:
-    		phpstan.rules.rule: %noUnnecessaryCollectionCall%
+        phpstan.rules.rule: %noUnnecessaryCollectionCall%
 
 services:
     -
@@ -213,6 +213,11 @@ services:
 
     -
         class: NunoMaduro\Larastan\ReturnTypes\Helpers\TransExtension
+        tags:
+            - phpstan.broker.dynamicFunctionReturnTypeExtension
+
+    -
+        class: NunoMaduro\Larastan\ReturnTypes\Helpers\ValidatorExtension
         tags:
             - phpstan.broker.dynamicFunctionReturnTypeExtension
 

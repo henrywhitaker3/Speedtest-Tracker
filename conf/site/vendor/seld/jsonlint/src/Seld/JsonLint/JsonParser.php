@@ -38,6 +38,9 @@ class JsonParser
     private $vstack; // semantic value stack
     private $lstack; // location stack
 
+    /**
+     * @phpstan-var array<string, int>
+     */
     private $symbols = array(
         'error'                 => 2,
         'JSONString'            => 3,
@@ -67,6 +70,9 @@ class JsonParser
         '$end'                  => 1,
     );
 
+    /**
+     * @phpstan-var array<int, string>
+     */
     private $terminals_ = array(
         2   => "error",
         4   => "STRING",
@@ -127,6 +133,7 @@ class JsonParser
         } catch (ParsingException $e) {
             return $e;
         }
+        return null;
     }
 
     /**
@@ -303,7 +310,7 @@ class JsonParser
                         'first_column' => $this->lstack[\count($this->lstack) - ($len ?: 1)]['first_column'],
                         'last_column' => $this->lstack[\count($this->lstack) - 1]['last_column'],
                     );
-                    $r = $this->performAction($yyval, $yytext, $yyleng, $yylineno, $action[1], $this->vstack, $this->lstack);
+                    $r = $this->performAction($yyval, $yytext, $yyleng, $yylineno, $action[1], $this->vstack);
 
                     if (!$r instanceof Undefined) {
                         return $r;
@@ -325,8 +332,6 @@ class JsonParser
                     return true;
             }
         }
-
-        return true;
     }
 
     protected function parseError($str, $hash)

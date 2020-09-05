@@ -6,9 +6,7 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\ParameterType;
 use UnexpectedValueException;
-use const OCI_COMMIT_ON_SUCCESS;
-use const OCI_DEFAULT;
-use const OCI_NO_AUTO_COMMIT;
+
 use function addcslashes;
 use function func_get_args;
 use function is_float;
@@ -22,6 +20,9 @@ use function oci_server_version;
 use function preg_match;
 use function sprintf;
 use function str_replace;
+
+use const OCI_COMMIT_ON_SUCCESS;
+use const OCI_NO_AUTO_COMMIT;
 
 /**
  * OCI8 implementation of the Connection interface.
@@ -51,7 +52,7 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
         $password,
         $db,
         $charset = '',
-        $sessionMode = OCI_DEFAULT,
+        $sessionMode = OCI_NO_AUTO_COMMIT,
         $persistent = false
     ) {
         $dbh = $persistent
@@ -103,9 +104,9 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function prepare($prepareString)
+    public function prepare($sql)
     {
-        return new OCI8Statement($this->dbh, $prepareString, $this);
+        return new OCI8Statement($this->dbh, $sql, $this);
     }
 
     /**
@@ -130,6 +131,7 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
         if (is_int($value) || is_float($value)) {
             return $value;
         }
+
         $value = str_replace("'", "''", $value);
 
         return "'" . addcslashes($value, "\000\n\r\\\032") . "'";
@@ -138,9 +140,9 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec($sql)
     {
-        $stmt = $this->prepare($statement);
+        $stmt = $this->prepare($sql);
         $stmt->execute();
 
         return $stmt->rowCount();
@@ -148,6 +150,8 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
 
     /**
      * {@inheritdoc}
+     *
+     * @return int|false
      */
     public function lastInsertId($name = null)
     {
@@ -194,6 +198,7 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
         if (! oci_commit($this->dbh)) {
             throw OCI8Exception::fromErrorInfo($this->errorInfo());
         }
+
         $this->executeMode = OCI_COMMIT_ON_SUCCESS;
 
         return true;
@@ -207,6 +212,7 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
         if (! oci_rollback($this->dbh)) {
             throw OCI8Exception::fromErrorInfo($this->errorInfo());
         }
+
         $this->executeMode = OCI_COMMIT_ON_SUCCESS;
 
         return true;
@@ -218,11 +224,12 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
     public function errorCode()
     {
         $error = oci_error($this->dbh);
+
         if ($error !== false) {
-            $error = $error['code'];
+            return $error['code'];
         }
 
-        return $error;
+        return null;
     }
 
     /**

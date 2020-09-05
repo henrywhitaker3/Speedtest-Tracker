@@ -9,6 +9,7 @@ use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use IteratorAggregate;
 use PDO;
+
 use function array_change_key_case;
 use function assert;
 use function is_string;
@@ -46,11 +47,11 @@ class Statement implements IteratorAggregate, DriverStatement
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null)
+    public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null)
     {
         assert($this->stmt instanceof DriverStatement);
 
-        return $this->stmt->bindParam($column, $variable, $type, $length);
+        return $this->stmt->bindParam($param, $variable, $type, $length);
     }
 
     /**
@@ -112,11 +113,11 @@ class Statement implements IteratorAggregate, DriverStatement
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode($fetchMode, $arg1 = null, $arg2 = null)
+    public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
     {
         $this->defaultFetchMode = $fetchMode;
 
-        return $this->stmt->setFetchMode($fetchMode, $arg1, $arg2);
+        return $this->stmt->setFetchMode($fetchMode, $arg2, $arg3);
     }
 
     /**
@@ -136,7 +137,7 @@ class Statement implements IteratorAggregate, DriverStatement
 
         $row = $this->stmt->fetch($fetchMode);
 
-        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL|Connection::PORTABILITY_RTRIM);
+        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL | Connection::PORTABILITY_RTRIM);
         $fixCase    = $this->case !== null
             && ($fetchMode === FetchMode::ASSOCIATIVE || $fetchMode === FetchMode::MIXED)
             && ($this->portability & Connection::PORTABILITY_FIX_CASE);
@@ -159,7 +160,7 @@ class Statement implements IteratorAggregate, DriverStatement
             $rows = $this->stmt->fetchAll($fetchMode);
         }
 
-        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL|Connection::PORTABILITY_RTRIM);
+        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL | Connection::PORTABILITY_RTRIM);
         $fixCase    = $this->case !== null
             && ($fetchMode === FetchMode::ASSOCIATIVE || $fetchMode === FetchMode::MIXED)
             && ($this->portability & Connection::PORTABILITY_FIX_CASE);
@@ -224,7 +225,7 @@ class Statement implements IteratorAggregate, DriverStatement
     {
         $value = $this->stmt->fetchColumn($columnIndex);
 
-        if ($this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL|Connection::PORTABILITY_RTRIM)) {
+        if ($this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL | Connection::PORTABILITY_RTRIM)) {
             if (($this->portability & Connection::PORTABILITY_EMPTY_TO_NULL) && $value === '') {
                 $value = null;
             } elseif (($this->portability & Connection::PORTABILITY_RTRIM) && is_string($value)) {

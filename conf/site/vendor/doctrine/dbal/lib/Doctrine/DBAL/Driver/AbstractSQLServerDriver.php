@@ -11,11 +11,13 @@ use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\SQLServerSchemaManager;
 use Doctrine\DBAL\VersionAwarePlatformDriver;
+
+use function assert;
 use function preg_match;
 use function version_compare;
 
 /**
- * Abstract base implementation of the {@link Doctrine\DBAL\Driver} interface for Microsoft SQL Server based drivers.
+ * Abstract base implementation of the {@link Driver} interface for Microsoft SQL Server based drivers.
  */
 abstract class AbstractSQLServerDriver implements Driver, VersionAwarePlatformDriver
 {
@@ -24,11 +26,13 @@ abstract class AbstractSQLServerDriver implements Driver, VersionAwarePlatformDr
      */
     public function createDatabasePlatformForVersion($version)
     {
-        if (! preg_match(
-            '/^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<patch>\d+)(?:\.(?P<build>\d+))?)?)?/',
-            $version,
-            $versionParts
-        )) {
+        if (
+            ! preg_match(
+                '/^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<patch>\d+)(?:\.(?P<build>\d+))?)?)?/',
+                $version,
+                $versionParts
+            )
+        ) {
             throw DBALException::invalidPlatformVersionSpecified(
                 $version,
                 '<major_version>.<minor_version>.<patch_version>.<build_version>'
@@ -60,7 +64,15 @@ abstract class AbstractSQLServerDriver implements Driver, VersionAwarePlatformDr
     {
         $params = $conn->getParams();
 
-        return $params['dbname'] ?? $conn->query('SELECT DB_NAME()')->fetchColumn();
+        if (isset($params['dbname'])) {
+            return $params['dbname'];
+        }
+
+        $database = $conn->query('SELECT DB_NAME()')->fetchColumn();
+
+        assert($database !== false);
+
+        return $database;
     }
 
     /**

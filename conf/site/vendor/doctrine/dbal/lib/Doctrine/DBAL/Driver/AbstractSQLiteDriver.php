@@ -7,10 +7,11 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\SqliteSchemaManager;
+
 use function strpos;
 
 /**
- * Abstract base implementation of the {@link Doctrine\DBAL\Driver} interface for SQLite based drivers.
+ * Abstract base implementation of the {@link Driver} interface for SQLite based drivers.
  */
 abstract class AbstractSQLiteDriver implements Driver, ExceptionConverterDriver
 {
@@ -25,7 +26,8 @@ abstract class AbstractSQLiteDriver implements Driver, ExceptionConverterDriver
             return new Exception\LockWaitTimeoutException($message, $exception);
         }
 
-        if (strpos($exception->getMessage(), 'must be unique') !== false ||
+        if (
+            strpos($exception->getMessage(), 'must be unique') !== false ||
             strpos($exception->getMessage(), 'is not unique') !== false ||
             strpos($exception->getMessage(), 'are not unique') !== false ||
             strpos($exception->getMessage(), 'UNIQUE constraint failed') !== false
@@ -33,7 +35,8 @@ abstract class AbstractSQLiteDriver implements Driver, ExceptionConverterDriver
             return new Exception\UniqueConstraintViolationException($message, $exception);
         }
 
-        if (strpos($exception->getMessage(), 'may not be NULL') !== false ||
+        if (
+            strpos($exception->getMessage(), 'may not be NULL') !== false ||
             strpos($exception->getMessage(), 'NOT NULL constraint failed') !== false
         ) {
             return new Exception\NotNullConstraintViolationException($message, $exception);
@@ -65,6 +68,10 @@ abstract class AbstractSQLiteDriver implements Driver, ExceptionConverterDriver
 
         if (strpos($exception->getMessage(), 'unable to open database file') !== false) {
             return new Exception\ConnectionException($message, $exception);
+        }
+
+        if (strpos($exception->getMessage(), 'FOREIGN KEY constraint failed') !== false) {
+            return new Exception\ForeignKeyConstraintViolationException($message, $exception);
         }
 
         return new Exception\DriverException($message, $exception);

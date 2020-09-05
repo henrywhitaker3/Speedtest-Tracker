@@ -5,6 +5,7 @@ namespace Doctrine\DBAL\Types;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 use function date_create;
 
 /**
@@ -23,9 +24,9 @@ class DateTimeType extends Type implements PhpDateTimeMappingType
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform)
     {
-        return $platform->getDateTimeTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getDateTimeTypeDeclarationSQL($column);
     }
 
     /**
@@ -60,7 +61,11 @@ class DateTimeType extends Type implements PhpDateTimeMappingType
         }
 
         if (! $val) {
-            throw ConversionException::conversionFailedFormat($value, $this->getName(), $platform->getDateTimeFormatString());
+            throw ConversionException::conversionFailedFormat(
+                $value,
+                $this->getName(),
+                $platform->getDateTimeFormatString()
+            );
         }
 
         return $val;

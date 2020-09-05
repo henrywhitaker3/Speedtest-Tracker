@@ -19,6 +19,9 @@ namespace Seld\JsonLint;
 class Lexer
 {
     private $EOF = 1;
+    /**
+     * @phpstan-var array<int, string>
+     */
     private $rules = array(
         0 => '/\G\s+/',
         1 => '/\G-?([0-9]|[1-9][0-9]+)(\.[0-9]+)?([eE][+-]?[0-9]+)?\b/',
@@ -199,7 +202,6 @@ class Lexer
             break;
         case 1:
             return 6;
-           break;
         case 2:
             $this->yytext = substr($this->yytext, 1, $this->yyleng-2);
 

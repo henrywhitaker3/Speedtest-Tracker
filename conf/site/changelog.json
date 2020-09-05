@@ -1,4 +1,14 @@
 {
+    "1.9.6": [
+        {
+            "description": "Clear the cache on restore.",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
     "1.9.5": [
         {
             "description": "Added toggle to show failed tests on graphs.",

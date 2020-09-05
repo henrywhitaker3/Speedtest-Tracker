@@ -5,6 +5,7 @@ namespace Doctrine\DBAL\Driver\SQLAnywhere;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\ParameterType;
+
 use function assert;
 use function func_get_args;
 use function is_float;
@@ -107,9 +108,9 @@ class SQLAnywhereConnection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec($sql)
     {
-        if (sasql_real_query($this->connection, $statement) === false) {
+        if (sasql_real_query($this->connection, $sql) === false) {
             throw SQLAnywhereException::fromSQLAnywhereError($this->connection);
         }
 
@@ -143,9 +144,9 @@ class SQLAnywhereConnection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function prepare($prepareString)
+    public function prepare($sql)
     {
-        return new SQLAnywhereStatement($this->connection, $prepareString);
+        return new SQLAnywhereStatement($this->connection, $sql);
     }
 
     /**
@@ -164,13 +165,13 @@ class SQLAnywhereConnection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type = ParameterType::STRING)
+    public function quote($value, $type = ParameterType::STRING)
     {
-        if (is_int($input) || is_float($input)) {
-            return $input;
+        if (is_int($value) || is_float($value)) {
+            return $value;
         }
 
-        return "'" . sasql_escape_string($this->connection, $input) . "'";
+        return "'" . sasql_escape_string($this->connection, $value) . "'";
     }
 
     /**
