@@ -7,6 +7,7 @@ use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\Expression\CompositeExpression;
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
 use function array_key_exists;
 use function array_keys;
 use function array_unshift;
@@ -231,6 +232,7 @@ class QueryBuilder
             case self::INSERT:
                 $sql = $this->getSQLForInsert();
                 break;
+
             case self::DELETE:
                 $sql = $this->getSQLForDelete();
                 break;
@@ -264,7 +266,7 @@ class QueryBuilder
      *
      * @param string|int      $key   The parameter position or name.
      * @param mixed           $value The parameter value.
-     * @param string|int|null $type  One of the {@link \Doctrine\DBAL\ParameterType} constants.
+     * @param string|int|null $type  One of the {@link ParameterType} constants.
      *
      * @return $this This QueryBuilder instance.
      */
@@ -394,7 +396,7 @@ class QueryBuilder
      * Gets the maximum number of results the query object was set to retrieve (the "limit").
      * Returns NULL if all results will be returned.
      *
-     * @return int The maximum number of results.
+     * @return int|null The maximum number of results.
      */
     public function getMaxResults()
     {
@@ -425,7 +427,12 @@ class QueryBuilder
         $this->state = self::STATE_DIRTY;
 
         if ($append) {
-            if ($sqlPartName === 'orderBy' || $sqlPartName === 'groupBy' || $sqlPartName === 'select' || $sqlPartName === 'set') {
+            if (
+                $sqlPartName === 'orderBy'
+                || $sqlPartName === 'groupBy'
+                || $sqlPartName === 'select'
+                || $sqlPartName === 'set'
+            ) {
                 foreach ($sqlPart as $part) {
                     $this->sqlParts[$sqlPartName][] = $part;
                 }
@@ -486,7 +493,7 @@ class QueryBuilder
      *
      * @return $this This QueryBuilder instance.
      */
-    public function distinct() : self
+    public function distinct(): self
     {
         $this->sqlParts['distinct'] = true;
 
@@ -1174,7 +1181,7 @@ class QueryBuilder
      *
      * @throws QueryException
      */
-    private function verifyAllAliasesAreKnown(array $knownAliases) : void
+    private function verifyAllAliasesAreKnown(array $knownAliases): void
     {
         foreach ($this->sqlParts['join'] as $fromAlias => $joins) {
             if (! isset($knownAliases[$fromAlias])) {
@@ -1210,7 +1217,8 @@ class QueryBuilder
      */
     private function getSQLForUpdate()
     {
-        $table = $this->sqlParts['from']['table'] . ($this->sqlParts['from']['alias'] ? ' ' . $this->sqlParts['from']['alias'] : '');
+        $table = $this->sqlParts['from']['table']
+            . ($this->sqlParts['from']['alias'] ? ' ' . $this->sqlParts['from']['alias'] : '');
 
         return 'UPDATE ' . $table
             . ' SET ' . implode(', ', $this->sqlParts['set'])
@@ -1224,9 +1232,11 @@ class QueryBuilder
      */
     private function getSQLForDelete()
     {
-        $table = $this->sqlParts['from']['table'] . ($this->sqlParts['from']['alias'] ? ' ' . $this->sqlParts['from']['alias'] : '');
+        $table = $this->sqlParts['from']['table']
+            . ($this->sqlParts['from']['alias'] ? ' ' . $this->sqlParts['from']['alias'] : '');
 
-        return 'DELETE FROM ' . $table . ($this->sqlParts['where'] !== null ? ' WHERE ' . ((string) $this->sqlParts['where']) : '');
+        return 'DELETE FROM ' . $table
+            . ($this->sqlParts['where'] !== null ? ' WHERE ' . ((string) $this->sqlParts['where']) : '');
     }
 
     /**
@@ -1274,6 +1284,7 @@ class QueryBuilder
             $this->boundCounter++;
             $placeHolder = ':dcValue' . $this->boundCounter;
         }
+
         $this->setParameter(substr($placeHolder, 1), $value, $type);
 
         return $placeHolder;
@@ -1326,11 +1337,13 @@ class QueryBuilder
                 if (array_key_exists($join['joinAlias'], $knownAliases)) {
                     throw QueryException::nonUniqueAlias($join['joinAlias'], array_keys($knownAliases));
                 }
+
                 $sql .= ' ' . strtoupper($join['joinType'])
                     . ' JOIN ' . $join['joinTable'] . ' ' . $join['joinAlias'];
                 if ($join['joinCondition'] !== null) {
                     $sql .= ' ON ' . $join['joinCondition'];
                 }
+
                 $knownAliases[$join['joinAlias']] = true;
             }
 

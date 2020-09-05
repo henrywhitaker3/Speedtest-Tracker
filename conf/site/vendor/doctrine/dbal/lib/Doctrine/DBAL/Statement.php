@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Type;
 use IteratorAggregate;
 use PDO;
 use Throwable;
+
 use function is_array;
 use function is_string;
 
@@ -81,20 +82,21 @@ class Statement implements IteratorAggregate, DriverStatement
      * type and the value undergoes the conversion routines of the mapping type before
      * being bound.
      *
-     * @param string|int $name  The name or position of the parameter.
+     * @param string|int $param The name or position of the parameter.
      * @param mixed      $value The value of the parameter.
      * @param mixed      $type  Either a PDO binding type or a DBAL mapping type name or instance.
      *
      * @return bool TRUE on success, FALSE on failure.
      */
-    public function bindValue($name, $value, $type = ParameterType::STRING)
+    public function bindValue($param, $value, $type = ParameterType::STRING)
     {
-        $this->params[$name] = $value;
-        $this->types[$name]  = $type;
+        $this->params[$param] = $value;
+        $this->types[$param]  = $type;
         if ($type !== null) {
             if (is_string($type)) {
                 $type = Type::getType($type);
             }
+
             if ($type instanceof Type) {
                 $value       = $type->convertToDatabaseValue($value, $this->platform);
                 $bindingType = $type->getBindingType();
@@ -102,10 +104,10 @@ class Statement implements IteratorAggregate, DriverStatement
                 $bindingType = $type;
             }
 
-            return $this->stmt->bindValue($name, $value, $bindingType);
+            return $this->stmt->bindValue($param, $value, $bindingType);
         }
 
-        return $this->stmt->bindValue($name, $value);
+        return $this->stmt->bindValue($param, $value);
     }
 
     /**
@@ -113,20 +115,20 @@ class Statement implements IteratorAggregate, DriverStatement
      *
      * Binding a parameter by reference does not support DBAL mapping types.
      *
-     * @param string|int $name   The name or position of the parameter.
-     * @param mixed      $var    The reference to the variable to bind.
-     * @param int        $type   The PDO binding type.
-     * @param int|null   $length Must be specified when using an OUT bind
-     *                           so that PHP allocates enough memory to hold the returned value.
+     * @param string|int $param    The name or position of the parameter.
+     * @param mixed      $variable The reference to the variable to bind.
+     * @param int        $type     The PDO binding type.
+     * @param int|null   $length   Must be specified when using an OUT bind
+     *                             so that PHP allocates enough memory to hold the returned value.
      *
      * @return bool TRUE on success, FALSE on failure.
      */
-    public function bindParam($name, &$var, $type = ParameterType::STRING, $length = null)
+    public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null)
     {
-        $this->params[$name] = $var;
-        $this->types[$name]  = $type;
+        $this->params[$param] = $variable;
+        $this->types[$param]  = $type;
 
-        return $this->stmt->bindParam($name, $var, $type, $length);
+        return $this->stmt->bindParam($param, $variable, $type, $length);
     }
 
     /**
@@ -155,6 +157,7 @@ class Statement implements IteratorAggregate, DriverStatement
             if ($logger) {
                 $logger->stopQuery();
             }
+
             throw DBALException::driverExceptionDuringQuery(
                 $this->conn->getDriver(),
                 $ex,
@@ -166,8 +169,6 @@ class Statement implements IteratorAggregate, DriverStatement
         if ($logger) {
             $logger->stopQuery();
         }
-        $this->params = [];
-        $this->types  = [];
 
         return $stmt;
     }

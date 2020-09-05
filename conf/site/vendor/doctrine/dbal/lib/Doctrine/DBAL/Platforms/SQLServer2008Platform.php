@@ -17,13 +17,14 @@ class SQLServer2008Platform extends SQLServer2005Platform
     {
         // "sysdiagrams" table must be ignored as it's internal SQL Server table for Database Diagrams
         // Category 2 must be ignored as it is "MS SQL Server 'pseudo-system' object[s]" for replication
-        return "SELECT name, SCHEMA_NAME (uid) AS schema_name FROM sysobjects WHERE type = 'U' AND name != 'sysdiagrams' AND category != 2 ORDER BY name";
+        return 'SELECT name, SCHEMA_NAME (uid) AS schema_name FROM sysobjects'
+            . " WHERE type = 'U' AND name != 'sysdiagrams' AND category != 2 ORDER BY name";
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTimeTypeDeclarationSQL(array $column)
     {
         // 3 - microseconds precision length
         // http://msdn.microsoft.com/en-us/library/ms187819.aspx
@@ -33,7 +34,7 @@ class SQLServer2008Platform extends SQLServer2005Platform
     /**
      * {@inheritDoc}
      */
-    public function getDateTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTypeDeclarationSQL(array $column)
     {
         return 'DATE';
     }
@@ -41,7 +42,7 @@ class SQLServer2008Platform extends SQLServer2005Platform
     /**
      * {@inheritDoc}
      */
-    public function getTimeTypeDeclarationSQL(array $fieldDeclaration)
+    public function getTimeTypeDeclarationSQL(array $column)
     {
         return 'TIME(0)';
     }
@@ -49,7 +50,7 @@ class SQLServer2008Platform extends SQLServer2005Platform
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeTzTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTimeTzTypeDeclarationSQL(array $column)
     {
         return 'DATETIMEOFFSET(6)';
     }
@@ -110,7 +111,7 @@ class SQLServer2008Platform extends SQLServer2005Platform
         return Keywords\SQLServer2008Keywords::class;
     }
 
-    protected function getLikeWildcardCharacters() : string
+    protected function getLikeWildcardCharacters(): string
     {
         return parent::getLikeWildcardCharacters() . '[]^';
     }

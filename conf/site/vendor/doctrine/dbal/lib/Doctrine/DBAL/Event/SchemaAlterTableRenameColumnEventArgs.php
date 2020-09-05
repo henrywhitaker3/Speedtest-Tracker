@@ -5,12 +5,13 @@ namespace Doctrine\DBAL\Event;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\TableDiff;
+
 use function array_merge;
 use function func_get_args;
 use function is_array;
 
 /**
- * Event Arguments used when SQL queries for renaming table columns are generated inside Doctrine\DBAL\Platform\*Platform.
+ * Event Arguments used when SQL queries for renaming table columns are generated inside {@link AbstractPlatform}.
  */
 class SchemaAlterTableRenameColumnEventArgs extends SchemaEventArgs
 {
@@ -77,7 +78,7 @@ class SchemaAlterTableRenameColumnEventArgs extends SchemaEventArgs
      *
      * @param string|string[] $sql
      *
-     * @return \Doctrine\DBAL\Event\SchemaAlterTableRenameColumnEventArgs
+     * @return SchemaAlterTableRenameColumnEventArgs
      */
     public function addSql($sql)
     {

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <psalm
     totallyTyped="false"
-    errorLevel="8"
+    errorLevel="5"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -23,6 +23,41 @@
         <file name="vendor/jetbrains/phpstorm-stubs/sqlsrv/sqlsrv.php" />
     </stubs>
     <issueHandlers>
+        <ConflictingReferenceConstraint>
+            <errorLevel type="suppress">
+                <!--
+                    This one is just too convoluted for Psalm to figure out, by
+                    its author's own admission
+                -->
+                <file name="lib/Doctrine/DBAL/Driver/OCI8/OCI8Statement.php"/>
+            </errorLevel>
+        </ConflictingReferenceConstraint>
+        <FalsableReturnStatement>
+            <errorLevel type="suppress">
+                <!--
+                    Fixing these issues requires an API change
+                -->
+                <file name="lib/Doctrine/DBAL/Driver/SQLAnywhere/SQLAnywhereConnection.php"/>
+                <file name="lib/Doctrine/DBAL/Driver/SQLSrv/SQLSrvConnection.php"/>
+            </errorLevel>
+        </FalsableReturnStatement>
+        <MethodSignatureMismatch>
+            <errorLevel type="suppress">
+                <!--
+                    This one is clearly deliberate; it's a hack to adapt \PDO to
+                    Doctrine\DBAL\Driver\Connection
+                -->
+                <file name="lib/Doctrine/DBAL/Driver/PDOConnection.php"/>
+            </errorLevel>
+        </MethodSignatureMismatch>
+        <NullableReturnStatement>
+            <errorLevel type="suppress">
+                <!--
+                    Fixing this issue requires an API change
+                -->
+                <file name="lib/Doctrine/DBAL/Driver/AbstractSQLiteDriver.php"/>
+            </errorLevel>
+        </NullableReturnStatement>
         <TooFewArguments>
             <errorLevel type="suppress">
                 <!--
@@ -53,5 +88,17 @@
                 <file name="lib/Doctrine/DBAL/Tools/Dumper.php"/>
             </errorLevel>
         </UndefinedClass>
+        <InvalidReturnType>
+            <errorLevel type="suppress">
+                <!-- lastInsertId has a return type that does not match the one defined in the interface-->
+                <file name="lib/Doctrine/DBAL/Driver/Mysqli/MysqliConnection.php"/>
+            </errorLevel>
+        </InvalidReturnType>
+        <InvalidReturnStatement>
+            <errorLevel type="suppress">
+                <!-- lastInsertId has a return type that does not match the one defined in the interface-->
+                <file name="lib/Doctrine/DBAL/Driver/Mysqli/MysqliConnection.php"/>
+            </errorLevel>
+        </InvalidReturnStatement>
     </issueHandlers>
 </psalm>

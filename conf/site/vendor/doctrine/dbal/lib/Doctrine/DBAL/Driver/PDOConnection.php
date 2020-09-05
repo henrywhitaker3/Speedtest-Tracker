@@ -2,8 +2,8 @@
 
 namespace Doctrine\DBAL\Driver;
 
-use Doctrine\DBAL\ParameterType;
 use PDO;
+
 use function assert;
 use function func_get_args;
 
@@ -35,10 +35,13 @@ class PDOConnection extends PDO implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec($sql)
     {
         try {
-            return parent::exec($statement);
+            $result = parent::exec($sql);
+            assert($result !== false);
+
+            return $result;
         } catch (\PDOException $exception) {
             throw new PDOException($exception);
         }
@@ -53,15 +56,18 @@ class PDOConnection extends PDO implements Connection, ServerInfoAwareConnection
     }
 
     /**
-     * @param string          $prepareString
+     * @param string          $sql
      * @param array<int, int> $driverOptions
      *
-     * @return Statement
+     * @return \PDOStatement
      */
-    public function prepare($prepareString, $driverOptions = [])
+    public function prepare($sql, $driverOptions = [])
     {
         try {
-            return parent::prepare($prepareString, $driverOptions);
+            $statement = parent::prepare($sql, $driverOptions);
+            assert($statement instanceof \PDOStatement);
+
+            return $statement;
         } catch (\PDOException $exception) {
             throw new PDOException($exception);
         }
@@ -69,6 +75,8 @@ class PDOConnection extends PDO implements Connection, ServerInfoAwareConnection
 
     /**
      * {@inheritdoc}
+     *
+     * @return \PDOStatement
      */
     public function query()
     {
@@ -82,14 +90,6 @@ class PDOConnection extends PDO implements Connection, ServerInfoAwareConnection
         } catch (\PDOException $exception) {
             throw new PDOException($exception);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function quote($input, $type = ParameterType::STRING)
-    {
-        return parent::quote($input, $type);
     }
 
     /**

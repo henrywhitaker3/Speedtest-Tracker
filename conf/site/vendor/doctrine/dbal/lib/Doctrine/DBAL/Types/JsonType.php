@@ -3,13 +3,15 @@
 namespace Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use const JSON_ERROR_NONE;
+
 use function is_resource;
 use function json_decode;
 use function json_encode;
 use function json_last_error;
 use function json_last_error_msg;
 use function stream_get_contents;
+
+use const JSON_ERROR_NONE;
 
 /**
  * Type generating json objects values
@@ -19,9 +21,9 @@ class JsonType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform)
     {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getJsonTypeDeclarationSQL($column);
     }
 
     /**

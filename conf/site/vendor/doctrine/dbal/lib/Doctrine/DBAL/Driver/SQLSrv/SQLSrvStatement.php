@@ -8,12 +8,7 @@ use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use IteratorAggregate;
 use PDO;
-use const SQLSRV_ENC_BINARY;
-use const SQLSRV_ERR_ERRORS;
-use const SQLSRV_FETCH_ASSOC;
-use const SQLSRV_FETCH_BOTH;
-use const SQLSRV_FETCH_NUMERIC;
-use const SQLSRV_PARAM_IN;
+
 use function array_key_exists;
 use function count;
 use function func_get_args;
@@ -34,6 +29,13 @@ use function sqlsrv_prepare;
 use function sqlsrv_rows_affected;
 use function SQLSRV_SQLTYPE_VARBINARY;
 use function stripos;
+
+use const SQLSRV_ENC_BINARY;
+use const SQLSRV_ERR_ERRORS;
+use const SQLSRV_FETCH_ASSOC;
+use const SQLSRV_FETCH_BOTH;
+use const SQLSRV_FETCH_NUMERIC;
+use const SQLSRV_PARAM_IN;
 
 /**
  * SQL Server Statement.
@@ -165,14 +167,16 @@ class SQLSrvStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null)
+    public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null)
     {
-        if (! is_numeric($column)) {
-            throw new SQLSrvException('sqlsrv does not support named parameters to queries, use question mark (?) placeholders instead.');
+        if (! is_numeric($param)) {
+            throw new SQLSrvException(
+                'sqlsrv does not support named parameters to queries, use question mark (?) placeholders instead.'
+            );
         }
 
-        $this->variables[$column] =& $variable;
-        $this->types[$column]     = $type;
+        $this->variables[$param] =& $variable;
+        $this->types[$param]     = $type;
 
         // unset the statement resource if it exists as the new one will need to be bound to the new variable
         $this->stmt = null;
@@ -387,12 +391,14 @@ class SQLSrvStatement implements IteratorAggregate, Statement
                 while (($row = $this->fetch(...func_get_args())) !== false) {
                     $rows[] = $row;
                 }
+
                 break;
 
             case FetchMode::COLUMN:
                 while (($row = $this->fetchColumn()) !== false) {
                     $rows[] = $row;
                 }
+
                 break;
 
             default:

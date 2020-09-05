@@ -10,6 +10,7 @@ use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Event\ConnectionEventArgs;
 use Doctrine\DBAL\Events;
 use InvalidArgumentException;
+
 use function array_rand;
 use function assert;
 use function count;
@@ -64,7 +65,8 @@ use function func_get_args;
  *    )
  * ));
  *
- * You can also pass 'driverOptions' and any other documented option to each of this drivers to pass additional information.
+ * You can also pass 'driverOptions' and any other documented option to each of this drivers
+ * to pass additional information.
  */
 class MasterSlaveConnection extends Connection
 {
@@ -90,11 +92,16 @@ class MasterSlaveConnection extends Connection
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(array $params, Driver $driver, ?Configuration $config = null, ?EventManager $eventManager = null)
-    {
+    public function __construct(
+        array $params,
+        Driver $driver,
+        ?Configuration $config = null,
+        ?EventManager $eventManager = null
+    ) {
         if (! isset($params['slaves'], $params['master'])) {
             throw new InvalidArgumentException('master or slaves configuration missing');
         }
+
         if (count($params['slaves']) === 0) {
             throw new InvalidArgumentException('You have to configure at least one slaves.');
         }
@@ -221,11 +228,11 @@ class MasterSlaveConnection extends Connection
     /**
      * {@inheritDoc}
      */
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate($sql, array $params = [], array $types = [])
     {
         $this->connect('master');
 
-        return parent::executeUpdate($query, $params, $types);
+        return parent::executeUpdate($sql, $params, $types);
     }
 
     /**
@@ -261,11 +268,11 @@ class MasterSlaveConnection extends Connection
     /**
      * {@inheritDoc}
      */
-    public function delete($tableName, array $identifier, array $types = [])
+    public function delete($table, array $identifier, array $types = [])
     {
         $this->connect('master');
 
-        return parent::delete($tableName, $identifier, $types);
+        return parent::delete($table, $identifier, $types);
     }
 
     /**
@@ -284,31 +291,31 @@ class MasterSlaveConnection extends Connection
     /**
      * {@inheritDoc}
      */
-    public function update($tableName, array $data, array $identifier, array $types = [])
+    public function update($table, array $data, array $identifier, array $types = [])
     {
         $this->connect('master');
 
-        return parent::update($tableName, $data, $identifier, $types);
+        return parent::update($table, $data, $identifier, $types);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function insert($tableName, array $data, array $types = [])
+    public function insert($table, array $data, array $types = [])
     {
         $this->connect('master');
 
-        return parent::insert($tableName, $data, $types);
+        return parent::insert($table, $data, $types);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function exec($statement)
+    public function exec($sql)
     {
         $this->connect('master');
 
-        return parent::exec($statement);
+        return parent::exec($sql);
     }
 
     /**
@@ -370,10 +377,10 @@ class MasterSlaveConnection extends Connection
     /**
      * {@inheritDoc}
      */
-    public function prepare($statement)
+    public function prepare($sql)
     {
         $this->connect('master');
 
-        return parent::prepare($statement);
+        return parent::prepare($sql);
     }
 }

@@ -10,6 +10,7 @@ use Doctrine\DBAL\Event\SchemaIndexDefinitionEventArgs;
 use Doctrine\DBAL\Events;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Throwable;
+
 use function array_filter;
 use function array_intersect;
 use function array_map;
@@ -132,6 +133,7 @@ abstract class AbstractSchemaManager
         if ($database === null) {
             $database = $this->_conn->getDatabase();
         }
+
         $sql = $this->_platform->getListSequencesSQL($database);
 
         $sequences = $this->_conn->fetchAll($sql);
@@ -143,7 +145,7 @@ abstract class AbstractSchemaManager
      * Lists the columns for a given table.
      *
      * In contrast to other libraries and to the old version of Doctrine,
-     * this column definition does try to contain the 'primary' field for
+     * this column definition does try to contain the 'primary' column for
      * the reason that it is not portable across different RDBMS. Use
      * {@see listTableIndexes($tableName)} to retrieve the primary key
      * of a table. Where a RDBMS specifies more details, these are held
@@ -190,15 +192,15 @@ abstract class AbstractSchemaManager
      *
      * The usage of a string $tableNames is deprecated. Pass a one-element array instead.
      *
-     * @param string|string[] $tableNames
+     * @param string|string[] $names
      *
      * @return bool
      */
-    public function tablesExist($tableNames)
+    public function tablesExist($names)
     {
-        $tableNames = array_map('strtolower', (array) $tableNames);
+        $names = array_map('strtolower', (array) $names);
 
-        return count($tableNames) === count(array_intersect($tableNames, array_map('strtolower', $this->listTableNames())));
+        return count($names) === count(array_intersect($names, array_map('strtolower', $this->listTableNames())));
     }
 
     /**
@@ -262,20 +264,21 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * @param string $tableName
+     * @param string $name
      *
      * @return Table
      */
-    public function listTableDetails($tableName)
+    public function listTableDetails($name)
     {
-        $columns     = $this->listTableColumns($tableName);
+        $columns     = $this->listTableColumns($name);
         $foreignKeys = [];
         if ($this->_platform->supportsForeignKeyConstraints()) {
-            $foreignKeys = $this->listTableForeignKeys($tableName);
+            $foreignKeys = $this->listTableForeignKeys($name);
         }
-        $indexes = $this->listTableIndexes($tableName);
 
-        return new Table($tableName, $columns, $indexes, $foreignKeys);
+        $indexes = $this->listTableIndexes($name);
+
+        return new Table($name, $columns, $indexes, $foreignKeys);
     }
 
     /**
@@ -305,6 +308,7 @@ abstract class AbstractSchemaManager
         if ($database === null) {
             $database = $this->_conn->getDatabase();
         }
+
         $sql              = $this->_platform->getListTableForeignKeysSQL($table, $database);
         $tableForeignKeys = $this->_conn->fetchAll($sql);
 
@@ -330,13 +334,13 @@ abstract class AbstractSchemaManager
     /**
      * Drops the given table.
      *
-     * @param string $tableName The name of the table to drop.
+     * @param string $name The name of the table to drop.
      *
      * @return void
      */
-    public function dropTable($tableName)
+    public function dropTable($name)
     {
-        $this->_execSql($this->_platform->getDropTableSQL($tableName));
+        $this->_execSql($this->_platform->getDropTableSQL($name));
     }
 
     /**
@@ -426,7 +430,7 @@ abstract class AbstractSchemaManager
      */
     public function createTable(Table $table)
     {
-        $createFlags = AbstractPlatform::CREATE_INDEXES|AbstractPlatform::CREATE_FOREIGNKEYS;
+        $createFlags = AbstractPlatform::CREATE_INDEXES | AbstractPlatform::CREATE_FOREIGNKEYS;
         $this->_execSql($this->_platform->getCreateTableSQL($table, $createFlags));
     }
 
@@ -525,7 +529,8 @@ abstract class AbstractSchemaManager
     /**
      * Drops and creates a new foreign key.
      *
-     * @param ForeignKeyConstraint $foreignKey An associative array that defines properties of the foreign key to be created.
+     * @param ForeignKeyConstraint $foreignKey An associative array that defines properties
+     *                                         of the foreign key to be created.
      * @param Table|string         $table      The name of the table on which the foreign key is to be created.
      *
      * @return void
@@ -833,19 +838,20 @@ abstract class AbstractSchemaManager
     /**
      * Aggregates and groups the index results according to the required data result.
      *
-     * @param mixed[][]   $tableIndexRows
+     * @param mixed[][]   $tableIndexes
      * @param string|null $tableName
      *
      * @return Index[]
      */
-    protected function _getPortableTableIndexesList($tableIndexRows, $tableName = null)
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName = null)
     {
         $result = [];
-        foreach ($tableIndexRows as $tableIndex) {
+        foreach ($tableIndexes as $tableIndex) {
             $indexName = $keyName = $tableIndex['key_name'];
             if ($tableIndex['primary']) {
                 $keyName = 'primary';
             }
+
             $keyName = strtolower($keyName);
 
             if (! isset($result[$keyName])) {
@@ -887,7 +893,14 @@ abstract class AbstractSchemaManager
             }
 
             if (! $defaultPrevented) {
-                $index = new Index($data['name'], $data['columns'], $data['unique'], $data['primary'], $data['flags'], $data['options']);
+                $index = new Index(
+                    $data['name'],
+                    $data['columns'],
+                    $data['unique'],
+                    $data['primary'],
+                    $data['flags'],
+                    $data['options']
+                );
             }
 
             if (! $index) {
@@ -1075,9 +1088,11 @@ abstract class AbstractSchemaManager
         if (! isset($params['defaultTableOptions'])) {
             $params['defaultTableOptions'] = [];
         }
+
         if (! isset($params['defaultTableOptions']['charset']) && isset($params['charset'])) {
             $params['defaultTableOptions']['charset'] = $params['charset'];
         }
+
         $schemaConfig->setDefaultTableOptions($params['defaultTableOptions']);
 
         return $schemaConfig;
