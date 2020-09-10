@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "94fffe1900e25fd9ab781c8dd9ebab35",
+    "content-hash": "5a60bc84653bdfda71c28e1264ed84e3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1103,23 +1103,23 @@
         },
         {
             "name": "laravel-notification-channels/telegram",
-            "version": "0.4.1",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel-notification-channels/telegram.git",
-                "reference": "55a9d8bce07f456e0c675909dba9b21acda376d6"
+                "reference": "c1e12a953ecb5fec0c285bc74950028ddd085fc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel-notification-channels/telegram/zipball/55a9d8bce07f456e0c675909dba9b21acda376d6",
-                "reference": "55a9d8bce07f456e0c675909dba9b21acda376d6",
+                "url": "https://api.github.com/repos/laravel-notification-channels/telegram/zipball/c1e12a953ecb5fec0c285bc74950028ddd085fc0",
+                "reference": "c1e12a953ecb5fec0c285bc74950028ddd085fc0",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^6.2 || ^7.0",
-                "illuminate/notifications": "^5.5 || ^6.0 || ^7.0",
-                "illuminate/support": "^5.5 || ^6.0 || ^7.0",
+                "illuminate/notifications": "^5.5 || ^6.0 || ^7.0 || ^8.0",
+                "illuminate/support": "^5.5 || ^6.0 || ^7.0 || ^8.0",
                 "php": ">=7.1"
             },
             "require-dev": {
@@ -1160,7 +1160,7 @@
                 "telegram notification",
                 "telegram notifications channel"
             ],
-            "time": "2020-07-06T19:01:02+00:00"
+            "time": "2020-09-07T19:29:19+00:00"
         },
         {
             "name": "laravel/framework",
