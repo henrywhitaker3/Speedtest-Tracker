@@ -1443,16 +1443,16 @@
         },
         {
             "name": "laravel/ui",
-            "version": "v2.2.0",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/ui.git",
-                "reference": "fb1404f04ece6eee128e3fb750d3a1e064238b33"
+                "reference": "2ccaa3b821ea8ac7e05393b946d0578bdb46099b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/ui/zipball/fb1404f04ece6eee128e3fb750d3a1e064238b33",
-                "reference": "fb1404f04ece6eee128e3fb750d3a1e064238b33",
+                "url": "https://api.github.com/repos/laravel/ui/zipball/2ccaa3b821ea8ac7e05393b946d0578bdb46099b",
+                "reference": "2ccaa3b821ea8ac7e05393b946d0578bdb46099b",
                 "shasum": ""
             },
             "require": {
@@ -1494,7 +1494,7 @@
                 "laravel",
                 "ui"
             ],
-            "time": "2020-08-25T18:30:43+00:00"
+            "time": "2020-09-09T12:07:59+00:00"
         },
         {
             "name": "lcobucci/jwt",
