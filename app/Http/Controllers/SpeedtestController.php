@@ -18,9 +18,9 @@ class SpeedtestController extends Controller
 {
     public function __construct()
     {
-        if((bool)SettingsHelper::get('auth')->value === true) {
+        if ((bool)SettingsHelper::get('auth')->value === true) {
             $this->middleware('auth:api')
-                 ->only([ 'run', 'delete', 'deleteAll' ]);
+                ->only(['run', 'delete', 'deleteAll']);
         }
     }
 
@@ -32,7 +32,7 @@ class SpeedtestController extends Controller
     public function index()
     {
         $data = Speedtest::orderBy('created_at', 'desc')
-                         ->paginate();
+            ->paginate();
 
         return response()->json([
             'method' => 'index of speedtests',
@@ -49,12 +49,12 @@ class SpeedtestController extends Controller
     public function time($days)
     {
         $rule = [
-            'days' => [ 'required', 'integer' ],
+            'days' => ['required', 'integer'],
         ];
 
-        $validator = Validator::make([ 'days' => $days ], $rule);
+        $validator = Validator::make(['days' => $days], $rule);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'method' => 'get speedtests in last x days',
                 'error' => $validator->errors(),
@@ -65,16 +65,16 @@ class SpeedtestController extends Controller
         $data = Cache::remember('speedtest-days-' . $days, $ttl, function () use ($days) {
             $showFailed = (bool)SettingsHelper::get('show_failed_tests_on_graph')->value;
 
-            if($showFailed === true) {
+            if ($showFailed === true) {
                 return Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
-                                ->orderBy('created_at', 'asc')
-                                ->get();
+                    ->orderBy('created_at', 'asc')
+                    ->get();
             }
 
             return Speedtest::where('created_at', '>=', Carbon::now()->subDays($days))
-                             ->where('failed', false)
-                             ->orderBy('created_at', 'asc')
-                             ->get();
+                ->where('failed', false)
+                ->orderBy('created_at', 'asc')
+                ->get();
         });
 
         return response()->json([
@@ -93,12 +93,12 @@ class SpeedtestController extends Controller
     public function fail($days)
     {
         $rule = [
-            'days' => [ 'required', 'integer' ],
+            'days' => ['required', 'integer'],
         ];
 
-        $validator = Validator::make([ 'days' => $days ], $rule);
+        $validator = Validator::make(['days' => $days], $rule);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'method' => 'get speedtests in last x days',
                 'error' => $validator->errors(),
@@ -122,20 +122,38 @@ class SpeedtestController extends Controller
     public function latest()
     {
         $data = SpeedtestHelper::latest();
-        $avg = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
-                        ->where('failed', false)
-                        ->get();
-        $max = Speedtest::select(DB::raw('MAX(ping) as ping, MAX(download) as download, MAX(upload) as upload'))
-                        ->where('failed', false)
-                        ->get();
 
-        if($data) {
-            return response()->json([
-                'method' => 'get latest speedtest',
-                'data' => $data,
-                'average' => $avg[0],
-                'max' => $max[0],
-            ], 200);
+        $response = [
+            'method' => 'get latest speedtest',
+            'data' => $data,
+        ];
+
+        if (SettingsHelper::get('show_average')) {
+            $avg = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
+                ->where('failed', false)
+                ->first()
+                ->toArray();
+            $response['average'] = $avg;
+        }
+
+        if (SettingsHelper::get('show_max')) {
+            $max = Speedtest::select(DB::raw('MAX(ping) as ping, MAX(download) as download, MAX(upload) as upload'))
+                ->where('failed', false)
+                ->first()
+                ->toArray();
+            $response['maximum'] = $max;
+        }
+
+        if (SettingsHelper::get('show_average')) {
+            $min = Speedtest::select(DB::raw('MIN(ping) as ping, MIN(download) as download, MIN(upload) as upload'))
+                ->where('failed', false)
+                ->first()
+                ->toArray();
+            $response['minimum'] = $min;
+        }
+
+        if ($data) {
+            return response()->json($response, 200);
         } else {
             return response()->json([
                 'method' => 'get latest speedtest',
@@ -158,7 +176,7 @@ class SpeedtestController extends Controller
                 'method' => 'run speedtest',
                 'data' => 'a new speedtest has been added to the queue'
             ], 200);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'method' => 'run speedtest',
                 'error' => $e
@@ -175,7 +193,7 @@ class SpeedtestController extends Controller
     {
         $ret = SpeedtestHelper::deleteAll();
 
-        if($ret['success']) {
+        if ($ret['success']) {
             return response()->json([
                 'method' => 'delete all speedtests from the database',
                 'success' => true
