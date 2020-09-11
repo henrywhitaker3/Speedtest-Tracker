@@ -19,7 +19,7 @@ class LatestTest extends TestCase
      */
     private $controller;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -53,6 +53,7 @@ class LatestTest extends TestCase
 
         $this->assertArrayHasKey('data', $resp);
         $this->assertArrayHasKey('average', $resp);
-        $this->assertArrayHasKey('max', $resp);
+        $this->assertArrayHasKey('maximum', $resp);
+        $this->assertArrayHasKey('minimum', $resp);
     }
 }

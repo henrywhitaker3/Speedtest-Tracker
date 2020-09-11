@@ -27,13 +27,13 @@ class APISpeedtestTest extends TestCase
         $dl = [];
         $ul = [];
 
-        for($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $pingVal = $faker->randomFloat();
-            array_push($ping,$pingVal);
+            array_push($ping, $pingVal);
             $dlVal = $faker->randomFloat();
-            array_push($dl,$dlVal);
+            array_push($dl, $dlVal);
             $ulVal = $faker->randomFloat();
-            array_push($ul,$ulVal);
+            array_push($ul, $ulVal);
 
             Speedtest::create([
                 'ping' => $pingVal,
@@ -70,7 +70,12 @@ class APISpeedtestTest extends TestCase
                 'download',
                 'upload',
             ],
-            'max' => [
+            'maximum' => [
+                'ping',
+                'download',
+                'upload',
+            ],
+            'minimum' => [
                 'ping',
                 'download',
                 'upload',
