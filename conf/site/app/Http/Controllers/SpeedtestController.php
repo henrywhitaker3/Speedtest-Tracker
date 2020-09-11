@@ -144,7 +144,7 @@ class SpeedtestController extends Controller
             $response['maximum'] = $max;
         }
 
-        if (SettingsHelper::get('show_average')) {
+        if (SettingsHelper::get('show_min')) {
             $min = Speedtest::select(DB::raw('MIN(ping) as ping, MIN(download) as download, MIN(upload) as upload'))
                 ->where('failed', false)
                 ->first()
