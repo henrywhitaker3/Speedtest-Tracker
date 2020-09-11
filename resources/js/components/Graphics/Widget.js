@@ -30,7 +30,7 @@ export default class Widget extends Component {
                 returnData.max = parseFloat(data.maximum.ping).toFixed(1);
             }
 
-            if(window.config.widgets.show_max) {
+            if(window.config.widgets.show_min) {
                 returnData.min = parseFloat(data.minimum.ping).toFixed(1);
             }
         }
@@ -46,7 +46,7 @@ export default class Widget extends Component {
                 returnData.max = parseFloat(data.maximum.upload).toFixed(1);
             }
 
-            if(window.config.widgets.show_max) {
+            if(window.config.widgets.show_min) {
                 returnData.min = parseFloat(data.minimum.upload).toFixed(1);
             }
         }
@@ -62,7 +62,7 @@ export default class Widget extends Component {
                 returnData.max = parseFloat(data.maximum.download).toFixed(1);
             }
 
-            if(window.config.widgets.show_max) {
+            if(window.config.widgets.show_min) {
                 returnData.min = parseFloat(data.minimum.download).toFixed(1);
             }
         }

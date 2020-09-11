@@ -1,4 +1,10 @@
 {
+    "1.9.8": [
+        {
+            "description": "Fixed bug with minimum display setting.",
+            "link": ""
+        }
+    ],
     "1.9.7": [
         {
             "description": "Added option to display minimum values on the top widgets.",
