@@ -94,6 +94,20 @@ class Telegram
     }
 
     /**
+     * Set HTTP Client.
+     *
+     * @param HttpClient $http
+     *
+     * @return $this
+     */
+    public function setHttpClient(HttpClient $http): self
+    {
+        $this->http = $http;
+
+        return $this;
+    }
+
+    /**
      * Send text message.
      *
      * <code>

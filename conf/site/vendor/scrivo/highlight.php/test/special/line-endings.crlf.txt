@@ -1,4 +1,0 @@
-// FileComponent Class
-export class FileComponent {
-    file = { name: 'logo.svg', size: 2120109, type: 'image/svg' };
-}

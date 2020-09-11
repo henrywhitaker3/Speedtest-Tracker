@@ -1,4 +1,0 @@
-class Foo; end
-struct Bar; end
-
-annotation JSON::Field; end

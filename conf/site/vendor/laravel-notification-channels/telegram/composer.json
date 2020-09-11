@@ -22,8 +22,8 @@
         "php": ">=7.1",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.2 || ^7.0",
-        "illuminate/notifications": "^5.5 || ^6.0 || ^7.0",
-        "illuminate/support": "^5.5 || ^6.0 || ^7.0"
+        "illuminate/notifications": "^5.5 || ^6.0 || ^7.0 || ^8.0",
+        "illuminate/support": "^5.5 || ^6.0 || ^7.0 || ^8.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.3",

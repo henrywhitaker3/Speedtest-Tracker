@@ -1,3 +1,0 @@
-{{!-- a comment {{expression}} --}} {{expression}}
-
-{{! a simple comment }}

@@ -1,5 +1,0 @@
-# Comment
-; ini-style comment
-x = "abc" # Comment on same line
-y = 123 ; Comment on same line
-[table] ; Comment on same line
