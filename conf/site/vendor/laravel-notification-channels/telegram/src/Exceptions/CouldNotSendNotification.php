@@ -28,7 +28,7 @@ class CouldNotSendNotification extends Exception
         $result = json_decode($exception->getResponse()->getBody(), false);
         $description = $result->description ?? 'no description given';
 
-        return new static("Telegram responded with an error `{$statusCode} - {$description}`");
+        return new static("Telegram responded with an error `{$statusCode} - {$description}`", 0, $exception);
     }
 
     /**

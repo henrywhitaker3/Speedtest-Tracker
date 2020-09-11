@@ -1,2 +1,0 @@
-<span class="hljs-template-variable">{{abc}}</span><span class="xml">
-</span>

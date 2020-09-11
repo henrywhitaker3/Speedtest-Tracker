@@ -1,2 +1,0 @@
-<span class="hljs-template-variable">{{&gt; partial}}</span><span class="xml">
-</span>

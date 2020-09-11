@@ -2,6 +2,14 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 0.5.0 - 2020-09-08
+
+- Add previous `ClientException` when constructing `CouldNotSendNotification` exception. PR [#86](https://github.com/laravel-notification-channels/telegram/pull/86).
+- Add Laravel 8 Support. PR [#88](https://github.com/laravel-notification-channels/telegram/pull/88).
+- Add Bot token per notification support. Closed [#84](https://github.com/laravel-notification-channels/telegram/issues/84).
+- Add view file support for notification content. Closed [#82](https://github.com/laravel-notification-channels/telegram/issues/82).
+- Add support to set HTTP Client.
+
 ## 0.4.1 - 2020-07-07
 
 - Add Guzzle 7 Support. PR [#80](https://github.com/laravel-notification-channels/telegram/pull/80).

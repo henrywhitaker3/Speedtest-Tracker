@@ -5232,6 +5232,7 @@ return array(
     'Symfony\\Component\\VarDumper\\VarDumper' => $vendorDir . '/symfony/var-dumper/VarDumper.php',
     'Symfony\\Contracts\\EventDispatcher\\Event' => $vendorDir . '/symfony/event-dispatcher-contracts/Event.php',
     'Symfony\\Contracts\\EventDispatcher\\EventDispatcherInterface' => $vendorDir . '/symfony/event-dispatcher-contracts/EventDispatcherInterface.php',
+    'Symfony\\Contracts\\Service\\Attribute\\Required' => $vendorDir . '/symfony/service-contracts/Attribute/Required.php',
     'Symfony\\Contracts\\Service\\ResetInterface' => $vendorDir . '/symfony/service-contracts/ResetInterface.php',
     'Symfony\\Contracts\\Service\\ServiceLocatorTrait' => $vendorDir . '/symfony/service-contracts/ServiceLocatorTrait.php',
     'Symfony\\Contracts\\Service\\ServiceProviderInterface' => $vendorDir . '/symfony/service-contracts/ServiceProviderInterface.php',

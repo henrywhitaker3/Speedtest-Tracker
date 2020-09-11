@@ -1,1 +1,0 @@
-{{#blockHelper param1 param2}}block content{{/blockHelper}}

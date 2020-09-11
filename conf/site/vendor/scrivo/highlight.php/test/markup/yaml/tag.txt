@@ -1,4 +1,0 @@
-key: !!builtintagname test
-key: !localtagname test
-key: "!notatag"
-key: '!!notatageither'
