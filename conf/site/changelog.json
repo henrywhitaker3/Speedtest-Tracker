@@ -1,4 +1,18 @@
 {
+    "1.9.7": [
+        {
+            "description": "Added option to display minimum values on the top widgets.",
+            "link": ""
+        },
+        {
+            "description": "New general settings section.",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
     "1.9.6": [
         {
             "description": "Clear the cache on restore.",

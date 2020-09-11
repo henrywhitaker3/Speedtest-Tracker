@@ -7,7 +7,8 @@ use App\Setting;
 use Cache;
 use Carbon\Carbon;
 
-class SettingsHelper {
+class SettingsHelper
+{
 
     /**
      * Get a Setting object by name
@@ -19,9 +20,9 @@ class SettingsHelper {
     {
         $name = Setting::where('name', $name)->get();
 
-        if(sizeof($name) == 0) {
+        if (sizeof($name) == 0) {
             return false;
-        } else if(sizeof($name) == 1) {
+        } else if (sizeof($name) == 1) {
             return $name[0];
         } else {
             $name = $name->keyBy('name');
@@ -40,11 +41,11 @@ class SettingsHelper {
     {
         $setting = SettingsHelper::get($name);
 
-        if($value === false) {
+        if ($value === false) {
             $value = "0";
         }
 
-        if($setting !== false) {
+        if ($setting !== false) {
             $setting->value = $value;
             $setting->save();
         } else {
@@ -54,7 +55,7 @@ class SettingsHelper {
             ]);
         }
 
-        if($name == 'show_failed_tests_on_graph') {
+        if ($name == 'show_failed_tests_on_graph') {
             Cache::flush();
         }
 
@@ -69,13 +70,13 @@ class SettingsHelper {
     public static function getBase()
     {
         $base = env('BASE_PATH', '/');
-        if($base == '') {
+        if ($base == '') {
             $base = '/';
         } else {
-            if($base[0] != '/') {
+            if ($base[0] != '/') {
                 $base = '/' . $base;
             }
-            if($base[-1] != '/') {
+            if ($base[-1] != '/') {
                 $base = $base . '/';
             }
         }
@@ -95,7 +96,7 @@ class SettingsHelper {
         // Try exact key
         $val = exec('echo $' . $key);
 
-        if($val == "") {
+        if ($val == "") {
             array_push($results, true);
         } else {
             array_push($results, false);
@@ -104,25 +105,25 @@ class SettingsHelper {
         // Try key all caps
         $val = exec('echo $' . strtoupper($key));
 
-        if($val == "") {
+        if ($val == "") {
             array_push($results, true);
         } else {
             array_push($results, false);
         }
 
-        if(env($key, false) == false) {
+        if (env($key, false) == false) {
             array_push($results, true);
         } else {
             array_push($results, false);
         }
 
-        if(env(strtoupper($key), false) == false) {
+        if (env(strtoupper($key), false) == false) {
             array_push($results, true);
         } else {
             array_push($results, false);
         }
 
-        if(in_array(false, $results)) {
+        if (in_array(false, $results)) {
             return false;
         }
 
@@ -138,6 +139,11 @@ class SettingsHelper {
     {
         return [
             'base' => SettingsHelper::getBase(),
+            'widgets' => [
+                'show_average' => (bool)SettingsHelper::get('show_average')->value,
+                'show_max' => (bool)SettingsHelper::get('show_max')->value,
+                'show_min' => (bool)SettingsHelper::get('show_min')->value,
+            ],
             'graphs' => [
                 'download_upload_graph_enabled' => SettingsHelper::get('download_upload_graph_enabled'),
                 'download_upload_graph_width' => SettingsHelper::get('download_upload_graph_width'),
@@ -163,15 +169,15 @@ class SettingsHelper {
      */
     public static function testNotification($agent = true)
     {
-        $agents = [ 'slack', 'telegram' ];
+        $agents = ['slack', 'telegram'];
 
-        if($agent === true) {
+        if ($agent === true) {
             event(new TestNotificationEvent($agents));
             return true;
         }
 
-        if(in_array($agent, $agents)) {
-            event(new TestNotificationEvent([ $agent ]));
+        if (in_array($agent, $agents)) {
+            event(new TestNotificationEvent([$agent]));
             return true;
         }
 
@@ -188,14 +194,14 @@ class SettingsHelper {
             'telegram_chat_id' => SettingsHelper::get('telegram_chat_id')->value,
         ];
 
-        foreach($settings as $key => $value) {
+        foreach ($settings as $key => $value) {
             $key = 'integrations.' . $key;
 
-            if($value === "") {
+            if ($value === "") {
                 $value = null;
             }
 
-            config()->set([ $key => $value ]);
+            config()->set([$key => $value]);
         }
     }
 }
