@@ -22,12 +22,15 @@ use Composer\Repository\PlatformRepository;
  */
 abstract class BasePackage implements PackageInterface
 {
+    /**
+     * @phpstan-var array<string, array{description: string, method: Link::TYPE_*}>
+     */
     public static $supportedLinkTypes = array(
-        'require' => array('description' => 'requires', 'method' => 'requires'),
-        'conflict' => array('description' => 'conflicts', 'method' => 'conflicts'),
-        'provide' => array('description' => 'provides', 'method' => 'provides'),
-        'replace' => array('description' => 'replaces', 'method' => 'replaces'),
-        'require-dev' => array('description' => 'requires (for development)', 'method' => 'devRequires'),
+        'require' => array('description' => 'requires', 'method' => Link::TYPE_REQUIRE),
+        'conflict' => array('description' => 'conflicts', 'method' => Link::TYPE_CONFLICT),
+        'provide' => array('description' => 'provides', 'method' => Link::TYPE_PROVIDE),
+        'replace' => array('description' => 'replaces', 'method' => Link::TYPE_REPLACE),
+        'require-dev' => array('description' => 'requires (for development)', 'method' => Link::TYPE_DEV_REQUIRE),
     );
 
     const STABILITY_STABLE = 0;
@@ -89,14 +92,16 @@ abstract class BasePackage implements PackageInterface
     /**
      * {@inheritDoc}
      */
-    public function getNames()
+    public function getNames($provides = true)
     {
         $names = array(
             $this->getName() => true,
         );
 
-        foreach ($this->getProvides() as $link) {
-            $names[$link->getTarget()] = true;
+        if ($provides) {
+            foreach ($this->getProvides() as $link) {
+                $names[$link->getTarget()] = true;
+            }
         }
 
         foreach ($this->getReplaces() as $link) {
@@ -210,18 +215,32 @@ abstract class BasePackage implements PackageInterface
     /**
      * {@inheritDoc}
      */
-    public function getFullPrettyVersion($truncate = true)
+    public function getFullPrettyVersion($truncate = true, $displayMode = PackageInterface::DISPLAY_SOURCE_REF_IF_DEV)
     {
-        if (!$this->isDev() || !in_array($this->getSourceType(), array('hg', 'git'))) {
+        if ($displayMode === PackageInterface::DISPLAY_SOURCE_REF_IF_DEV &&
+            (!$this->isDev() || !\in_array($this->getSourceType(), array('hg', 'git')))
+        ) {
             return $this->getPrettyVersion();
         }
 
-        // if source reference is a sha1 hash -- truncate
-        if ($truncate && strlen($this->getSourceReference()) === 40) {
-            return $this->getPrettyVersion() . ' ' . substr($this->getSourceReference(), 0, 7);
+        switch ($displayMode) {
+            case PackageInterface::DISPLAY_SOURCE_REF_IF_DEV:
+            case PackageInterface::DISPLAY_SOURCE_REF:
+                $reference = $this->getSourceReference();
+                break;
+            case PackageInterface::DISPLAY_DIST_REF:
+                $reference = $this->getDistReference();
+                break;
+            default:
+                throw new \UnexpectedValueException('Display mode '.$displayMode.' is not supported');
         }
 
-        return $this->getPrettyVersion() . ' ' . $this->getSourceReference();
+        // if source reference is a sha1 hash -- truncate
+        if ($truncate && \strlen($reference) === 40 && $this->getSourceType() !== 'svn') {
+            return $this->getPrettyVersion() . ' ' . substr($reference, 0, 7);
+        }
+
+        return $this->getPrettyVersion() . ' ' . $reference;
     }
 
     public function getStabilityPriority()
@@ -238,14 +257,14 @@ abstract class BasePackage implements PackageInterface
     /**
      * Build a regexp from a package name, expanding * globs as required
      *
-     * @param  string $allowListPattern
+     * @param  string $allowPattern
      * @param  string $wrap Wrap the cleaned string by the given string
      * @return string
      */
-    public static function packageNameToRegexp($allowListPattern, $wrap = '{^%s$}i')
+    public static function packageNameToRegexp($allowPattern, $wrap = '{^%s$}i')
     {
-        $cleanedAllowListPattern = str_replace('\\*', '.*', preg_quote($allowListPattern));
+        $cleanedAllowPattern = str_replace('\\*', '.*', preg_quote($allowPattern));
 
-        return sprintf($wrap, $cleanedAllowListPattern);
+        return sprintf($wrap, $cleanedAllowPattern);
     }
 }

@@ -2,10 +2,7 @@
 
 var path = require('path');
 
-var loaderUtils = require('loader-utils'),
-    camelcase   = require('camelcase');
-
-var PACKAGE_NAME = require('../package.json').name;
+var loaderUtils = require('loader-utils');
 
 var process = require('./process');
 
@@ -28,7 +25,7 @@ function loader(content, sourceMap) {
   // webpack 4: loader.options no longer defined
   var options = Object.assign(
     {},
-    this.options && this.options[camelcase(PACKAGE_NAME)],
+    this.options && this.options.adjustSourcemapLoader,
     loaderUtils.getOptions(this),
     {sep: path.sep}
   );

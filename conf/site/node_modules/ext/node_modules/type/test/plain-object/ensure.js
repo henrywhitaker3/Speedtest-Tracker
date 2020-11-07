@@ -15,7 +15,16 @@ describe("plain-object/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert.equal(error.message, "null is not a valid plain object");
+			assert.equal(error.message, "null is not a plain object");
+		}
+	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensurePlainObject(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a plain object for name, received null");
 		}
 	});
 	it("Should support allowedKeys option", function () {
@@ -26,7 +35,7 @@ describe("plain-object/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert.equal(error.message.indexOf("is not a valid plain object") !== -1, true);
+			assert.equal(error.message.indexOf("is not a plain object") !== -1, true);
 		}
 	});
 
@@ -40,7 +49,7 @@ describe("plain-object/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert.equal(error.message.indexOf("is not a valid plain object") !== -1, true);
+			assert.equal(error.message.indexOf("is not a plain object") !== -1, true);
 		}
 	});
 });

@@ -17,4 +17,13 @@ describe("object/ensure", function () {
 			assert.equal(error.message, "null is not an object");
 		}
 	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureObject(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected an object for name, received null");
+		}
+	});
 });

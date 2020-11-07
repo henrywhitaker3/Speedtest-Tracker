@@ -12,7 +12,7 @@
 
 namespace Composer\SelfUpdate;
 
-use Composer\Util\RemoteFilesystem;
+use Composer\Util\HttpDownloader;
 use Composer\Config;
 use Composer\Json\JsonFile;
 
@@ -23,14 +23,14 @@ class Versions
 {
     public static $channels = array('stable', 'preview', 'snapshot', '1', '2');
 
-    private $rfs;
+    private $httpDownloader;
     private $config;
     private $channel;
     private $versionsData;
 
-    public function __construct(Config $config, RemoteFilesystem $rfs)
+    public function __construct(Config $config, HttpDownloader $httpDownloader)
     {
-        $this->rfs = $rfs;
+        $this->httpDownloader = $httpDownloader;
         $this->config = $config;
     }
 
@@ -84,7 +84,7 @@ class Versions
                 $protocol = 'https';
             }
 
-            $this->versionsData = JsonFile::parseJson($this->rfs->getContents('getcomposer.org', $protocol . '://getcomposer.org/versions', false));
+            $this->versionsData = $this->httpDownloader->get($protocol . '://getcomposer.org/versions')->decodeJson();
         }
 
         return $this->versionsData;

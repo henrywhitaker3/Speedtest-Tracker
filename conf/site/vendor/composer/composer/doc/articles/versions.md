@@ -18,7 +18,7 @@ In Composer, what's often referred to casually as a version -- that is,
 the string that follows the package name in a require line (e.g., `~1.1` or
 `1.2.*`) -- is actually more specifically a version constraint. Composer
 uses version constraints to figure out which refs in a VCS it should be
-checking out (or simply to verify that a given library is acceptable in
+checking out (or to verify that a given library is acceptable in
 the case of a statically-maintained library with a `version` specification
 in `composer.json`).
 
@@ -117,7 +117,7 @@ Examples:
 * `>=1.0 <2.0`
 * `>=1.0 <1.1 || >=1.2`
 
-### Hyphenated Version Range ( - )
+### Hyphenated Version Range (` - `)
 
 Inclusive set of versions. Partial versions on the right include are completed
 with a wildcard. For example `1.0 - 2.0` is equivalent to `>=1.0.0 <2.1` as the
@@ -126,7 +126,7 @@ with a wildcard. For example `1.0 - 2.0` is equivalent to `>=1.0.0 <2.1` as the
 
 Example: `1.0 - 2.0`
 
-### Wildcard Version Range (.*)
+### Wildcard Version Range (`.*`)
 
 You can specify a pattern with a `*` wildcard. `1.0.*` is the equivalent of
 `>=1.0 <1.1`.
@@ -135,7 +135,7 @@ Example: `1.0.*`
 
 ## Next Significant Release Operators
 
-### Tilde Version Range (~)
+### Tilde Version Range (`~`)
 
 The `~` operator is best explained by example: `~1.2` is equivalent to
 `>=1.2 <2.0.0`, while `~1.2.3` is equivalent to `>=1.2.3 <1.3.0`. As you can see
@@ -157,9 +157,9 @@ Example: `~1.2`
 > it will not allow the major number to increase trying to keep backwards
 > compatibility.
 
-### Caret Version Range (^)
+### Caret Version Range (`^`)
 
-The `^` operator behaves very similarly but it sticks closer to semantic
+The `^` operator behaves very similarly, but it sticks closer to semantic
 versioning, and will always allow non-breaking updates. For example `^1.2.3`
 is equivalent to `>=1.2.3 <2.0.0` as none of the releases until 2.0 should
 break backwards compatibility. For pre-1.0 versions it also acts with safety

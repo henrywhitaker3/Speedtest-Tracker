@@ -1,2 +1,2 @@
-declare const _exports: typeof import('./validate').default;
-export = _exports;
+export const validate: typeof import('./validate').validate;
+export const ValidationError: typeof import('./ValidationError').default;

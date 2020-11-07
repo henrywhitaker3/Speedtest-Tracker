@@ -80,9 +80,9 @@ EOT
         }
 
         $io = $this->getIO();
-        $remoteFilesystem = Factory::createRemoteFilesystem($io, $config);
+        $httpDownloader = Factory::createHttpDownloader($io, $config);
 
-        $versionsUtil = new Versions($config, $remoteFilesystem);
+        $versionsUtil = new Versions($config, $httpDownloader);
 
         // switch channel if requested
         $requestedChannel = null;
@@ -124,7 +124,7 @@ EOT
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
             $composeUser = posix_getpwuid(posix_geteuid());
             $homeOwner = posix_getpwuid(fileowner($home));
-            if (isset($composeUser['name']) && isset($homeOwner['name']) && $composeUser['name'] !== $homeOwner['name']) {
+            if (isset($composeUser['name'], $homeOwner['name']) && $composeUser['name'] !== $homeOwner['name']) {
                 $io->writeError('<warning>You are running composer as "'.$composeUser['name'].'", while "'.$home.'" is owned by "'.$homeOwner['name'].'"</warning>');
             }
         }
@@ -159,14 +159,14 @@ EOT
                 $latestVersion = $latest['version'];
                 $updateVersion = $latestVersion;
 
-                $io->writeError('<warning>A new stable major version of Composer is available ('.$skippedVersion.'), run "composer self-update --'.$updateMajorVersion.'" to update to it. See also https://github.com/composer/composer/releases for changelogs.</warning>');
+                $io->writeError('<warning>A new stable major version of Composer is available ('.$skippedVersion.'), run "composer self-update --'.$updateMajorVersion.'" to update to it. See also https://getcomposer.org/'.$updateMajorVersion.'</warning>');
             } elseif ($currentMajorVersion < $previewMajorVersion) {
                 // promote next major version if available in preview
                 $io->writeError('<warning>A preview release of the next major version of Composer is available ('.$latestPreview['version'].'), run "composer self-update --preview" to give it a try. See also https://github.com/composer/composer/releases for changelogs.</warning>');
             }
         }
 
-        if ($requestedChannel && is_numeric($requestedChannel) && substr($latestStable['version'], 0, 1) !== $requestedChannel) {
+        if ($requestedChannel && is_numeric($requestedChannel) && strpos($latestStable['version'], $requestedChannel) !== 0) {
             $io->writeError('<warning>Warning: You forced the install of '.$latestVersion.' via --'.$requestedChannel.', but '.$latestStable['version'].' is the latest stable version. Updating to it via composer self-update --stable is recommended.</warning>');
         }
 
@@ -176,8 +176,19 @@ EOT
             return 1;
         }
 
+        $channelString = $versionsUtil->getChannel();
+        if (is_numeric($channelString)) {
+            $channelString .= '.x';
+        }
+
         if (Composer::VERSION === $updateVersion) {
-            $io->writeError(sprintf('<info>You are already using composer version %s (%s channel).</info>', $updateVersion, $versionsUtil->getChannel()));
+            $io->writeError(
+                sprintf(
+                    '<info>You are already using composer version %s (%s channel).</info>',
+                    $updateVersion,
+                    $channelString
+                )
+            );
 
             // remove all backups except for the most recent, if any
             if ($input->getOption('clean-backups')) {
@@ -198,11 +209,11 @@ EOT
 
         $updatingToTag = !preg_match('{^[0-9a-f]{40}$}', $updateVersion);
 
-        $io->write(sprintf("Updating to version <info>%s</info> (%s channel).", $updateVersion, $versionsUtil->getChannel()));
+        $io->write(sprintf("Upgrading to version <info>%s</info> (%s channel).", $updateVersion, $channelString));
         $remoteFilename = $baseUrl . ($updatingToTag ? "/download/{$updateVersion}/composer.phar" : '/composer.phar');
-        $signature = $remoteFilesystem->getContents(self::HOMEPAGE, $remoteFilename.'.sig', false);
+        $signature = $httpDownloader->get($remoteFilename.'.sig')->getBody();
         $io->writeError('   ', false);
-        $remoteFilesystem->copy(self::HOMEPAGE, $remoteFilename, $tempFilename, !$input->getOption('no-progress'));
+        $httpDownloader->copy($remoteFilename, $tempFilename);
         $io->writeError('');
 
         if (!file_exists($tempFilename) || !$signature) {
@@ -271,7 +282,12 @@ TAGSPUBKEY
             $signature = json_decode($signature, true);
             $signature = base64_decode($signature['sha384']);
             $verified = 1 === openssl_verify(file_get_contents($tempFilename), $signature, $pubkeyid, $algo);
-            openssl_free_key($pubkeyid);
+
+            // PHP 8 automatically frees the key instance and deprecates the function
+            if (PHP_VERSION_ID < 80000) {
+                openssl_free_key($pubkeyid);
+            }
+
             if (!$verified) {
                 throw new \RuntimeException('The phar signature did not match the file you downloaded, this means your public keys are outdated or that the phar file is corrupt/has been modified');
             }
@@ -448,13 +464,11 @@ TAGSPUBKEY
 
     protected function getOldInstallationFinder($rollbackDir)
     {
-        $finder = Finder::create()
+        return Finder::create()
             ->depth(0)
             ->files()
             ->name('*' . self::OLD_INSTALL_EXT)
             ->in($rollbackDir);
-
-        return $finder;
     }
 
     /**
@@ -557,7 +571,7 @@ EOT;
             $io->writeError('<info>Operation succeeded.</info>');
         } else {
             $io->writeError('<error>Operation failed (file not written). '.$helpMessage.'</error>');
-        };
+        }
 
         return $result;
     }

@@ -1,10 +1,6 @@
 # img-loader
 
 [![npm Version][npm-image]][npm]
-[![Greenkeeper badge][greenkeeper-image]][greenkeeper]
-[![Build Status][build-image]][build]
-
-[![JS Standard Style][style-image]][style]
 [![MIT License][license-image]][LICENSE]
 
 Image minimizing loader for webpack 4, meant to be used with [url-loader](https://github.com/webpack/url-loader), [file-loader](https://github.com/webpack/file-loader), or [raw-loader](https://github.com/webpack/raw-loader)
@@ -174,11 +170,5 @@ This software is free to use under the MIT license. See the [LICENSE-MIT file][L
 
 [npm]: https://www.npmjs.org/package/img-loader
 [npm-image]: https://img.shields.io/npm/v/img-loader.svg
-[greenkeeper-image]: https://badges.greenkeeper.io/thetalecrafter/img-loader.svg
-[greenkeeper]: https://greenkeeper.io/
-[build]: https://travis-ci.org/thetalecrafter/img-loader
-[build-image]: https://img.shields.io/travis/thetalecrafter/img-loader.svg
-[style]: https://github.com/feross/standard
-[style-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [license-image]: https://img.shields.io/npm/l/img-loader.svg
-[LICENSE]: https://github.com/thetalecrafter/img-loader/blob/master/LICENSE-MIT
+[LICENSE]: https://github.com/vanwagonet/img-loader/blob/master/LICENSE-MIT

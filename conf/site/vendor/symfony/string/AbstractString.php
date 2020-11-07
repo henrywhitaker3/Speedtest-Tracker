@@ -29,15 +29,15 @@ use Symfony\Component\String\Exception\RuntimeException;
  */
 abstract class AbstractString implements \Stringable, \JsonSerializable
 {
-    public const PREG_PATTERN_ORDER = PREG_PATTERN_ORDER;
-    public const PREG_SET_ORDER = PREG_SET_ORDER;
-    public const PREG_OFFSET_CAPTURE = PREG_OFFSET_CAPTURE;
-    public const PREG_UNMATCHED_AS_NULL = PREG_UNMATCHED_AS_NULL;
+    public const PREG_PATTERN_ORDER = \PREG_PATTERN_ORDER;
+    public const PREG_SET_ORDER = \PREG_SET_ORDER;
+    public const PREG_OFFSET_CAPTURE = \PREG_OFFSET_CAPTURE;
+    public const PREG_UNMATCHED_AS_NULL = \PREG_UNMATCHED_AS_NULL;
 
     public const PREG_SPLIT = 0;
-    public const PREG_SPLIT_NO_EMPTY = PREG_SPLIT_NO_EMPTY;
-    public const PREG_SPLIT_DELIM_CAPTURE = PREG_SPLIT_DELIM_CAPTURE;
-    public const PREG_SPLIT_OFFSET_CAPTURE = PREG_SPLIT_OFFSET_CAPTURE;
+    public const PREG_SPLIT_NO_EMPTY = \PREG_SPLIT_NO_EMPTY;
+    public const PREG_SPLIT_DELIM_CAPTURE = \PREG_SPLIT_DELIM_CAPTURE;
+    public const PREG_SPLIT_OFFSET_CAPTURE = \PREG_SPLIT_OFFSET_CAPTURE;
 
     protected $string = '';
     protected $ignoreCase = false;
@@ -98,8 +98,7 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
     public function after($needle, bool $includeNeedle = false, int $offset = 0): self
     {
         $str = clone $this;
-        $str->string = '';
-        $i = PHP_INT_MAX;
+        $i = \PHP_INT_MAX;
 
         foreach ((array) $needle as $n) {
             $n = (string) $n;
@@ -111,7 +110,7 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
             }
         }
 
-        if (PHP_INT_MAX === $i) {
+        if (\PHP_INT_MAX === $i) {
             return $str;
         }
 
@@ -130,7 +129,6 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
     public function afterLast($needle, bool $includeNeedle = false, int $offset = 0): self
     {
         $str = clone $this;
-        $str->string = '';
         $i = null;
 
         foreach ((array) $needle as $n) {
@@ -167,8 +165,7 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
     public function before($needle, bool $includeNeedle = false, int $offset = 0): self
     {
         $str = clone $this;
-        $str->string = '';
-        $i = PHP_INT_MAX;
+        $i = \PHP_INT_MAX;
 
         foreach ((array) $needle as $n) {
             $n = (string) $n;
@@ -180,7 +177,7 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
             }
         }
 
-        if (PHP_INT_MAX === $i) {
+        if (\PHP_INT_MAX === $i) {
             return $str;
         }
 
@@ -199,7 +196,6 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
     public function beforeLast($needle, bool $includeNeedle = false, int $offset = 0): self
     {
         $str = clone $this;
-        $str->string = '';
         $i = null;
 
         foreach ((array) $needle as $n) {
@@ -360,7 +356,7 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
             throw new \TypeError(sprintf('Method "%s()" must be overridden by class "%s" to deal with non-iterable values.', __FUNCTION__, static::class));
         }
 
-        $i = PHP_INT_MAX;
+        $i = \PHP_INT_MAX;
 
         foreach ($needle as $n) {
             $j = $this->indexOf((string) $n, $offset);
@@ -370,7 +366,7 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
             }
         }
 
-        return PHP_INT_MAX === $i ? null : $i;
+        return \PHP_INT_MAX === $i ? null : $i;
     }
 
     /**

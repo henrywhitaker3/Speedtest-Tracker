@@ -17,4 +17,13 @@ describe("plain-function/ensure", function () {
 			assert(error.message.includes("is not a plain function"));
 		}
 	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensurePlainFunction(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a plain function for name, received null");
+		}
+	});
 });

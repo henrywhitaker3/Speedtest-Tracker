@@ -14,4 +14,13 @@ describe("time-value/ensure", function () {
 			assert.equal(error.message, "foo is not a time value");
 		}
 	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureTimeValue("foo", { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a time value for name, received foo");
+		}
+	});
 });

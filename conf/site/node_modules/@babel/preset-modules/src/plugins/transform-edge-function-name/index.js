@@ -20,7 +20,7 @@ export default ({ types: t }) => ({
           const id = t.cloneNode(path.parent.id);
           const binding = path.scope.getBinding(id.name);
           // if the binding gets reassigned anywhere, rename it
-          if (binding.constantViolations.length) {
+          if (binding?.constantViolations.length) {
             path.scope.rename(id.name);
           }
           path.node.id = id;

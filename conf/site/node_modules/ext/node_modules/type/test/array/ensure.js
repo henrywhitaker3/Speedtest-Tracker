@@ -14,7 +14,16 @@ describe("array/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert(error.message.includes("is not an array object"));
+			assert.equal(error.message, "null is not an array");
+		}
+	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureArray(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected an array for name, received null");
 		}
 	});
 });

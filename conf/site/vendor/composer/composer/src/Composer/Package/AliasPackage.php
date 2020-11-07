@@ -25,6 +25,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     protected $dev;
     protected $rootPackageAlias = false;
     protected $stability;
+    protected $hasSelfVersionRequires = false;
 
     /** @var PackageInterface */
     protected $aliasOf;
@@ -56,7 +57,7 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
         $this->stability = VersionParser::parseStability($version);
         $this->dev = $this->stability === 'dev';
 
-        foreach (array('requires', 'devRequires', 'conflicts', 'provides', 'replaces') as $type) {
+        foreach (Link::$TYPES as $type) {
             $links = $aliasOf->{'get' . ucfirst($type)}();
             $this->$type = $this->replaceSelfVersionDependencies($links, $type);
         }
@@ -173,24 +174,40 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
      */
     protected function replaceSelfVersionDependencies(array $links, $linkType)
     {
-        if (in_array($linkType, array('conflicts', 'provides', 'replaces'), true)) {
+        // for self.version requirements, we use the original package's branch name instead, to avoid leaking the magic dev-master-alias to users
+        $prettyVersion = $this->prettyVersion;
+        if ($prettyVersion === VersionParser::DEFAULT_BRANCH_ALIAS) {
+            $prettyVersion = $this->aliasOf->getPrettyVersion();
+        }
+
+        if (\in_array($linkType, array(Link::TYPE_CONFLICT, Link::TYPE_PROVIDE, Link::TYPE_REPLACE), true)) {
             $newLinks = array();
             foreach ($links as $link) {
                 // link is self.version, but must be replacing also the replaced version
                 if ('self.version' === $link->getPrettyConstraint()) {
-                    $newLinks[] = new Link($link->getSource(), $link->getTarget(), new Constraint('=', $this->version), $linkType, $this->prettyVersion);
+                    $newLinks[] = new Link($link->getSource(), $link->getTarget(), $constraint = new Constraint('=', $this->version), $linkType, $prettyVersion);
+                    $constraint->setPrettyString($prettyVersion);
                 }
             }
             $links = array_merge($links, $newLinks);
         } else {
             foreach ($links as $index => $link) {
                 if ('self.version' === $link->getPrettyConstraint()) {
-                    $links[$index] = new Link($link->getSource(), $link->getTarget(), new Constraint('=', $this->version), $linkType, $this->prettyVersion);
+                    if ($linkType === Link::TYPE_REQUIRE) {
+                        $this->hasSelfVersionRequires = true;
+                    }
+                    $links[$index] = new Link($link->getSource(), $link->getTarget(), $constraint = new Constraint('=', $this->version), $linkType, $prettyVersion);
+                    $constraint->setPrettyString($prettyVersion);
                 }
             }
         }
 
         return $links;
+    }
+
+    public function hasSelfVersionRequires()
+    {
+        return $this->hasSelfVersionRequires;
     }
 
     /***************************************
@@ -387,9 +404,19 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
         return $this->aliasOf->getNotificationUrl();
     }
 
+    public function getArchiveName()
+    {
+        return $this->aliasOf->getArchiveName();
+    }
+
     public function getArchiveExcludes()
     {
         return $this->aliasOf->getArchiveExcludes();
+    }
+
+    public function isDefaultBranch()
+    {
+        return $this->aliasOf->isDefaultBranch();
     }
 
     public function isAbandoned()
@@ -415,5 +442,10 @@ class AliasPackage extends BasePackage implements CompletePackageInterface
     public function setDistType($type)
     {
         return $this->aliasOf->setDistType($type);
+    }
+
+    public function setSourceDistReferences($reference)
+    {
+        return $this->aliasOf->setSourceDistReferences($reference);
     }
 }

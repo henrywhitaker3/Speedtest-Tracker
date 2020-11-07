@@ -5,7 +5,7 @@
  * @type {{name:string, decode:function, abstract:boolean}}
  */
 module.exports = {
-  name    : 'bower-component',
+  name    : 'bowerComponent',
   decode  : decode,
   abstract: true
 };

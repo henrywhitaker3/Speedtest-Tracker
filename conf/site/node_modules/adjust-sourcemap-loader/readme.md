@@ -76,7 +76,7 @@ Where `...` is a hash of any of the following options.
 
 * **`fail`** : `boolean` Implies an **Error** if a source-map source cannot be decoded.
 
-* **`format`** : `string` Optional output format for source-map `sources`. Must be the camel-case name of one of the available `codecs`. Omitting the format will result in **no change** and the outgoing source-map will match the incomming one.
+* **`format`** : `string` Optional output format for source-map `sources`. Must be the name of one of the available `codecs`. Omitting the format will result in **no change** and the outgoing source-map will match the incomming one.
 
 * **`root`** : `boolean` A boolean flag that indices that a `sourceRoot` path sould be included in the output map. This is contingent on a `format` being specified.
 

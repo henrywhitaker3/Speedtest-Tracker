@@ -1,5 +1,8 @@
 # `@babel/preset-modules`
 
+> ℹ️ Starting from `@babel/preset-env` 7.9.0, you can enable the [`bugfixes: true` option](https://babeljs.io/docs/en/babel-preset-env#bugfixes) to get the same behavior as using `@babel/preset-modules`, but with support for custom `targets`.
+> If you need to target browsers with native modules support (like this preset does), you can use `targets: { esmodules: true }`.
+
 A Babel preset that enables async/await, Tagged Templates, arrow functions, destructured and rest parameters, and more **in all modern browsers** ([88% of traffic](https://caniuse.com/#feat=es6-module)).
 
 It works around bugs and inconsistencies in modern JavaScript engines by converting broken syntax to the _closest non-broken modern syntax_.  Use this in place of `@babel/preset-env`'s [target.esmodules](https://babeljs.io/docs/en/babel-preset-env#targetsesmodules) option for smaller bundle size and improved performance.

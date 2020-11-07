@@ -6,7 +6,7 @@
 
 ## Synopsis
 
-At times it may be necessary for a package to require additional actions during
+At times, it may be necessary for a package to require additional actions during
 installation, such as installing packages outside of the default `vendor`
 library.
 
@@ -189,7 +189,7 @@ class TemplateInstaller extends LibraryInstaller
 }
 ```
 
-The example demonstrates that it is quite simple to extend the
+The example demonstrates that it is possible to extend the
 [`Composer\Installer\LibraryInstaller`][5] class to strip a prefix
 (`phpdocumentor/template-`) and use the remaining part to assemble a completely
 different installation path.

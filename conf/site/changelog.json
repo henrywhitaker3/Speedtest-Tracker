@@ -1,4 +1,10 @@
 {
+    "1.9.9": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
     "1.9.8": [
         {
             "description": "Fixed bug with minimum display setting.",

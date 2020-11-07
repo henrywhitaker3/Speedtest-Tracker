@@ -1,4 +1,3 @@
-export default validate;
 export type JSONSchema4 = import('json-schema').JSONSchema4;
 export type JSONSchema6 = import('json-schema').JSONSchema6;
 export type JSONSchema7 = import('json-schema').JSONSchema7;
@@ -31,13 +30,10 @@ export type ValidationErrorConfiguration = {
  * @param {ValidationErrorConfiguration=} configuration
  * @returns {void}
  */
-declare function validate(
+export function validate(
   schema: Schema,
   options: Array<object> | object,
   configuration?: ValidationErrorConfiguration | undefined
 ): void;
-declare namespace validate {
-  export { ValidationError };
-  export { ValidationError as ValidateError };
-}
 import ValidationError from './ValidationError';
+export { ValidationError };

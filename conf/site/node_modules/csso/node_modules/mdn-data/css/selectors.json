@@ -816,6 +816,15 @@
     "status": "standard",
     "mdn_url": "https://developer.mozilla.org/docs/Web/CSS/::cue"
   },
+  "::cue-region": {
+    "syntax": "::cue-region | ::cue-region( <selector> )",
+    "groups": [
+      "Pseudo-elements",
+      "Selectors"
+    ],
+    "status": "standard",
+    "mdn_url": "https://developer.mozilla.org/docs/Web/CSS/::cue-region"
+  },
   "::first-letter": {
     "syntax": "/* CSS3 syntax */\n::first-letter\n\n/* CSS2 syntax */\n:first-letter",
     "groups": [

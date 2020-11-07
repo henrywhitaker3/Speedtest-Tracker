@@ -20,7 +20,16 @@ describe("iterable/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert(error.message.includes("is not expected iterable value"));
+			assert(error.message.includes("is not expected iterable"));
+		}
+	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureIterable("foo", { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected an iterable for name, received foo");
 		}
 	});
 	describe("Should support 'ensureItem' option", function () {
@@ -35,7 +44,7 @@ describe("iterable/ensure", function () {
 				throw new Error("Unexpected");
 			} catch (error) {
 				assert.equal(error.name, "TypeError");
-				assert(error.message.includes("is not expected iterable value"));
+				assert(error.message.includes("is not expected iterable"));
 			}
 		});
 	});

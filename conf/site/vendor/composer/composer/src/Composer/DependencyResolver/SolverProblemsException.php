@@ -13,6 +13,7 @@
 namespace Composer\DependencyResolver;
 
 use Composer\Util\IniHelper;
+use Composer\Repository\RepositorySet;
 
 /**
  * @author Nils Adermann <naderman@naderman.de>
@@ -20,34 +21,64 @@ use Composer\Util\IniHelper;
 class SolverProblemsException extends \RuntimeException
 {
     protected $problems;
-    protected $installedMap;
+    protected $learnedPool;
 
-    public function __construct(array $problems, array $installedMap)
+    public function __construct(array $problems, array $learnedPool)
     {
         $this->problems = $problems;
-        $this->installedMap = $installedMap;
+        $this->learnedPool = $learnedPool;
 
-        parent::__construct($this->createMessage(), 2);
+        parent::__construct('Failed resolving dependencies with '.count($problems).' problems, call getPrettyString to get formatted details', 2);
     }
 
-    protected function createMessage()
+    public function getPrettyString(RepositorySet $repositorySet, Request $request, Pool $pool, $isVerbose, $isDevExtraction = false)
     {
-        $text = "\n";
+        $installedMap = $request->getPresentMap(true);
         $hasExtensionProblems = false;
-        foreach ($this->problems as $i => $problem) {
-            $text .= "  Problem ".($i + 1).$problem->getPrettyString($this->installedMap)."\n";
+        $isCausedByLock = false;
+
+        $problems = array();
+        foreach ($this->problems as $problem) {
+            $problems[] = $problem->getPrettyString($repositorySet, $request, $pool, $isVerbose, $installedMap, $this->learnedPool)."\n";
 
             if (!$hasExtensionProblems && $this->hasExtensionProblems($problem->getReasons())) {
                 $hasExtensionProblems = true;
             }
+
+            $isCausedByLock |= $problem->isCausedByLock($repositorySet, $request, $pool);
         }
 
-        if (strpos($text, 'could not be found') || strpos($text, 'no matching package found')) {
-            $text .= "\nPotential causes:\n - A typo in the package name\n - The package is not available in a stable-enough version according to your minimum-stability setting\n   see <https://getcomposer.org/doc/04-schema.md#minimum-stability> for more details.\n - It's a private package and you forgot to add a custom repository to find it\n\nRead <https://getcomposer.org/doc/articles/troubleshooting.md> for further common problems.";
+        $i = 1;
+        $text = "\n";
+        foreach (array_unique($problems) as $problem) {
+            $text .= "  Problem ".($i++).$problem;
+        }
+
+        $hints = array();
+        if (!$isDevExtraction && (strpos($text, 'could not be found') || strpos($text, 'no matching package found'))) {
+            $hints[] = "Potential causes:\n - A typo in the package name\n - The package is not available in a stable-enough version according to your minimum-stability setting\n   see <https://getcomposer.org/doc/04-schema.md#minimum-stability> for more details.\n - It's a private package and you forgot to add a custom repository to find it\n\nRead <https://getcomposer.org/doc/articles/troubleshooting.md> for further common problems.";
         }
 
         if ($hasExtensionProblems) {
-            $text .= $this->createExtensionHint();
+            $hints[] = $this->createExtensionHint();
+        }
+
+        if ($isCausedByLock && !$isDevExtraction) {
+            $hints[] = "Use the option --with-all-dependencies (-W) to allow upgrades, downgrades and removals for packages currently locked to specific versions.";
+        }
+
+        if (strpos($text, 'found composer-plugin-api[2.0.0] but it does not match') && strpos($text, '- ocramius/package-versions')) {
+            $hints[] = "<warning>ocramius/package-versions only provides support for Composer 2 in 1.8+, which requires PHP 7.4.</warning>\nIf you can not upgrade PHP you can require <info>composer/package-versions-deprecated</info> to resolve this with PHP 7.0+.";
+        }
+
+        if (!class_exists('PHPUnit\Framework\TestCase', false)) {
+            if (strpos($text, 'found composer-plugin-api[2.0.0] but it does not match')) {
+                $hints[] = "You are using Composer 2, which some of your plugins seem to be incompatible with. Make sure you update your plugins or report a plugin-issue to ask them to support Composer 2.";
+            }
+        }
+
+        if ($hints) {
+            $text .= "\n" . implode("\n\n", $hints);
         }
 
         return $text;
@@ -66,9 +97,9 @@ class SolverProblemsException extends \RuntimeException
             return '';
         }
 
-        $text = "\n  To enable extensions, verify that they are enabled in your .ini files:\n    - ";
+        $text = "To enable extensions, verify that they are enabled in your .ini files:\n    - ";
         $text .= implode("\n    - ", $paths);
-        $text .= "\n  You can also run `php --ini` inside terminal to see which files are used by PHP in CLI mode.";
+        $text .= "\nYou can also run `php --ini` inside terminal to see which files are used by PHP in CLI mode.";
 
         return $text;
     }
@@ -76,8 +107,8 @@ class SolverProblemsException extends \RuntimeException
     private function hasExtensionProblems(array $reasonSets)
     {
         foreach ($reasonSets as $reasonSet) {
-            foreach ($reasonSet as $reason) {
-                if (isset($reason["rule"]) && 0 === strpos($reason["rule"]->getRequiredPackage(), 'ext-')) {
+            foreach ($reasonSet as $rule) {
+                if (0 === strpos($rule->getRequiredPackage(), 'ext-')) {
                     return true;
                 }
             }

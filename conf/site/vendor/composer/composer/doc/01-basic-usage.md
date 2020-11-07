@@ -13,12 +13,15 @@ a logging library. If you have not yet installed Composer, refer to the
 
 To start using Composer in your project, all you need is a `composer.json`
 file. This file describes the dependencies of your project and may contain
-other metadata as well.
+other metadata as well. It typically should go in the top-most directory of
+your project/VCS repository. You can technically run Composer anywhere but
+if you want to publish a package to Packagist.org, it will have to be able
+to find the file at the top of your VCS repository.
 
 ### The `require` key
 
 The first (and often only) thing you specify in `composer.json` is the
-[`require`](04-schema.md#require) key. You are simply telling Composer which
+[`require`](04-schema.md#require) key. You are telling Composer which
 packages your project depends on.
 
 ```json
@@ -77,7 +80,7 @@ versions, how versions relate to each other, and on version constraints.
 
 > **Note:** If you are trying to require a package but Composer throws an error
 > regarding package stability, the version you have specified may not meet your
-> default minimum stability requirements. By default only stable releases are taken
+> default minimum stability requirements. By default, only stable releases are taken
 > into consideration when searching for valid package versions in your VCS.
 >
 > You might run into this if you are trying to require dev, alpha, beta, or RC
@@ -87,7 +90,7 @@ versions, how versions relate to each other, and on version constraints.
 ## Installing dependencies
 
 To install the defined dependencies for your project, run the
-[`install`](03-cli.md#install) command.
+[`install`](03-cli.md#install-i) command.
 
 ```sh
 php composer.phar install
@@ -98,7 +101,7 @@ When you run this command, one of two things may happen:
 ### Installing without `composer.lock`
 
 If you have never run the command before and there is also no `composer.lock` file present,
-Composer simply resolves all dependencies listed in your `composer.json` file and downloads
+Composer resolves all dependencies listed in your `composer.json` file and downloads
 the latest version of their files into the `vendor` directory in your project. (The `vendor`
 directory is the conventional location for all third-party code in a project). In our
 example from above, you would end up with the Monolog source files in
@@ -142,11 +145,14 @@ reinstalling the project you can feel confident the dependencies installed are
 still working even if your dependencies released many new versions since then.
 (See note below about using the `update` command.)
 
+> **Note:** For libraries it is not necessary to commit the lock
+> file, see also: [Libraries - Lock file](02-libraries.md#lock-file).
+
 ## Updating dependencies to their latest versions
 
 As mentioned above, the `composer.lock` file prevents you from automatically getting
 the latest versions of your dependencies. To update to the latest versions, use the
-[`update`](03-cli.md#update) command. This will fetch the latest matching
+[`update`](03-cli.md#update-u) command. This will fetch the latest matching
 versions (according to your `composer.json` file) and update the lock file
 with the new versions. (This is equivalent to deleting the `composer.lock` file
 and running `install` again.)
@@ -159,14 +165,11 @@ php composer.phar update
 > if the `composer.lock` has not been updated since changes were made to the
 > `composer.json` that might affect dependency resolution.
 
-If you only want to install or update one dependency, you can allow them:
+If you only want to install, upgrade or remove one dependency, you can explicitly list it as an argument:
 
 ```sh
 php composer.phar update monolog/monolog [...]
 ```
-
-> **Note:** For libraries it is not necessary to commit the lock
-> file, see also: [Libraries - Lock file](02-libraries.md#lock-file).
 
 ## Packagist
 
@@ -211,7 +214,7 @@ available platform packages.
 ## Autoloading
 
 For libraries that specify autoload information, Composer generates a
-`vendor/autoload.php` file. You can simply include this file and start
+`vendor/autoload.php` file. You can include this file and start
 using the classes that those libraries provide without any extra work:
 
 ```php
@@ -233,7 +236,7 @@ You can even add your own code to the autoloader by adding an
 }
 ```
 
-Composer will register a [PSR-4](http://www.php-fig.org/psr/psr-4/) autoloader
+Composer will register a [PSR-4](https://www.php-fig.org/psr/psr-4/) autoloader
 for the `Acme` namespace.
 
 You define a mapping from namespaces to directories. The `src` directory would

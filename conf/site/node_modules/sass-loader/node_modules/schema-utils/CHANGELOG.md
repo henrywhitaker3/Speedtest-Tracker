@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/webpack/schema-utils/compare/v2.7.1...v3.0.0) (2020-10-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* minimum supported `Node.js` version is `10.13.0`, 
+* the packages exports was changed, please use `const { validate } = require('schema-utils');`
+* the `ValidateError` export was removed in favor the `ValidationError` export, please use `const { ValidationError } = require('schema-utils');`
+
 ### [2.7.1](https://github.com/webpack/schema-utils/compare/v2.7.0...v2.7.1) (2020-08-31)
 
 

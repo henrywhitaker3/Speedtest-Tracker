@@ -8,7 +8,7 @@ var path = require('path'),
  * @type {{name:string, decode: function, encode: function, root: function}}
  */
 module.exports = {
-  name  : 'source-relative',
+  name  : 'sourceRelative',
   decode: decode,
   encode: encode,
   root  : root

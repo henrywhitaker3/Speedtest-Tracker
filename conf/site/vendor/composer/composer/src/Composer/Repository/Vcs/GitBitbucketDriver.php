@@ -53,7 +53,7 @@ class GitBitbucketDriver extends BitbucketDriver
      */
     public static function supports(IOInterface $io, Config $config, $url, $deep = false)
     {
-        if (!preg_match('#^https?://bitbucket\.org/([^/]+)/(.+?)\.git$#i', $url)) {
+        if (!preg_match('#^(?:https?://bitbucket\.org/|git@bitbucket\.org:)([^/]+)/(.+?)\.git$#i', $url)) {
             return false;
         }
 
@@ -75,8 +75,8 @@ class GitBitbucketDriver extends BitbucketDriver
             array('url' => $url),
             $this->io,
             $this->config,
-            $this->process,
-            $this->remoteFilesystem
+            $this->httpDownloader,
+            $this->process
         );
         $this->fallbackDriver->initialize();
     }
