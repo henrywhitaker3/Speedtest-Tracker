@@ -33,6 +33,6 @@
         "react-chartjs-2": "^2.10.0",
         "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",
-        "react-toastify": "^6.0.8"
+        "react-toastify": "^6.0.9"
     }
 }
