@@ -25,7 +25,7 @@
         "sass": "^1.29.0",
     },
     "dependencies": {
-        "@babel/plugin-proposal-class-properties": "^7.10.4",
+        "@babel/plugin-proposal-class-properties": "^7.12.1",
         "chart.js": "^2.9.4",
         "csv-file-validator": "^1.8.0",
         "js-cookie": "^2.2.1",
