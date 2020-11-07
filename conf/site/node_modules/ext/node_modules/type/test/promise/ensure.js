@@ -17,4 +17,13 @@ describe("promise/ensure", function () {
 			assert.equal(error.message, "[object Object] is not a promise");
 		}
 	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensurePromise(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a promise for name, received null");
+		}
+	});
 });

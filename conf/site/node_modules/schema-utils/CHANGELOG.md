@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.7.1](https://github.com/webpack/schema-utils/compare/v2.7.0...v2.7.1) (2020-08-31)
+
+
+### Bug Fixes
+
+* remove esModuleInterop from tsconfig ([#110](https://github.com/webpack/schema-utils/issues/110)) ([#111](https://github.com/webpack/schema-utils/issues/111)) ([2f40154](https://github.com/webpack/schema-utils/commit/2f40154b91e45b393258ae9dd8f10cc3b8590b7d))
+
 ## [2.7.0](https://github.com/webpack/schema-utils/compare/v2.6.6...v2.7.0) (2020-05-29)
 
 

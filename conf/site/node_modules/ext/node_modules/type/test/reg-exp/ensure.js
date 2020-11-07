@@ -14,7 +14,16 @@ describe("reg-exp/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert(error.message.includes("is not a regular expression object"));
+			assert(error.message.includes("is not a regular expression"));
+		}
+	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureRegExp(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a regular expression for name, received null");
 		}
 	});
 });

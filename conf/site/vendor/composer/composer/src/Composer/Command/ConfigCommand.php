@@ -73,6 +73,9 @@ class ConfigCommand extends BaseCommand
                 new InputOption('list', 'l', InputOption::VALUE_NONE, 'List configuration settings'),
                 new InputOption('file', 'f', InputOption::VALUE_REQUIRED, 'If you want to choose a different composer.json or config.json'),
                 new InputOption('absolute', null, InputOption::VALUE_NONE, 'Returns absolute paths when fetching *-dir config values instead of relative'),
+                new InputOption('json', 'j', InputOption::VALUE_NONE, 'JSON decode the setting value, to be used with extra.* keys'),
+                new InputOption('merge', 'm', InputOption::VALUE_NONE, 'Merge the setting value with the current value, to be used with extra.* keys in combination with --json'),
+                new InputOption('append', null, InputOption::VALUE_NONE, 'When adding a repository, append it (lowest priority) to the existing ones instead of prepending it (highest priority)'),
                 new InputArgument('setting-key', null, 'Setting key'),
                 new InputArgument('setting-value', InputArgument::IS_ARRAY, 'Setting value'),
             ))
@@ -118,6 +121,10 @@ To add or edit suggested packages you can use:
 To add or edit extra properties you can use:
 
     <comment>%command.full_name% extra.property value</comment>
+
+Or to add a complex value you can use json with:
+
+    <comment>%command.full_name% extra.property --json '{"foo":true, "bar": []}'</comment>
 
 To edit the file in an external editor:
 
@@ -236,7 +243,7 @@ EOT
         }
 
         $settingKey = $input->getArgument('setting-key');
-        if (!$settingKey) {
+        if (!$settingKey || !is_string($settingKey)) {
             return 0;
         }
 
@@ -285,7 +292,7 @@ EOT
                 $value = $data;
             } elseif (isset($data['config'][$settingKey])) {
                 $value = $this->config->get($settingKey, $input->getOption('absolute') ? 0 : Config::RELATIVE_PATHS);
-            } elseif (in_array($settingKey, $properties, true) && isset($rawData[$settingKey])) {
+            } elseif (isset($rawData[$settingKey]) && in_array($settingKey, $properties, true)) {
                 $value = $rawData[$settingKey];
             } else {
                 throw new \RuntimeException($settingKey.' is not defined');
@@ -421,6 +428,7 @@ EOT
             'github-expose-hostname' => array($booleanValidator, $booleanNormalizer),
             'htaccess-protect' => array($booleanValidator, $booleanNormalizer),
             'lock' => array($booleanValidator, $booleanNormalizer),
+            'platform-check' => array($booleanValidator, $booleanNormalizer),
         );
         $multiConfigValues = array(
             'github-protocols' => array(
@@ -558,7 +566,7 @@ EOT
             ),
         );
 
-        if ($input->getOption('global') && (isset($uniqueProps[$settingKey]) || isset($multiProps[$settingKey]) || substr($settingKey, 0, 6) === 'extra.')) {
+        if ($input->getOption('global') && (isset($uniqueProps[$settingKey]) || isset($multiProps[$settingKey]) || strpos($settingKey, 'extra.') === 0)) {
             throw new \InvalidArgumentException('The '.$settingKey.' property can not be set in the global config.json file. Use `composer global config` to apply changes to the global composer.json');
         }
         if ($input->getOption('unset') && (isset($uniqueProps[$settingKey]) || isset($multiProps[$settingKey]))) {
@@ -589,7 +597,7 @@ EOT
                 $this->configSource->addRepository($matches[1], array(
                     'type' => $values[0],
                     'url' => $values[1],
-                ));
+                ), $input->getOption('append'));
 
                 return 0;
             }
@@ -598,13 +606,13 @@ EOT
                 $value = strtolower($values[0]);
                 if (true === $booleanValidator($value)) {
                     if (false === $booleanNormalizer($value)) {
-                        $this->configSource->addRepository($matches[1], false);
+                        $this->configSource->addRepository($matches[1], false, $input->getOption('append'));
 
                         return 0;
                     }
                 } else {
                     $value = JsonFile::parseJson($values[0]);
-                    $this->configSource->addRepository($matches[1], $value);
+                    $this->configSource->addRepository($matches[1], $value, $input->getOption('append'));
 
                     return 0;
                 }
@@ -621,7 +629,21 @@ EOT
                 return 0;
             }
 
-            $this->configSource->addProperty($settingKey, $values[0]);
+            $value = $values[0];
+            if ($input->getOption('json')) {
+                $value = JsonFile::parseJson($value);
+                if ($input->getOption('merge')) {
+                    $currentValue = $this->configFile->read();
+                    $bits = explode('.', $settingKey);
+                    foreach ($bits as $bit) {
+                        $currentValue = isset($currentValue[$bit]) ? $currentValue[$bit] : null;
+                    }
+                    if (is_array($currentValue)) {
+                        $value = array_merge($currentValue, $value);
+                    }
+                }
+            }
+            $this->configSource->addProperty($settingKey, $value);
 
             return 0;
         }

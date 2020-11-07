@@ -29,6 +29,7 @@ Composer fires the following named events during its execution process:
   the `install` command is executed without a lock file present.
 - **post-update-cmd**: occurs after the `update` command has been executed, or
   after the `install` command has been executed without a lock file present.
+- **pre-status-cmd**: occurs before the `status` command is executed.
 - **post-status-cmd**: occurs after the `status` command has been executed.
 - **pre-archive-cmd**: occurs before the `archive` command is executed.
 - **post-archive-cmd**: occurs after the `archive` command has been executed.
@@ -43,8 +44,8 @@ Composer fires the following named events during its execution process:
 
 ### Installer Events
 
-- **pre-dependencies-solving**: occurs before the dependencies are resolved.
-- **post-dependencies-solving**: occurs after the dependencies have been resolved.
+- **pre-operations-exec**: occurs before the install/upgrade/.. operations
+  are executed when installing a lock file.
 
 ### Package Events
 
@@ -61,11 +62,15 @@ Composer fires the following named events during its execution process:
 - **command**: occurs before any Composer Command is executed on the CLI. It
   provides you with access to the input and output objects of the program.
 - **pre-file-download**: occurs before files are downloaded and allows
-  you to manipulate the `RemoteFilesystem` object prior to downloading files
+  you to manipulate the `HttpDownloader` object prior to downloading files
   based on the URL to be downloaded.
+- **post-file-download**: occurs after package dist files are downloaded and
+  allows you to perform additional checks on the file if required.
 - **pre-command-run**: occurs before a command is executed and allows you to
   manipulate the `InputInterface` object's options and arguments to tweak
   a command's behavior.
+- **pre-pool-create**: occurs before the Pool of packages is created, and lets
+  you filter the list of packages which is going to enter the Solver.
 
 > **Note:** Composer makes no assumptions about the state of your dependencies
 > prior to `install` or `update`. Therefore, you should not specify scripts
@@ -179,6 +184,7 @@ objects:
   - init: [`Composer\EventDispatcher\Event`](https://getcomposer.org/apidoc/master/Composer/EventDispatcher/Event.html)
   - command: [`Composer\Plugin\CommandEvent`](https://getcomposer.org/apidoc/master/Composer/Plugin/CommandEvent.html)
   - pre-file-download: [`Composer\Plugin\PreFileDownloadEvent`](https://getcomposer.org/apidoc/master/Composer/Plugin/PreFileDownloadEvent.html)
+  - post-file-download: [`Composer\Plugin\PostFileDownloadEvent`](https://getcomposer.org/apidoc/master/Composer/Plugin/PostFileDownloadEvent.html)
 
 ## Running scripts manually
 
@@ -202,7 +208,7 @@ and can be retrieved as an array via `$event->getArguments()` by PHP handlers.
 If you add custom scripts that do not fit one of the predefined event name
 above, you can either run them with run-script or also run them as native
 Composer commands. For example the handler defined below is executable by
-simply running `composer test`:
+running `composer test`:
 
 ```json
 {
@@ -218,7 +224,7 @@ to the `phpunit` script.
 
 > **Note:** Before executing scripts, Composer's bin-dir is temporarily pushed
 > on top of the PATH environment variable so that binaries of dependencies
-> are easily accessible. In this example no matter if the `phpunit` binary is
+> are directly accessible. In this example no matter if the `phpunit` binary is
 > actually in `vendor/bin/phpunit` or `bin/phpunit` it will be found and executed.
 
 Although Composer is not intended to manage long-running processes and other
@@ -368,5 +374,8 @@ You can set custom script descriptions with the following in your `composer.json
     }
 }
 ```
+
+The descriptions are used in `composer list` or `composer run -l` commands to
+describe what the scripts do when the command is run.
 
 > **Note:** You can only set custom descriptions of custom commands.

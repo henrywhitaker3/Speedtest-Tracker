@@ -1,10 +1,10 @@
-# The composer.json Schema
+# The composer.json schema
 
 This chapter will explain all of the fields available in `composer.json`.
 
 ## JSON schema
 
-We have a [JSON schema](http://json-schema.org) that documents the format and
+We have a [JSON schema](https://json-schema.org) that documents the format and
 can also be used to validate your `composer.json`. In fact, it is used by the
 `validate` command. You can find it at: https://getcomposer.org/schema.json
 
@@ -34,12 +34,12 @@ separated by `/`. Examples:
 * monolog/monolog
 * igorw/event-source
 
-The name can contain any character, including white spaces, and it's case
-insensitive (`foo/bar` and `Foo/Bar` are considered the same package). In order
-to simplify its installation, it's recommended to define a short and lowercase
-name that doesn't include non-alphanumeric characters or white spaces.
+The name must be lowercased and consist of words separated by `-`, `.` or `_`.
+The complete name should match `^[a-z0-9]([_.-]?[a-z0-9]+)*/[a-z0-9](([_.]?|-{0,2})[a-z0-9]+)*$`.
 
-Required for published packages (libraries).
+The `name` property is required for published packages (libraries).
+
+> **Note:** Before Composer version 2.0, a name could contain any character, including white spaces.
 
 ### description
 
@@ -88,7 +88,7 @@ installer capable of installing packages of that type.
 
 Out of the box, Composer supports four types:
 
-- **library:** This is the default. It will simply copy the files to `vendor`.
+- **library:** This is the default. It will copy the files to `vendor`.
 - **project:** This denotes a project rather than a library. For example
   application shells like the [Symfony standard edition](https://github.com/symfony/symfony-standard),
   CMSs like the [SilverStripe installer](https://github.com/silverstripe/silverstripe-installer)
@@ -123,7 +123,7 @@ Optional.
 
 ### homepage
 
-An URL to the website of the project.
+A URL to the website of the project.
 
 Optional.
 
@@ -184,7 +184,7 @@ An Example for disjunctive licenses:
 }
 ```
 
-Alternatively they can be separated with "or" and enclosed in parenthesis;
+Alternatively they can be separated with "or" and enclosed in parentheses;
 
 ```json
 {
@@ -192,8 +192,8 @@ Alternatively they can be separated with "or" and enclosed in parenthesis;
 }
 ```
 
-Similarly when multiple licenses need to be applied ("conjunctive license"),
-they should be separated with "and" and enclosed in parenthesis.
+Similarly, when multiple licenses need to be applied ("conjunctive license"),
+they should be separated with "and" and enclosed in parentheses.
 
 ### authors
 
@@ -214,7 +214,7 @@ An example:
         {
             "name": "Nils Adermann",
             "email": "naderman@naderman.de",
-            "homepage": "http://www.naderman.de",
+            "homepage": "https://www.naderman.de",
             "role": "Developer"
         },
         {
@@ -265,8 +265,8 @@ development of new functionality.
 
 Each entry consists of the following
 
-* **type:** The type of funding or the platform through which funding can be provided, e.g. patreon, opencollective, tidelift or github.
-* **url:** URL to a website with details and a way to fund the package.
+* **type:** The type of funding, or the platform through which funding can be provided, e.g. patreon, opencollective, tidelift or github.
+* **url:** URL to a website with details, and a way to fund the package.
 
 An example:
 
@@ -310,7 +310,7 @@ Example:
 All links are optional fields.
 
 `require` and `require-dev` additionally support _stability flags_ ([root-only](04-schema.md#root-package)).
-They take the form "_constraint_@_stability flag_". 
+They take the form "_constraint_@_stability flag_".
 These allow you to further restrict or expand the stability of a package beyond
 the scope of the [minimum-stability](#minimum-stability) setting. You can apply
 them to a constraint, or apply them to an empty _constraint_ if you want to
@@ -442,9 +442,15 @@ that exact version, and not any other version, which would be incorrect.
 #### provide
 
 List of other packages that are provided by this package. This is mostly
-useful for common interfaces. A package could depend on some virtual
-`logger` package, any library that implements this logger interface would
-simply list it in `provide`.
+useful for implementations of common interfaces. A package could depend on
+some virtual `logger-implementation` package, any library that implements
+this logger interface would list it in `provide`.
+Using `provide` with the name of an actual package rather than a virtual one
+implies that the code of that package is also shipped, in which case `replace`
+is generally a better choice. A common convention for packages providing an
+interface and relying on other packages to provide an implementation (for
+instance the PSR interfaces) is to use a `-implementation` suffix for the
+name of the virtual package corresponding to the interface package.
 
 #### suggest
 
@@ -471,7 +477,7 @@ Example:
 
 Autoload mapping for a PHP autoloader.
 
-[`PSR-4`](http://www.php-fig.org/psr/psr-4/) and [`PSR-0`](http://www.php-fig.org/psr/psr-0/)
+[`PSR-4`](https://www.php-fig.org/psr/psr-4/) and [`PSR-0`](http://www.php-fig.org/psr/psr-0/)
 autoloading, `classmap` generation and `files` includes are supported.
 
 PSR-4 is the recommended way since it offers greater ease of use (no need
@@ -606,6 +612,18 @@ Example:
 {
     "autoload": {
         "classmap": ["src/", "lib/", "Something.php"]
+    }
+}
+```
+
+Wildcards (`*`) are also supported in a classmap paths, and expand to match any directory name:
+
+Example:
+
+```json
+{
+    "autoload": {
+        "classmap": ["src/addons/*/lib/", "3rd-party/*", "Something.php"]
     }
 }
 ```
@@ -763,15 +781,13 @@ ignored.
 
 The following repository types are supported:
 
-* **composer:** A Composer repository is simply a `packages.json` file served
+* **composer:** A Composer repository is a `packages.json` file served
   via the network (HTTP, FTP, SSH), that contains a list of `composer.json`
   objects with additional `dist` and/or `source` information. The `packages.json`
   file is loaded using a PHP stream. You can set extra options on that stream
   using the `options` parameter.
 * **vcs:** The version control system repository can fetch packages from git,
   svn, fossil and hg repositories.
-* **pear:** With this you can import any pear repository into your Composer
-  project.
 * **package:** If you depend on a project that does not have any support for
   composer whatsoever you can define the package inline using a `package`
   repository. You basically inline the `composer.json` object.
@@ -799,10 +815,6 @@ Example:
         {
             "type": "vcs",
             "url": "https://github.com/Seldaek/monolog"
-        },
-        {
-            "type": "pear",
-            "url": "https://pear2.php.net"
         },
         {
             "type": "package",
@@ -883,6 +895,21 @@ A set of options for creating package archives.
 
 The following options are supported:
 
+* **name:** Allows configuring base name for archive.
+  By default (if not configured, and `--file` is not passed as command-line argument),
+  `preg_replace('#[^a-z0-9-_]#i', '-', name)` is used.
+
+Example:
+
+```json
+{
+    "name": "org/strangeName",
+    "archive": {
+        "name": "Strange_name"
+    }
+}
+```
+
 * **exclude:** Allows configuring a list of patterns for excluded paths. The
   pattern syntax matches .gitignore files. A leading exclamation mark (!) will
   result in any matching files to be included even if a previous pattern
@@ -913,7 +940,7 @@ It can be boolean or a package name/URL pointing to a recommended alternative.
 Examples:
 
 Use `"abandoned": true` to indicates this package is abandoned.
-Use `"abandoned": "monolog/monolog"` to indicates this package is abandoned and the
+Use `"abandoned": "monolog/monolog"` to indicates this package is abandoned, and the
 recommended alternative is  `monolog/monolog`.
 
 Defaults to false.
@@ -928,7 +955,7 @@ that will NOT be handled as feature branches. This is an array of strings.
 If you have non-numeric branch names, for example like "latest", "current", "latest-stable"
 or something, that do not look like a version number, then Composer handles such branches
 as feature branches. This means it searches for parent branches, that look like a version
-or ends at special branches (like master) and the root package version number becomes the
+or ends at special branches (like master), and the root package version number becomes the
 version of the parent branch or at least master or something.
 
 To handle non-numeric named branches as versions instead of searching for a parent branch

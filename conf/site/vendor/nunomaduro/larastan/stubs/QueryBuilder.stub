@@ -238,7 +238,7 @@ class Builder
     /**
      * Add a basic where clause to the query.
      *
-     * @param  \Closure|string|array<string, mixed>  $column
+     * @param  \Closure|string|array<string|int, mixed>  $column
      * @param  mixed  $operator
      * @param  mixed  $value
      * @param  string  $boolean
@@ -250,7 +250,7 @@ class Builder
     /**
      * Add an array of where clauses to the query.
      *
-     * @param  array<string>  $column
+     * @param  array<string|int, mixed>  $column
      * @param  string  $boolean
      * @param  string  $method
      * @return $this
@@ -295,7 +295,7 @@ class Builder
     /**
      * Add an "or where" clause to the query.
      *
-     * @param  \Closure|string|array<string, mixed>  $column
+     * @param  \Closure|string|array<string|int, mixed>  $column
      * @param  mixed  $operator
      * @param  mixed  $value
      * @return $this
@@ -306,7 +306,7 @@ class Builder
     /**
      * Add a "where" clause comparing two columns to the query.
      *
-     * @param  string|array<mixed>  $first
+     * @param  model-property|array<model-property|int, mixed>  $first
      * @param  string|null  $operator
      * @param  string|null  $second
      * @param  string|null  $boolean
@@ -656,7 +656,7 @@ class Builder
     /**
      * Create a new query instance for nested where condition.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return $this
      */
     public function forNestedWhere()
     {}
@@ -1098,7 +1098,7 @@ class Builder
     /**
      * Lock the selected rows in the table for updating.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return $this
      */
     public function lockForUpdate()
     {}
@@ -1106,7 +1106,7 @@ class Builder
     /**
      * Share lock the selected rows in the table.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return $this
      */
     public function sharedLock()
     {}
@@ -1384,7 +1384,7 @@ class Builder
     /**
      * Get a new instance of the query builder.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return $this
      */
     public function newQuery()
     {}

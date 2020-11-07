@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 ### Security
 
+## [1.1.1] - 2020-09-10
+
+### Fixed
+
+* Fixed broken `AbstractCollection::map()` implementation.
+
 ## [1.1.0] - 2020-08-10
 
 ### Fixed

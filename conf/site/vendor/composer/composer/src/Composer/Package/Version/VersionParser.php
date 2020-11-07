@@ -18,6 +18,8 @@ use Composer\Semver\Semver;
 
 class VersionParser extends SemverVersionParser
 {
+    const DEFAULT_BRANCH_ALIAS = '9999999-dev';
+
     private static $constraints = array();
 
     /**
@@ -49,7 +51,7 @@ class VersionParser extends SemverVersionParser
 
         for ($i = 0, $count = count($pairs); $i < $count; $i++) {
             $pair = preg_replace('{^([^=: ]+)[=: ](.*)$}', '$1 $2', trim($pairs[$i]));
-            if (false === strpos($pair, ' ') && isset($pairs[$i + 1]) && false === strpos($pairs[$i + 1], '/') && !preg_match(PlatformRepository::PLATFORM_PACKAGE_REGEX, $pairs[$i + 1])) {
+            if (false === strpos($pair, ' ') && isset($pairs[$i + 1]) && false === strpos($pairs[$i + 1], '/') && !PlatformRepository::isPlatformPackage($pairs[$i + 1])) {
                 $pair .= ' '.$pairs[$i + 1];
                 $i++;
             }
@@ -70,7 +72,14 @@ class VersionParser extends SemverVersionParser
      */
     public static function isUpgrade($normalizedFrom, $normalizedTo)
     {
-        if (substr($normalizedFrom, 0, 4) === 'dev-' || substr($normalizedTo, 0, 4) === 'dev-') {
+        if ($normalizedFrom === $normalizedTo) {
+            return true;
+        }
+
+        $normalizedFrom = str_replace(array('dev-master', 'dev-trunk', 'dev-default'), VersionParser::DEFAULT_BRANCH_ALIAS, $normalizedFrom);
+        $normalizedTo = str_replace(array('dev-master', 'dev-trunk', 'dev-default'), VersionParser::DEFAULT_BRANCH_ALIAS, $normalizedTo);
+
+        if (strpos($normalizedFrom, 'dev-') === 0 || strpos($normalizedTo, 'dev-') === 0) {
             return true;
         }
 

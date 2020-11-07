@@ -36,6 +36,14 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
         'exists', 'doesntExist', 'count', 'min', 'max', 'avg', 'average', 'sum', 'getConnection',
     ];
 
+    /** @var BuilderHelper */
+    private $builderHelper;
+
+    public function __construct(BuilderHelper $builderHelper)
+    {
+        $this->builderHelper = $builderHelper;
+    }
+
     private function getBuilderReflection(): ClassReflection
     {
         return $this->broker->getClass(QueryBuilder::class);
@@ -81,7 +89,7 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
             }
 
             return new EloquentBuilderMethodReflection(
-                $methodName, $classReflection,
+                $methodName, $classReflection, $methodReflection,
                 $parametersAcceptor->getParameters(),
                 $returnType,
                 $parametersAcceptor->isVariadic()
@@ -109,7 +117,7 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
             $parametersAcceptor = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants());
 
             return new EloquentBuilderMethodReflection(
-                $methodName, $classReflection,
+                $methodName, $classReflection, $methodReflection,
                 $parametersAcceptor->getParameters(),
                 new GenericObjectType($builderClass, [$modelType]),
                 $parametersAcceptor->isVariadic()
@@ -117,15 +125,13 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
         }
 
         if ($modelType instanceof ObjectType) {
-            $builderHelper = new BuilderHelper($this->getBroker());
-
             if ($classReflection->isSubclassOf(EloquentBuilder::class)) {
                 $eloquentBuilderClass = $classReflection->getName();
             } else {
-                $eloquentBuilderClass = $builderHelper->determineBuilderType($modelType->getClassName());
+                $eloquentBuilderClass = $this->builderHelper->determineBuilderType($modelType->getClassName());
             }
 
-            $returnMethodReflection = $builderHelper->getMethodReflectionFromBuilder(
+            $returnMethodReflection = $this->builderHelper->getMethodReflectionFromBuilder(
                 $classReflection,
                 $methodName,
                 $modelType->getClassName(),

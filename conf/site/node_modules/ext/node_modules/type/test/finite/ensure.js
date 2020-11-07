@@ -14,4 +14,13 @@ describe("finite/ensure", function () {
 			assert.equal(error.message, "null is not a finite number");
 		}
 	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureFinite(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a finite number for name, received null");
+		}
+	});
 });

@@ -12,7 +12,7 @@ var getContextDirectory = require('./utility/get-context-directory');
  * @type {{name:string, decode: function}}
  */
 module.exports = {
-  name  : 'npm-module',
+  name  : 'npmModule',
   decode: decode
 };
 

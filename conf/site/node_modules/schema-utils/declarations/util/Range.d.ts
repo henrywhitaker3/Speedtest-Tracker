@@ -52,13 +52,13 @@ declare class Range {
    * @return {RangeValue} computed value and it's exclusive flag
    */
   static getRangeValue(
-    values: Array<RangeValue>,
+    values: Array<[number, boolean]>,
     logic: boolean
   ): [number, boolean];
   /** @type {Array<RangeValue>} */
-  _left: Array<RangeValue>;
+  _left: Array<[number, boolean]>;
   /** @type {Array<RangeValue>} */
-  _right: Array<RangeValue>;
+  _right: Array<[number, boolean]>;
   /**
    * @param {number} value
    * @param {boolean=} exclusive

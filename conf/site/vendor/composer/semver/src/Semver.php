@@ -45,7 +45,7 @@ class Semver
     /**
      * Return all versions that satisfy given constraints.
      *
-     * @param array $versions
+     * @param array  $versions
      * @param string $constraints
      *
      * @return array
@@ -85,7 +85,7 @@ class Semver
 
     /**
      * @param array $versions
-     * @param int $direction
+     * @param int   $direction
      *
      * @return array
      */
@@ -101,7 +101,9 @@ class Semver
         // Normalize outside of usort() scope for minor performance increase.
         // Creates an array of arrays: [[normalized, key], ...]
         foreach ($versions as $key => $version) {
-            $normalized[] = array($versionParser->normalize($version), $key);
+            $normalizedVersion = $versionParser->normalize($version);
+            $normalizedVersion = $versionParser->normalizeDefaultBranch($normalizedVersion);
+            $normalized[] = array($normalizedVersion, $key);
         }
 
         usort($normalized, function (array $left, array $right) use ($direction) {

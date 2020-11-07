@@ -1,5 +1,5 @@
 FROM linuxserver/nginx
-MAINTAINER henrywhitaker3@outlook.com
+LABEL maintainer=henrywhitaker3@outlook.com
 
 COPY conf/ /
 

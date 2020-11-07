@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/medikoo/type/compare/v2.0.0...v2.1.0) (2020-08-21)
+
+### Features
+
+- `ensure` util for cumulated input validation ([814c5a8](https://github.com/medikoo/type/commit/814c5a801ecac23d06d8a5f4bcafc4763a04408c))
+- Provide an alternative error message with `options.name` ([c7751c0](https://github.com/medikoo/type/commit/c7751c084ee4f3d3ed10500db0edde2ff00e03a1))
+- Support `%n` (meaningful name) token in error message resolver ([b0f374e](https://github.com/medikoo/type/commit/b0f374e54345c714fe37a90887ecfe60577ce133))
+- Support `min` validation for natural numbers ([e703512](https://github.com/medikoo/type/commit/e70351248818d3e113110106ad174b42c5fd9b25))
+- Support custom Error constructors ([c6ecb90](https://github.com/medikoo/type/commit/c6ecb90e21c1c778210934204cbe393fb89ef2f6))
+
+### Bug Fixes
+
+- Fix typo in error message ([2735533](https://github.com/medikoo/type/commit/2735533de28d33dfa13222743698169c92d08c09))
+
 ## [2.0.0](https://github.com/medikoo/type/compare/v1.2.0...v2.0.0) (2019-10-10)
 
 ### Features

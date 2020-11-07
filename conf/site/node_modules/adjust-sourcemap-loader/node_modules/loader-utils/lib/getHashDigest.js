@@ -40,7 +40,7 @@ function encodeBufferToBase(buffer, base) {
 }
 
 function getHashDigest(buffer, hashType, digestType, maxLength) {
-  hashType = hashType || 'md5';
+  hashType = hashType || 'md4';
   maxLength = maxLength || 9999;
 
   const hash = require('crypto').createHash(hashType);

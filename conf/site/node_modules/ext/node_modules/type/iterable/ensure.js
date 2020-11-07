@@ -6,11 +6,15 @@ var resolveException    = require("../lib/resolve-exception")
   , ensurePlainFunction = require("../plain-function/ensure")
   , is                  = require("./is");
 
-var invalidItemsLimit = 3, defaultErrorMessage = "%v is not expected iterable value";
+var invalidItemsLimit = 3;
 
 module.exports = function (value/*, options*/) {
 	var options = arguments[1];
-	if (!is(value, options)) return resolveException(value, defaultErrorMessage, options);
+	var mainErrorMessage =
+		options && options.name
+			? "Expected an iterable for %n, received %v"
+			: "%v is not expected iterable";
+	if (!is(value, options)) return resolveException(value, mainErrorMessage, options);
 	if (!options) return value;
 
 	var ensureItem = ensurePlainFunction(options.ensureItem, { isOptional: true });
@@ -31,7 +35,7 @@ module.exports = function (value/*, options*/) {
 		}
 		if (invalidItems) {
 			var errorMessage =
-				resolveErrorMessage(defaultErrorMessage, value, options) +
+				resolveErrorMessage(mainErrorMessage, value, options) +
 				".\n           Following items are invalid:";
 			for (var i = 0; i < invalidItems.length; ++i) {
 				errorMessage += "\n             - " + toShortString(invalidItems[i]);

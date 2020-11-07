@@ -111,25 +111,27 @@ class ValidatingArrayLoader implements LoaderInterface
             if (is_array($this->config['license']) || is_string($this->config['license'])) {
                 $licenses = (array) $this->config['license'];
 
-                // strip proprietary since it's not a valid SPDX identifier, but is accepted by composer
-                foreach ($licenses as $key => $license) {
-                    if ('proprietary' === $license) {
-                        unset($licenses[$key]);
-                    }
-                }
-
                 $licenseValidator = new SpdxLicenses();
-                if (count($licenses) === 1 && !$licenseValidator->validate($licenses) && $licenseValidator->validate(trim($licenses[0]))) {
-                    $this->warnings[] = sprintf(
-                        'License %s must not contain extra spaces, make sure to trim it.',
-                        json_encode($this->config['license'])
-                    );
-                } elseif (array() !== $licenses && !$licenseValidator->validate($licenses)) {
-                    $this->warnings[] = sprintf(
-                        'License %s is not a valid SPDX license identifier, see https://spdx.org/licenses/ if you use an open license.' . PHP_EOL .
-                        'If the software is closed-source, you may use "proprietary" as license.',
-                        json_encode($this->config['license'])
-                    );
+                foreach ($licenses as $license) {
+                    // replace proprietary by MIT for validation purposes since it's not a valid SPDX identifier, but is accepted by composer
+                    if ('proprietary' === $license) {
+                        continue;
+                    }
+                    $licenseToValidate = str_replace('proprietary', 'MIT', $license);
+                    if (!$licenseValidator->validate($licenseToValidate)) {
+                        if ($licenseValidator->validate(trim($licenseToValidate))) {
+                            $this->warnings[] = sprintf(
+                                'License %s must not contain extra spaces, make sure to trim it.',
+                                json_encode($license)
+                            );
+                        } else {
+                            $this->warnings[] = sprintf(
+                                'License %s is not a valid SPDX license identifier, see https://spdx.org/licenses/ if you use an open license.' . PHP_EOL .
+                                'If the software is closed-source, you may use "proprietary" as license.',
+                                json_encode($license)
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -219,7 +221,7 @@ class ValidatingArrayLoader implements LoaderInterface
             }
         }
 
-        $unboundConstraint = new Constraint('=', $this->versionParser->normalize('dev-master'));
+        $unboundConstraint = new Constraint('=', '10000000-dev');
         $stableConstraint = new Constraint('=', '1.0.0');
 
         foreach (array_keys(BasePackage::$supportedLinkTypes) as $linkType) {
@@ -247,14 +249,14 @@ class ValidatingArrayLoader implements LoaderInterface
                             ($this->flags & self::CHECK_UNBOUND_CONSTRAINTS)
                             && 'require' === $linkType
                             && $linkConstraint->matches($unboundConstraint)
-                            && !preg_match(PlatformRepository::PLATFORM_PACKAGE_REGEX, $package)
+                            && !PlatformRepository::isPlatformPackage($package)
                         ) {
                             $this->warnings[] = $linkType.'.'.$package.' : unbound version constraints ('.$constraint.') should be avoided';
                         } elseif (
                             // check requires for exact constraints
                             ($this->flags & self::CHECK_STRICT_CONSTRAINTS)
                             && 'require' === $linkType
-                            && substr($linkConstraint, 0, 1) === '='
+                            && strpos($linkConstraint, '=') === 0
                             && $stableConstraint->versionCompare($stableConstraint, $linkConstraint, '<=')
                         ) {
                             $this->warnings[] = $linkType.'.'.$package.' : exact version constraints ('.$constraint.') should be avoided if the package follows semantic versioning';
@@ -370,7 +372,7 @@ class ValidatingArrayLoader implements LoaderInterface
 
     public static function hasPackageNamingError($name, $isLink = false)
     {
-        if (preg_match(PlatformRepository::PLATFORM_PACKAGE_REGEX, $name)) {
+        if (PlatformRepository::isPlatformPackage($name)) {
             return;
         }
 

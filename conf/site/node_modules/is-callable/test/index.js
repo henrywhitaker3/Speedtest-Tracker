@@ -181,3 +181,10 @@ test('proxies of functions', { skip: !proxy }, function (t) {
 	t.ok(isCallable(proxy), 'proxies of functions are callable');
 	t.end();
 });
+
+test('throwing functions', function (t) {
+	t.plan(1);
+
+	var thrower = function (a) { return a.b; };
+	t.ok(isCallable(thrower), 'a function that throws is callable');
+});

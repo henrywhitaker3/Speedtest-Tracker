@@ -35,6 +35,7 @@ function parseQuery(query) {
       let name = arg.substr(0, idx);
       let value = decodeURIComponent(arg.substr(idx + 1));
 
+      // eslint-disable-next-line no-prototype-builtins
       if (specialValues.hasOwnProperty(value)) {
         value = specialValues[value];
       }

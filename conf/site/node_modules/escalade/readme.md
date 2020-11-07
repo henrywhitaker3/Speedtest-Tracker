@@ -9,6 +9,12 @@ With [escalade](https://en.wikipedia.org/wiki/Escalade), you can scale parent di
 
 > **Important:**<br>Please note that `escalade` only deals with direct ancestry – it will not dive into parents' sibling directories.
 
+---
+
+**Notice:** As of v3.1.0, `escalade` now includes [Deno support](http://deno.land/x/escalade)! Please see [Deno Usage](#deno) below.
+
+---
+
 ## Install
 
 ```
@@ -176,6 +182,22 @@ If the string is an absolute path, then it's left as is. Otherwise, the string i
   find-up.sync     x  1,037 ops/sec ± 2.86% (88 runs sampled)
   escalade/sync    x  1,248 ops/sec ± 0.50% (93 runs sampled)
 ```
+
+## Deno
+
+As of v3.1.0, `escalade` is available on the Deno registry.
+
+Please note that the [API](#api) is identical and that there are still [two modes](#modes) from which to choose:
+
+```ts
+// Choose "async" mode
+import escalade from 'https://deno.land/escalade/async.ts';
+
+// Choose "sync" mode
+import escalade from 'https://deno.land/escalade/sync.ts';
+```
+
+> **Important:** The `allow-read` permission is required!
 
 
 ## Related

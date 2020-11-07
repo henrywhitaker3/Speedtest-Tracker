@@ -19,7 +19,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\Table;
 
 /**
  * @author Fabien Potencier <fabien.potencier@gmail.com>
@@ -74,7 +73,8 @@ EOT
     {
         if ($input->getOption('list')) {
             return $this->listScripts($output);
-        } elseif (!$input->getArgument('script')) {
+        }
+        if (!$input->getArgument('script')) {
             throw new \RuntimeException('Missing required argument "script"');
         }
 
@@ -130,16 +130,7 @@ EOT
             $table[] = array('  '.$name, $description);
         }
 
-        $renderer = new Table($output);
-        $renderer->setStyle('compact');
-        $rendererStyle = $renderer->getStyle();
-        if (method_exists($rendererStyle, 'setVerticalBorderChars')) {
-            $rendererStyle->setVerticalBorderChars('');
-        } else {
-            $rendererStyle->setVerticalBorderChar('');
-        }
-        $rendererStyle->setCellRowContentFormat('%s  ');
-        $renderer->setRows($table)->render();
+        $this->renderTable($table, $output);
 
         return 0;
     }

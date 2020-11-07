@@ -18,7 +18,16 @@ describe("array-like/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert(error.message.includes("is not an array like value"));
+			assert(error.message.includes("is not an array like"));
+		}
+	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureArrayLike("foo", { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected an array like for name, received foo");
 		}
 	});
 });

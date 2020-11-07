@@ -57,7 +57,9 @@ class Package extends BasePackage
     protected $autoload = array();
     protected $devAutoload = array();
     protected $includePaths = array();
+    protected $archiveName;
     protected $archiveExcludes = array();
+    protected $isDefaultBranch = false;
 
     /**
      * Creates a new in memory package.
@@ -552,6 +554,24 @@ class Package extends BasePackage
     }
 
     /**
+     * Sets default base filename for archive
+     *
+     * @param string $name
+     */
+    public function setArchiveName($name)
+    {
+        $this->archiveName = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArchiveName()
+    {
+        return $this->archiveName;
+    }
+
+    /**
      * Sets a list of patterns to be excluded from archives
      *
      * @param array $excludes
@@ -567,6 +587,39 @@ class Package extends BasePackage
     public function getArchiveExcludes()
     {
         return $this->archiveExcludes;
+    }
+
+    /**
+     * @param bool $defaultBranch
+     */
+    public function setIsDefaultBranch($defaultBranch)
+    {
+        $this->isDefaultBranch = $defaultBranch;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isDefaultBranch()
+    {
+        return $this->isDefaultBranch;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSourceDistReferences($reference)
+    {
+        $this->setSourceReference($reference);
+
+        // only bitbucket, github and gitlab have auto generated dist URLs that easily allow replacing the reference in the dist URL
+        // TODO generalize this a bit for self-managed/on-prem versions? Some kind of replace token in dist urls which allow this?
+        if (preg_match('{^https?://(?:(?:www\.)?bitbucket\.org|(api\.)?github\.com|(?:www\.)?gitlab\.com)/}i', $this->getDistUrl())) {
+            $this->setDistReference($reference);
+            $this->setDistUrl(preg_replace('{(?<=/|sha=)[a-f0-9]{40}(?=/|$)}i', $reference, $this->getDistUrl()));
+        } elseif ($this->getDistReference()) { // update the dist reference if there was one, but if none was provided ignore it
+            $this->setDistReference($reference);
+        }
     }
 
     /**
@@ -599,8 +652,10 @@ class Package extends BasePackage
                     $mirrorUrl = ComposerMirror::processGitUrl($mirror['url'], $this->name, $url, $type);
                 } elseif ($urlType === 'source' && $type === 'hg') {
                     $mirrorUrl = ComposerMirror::processHgUrl($mirror['url'], $this->name, $url, $type);
+                } else {
+                    continue;
                 }
-                if (!in_array($mirrorUrl, $urls)) {
+                if (!\in_array($mirrorUrl, $urls)) {
                     $func = $mirror['preferred'] ? 'array_unshift' : 'array_push';
                     $func($urls, $mirrorUrl);
                 }

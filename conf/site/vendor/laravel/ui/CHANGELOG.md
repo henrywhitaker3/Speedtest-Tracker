@@ -1,6 +1,40 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/ui/compare/v2.2.0...2.x)
+## [Unreleased](https://github.com/laravel/ui/compare/v2.5.0...2.x)
+
+
+## [v2.5.0 (2020-11-03)](https://github.com/laravel/ui/compare/v2.4.1...v2.5.0)
+
+### Added
+- PHP 8 Support ([#179](https://github.com/laravel/ui/pull/179))
+
+
+## [v2.4.1 (2020-09-22)](https://github.com/laravel/ui/compare/v2.4.0...v2.4.1)
+
+### Changed
+- Revert "Add namespace check to Auth routes" ([#160](https://github.com/laravel/ui/pull/160))
+
+
+## [v2.4.0 (2020-09-11)](https://github.com/laravel/ui/compare/v2.3.0...v2.4.0)
+
+### Removed
+- Remove Laravel 8 support ([#154](https://github.com/laravel/ui/pull/154))
+
+### Fixed
+- Fix Bootstrap preset ([#146](https://github.com/laravel/ui/pull/146))
+
+
+## [v2.3.0 (2020-09-09)](https://github.com/laravel/ui/compare/v2.2.1...v2.3.0)
+
+### Fixed
+- Add namespace check to Auth routes ([#143](https://github.com/laravel/ui/pull/143))
+
+
+## [v2.2.1 (2020-09-08)](https://github.com/laravel/ui/compare/v2.2.0...v2.2.1)
+
+### Fixed
+- Use proper json responses ([#139](https://github.com/laravel/ui/pull/139))
+- Ensure sass directory exists ([456daa3](https://github.com/laravel/ui/commit/456daa330a32483b0fa9794334e60af6b2db3bf6))
 
 
 ## [v2.2.0 (2020-08-25)](https://github.com/laravel/ui/compare/v2.1.0...v2.2.0)

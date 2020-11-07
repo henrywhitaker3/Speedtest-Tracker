@@ -5,7 +5,7 @@
  * @type {{name:string, decode:function, abstract:boolean}}
  */
 module.exports = {
-  name    : 'webpack-bootstrap',
+  name    : 'webpackBootstrap',
   decode  : decode,
   abstract: true
 };
