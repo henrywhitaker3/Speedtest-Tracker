@@ -19,7 +19,7 @@
         "lodash": "^4.17.20",
         "popper.js": "^1.12",
         "react": "^16.14.0",
-        "react-dom": "^16.2.0",
+        "react-dom": "^16.14.0",
         "resolve-url-loader": "^3.1.2",
         "sass-loader": "^10.0.5",
         "sass": "^1.29.0"
