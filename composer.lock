@@ -1123,16 +1123,16 @@
         },
         {
             "name": "laravel-notification-channels/telegram",
-            "version": "0.5.0",
+            "version": "0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel-notification-channels/telegram.git",
-                "reference": "c1e12a953ecb5fec0c285bc74950028ddd085fc0"
+                "reference": "2cedb10b78219cc91a285eaa5a3de0db405cc207"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel-notification-channels/telegram/zipball/c1e12a953ecb5fec0c285bc74950028ddd085fc0",
-                "reference": "c1e12a953ecb5fec0c285bc74950028ddd085fc0",
+                "url": "https://api.github.com/repos/laravel-notification-channels/telegram/zipball/2cedb10b78219cc91a285eaa5a3de0db405cc207",
+                "reference": "2cedb10b78219cc91a285eaa5a3de0db405cc207",
                 "shasum": ""
             },
             "require": {
@@ -1140,7 +1140,7 @@
                 "guzzlehttp/guzzle": "^6.2 || ^7.0",
                 "illuminate/notifications": "^5.5 || ^6.0 || ^7.0 || ^8.0",
                 "illuminate/support": "^5.5 || ^6.0 || ^7.0 || ^8.0",
-                "php": ">=7.1"
+                "php": "^7.1 || ^8.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.3",
@@ -1180,7 +1180,7 @@
                 "telegram notification",
                 "telegram notifications channel"
             ],
-            "time": "2020-09-07T19:29:19+00:00"
+            "time": "2020-12-06T19:00:18+00:00"
         },
         {
             "name": "laravel/framework",
