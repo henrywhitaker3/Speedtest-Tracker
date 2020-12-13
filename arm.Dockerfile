@@ -3,7 +3,7 @@ LABEL maintainer=henrywhitaker3@outlook.com
 
 COPY conf/ /
 
-RUN sed -i 's/1\.0\.0-x86_64/1\.0\.0-arm/' /etc/cont-init.d/50-speedtest
+RUN sed -i "s/1\.0\.0-x86_64/1\.0\.0-arm/" /etc/cont-init.d/50-speedtest
 
 EXPOSE 80 443
 
