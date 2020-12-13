@@ -1,4 +1,10 @@
 {
+    "1.10.1": [
+        {
+            "description": "Fixed integrations config being empty causing healthchecks to not run on scheduled tests.",
+            "link": ""
+        }
+    ],
     "1.10.0": [
         {
             "description": "Added automated build for ARM.",
