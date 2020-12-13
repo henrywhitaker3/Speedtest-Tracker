@@ -35,18 +35,20 @@ class IntegrationsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if(File::exists(env('DB_DATABASE'))) {
-            if(Schema::hasTable('settings')) {
+        if (File::exists(env('DB_DATABASE'))) {
+            if (Schema::hasTable('settings')) {
                 $setting = SettingsHelper::get('healthchecks_uuid');
 
-                if($setting !== false) {
+                if ($setting !== false) {
                     try {
-                        App::bind('healthcheck', function() use ($setting) {
+                        SettingsHelper::loadIntegrationConfig();
+
+                        App::bind('healthcheck', function () use ($setting) {
                             return new Healthchecks($setting->value);
                         });
-                    } catch(InvalidUuidStringException $e) {
+                    } catch (InvalidUuidStringException $e) {
                         Log::error('Invalid healthchecks UUID');
-                    } catch(Exception $e) {
+                    } catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
                 }
