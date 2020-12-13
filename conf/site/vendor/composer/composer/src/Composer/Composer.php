@@ -51,9 +51,9 @@ class Composer
      * const RELEASE_DATE = '@release_date@';
      * const SOURCE_VERSION = '1.8-dev+source';
      */
-    const VERSION = '2.0.4';
+    const VERSION = '2.0.8';
     const BRANCH_ALIAS_VERSION = '';
-    const RELEASE_DATE = '2020-10-30 22:39:11';
+    const RELEASE_DATE = '2020-12-03 17:20:38';
     const SOURCE_VERSION = '';
 
     /**

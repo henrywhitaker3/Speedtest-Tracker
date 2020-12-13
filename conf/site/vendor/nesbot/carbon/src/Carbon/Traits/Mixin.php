@@ -11,6 +11,7 @@
 namespace Carbon\Traits;
 
 use Closure;
+use Generator;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -63,13 +64,13 @@ trait Mixin
      */
     public static function mixin($mixin)
     {
-        is_string($mixin) && trait_exists($mixin)
+        \is_string($mixin) && trait_exists($mixin)
             ? static::loadMixinTrait($mixin)
             : static::loadMixinClass($mixin);
     }
 
     /**
-     * @param string $mixin
+     * @param object|string $mixin
      *
      * @throws ReflectionException
      */
@@ -95,18 +96,14 @@ trait Mixin
      */
     private static function loadMixinTrait($trait)
     {
-        $baseClass = static::class;
-        $context = eval('return new class() extends '.$baseClass.' {use '.$trait.';};');
-        $className = get_class($context);
+        $context = eval(self::getAnonymousClassCodeForTrait($trait));
+        $className = \get_class($context);
 
-        foreach (get_class_methods($context) as $name) {
-            if (method_exists($baseClass, $name)) {
-                continue;
-            }
-
+        foreach (self::getMixableMethods($context) as $name) {
             $closureBase = Closure::fromCallable([$context, $name]);
 
             static::macro($name, function () use ($closureBase, $className) {
+                /** @phpstan-ignore-next-line */
                 $context = isset($this) ? $this->cast($className) : new $className();
 
                 try {
@@ -115,8 +112,24 @@ trait Mixin
                     $closure = $closureBase;
                 }
 
-                return $closure(...func_get_args());
+                return $closure(...\func_get_args());
             });
+        }
+    }
+
+    private static function getAnonymousClassCodeForTrait(string $trait)
+    {
+        return 'return new class() extends '.static::class.' {use '.$trait.';};';
+    }
+
+    private static function getMixableMethods(self $context): Generator
+    {
+        foreach (get_class_methods($context) as $name) {
+            if (method_exists(static::class, $name)) {
+                continue;
+            }
+
+            yield $name;
         }
     }
 

@@ -15,7 +15,6 @@ namespace Composer\Package;
 use Composer\Json\JsonFile;
 use Composer\Installer\InstallationManager;
 use Composer\Repository\LockArrayRepository;
-use Composer\Repository\RepositoryManager;
 use Composer\Util\ProcessExecutor;
 use Composer\Package\Dumper\ArrayDumper;
 use Composer\Package\Loader\ArrayLoader;
@@ -187,7 +186,9 @@ class Locker
             if (isset($lockData['aliases'])) {
                 foreach ($lockData['aliases'] as $alias) {
                     if (isset($packageByName[$alias['package']])) {
-                        $packages->addPackage(new AliasPackage($packageByName[$alias['package']], $alias['alias_normalized'], $alias['alias']));
+                        $aliasPkg = new AliasPackage($packageByName[$alias['package']], $alias['alias_normalized'], $alias['alias']);
+                        $aliasPkg->setRootPackageAlias(true);
+                        $packages->addPackage($aliasPkg);
                     }
                 }
             }
@@ -196,6 +197,22 @@ class Locker
         }
 
         throw new \RuntimeException('Your composer.lock is invalid. Run "composer update" to generate a new one.');
+    }
+
+    /**
+     * @return string[] Names of dependencies installed through require-dev
+     */
+    public function getDevPackageNames()
+    {
+        $names = array();
+        $lockData = $this->getLockData();
+        if (isset($lockData['packages-dev'])) {
+            foreach ($lockData['packages-dev'] as $package) {
+                $names[] = strtolower($package['name']);
+            }
+        }
+
+        return $names;
     }
 
     /**
@@ -316,6 +333,7 @@ class Locker
             if (in_array($alias['version'], array('dev-master', 'dev-trunk', 'dev-default'), true)) {
                 $alias['version'] = VersionParser::DEFAULT_BRANCH_ALIAS;
             }
+
             return $alias;
         }, $aliases);
 

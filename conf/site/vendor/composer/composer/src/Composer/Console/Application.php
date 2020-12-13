@@ -129,7 +129,7 @@ class Application extends BaseApplication
     {
         $this->disablePluginsByDefault = $input->hasParameterOption('--no-plugins');
 
-        if (getenv('COMPOSER_NO_INTERACTION')) {
+        if (getenv('COMPOSER_NO_INTERACTION') || !Platform::isTty(defined('STDIN') ? STDIN : fopen('php://stdin', 'r'))) {
             $input->setInteractive(false);
         }
 
@@ -158,8 +158,8 @@ class Application extends BaseApplication
             try {
                 $commandName = $this->find($name)->getName();
             } catch (CommandNotFoundException $e) {
-              // we'll check command validity again later after plugins are loaded
-              $commandName = false;
+                // we'll check command validity again later after plugins are loaded
+                $commandName = false;
             } catch (\InvalidArgumentException $e) {
             }
         }

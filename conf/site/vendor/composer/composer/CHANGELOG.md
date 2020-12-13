@@ -1,3 +1,38 @@
+### [2.0.8] 2020-12-03
+
+  * Fixed packages with aliases not matching conflicts which match the alias
+  * Fixed invalid reports of uncommitted changes when using non-default remotes in vendor dir
+  * Fixed curl error handling edge cases
+  * Fixed cached git repositories becoming stale by having a `git gc` applied to them periodically
+  * Fixed issue initializing plugins when using dev packages
+  * Fixed update --lock / mirrors failing to update in some edge cases
+  * Fixed partial update with --with-dependencies failing in some edge cases with some nonsensical error
+
+### [2.0.7] 2020-11-13
+
+  * Fixed detection of TTY mode, made input non-interactive automatically if STDIN is not a TTY
+  * Fixed root aliases not being present in lock file if not required by anything else
+  * Fixed `remove` command requiring a lock file to be present
+  * Fixed `Composer\InstalledVersions` to always contain up to date data during installation
+  * Fixed `status` command breaking on slow networks
+  * Fixed order of POST_PACKAGE_* events to occur together once all installations of a package batch are done
+
+### [2.0.6] 2020-11-07
+
+  * Fixed regression in 2.0.5 dealing with custom installers which do not pass absolute paths
+
+### [2.0.5] 2020-11-06
+
+  * Disabled platform-check verification of extensions by default (now defaulting `php-only`), set platform-check to `true` if you want a complete check
+  * Improved platform-check handling of issue reporting
+  * Fixed platform-check to only check non-dev requires even if require-dev dependencies are installed
+  * Fixed issues dealing with custom installers which return trailing slashes in getInstallPath (ideally avoid doing this as there might be other issues left)
+  * Fixed issues when curl functions are disabled
+  * Fixed gitlab-domains/github-domains to make sure if they are overridden the default value remains present
+  * Fixed issues removing/upgrading packages from path repositories on Windows
+  * Fixed regression in 2.0.4 when handling of git@bitbucket.org URLs in vcs repositories
+  * Fixed issue running create-project in current directory on Windows
+
 ### [2.0.4] 2020-10-30
 
   * Fixed `check-platform-req` command not being clear on what packages are checked, and added a --lock flag to explicitly check the locked packages
@@ -114,6 +149,10 @@
   * Fixed package ordering when autoloading and especially when loading plugins, to make sure dependencies are loaded before their dependents
   * Fixed suggest output being very spammy, it now is only one line long and shows more rarely
   * Fixed conflict rules like e.g. >=5 from matching dev-master, as it is not normalized to 9999999-dev internally anymore
+
+### [1.10.18] 2020-12-03
+
+  * Allow installation on PHP 8.0
 
 ### [1.10.17] 2020-10-30
 
@@ -1033,6 +1072,10 @@
 
   * Initial release
 
+[2.0.8]: https://github.com/composer/composer/compare/2.0.7...2.0.8
+[2.0.7]: https://github.com/composer/composer/compare/2.0.6...2.0.7
+[2.0.6]: https://github.com/composer/composer/compare/2.0.5...2.0.6
+[2.0.5]: https://github.com/composer/composer/compare/2.0.4...2.0.5
 [2.0.4]: https://github.com/composer/composer/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/composer/composer/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/composer/composer/compare/2.0.1...2.0.2
@@ -1043,6 +1086,7 @@
 [2.0.0-alpha3]: https://github.com/composer/composer/compare/2.0.0-alpha2...2.0.0-alpha3
 [2.0.0-alpha2]: https://github.com/composer/composer/compare/2.0.0-alpha1...2.0.0-alpha2
 [2.0.0-alpha1]: https://github.com/composer/composer/compare/1.10.7...2.0.0-alpha1
+[1.10.18]: https://github.com/composer/composer/compare/1.10.17...1.10.18
 [1.10.17]: https://github.com/composer/composer/compare/1.10.16...1.10.17
 [1.10.16]: https://github.com/composer/composer/compare/1.10.15...1.10.16
 [1.10.15]: https://github.com/composer/composer/compare/1.10.14...1.10.15

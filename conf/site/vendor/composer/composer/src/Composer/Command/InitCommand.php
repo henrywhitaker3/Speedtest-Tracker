@@ -129,6 +129,12 @@ EOT
 
                 return 1;
             }
+        } else {
+            if (json_encode($options) === '{"require":{}}') {
+                throw new \RuntimeException('You have to run this command in interactive mode, or specify at least some data using --name, --require, etc.');
+            }
+
+            $io->writeError('Writing composer.json');
         }
 
         $file->write($options);
@@ -839,7 +845,6 @@ EOT
         } catch (\Exception $e) {
             $this->getIO()->writeError('Could not install dependencies. Run `composer install` to see more information.');
         }
-
     }
 
     private function hasDependencies($options)

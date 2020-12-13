@@ -14,7 +14,6 @@ namespace Composer\Downloader;
 
 use Composer\Config;
 use Composer\Cache;
-use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Package\Comparer\Comparer;
@@ -22,7 +21,6 @@ use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\DependencyResolver\Operation\UninstallOperation;
 use Composer\Package\PackageInterface;
-use Composer\Package\Version\VersionParser;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PostFileDownloadEvent;
 use Composer\Plugin\PreFileDownloadEvent;
@@ -31,7 +29,6 @@ use Composer\Util\Filesystem;
 use Composer\Util\HttpDownloader;
 use Composer\Util\Url as UrlUtil;
 use Composer\Util\ProcessExecutor;
-use Composer\Downloader\TransportException;
 use React\Promise\PromiseInterface;
 
 /**
@@ -67,12 +64,12 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
     /**
      * Constructor.
      *
-     * @param IOInterface      $io              The IO instance
-     * @param Config           $config          The config
-     * @param HttpDownloader   $httpDownloader  The remote filesystem
-     * @param EventDispatcher  $eventDispatcher The event dispatcher
-     * @param Cache            $cache           Cache instance
-     * @param Filesystem       $filesystem      The filesystem
+     * @param IOInterface     $io              The IO instance
+     * @param Config          $config          The config
+     * @param HttpDownloader  $httpDownloader  The remote filesystem
+     * @param EventDispatcher $eventDispatcher The event dispatcher
+     * @param Cache           $cache           Cache instance
+     * @param Filesystem      $filesystem      The filesystem
      */
     public function __construct(IOInterface $io, Config $config, HttpDownloader $httpDownloader, EventDispatcher $eventDispatcher = null, Cache $cache = null, Filesystem $filesystem = null, ProcessExecutor $process = null)
     {
@@ -123,7 +120,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
                 // from different packages, which would potentially allow a given package
                 // in a third party repo to pre-populate the cache for the same package in
                 // packagist for example.
-                'cacheKey' => $cacheKeyGenerator($package, $processedUrl)
+                'cacheKey' => $cacheKeyGenerator($package, $processedUrl),
             );
         }
 
@@ -149,7 +146,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
                 $eventDispatcher->dispatch($preFileDownloadEvent->getName(), $preFileDownloadEvent);
                 if ($preFileDownloadEvent->getCustomCacheKey() !== null) {
                     $url['cacheKey'] = $cacheKeyGenerator($package, $preFileDownloadEvent->getCustomCacheKey());
-                } else if ($preFileDownloadEvent->getProcessedUrl() !== $url['processed']) {
+                } elseif ($preFileDownloadEvent->getProcessedUrl() !== $url['processed']) {
                     $url['cacheKey'] = $cacheKeyGenerator($package, $preFileDownloadEvent->getProcessedUrl());
                 }
                 $url['processed'] = $preFileDownloadEvent->getProcessedUrl();
@@ -247,7 +244,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
                 if ($io->isDebug()) {
                     $io->writeError('    Failed downloading '.$package->getName().': ['.get_class($e).'] '.$e->getCode().': '.$e->getMessage());
                     $io->writeError('    Trying the next URL for '.$package->getName());
-                } elseif (count($urls)) {
+                } else {
                     $io->writeError('    Failed downloading '.$package->getName().', trying the next URL ('.$e->getCode().': '.$e->getMessage().')');
                 }
 
@@ -293,7 +290,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
         }
 
         foreach ($dirsToCleanUp as $dir) {
-            if (is_dir($dir) && $this->filesystem->isDirEmpty($dir)) {
+            if (is_dir($dir) && $this->filesystem->isDirEmpty($dir) && realpath($dir) !== getcwd()) {
                 $this->filesystem->removeDirectory($dir);
             }
         }
@@ -310,7 +307,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
 
         $this->filesystem->emptyDirectory($path);
         $this->filesystem->ensureDirectoryExists($path);
-        $this->filesystem->rename($this->getFileName($package, $path), $path . pathinfo(parse_url($package->getDistUrl(), PHP_URL_PATH), PATHINFO_BASENAME));
+        $this->filesystem->rename($this->getFileName($package, $path), $path . '/' . pathinfo(parse_url($package->getDistUrl(), PHP_URL_PATH), PATHINFO_BASENAME));
     }
 
     /**
@@ -429,6 +426,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
         $e = null;
         $output = '';
 
+        $targetDir = Filesystem::trimTrailingSlash($targetDir);
         try {
             if (is_dir($targetDir.'_compare')) {
                 $this->filesystem->removeDirectory($targetDir.'_compare');

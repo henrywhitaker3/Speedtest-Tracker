@@ -836,7 +836,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
     public function getAnnotations(): array
     {
         return TestUtil::parseTestMethodAnnotations(
-            \get_class($this),
+            static::class,
             $this->name
         );
     }
@@ -865,7 +865,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
     public function getSize(): int
     {
         return TestUtil::getSize(
-            \get_class($this),
+            static::class,
             $this->getName(false)
         );
     }
@@ -1010,7 +1010,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
         \clearstatcache();
         $currentWorkingDirectory = \getcwd();
 
-        $hookMethods = TestUtil::getHookMethods(\get_class($this));
+        $hookMethods = TestUtil::getHookMethods(static::class);
 
         $hasMetRequirements = false;
 
@@ -1020,7 +1020,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
 
             if ($this->inIsolation) {
                 foreach ($hookMethods['beforeClass'] as $method) {
-                    $this->$method();
+                    $this->{$method}();
                 }
             }
 
@@ -1028,7 +1028,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
             $this->setDoesNotPerformAssertionsFromAnnotation();
 
             foreach ($hookMethods['before'] as $method) {
-                $this->$method();
+                $this->{$method}();
             }
 
             $this->assertPreConditions();
@@ -1075,12 +1075,12 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
         try {
             if ($hasMetRequirements) {
                 foreach ($hookMethods['after'] as $method) {
-                    $this->$method();
+                    $this->{$method}();
                 }
 
                 if ($this->inIsolation) {
                     foreach ($hookMethods['afterClass'] as $method) {
-                        $this->$method();
+                        $this->{$method}();
                     }
                 }
             }
@@ -1455,7 +1455,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
             }
 
             if ($this->deprecatedExpectExceptionMessageRegExpUsed) {
-                $this->addWarning('expectExceptionMessageRegExp() is deprecated in PHPUnit 8 and will be removed in PHPUnit 9.');
+                $this->addWarning('expectExceptionMessageRegExp() is deprecated in PHPUnit 8 and will be removed in PHPUnit 9. Use expectExceptionMessageMatches() instead.');
             }
 
             return;
@@ -1920,7 +1920,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
 
         try {
             $expectedException = TestUtil::getExpectedException(
-                \get_class($this),
+                static::class,
                 $this->name
             );
 
@@ -1955,7 +1955,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
         }
 
         $missingRequirements = TestUtil::getMissingRequirements(
-            \get_class($this),
+            static::class,
             $this->name
         );
 
@@ -1999,7 +1999,6 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
     private function handleDependencies(): bool
     {
         if (!empty($this->dependencies) && !$this->inIsolation) {
-            $className  = \get_class($this);
             $passed     = $this->result->passed();
             $passedKeys = \array_keys($passed);
 
@@ -2040,7 +2039,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
                 }
 
                 if (\strpos($dependency, '::') === false) {
-                    $dependency = $className . '::' . $dependency;
+                    $dependency = static::class . '::' . $dependency;
                 }
 
                 if (!isset($passedKeys[$dependency])) {
@@ -2258,6 +2257,7 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
             $blacklist->addClassNamePrefix('Text_Template');
             $blacklist->addClassNamePrefix('Doctrine\Instantiator');
             $blacklist->addClassNamePrefix('Prophecy');
+            $blacklist->addStaticAttribute(ComparatorFactory::class, 'instance');
 
             foreach ($this->backupStaticAttributesBlacklist as $class => $attributes) {
                 foreach ($attributes as $attribute) {

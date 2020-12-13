@@ -1,27 +1,27 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f00846dde236d314a19d00d268d737dd",
+    "content-hash": "f2ac4614ce4f7273fd54a64b65fd047a",
     "packages": [
         {
             "name": "phar-io/version",
-            "version": "2.0.1",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phar-io/version.git",
-                "reference": "45a2ec53a73c70ce41d55cedef9063630abaf1b6"
+                "reference": "d06a5000ac1a258a7d035295f0bd4ae7c859bc4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/version/zipball/45a2ec53a73c70ce41d55cedef9063630abaf1b6",
-                "reference": "45a2ec53a73c70ce41d55cedef9063630abaf1b6",
+                "url": "https://api.github.com/repos/phar-io/version/zipball/d06a5000ac1a258a7d035295f0bd4ae7c859bc4f",
+                "reference": "d06a5000ac1a258a7d035295f0bd4ae7c859bc4f",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6 || ^7.0"
+                "php": "^7.2"
             },
             "type": "library",
             "autoload": {
@@ -51,7 +51,7 @@
                 }
             ],
             "description": "Library for handling version information and constraints",
-            "time": "2018-07-08T19:19:57+00:00"
+            "time": "2020-05-09T21:27:55+00:00"
         }
     ],
     "packages-dev": [],
@@ -61,9 +61,10 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^5.6 || ^7.0",
+        "php": "^7.2",
         "ext-dom": "*",
-        "ext-phar": "*"
+        "ext-phar": "*",
+        "ext-xmlwriter": "*"
     },
     "platform-dev": []
 }

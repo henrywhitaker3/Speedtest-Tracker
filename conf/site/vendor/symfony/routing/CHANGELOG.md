@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+5.2.0
+-----
+
+ * Added support for inline definition of requirements and defaults for host
+ * Added support for `\A` and `\z` as regex start and end for route requirement
+ * Added support for `#[Route]` attributes
+
 5.1.0
 -----
 

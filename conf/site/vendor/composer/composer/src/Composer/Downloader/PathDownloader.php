@@ -18,16 +18,9 @@ use Composer\Package\PackageInterface;
 use Composer\Package\Version\VersionGuesser;
 use Composer\Package\Version\VersionParser;
 use Composer\Util\Platform;
-use Composer\IO\IOInterface;
-use Composer\Config;
-use Composer\Cache;
-use Composer\Util\HttpDownloader;
-use Composer\Util\ProcessExecutor;
 use Composer\Util\Filesystem;
-use Composer\EventDispatcher\EventDispatcher;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
-use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\DependencyResolver\Operation\UninstallOperation;
 
@@ -47,6 +40,7 @@ class PathDownloader extends FileDownloader implements VcsCapableDownloaderInter
      */
     public function download(PackageInterface $package, $path, PackageInterface $prevPackage = null, $output = true)
     {
+        $path = Filesystem::trimTrailingSlash($path);
         $url = $package->getDistUrl();
         $realUrl = realpath($url);
         if (false === $realUrl || !file_exists($realUrl) || !is_dir($realUrl)) {
@@ -80,6 +74,7 @@ class PathDownloader extends FileDownloader implements VcsCapableDownloaderInter
      */
     public function install(PackageInterface $package, $path, $output = true)
     {
+        $path = Filesystem::trimTrailingSlash($path);
         $url = $package->getDistUrl();
         $realUrl = realpath($url);
 
@@ -178,17 +173,12 @@ class PathDownloader extends FileDownloader implements VcsCapableDownloaderInter
      */
     public function remove(PackageInterface $package, $path, $output = true)
     {
-        $realUrl = realpath($package->getDistUrl());
-
-        if (realpath($path) === $realUrl) {
-            if ($output) {
-                $this->io->writeError("  - " . UninstallOperation::format($package).", source is still present in $path");
-            }
-
-            return;
-        }
-
+        $path = Filesystem::trimTrailingSlash($path);
         /**
+         * realpath() may resolve Windows junctions to the source path, so we'll check for a junction first
+         * to prevent a false positive when checking if the dist and install paths are the same.
+         * See https://bugs.php.net/bug.php?id=77639
+         *
          * For junctions don't blindly rely on Filesystem::removeDirectory as it may be overzealous. If a process
          * inadvertently locks the file the removal will fail, but it would fall back to recursive delete which
          * is disastrous within a junction. So in that case we have no other real choice but to fail hard.
@@ -201,6 +191,10 @@ class PathDownloader extends FileDownloader implements VcsCapableDownloaderInter
                 $this->io->writeError("    <warning>Could not remove junction at " . $path . " - is another process locking it?</warning>");
                 throw new \RuntimeException('Could not reliably remove junction for package ' . $package->getName());
             }
+        } elseif (realpath($path) === realpath($package->getDistUrl())) {
+            if ($output) {
+                $this->io->writeError("  - " . UninstallOperation::format($package).", source is still present in $path");
+            }
         } else {
             parent::remove($package, $path, $output);
         }
@@ -211,6 +205,7 @@ class PathDownloader extends FileDownloader implements VcsCapableDownloaderInter
      */
     public function getVcsReference(PackageInterface $package, $path)
     {
+        $path = Filesystem::trimTrailingSlash($path);
         $parser = new VersionParser;
         $guesser = new VersionGuesser($this->config, $this->process, $parser);
         $dumper = new ArrayDumper;
