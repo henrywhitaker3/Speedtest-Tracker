@@ -1,4 +1,14 @@
 {
+    "1.10.0": [
+        {
+            "description": "Added automated build for ARM.",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
     "1.9.10": [
         {
             "description": "Laravel will now log into daily files and logs will only be kept for 7 days.",
