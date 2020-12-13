@@ -28,6 +28,8 @@ use Composer\Spdx\SpdxLicenses;
  */
 class ConfigValidator
 {
+    const CHECK_VERSION = 1;
+
     private $io;
 
     public function __construct(IOInterface $io)
@@ -40,10 +42,11 @@ class ConfigValidator
      *
      * @param string $file                       The path to the file
      * @param int    $arrayLoaderValidationFlags Flags for ArrayLoader validation
+     * @param int    $flags                      Flags for validation
      *
      * @return array a triple containing the errors, publishable errors, and warnings
      */
-    public function validate($file, $arrayLoaderValidationFlags = ValidatingArrayLoader::CHECK_ALL)
+    public function validate($file, $arrayLoaderValidationFlags = ValidatingArrayLoader::CHECK_ALL, $flags = self::CHECK_VERSION)
     {
         $errors = array();
         $publishErrors = array();
@@ -109,7 +112,7 @@ class ConfigValidator
             }
         }
 
-        if (isset($manifest['version'])) {
+        if (($flags & self::CHECK_VERSION) && isset($manifest['version'])) {
             $warnings[] = 'The version field is present, it is recommended to leave it out if the package is published on Packagist.';
         }
 
@@ -129,12 +132,27 @@ class ConfigValidator
         }
 
         // check for require-dev overrides
-        if (isset($manifest['require']) && isset($manifest['require-dev'])) {
+        if (isset($manifest['require'], $manifest['require-dev'])) {
             $requireOverrides = array_intersect_key($manifest['require'], $manifest['require-dev']);
 
             if (!empty($requireOverrides)) {
                 $plural = (count($requireOverrides) > 1) ? 'are' : 'is';
                 $warnings[] = implode(', ', array_keys($requireOverrides)). " {$plural} required both in require and require-dev, this can lead to unexpected behavior";
+            }
+        }
+
+        // check for meaningless provide/replace satisfying requirements
+        foreach (array('provide', 'replace') as $linkType) {
+            if (isset($manifest[$linkType])) {
+                foreach (array('require', 'require-dev') as $requireType) {
+                    if (isset($manifest[$requireType])) {
+                        foreach ($manifest[$linkType] as $provide => $constraint) {
+                            if (isset($manifest[$requireType][$provide])) {
+                                $warnings[] = 'The package ' . $provide . ' in '.$requireType.' is also listed in '.$linkType.' which satisfies the requirement. Remove it from '.$linkType.' if you wish to install it.';
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -171,8 +189,8 @@ class ConfigValidator
             $warnings[] = "Defining autoload.psr-4 with an empty namespace prefix is a bad idea for performance";
         }
 
+        $loader = new ValidatingArrayLoader(new ArrayLoader(), true, null, $arrayLoaderValidationFlags);
         try {
-            $loader = new ValidatingArrayLoader(new ArrayLoader(), true, null, $arrayLoaderValidationFlags);
             if (!isset($manifest['version'])) {
                 $manifest['version'] = '1.0.0';
             }

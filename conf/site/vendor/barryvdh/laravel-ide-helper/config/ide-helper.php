@@ -1,18 +1,17 @@
 <?php
 
-return array(
+return [
 
     /*
     |--------------------------------------------------------------------------
     | Filename & Format
     |--------------------------------------------------------------------------
     |
-    | The default filename (without extension) and the format (php or json)
+    | The default filename
     |
     */
 
-    'filename'  => '_ide_helper',
-    'format'    => 'php',
+    'filename'  => '_ide_helper.php',
 
     /*
     |--------------------------------------------------------------------------
@@ -45,6 +44,8 @@ return array(
     | Set to true to generate factory generators for better factory()
     | method auto-completion.
     |
+    | Deprecated for Laravel 8 or latest.
+    |
     */
 
     'include_factory_builders' => false,
@@ -59,6 +60,17 @@ return array(
     */
 
     'write_model_magic_where' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Write Model External Eloquent Builder methods
+    |--------------------------------------------------------------------------
+    |
+    | Set to false to disable write external eloquent builder methods
+    |
+    */
+
+    'write_model_external_builder_methods' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -98,9 +110,9 @@ return array(
 
     'include_helpers' => false,
 
-    'helper_files' => array(
+    'helper_files' => [
         base_path() . '/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -115,9 +127,9 @@ return array(
     |
     */
 
-    'model_locations' => array(
+    'model_locations' => [
         'app',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -128,9 +140,9 @@ return array(
     |
     */
 
-    'ignored_models' => array(
+    'ignored_models' => [
 
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -141,12 +153,12 @@ return array(
     |
     */
 
-    'extra' => array(
-        'Eloquent' => array('Illuminate\Database\Eloquent\Builder', 'Illuminate\Database\Query\Builder'),
-        'Session' => array('Illuminate\Session\Store'),
-    ),
+    'extra' => [
+        'Eloquent' => ['Illuminate\Database\Eloquent\Builder', 'Illuminate\Database\Query\Builder'],
+        'Session' => ['Illuminate\Session\Store'],
+    ],
 
-    'magic' => array(),
+    'magic' => [],
 
     /*
     |--------------------------------------------------------------------------
@@ -158,9 +170,9 @@ return array(
     |
     */
 
-    'interfaces' => array(
+    'interfaces' => [
 
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -188,9 +200,9 @@ return array(
     |  ),
     |
     */
-    'custom_db_types' => array(
+    'custom_db_types' => [
 
-    ),
+    ],
 
     /*
      |--------------------------------------------------------------------------
@@ -226,10 +238,10 @@ return array(
     | Cast the given "real type" to the given "type".
     |
     */
-    'type_overrides' => array(
+    'type_overrides' => [
         'integer' => 'int',
         'boolean' => 'bool',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -242,4 +254,28 @@ return array(
     */
     'include_class_docblocks' => false,
 
-);
+    /*
+    |--------------------------------------------------------------------------
+    | Force FQN usage
+    |--------------------------------------------------------------------------
+    |
+    | Use the fully qualified (class) name in docBlock,
+    | event if class exists in a given file
+    | or there is an import (use className) of a given class
+    |
+    */
+    'force_fqn' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Additional relation types
+    |--------------------------------------------------------------------------
+    |
+    | Sometimes it's needed to create custom relation types. The key of the array
+    | is the Relationship Method name. The value of the array is the canonical class
+    | name of the Relationship, e.g. `'relationName' => RelationShipClass::class`.
+    |
+    */
+    'additional_relation_types' => [],
+
+];

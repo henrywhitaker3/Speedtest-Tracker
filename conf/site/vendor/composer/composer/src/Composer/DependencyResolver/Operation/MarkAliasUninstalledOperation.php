@@ -13,34 +13,30 @@
 namespace Composer\DependencyResolver\Operation;
 
 use Composer\Package\AliasPackage;
-use Composer\Package\PackageInterface;
 
 /**
  * Solver install operation.
  *
  * @author Nils Adermann <naderman@naderman.de>
  */
-class MarkAliasUninstalledOperation extends SolverOperation
+class MarkAliasUninstalledOperation extends SolverOperation implements OperationInterface
 {
-    protected $package;
+    const TYPE = 'markAliasUninstalled';
 
     /**
-     * Initializes operation.
-     *
-     * @param AliasPackage $package package instance
-     * @param string       $reason  operation reason
+     * @var AliasPackage
      */
-    public function __construct(AliasPackage $package, $reason = null)
-    {
-        parent::__construct($reason);
+    protected $package;
 
+    public function __construct(AliasPackage $package)
+    {
         $this->package = $package;
     }
 
     /**
      * Returns package instance.
      *
-     * @return PackageInterface
+     * @return AliasPackage
      */
     public function getPackage()
     {
@@ -48,20 +44,10 @@ class MarkAliasUninstalledOperation extends SolverOperation
     }
 
     /**
-     * Returns job type.
-     *
-     * @return string
-     */
-    public function getJobType()
-    {
-        return 'markAliasUninstalled';
-    }
-
-    /**
      * {@inheritDoc}
      */
-    public function __toString()
+    public function show($lock)
     {
-        return 'Marking '.$this->package->getPrettyName().' ('.$this->formatVersion($this->package).') as uninstalled, alias of '.$this->package->getAliasOf()->getPrettyName().' ('.$this->formatVersion($this->package->getAliasOf()).')';
+        return 'Marking <info>'.$this->package->getPrettyName().'</info> (<comment>'.$this->package->getFullPrettyVersion().'</comment>) as uninstalled, alias of <info>'.$this->package->getAliasOf()->getPrettyName().'</info> (<comment>'.$this->package->getAliasOf()->getFullPrettyVersion().'</comment>)';
     }
 }

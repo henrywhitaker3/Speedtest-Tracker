@@ -7,7 +7,7 @@ var projectRelative = require('./project-relative');
  * @type {{name:string, decode: function, encode: function, root: function}}
  */
 module.exports = {
-  name  : 'webpack-protocol',
+  name  : 'webpackProtocol',
   decode: decode,
   encode: encode,
   root  : root

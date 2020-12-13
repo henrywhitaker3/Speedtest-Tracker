@@ -2,12 +2,47 @@
 
 All notable changes to phar-io/version are documented in this file using the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## [3.0.3] - 30.11.2020
+
+### Added
+
+- Comparator method `Version::equals()` added
+
+## [3.0.2] - 27.06.2020
+
+This release now supports PHP 7.2+ and PHP ^8.0. No other changes included.
+
+## [3.0.1] - 09.05.2020
+
+### Changed
+
+- Internal Refactoring
+- More scalar types
+
+### Fixed
+
+- Fixed Constraint processing Regression for ^1.2  and ~1.2
+
+
+## [3.0.0] - 05.05.2020
+
+### Changed
+
+- Require PHP 7.2+
+- All code now uses strict mode
+- Scalar types have been added as needed
+
+### Added
+
+- The technically invalid format using 'v' prefix ("v1.2.3") is now properly supported 
+
+
 ## [2.0.1] - 08.07.2018
 
 ### Fixed
 
 - Versions without a pre-release suffix are now always considered greater 
-than versions without a pre-release suffix. Example: `3.0.0 > 3.0.0-alpha.1`  
+than versions with a pre-release suffix. Example: `3.0.0 > 3.0.0-alpha.1`  
 
 ## [2.0.0] - 23.06.2018
 

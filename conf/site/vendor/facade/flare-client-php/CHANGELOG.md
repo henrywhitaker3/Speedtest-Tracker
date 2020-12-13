@@ -2,6 +2,14 @@
 
 All notable changes to `flare-client-php` will be documented in this file
 
+## 1.3.6 - 2020-09-18
+
+- remove `larapack/dd` (#15)
+
+## 1.3.5 - 2020-08-26
+
+- allow Laravel 8 (#13)
+
 ## 1.3.4 - 2020-07-14
 
 - use directory separator constant

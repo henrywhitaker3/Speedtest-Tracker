@@ -2,6 +2,7 @@
 
 namespace NotificationChannels\Telegram;
 
+use Illuminate\Support\Facades\View;
 use JsonSerializable;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
@@ -45,5 +46,20 @@ class TelegramMessage implements JsonSerializable
         $this->payload['text'] = $content;
 
         return $this;
+    }
+
+    /**
+     * Attach a view file as the content for the notification.
+     * Supports Laravel blade template.
+     *
+     * @param string $view
+     * @param array  $data
+     * @param array  $mergeData
+     *
+     * @return $this
+     */
+    public function view(string $view, array $data = [], array $mergeData = []): self
+    {
+        return $this->content(View::make($view, $data, $mergeData)->render());
     }
 }

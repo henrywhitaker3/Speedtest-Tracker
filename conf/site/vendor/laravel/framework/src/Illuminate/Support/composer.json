@@ -14,12 +14,12 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.2.5|^8.0",
         "ext-json": "*",
         "ext-mbstring": "*",
         "doctrine/inflector": "^1.4|^2.0",
         "illuminate/contracts": "^7.0",
-        "nesbot/carbon": "^2.17",
+        "nesbot/carbon": "^2.31",
         "voku/portable-ascii": "^1.4.8"
     },
     "conflict": {

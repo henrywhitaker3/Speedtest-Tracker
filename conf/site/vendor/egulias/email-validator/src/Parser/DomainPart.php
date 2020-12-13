@@ -198,6 +198,9 @@ class DomainPart extends Parser
 
             $domain .= $this->lexer->token['value'];
             $this->lexer->moveNext();
+            if ($this->lexer->token['type'] === EmailLexer::S_SP) {
+                throw new CharNotAllowed();
+            }
         } while (null !== $this->lexer->token['type']);
 
         return $domain;
@@ -332,6 +335,8 @@ class DomainPart extends Parser
     {
         $invalidDomainTokens = array(
             EmailLexer::S_DQUOTE => true,
+            EmailLexer::S_SQUOTE => true,
+            EmailLexer::S_BACKTICK => true,
             EmailLexer::S_SEMICOLON => true,
             EmailLexer::S_GREATERTHAN => true,
             EmailLexer::S_LOWERTHAN => true,

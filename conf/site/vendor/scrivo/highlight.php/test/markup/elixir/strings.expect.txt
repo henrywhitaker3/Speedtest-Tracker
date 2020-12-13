@@ -1,4 +1,0 @@
-a = <span class="hljs-string">"""test"""</span>
-b = <span class="hljs-string">'''test'''</span>
-c = <span class="hljs-string">"test"</span>
-d = <span class="hljs-string">'test'</span>

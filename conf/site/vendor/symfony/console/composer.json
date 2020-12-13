@@ -2,7 +2,7 @@
     "name": "symfony/console",
     "type": "library",
     "description": "Symfony Console Component",
-    "keywords": [],
+    "keywords": ["console", "cli", "command line", "terminal"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
@@ -54,10 +54,5 @@
             "/Tests/"
         ]
     },
-    "minimum-stability": "dev",
-    "extra": {
-        "branch-alias": {
-            "dev-master": "5.1-dev"
-        }
-    }
+    "minimum-stability": "dev"
 }

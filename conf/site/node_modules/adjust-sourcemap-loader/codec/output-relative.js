@@ -10,7 +10,7 @@ var getOutputDirectory = require('./utility/get-output-directory');
  * @type {{name:string, decode: function, encode: function, root: function}}
  */
 module.exports = {
-  name  : 'output-relative',
+  name  : 'outputRelative',
   decode: decode,
   encode: encode,
   root  : getOutputDirectory

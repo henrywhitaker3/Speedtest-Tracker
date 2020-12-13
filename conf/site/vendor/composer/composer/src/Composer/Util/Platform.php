@@ -55,7 +55,7 @@ class Platform
             return $home;
         }
 
-        if (function_exists('posix_getuid') && function_exists('posix_getpwuid')) {
+        if (\function_exists('posix_getuid') && \function_exists('posix_getpwuid')) {
             $info = posix_getpwuid(posix_getuid());
 
             return $info['dir'];
@@ -69,7 +69,7 @@ class Platform
      */
     public static function isWindows()
     {
-        return defined('PHP_WINDOWS_VERSION_BUILD');
+        return \defined('PHP_WINDOWS_VERSION_BUILD');
     }
 
     /**
@@ -80,13 +80,35 @@ class Platform
     {
         static $useMbString = null;
         if (null === $useMbString) {
-            $useMbString = function_exists('mb_strlen') && ini_get('mbstring.func_overload');
+            $useMbString = \function_exists('mb_strlen') && ini_get('mbstring.func_overload');
         }
 
         if ($useMbString) {
             return mb_strlen($str, '8bit');
         }
 
-        return strlen($str);
+        return \strlen($str);
+    }
+
+    public static function isTty($fd = null)
+    {
+        if ($fd === null) {
+            $fd = defined('STDOUT') ? STDOUT : fopen('php://stdout', 'w');
+        }
+
+        // modern cross-platform function, includes the fstat
+        // fallback so if it is present we trust it
+        if (function_exists('stream_isatty')) {
+            return stream_isatty($fd);
+        }
+
+        // only trusting this if it is positive, otherwise prefer fstat fallback
+        if (function_exists('posix_isatty') && posix_isatty($fd)) {
+            return true;
+        }
+
+        $stat = @fstat($fd);
+        // Check if formatted mode is S_IFCHR
+        return $stat ? 0020000 === ($stat['mode'] & 0170000) : false;
     }
 }

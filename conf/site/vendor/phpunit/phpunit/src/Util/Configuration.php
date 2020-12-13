@@ -906,7 +906,7 @@ final class Configuration
         $xsdFilename = __DIR__ . '/../../phpunit.xsd';
 
         if (\defined('__PHPUNIT_PHAR_ROOT__')) {
-            $xsdFilename =  __PHPUNIT_PHAR_ROOT__ . '/phpunit.xsd';
+            $xsdFilename = __PHPUNIT_PHAR_ROOT__ . '/phpunit.xsd';
         }
 
         $this->document->schemaValidate($xsdFilename);
@@ -981,7 +981,7 @@ final class Configuration
         foreach ($testSuiteNode->getElementsByTagName('directory') as $directoryNode) {
             \assert($directoryNode instanceof DOMElement);
 
-            if (!empty($testSuiteFilter) && !\in_array($directoryNode->parentNode->getAttribute('name'), $testSuiteFilter)) {
+            if (!empty($testSuiteFilter) && !\in_array($directoryNode->parentNode->getAttribute('name'), $testSuiteFilter, true)) {
                 continue;
             }
 
@@ -1008,7 +1008,7 @@ final class Configuration
         foreach ($testSuiteNode->getElementsByTagName('file') as $fileNode) {
             \assert($fileNode instanceof DOMElement);
 
-            if (!empty($testSuiteFilter) && !\in_array($fileNode->parentNode->getAttribute('name'), $testSuiteFilter)) {
+            if (!empty($testSuiteFilter) && !\in_array($fileNode->parentNode->getAttribute('name'), $testSuiteFilter, true)) {
                 continue;
             }
 

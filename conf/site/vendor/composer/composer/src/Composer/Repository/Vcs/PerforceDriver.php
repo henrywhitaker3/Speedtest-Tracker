@@ -116,14 +116,12 @@ class PerforceDriver extends VcsDriver
      */
     public function getSource($identifier)
     {
-        $source = array(
+        return array(
             'type' => 'perforce',
             'url' => $this->repoConfig['url'],
             'reference' => $identifier,
             'p4user' => $this->perforce->getUser(),
         );
-
-        return $source;
     }
 
     /**
@@ -140,7 +138,6 @@ class PerforceDriver extends VcsDriver
     public function hasComposerFile($identifier)
     {
         $composerInfo = $this->perforce->getComposerInformation('//' . $this->depot . '/' . $identifier);
-        $composerInfoIdentifier = $identifier;
 
         return !empty($composerInfo);
     }

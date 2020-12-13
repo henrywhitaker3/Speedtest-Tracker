@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/voku/portable-ascii.svg?branch=master)](https://travis-ci.org/voku/portable-ascii)
+[![Build Status](https://travis-ci.com/voku/portable-ascii.svg?branch=master)](https://travis-ci.com/voku/portable-ascii)
 [![Build status](https://ci.appveyor.com/api/projects/status/gnejjnk7qplr7f5t/branch/master?svg=true)](https://ci.appveyor.com/project/voku/portable-ascii/branch/master)
 [![Coverage Status](https://coveralls.io/repos/voku/portable-ascii/badge.svg?branch=master&service=github)](https://coveralls.io/github/voku/portable-ascii?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/997c9bb10d1c4791967bdf2e42013e8e)](https://www.codacy.com/app/voku/portable-ascii)
@@ -63,6 +63,7 @@ but this repo is more modular and portable, because it has no dependencies.
 
 *   No extensions are required to run this library. Portable ASCII only needs PCRE library that is available by default since PHP 4.2.0 and cannot be disabled since PHP 5.3.0. "\u" modifier support in PCRE for ASCII handling is not a must.
 *   PHP 7.0 is the minimum requirement
+*   PHP 8.0 is also supported
 
 ## Usage
 

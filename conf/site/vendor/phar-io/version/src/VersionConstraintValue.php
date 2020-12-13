@@ -1,36 +1,23 @@
-<?php
-
+<?php declare(strict_types = 1);
 namespace PharIo\Version;
 
 class VersionConstraintValue {
-    /**
-     * @var VersionNumber
-     */
+    /** @var VersionNumber */
     private $major;
 
-    /**
-     * @var VersionNumber
-     */
+    /** @var VersionNumber */
     private $minor;
 
-    /**
-     * @var VersionNumber
-     */
+    /** @var VersionNumber */
     private $patch;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $label = '';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $buildMetaData = '';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $versionString = '';
 
     /**
@@ -42,60 +29,43 @@ class VersionConstraintValue {
         $this->parseVersion($versionString);
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel() {
+    public function getLabel(): string {
         return $this->label;
     }
 
-    /**
-     * @return string
-     */
-    public function getBuildMetaData() {
+    public function getBuildMetaData(): string {
         return $this->buildMetaData;
     }
 
-    /**
-     * @return string
-     */
-    public function getVersionString() {
+    public function getVersionString(): string {
         return $this->versionString;
     }
 
-    /**
-     * @return VersionNumber
-     */
-    public function getMajor() {
+    public function getMajor(): VersionNumber {
         return $this->major;
     }
 
-    /**
-     * @return VersionNumber
-     */
-    public function getMinor() {
+    public function getMinor(): VersionNumber {
         return $this->minor;
     }
 
-    /**
-     * @return VersionNumber
-     */
-    public function getPatch() {
+    public function getPatch(): VersionNumber {
         return $this->patch;
     }
 
     /**
      * @param $versionString
      */
-    private function parseVersion($versionString) {
+    private function parseVersion($versionString): void {
         $this->extractBuildMetaData($versionString);
         $this->extractLabel($versionString);
+        $this->stripPotentialVPrefix($versionString);
 
-        $versionSegments = explode('.', $versionString);
-        $this->major = new VersionNumber($versionSegments[0]);
+        $versionSegments = \explode('.', $versionString);
+        $this->major     = new VersionNumber(\is_numeric($versionSegments[0]) ? (int)$versionSegments[0] : null);
 
-        $minorValue = isset($versionSegments[1]) ? $versionSegments[1] : null;
-        $patchValue = isset($versionSegments[2]) ? $versionSegments[2] : null;
+        $minorValue = isset($versionSegments[1]) && \is_numeric($versionSegments[1]) ? (int)$versionSegments[1] : null;
+        $patchValue = isset($versionSegments[2]) && \is_numeric($versionSegments[2]) ? (int)$versionSegments[2] : null;
 
         $this->minor = new VersionNumber($minorValue);
         $this->patch = new VersionNumber($patchValue);
@@ -104,20 +74,27 @@ class VersionConstraintValue {
     /**
      * @param string $versionString
      */
-    private function extractBuildMetaData(&$versionString) {
-        if (preg_match('/\+(.*)/', $versionString, $matches) == 1) {
+    private function extractBuildMetaData(&$versionString): void {
+        if (\preg_match('/\+(.*)/', $versionString, $matches) === 1) {
             $this->buildMetaData = $matches[1];
-            $versionString = str_replace($matches[0], '', $versionString);
+            $versionString       = \str_replace($matches[0], '', $versionString);
         }
     }
 
     /**
      * @param string $versionString
      */
-    private function extractLabel(&$versionString) {
-        if (preg_match('/\-(.*)/', $versionString, $matches) == 1) {
-            $this->label = $matches[1];
-            $versionString = str_replace($matches[0], '', $versionString);
+    private function extractLabel(&$versionString): void {
+        if (\preg_match('/-(.*)/', $versionString, $matches) === 1) {
+            $this->label   = $matches[1];
+            $versionString = \str_replace($matches[0], '', $versionString);
         }
+    }
+
+    private function stripPotentialVPrefix(&$versionString): void {
+        if ($versionString[0] !== 'v') {
+            return;
+        }
+        $versionString = \substr($versionString, 1);
     }
 }

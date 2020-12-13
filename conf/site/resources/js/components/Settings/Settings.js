@@ -59,10 +59,28 @@ export default class Settings extends Component {
         return (
             <Row>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
-                    <Setting name={e.schedule.name} value={e.schedule.value} description={e.schedule.description} />
-                </Col>
-                <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
-                    <Setting name={e.server.name} value={e.server.value} description={e.server.description} />
+                    <SettingWithModal title="General settings" description="Configure general settings for the app." autoClose={true} settings={[
+                        {
+                            obj: e.schedule,
+                            type: 'text'
+                        },
+                        {
+                            obj: e.server,
+                            type: 'text'
+                        },
+                        {
+                            obj: e.show_average,
+                            type: 'checkbox'
+                        },
+                        {
+                            obj: e.show_max,
+                            type: 'checkbox'
+                        },
+                        {
+                            obj: e.show_min,
+                            type: 'checkbox'
+                        },
+                    ]} />
                 </Col>
                 <Col lg={{ span: 4 }} md={{ span: 6 }} sm={{ span: 12 }}>
                     <SettingWithModal title="Graph settings" description="Control settings for the graphs." autoClose={true} settings={[

@@ -47,6 +47,10 @@ export default class SettingWithModal extends Component {
             if(this.state.autoClose) {
                 this.toggleShow();
             }
+            Axios.get('api/settings/config')
+            .then((resp) => {
+                window.config = resp.data;
+            })
         })
         .catch((err) => {
             if(err.response.status == 422) {
@@ -194,7 +198,7 @@ export default class SettingWithModal extends Component {
                                         </Col>
                                         {e.description == null &&
                                             <Col md={md} sm={sm}>
-                                                <p>{e.obj.description}</p>
+                                                <p dangerouslySetInnerHTML={{ __html: e.obj.description}}></p>
                                             </Col>
                                         }
                                     </Row>

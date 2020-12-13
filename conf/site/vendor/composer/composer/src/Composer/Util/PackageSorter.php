@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of Composer.
+ *
+ * (c) Nils Adermann <naderman@naderman.de>
+ *     Jordi Boggiano <j.boggiano@seld.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Composer\Util;
 
@@ -16,7 +25,8 @@ class PackageSorter
      * @param  array $packages
      * @return array
      */
-    public static function sortPackages(array $packages) {
+    public static function sortPackages(array $packages)
+    {
         $usageList = array();
 
         foreach ($packages as $package) { /** @var PackageInterface $package */
@@ -55,9 +65,9 @@ class PackageSorter
 
         $weightList = array();
 
-        foreach ($packages as $name => $package) {
-            $weight = $computeImportance($name);
-            $weightList[$name] = $weight;
+        foreach ($packages as $index => $package) {
+            $weight = $computeImportance($package->getName());
+            $weightList[$index] = $weight;
         }
 
         $stable_sort = function (&$array) {
@@ -84,9 +94,10 @@ class PackageSorter
 
         $sortedPackages = array();
 
-        foreach (array_keys($weightList) as $name) {
-            $sortedPackages[] = $packages[$name];
+        foreach (array_keys($weightList) as $index) {
+            $sortedPackages[] = $packages[$index];
         }
+
         return $sortedPackages;
     }
 }

@@ -261,7 +261,7 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
     public function map(callable $callback): CollectionInterface
     {
         $collection = clone $this;
-        array_map($callback, $collection->data);
+        $collection->data = array_map($callback, $collection->data);
 
         return $collection;
     }

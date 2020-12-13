@@ -11,7 +11,7 @@ var getContextDirectory = require('./utility/get-context-directory'),
  * @type {{name:string, decode: function, encode: function, root: function}}
  */
 module.exports = {
-  name  : 'project-relative',
+  name  : 'projectRelative',
   decode: decode,
   encode: encode,
   root  : getContextDirectory

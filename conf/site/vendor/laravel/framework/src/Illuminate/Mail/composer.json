@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.2.5|^8.0",
         "ext-json": "*",
         "illuminate/container": "^7.0",
         "illuminate/contracts": "^7.0",
@@ -35,8 +35,8 @@
         }
     },
     "suggest": {
-        "aws/aws-sdk-php": "Required to use the SES mail driver (^3.0).",
-        "guzzlehttp/guzzle": "Required to use the Mailgun mail driver (^6.3.1|^7.0).",
+        "aws/aws-sdk-php": "Required to use the SES mail driver (^3.155).",
+        "guzzlehttp/guzzle": "Required to use the Mailgun mail driver (^6.3.1|^7.0.1).",
         "wildbit/swiftmailer-postmark": "Required to use Postmark mail driver (^3.0)."
     },
     "config": {

@@ -12,14 +12,9 @@
 
 namespace Composer\Downloader;
 
-use Composer\Config;
-use Composer\Cache;
-use Composer\EventDispatcher\EventDispatcher;
 use Composer\Package\PackageInterface;
 use Composer\Util\Platform;
 use Composer\Util\ProcessExecutor;
-use Composer\Util\RemoteFilesystem;
-use Composer\IO\IOInterface;
 
 /**
  * GZip archive downloader.
@@ -28,17 +23,10 @@ use Composer\IO\IOInterface;
  */
 class GzipDownloader extends ArchiveDownloader
 {
-    protected $process;
-
-    public function __construct(IOInterface $io, Config $config, EventDispatcher $eventDispatcher = null, Cache $cache = null, ProcessExecutor $process = null, RemoteFilesystem $rfs = null)
+    protected function extract(PackageInterface $package, $file, $path)
     {
-        $this->process = $process ?: new ProcessExecutor($io);
-        parent::__construct($io, $config, $eventDispatcher, $cache, $rfs);
-    }
-
-    protected function extract($file, $path)
-    {
-        $targetFilepath = $path . DIRECTORY_SEPARATOR . basename(substr($file, 0, -3));
+        $filename = pathinfo(parse_url($package->getDistUrl(), PHP_URL_PATH), PATHINFO_FILENAME);
+        $targetFilepath = $path . DIRECTORY_SEPARATOR . $filename;
 
         // Try to use gunzip on *nix
         if (!Platform::isWindows()) {
@@ -61,14 +49,6 @@ class GzipDownloader extends ArchiveDownloader
 
         // Windows version of PHP has built-in support of gzip functions
         $this->extractUsingExt($file, $targetFilepath);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getFileName(PackageInterface $package, $path)
-    {
-        return $path.'/'.pathinfo(parse_url($package->getDistUrl(), PHP_URL_PATH), PATHINFO_BASENAME);
     }
 
     private function extractUsingExt($file, $targetFilepath)

@@ -19,13 +19,17 @@ use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Plugin\PreCommandRunEvent;
+use Composer\Package\Version\VersionParser;
 use Composer\Plugin\PluginEvents;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 
 /**
  * Base class for Composer commands
+ *
+ * @method Application getApplication()
  *
  * @author Ryan Weaver <ryan@knplabs.com>
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
@@ -46,7 +50,7 @@ abstract class BaseCommand extends Command
      * @param  bool              $required
      * @param  bool|null         $disablePlugins
      * @throws \RuntimeException
-     * @return Composer
+     * @return Composer|null
      */
     public function getComposer($required = true, $disablePlugins = null)
     {
@@ -173,9 +177,44 @@ abstract class BaseCommand extends Command
 
         if ($input->getOption('prefer-source') || $input->getOption('prefer-dist') || ($keepVcsRequiresPreferSource && $input->hasOption('keep-vcs') && $input->getOption('keep-vcs'))) {
             $preferSource = $input->getOption('prefer-source') || ($keepVcsRequiresPreferSource && $input->hasOption('keep-vcs') && $input->getOption('keep-vcs'));
-            $preferDist = $input->getOption('prefer-dist');
+            $preferDist = (bool) $input->getOption('prefer-dist');
         }
 
         return array($preferSource, $preferDist);
+    }
+
+    protected function formatRequirements(array $requirements)
+    {
+        $requires = array();
+        $requirements = $this->normalizeRequirements($requirements);
+        foreach ($requirements as $requirement) {
+            if (!isset($requirement['version'])) {
+                throw new \UnexpectedValueException('Option '.$requirement['name'] .' is missing a version constraint, use e.g. '.$requirement['name'].':^1.0');
+            }
+            $requires[$requirement['name']] = $requirement['version'];
+        }
+
+        return $requires;
+    }
+
+    protected function normalizeRequirements(array $requirements)
+    {
+        $parser = new VersionParser();
+
+        return $parser->parseNameVersionPairs($requirements);
+    }
+
+    protected function renderTable(array $table, OutputInterface $output)
+    {
+        $renderer = new Table($output);
+        $renderer->setStyle('compact');
+        $rendererStyle = $renderer->getStyle();
+        if (method_exists($rendererStyle, 'setVerticalBorderChars')) {
+            $rendererStyle->setVerticalBorderChars('');
+        } else {
+            $rendererStyle->setVerticalBorderChar('');
+        }
+        $rendererStyle->setCellRowContentFormat('%s  ');
+        $renderer->setRows($table)->render();
     }
 }

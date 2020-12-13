@@ -1,5 +1,19 @@
 CHANGELOG
 ---------
+
+### v3.6.1, 2020.11.07
+
+- Fixed serialization error [#84](https://github.com/opis/closure/issues/84)
+
+### v3.6.0, 2020.10.12
+
+- Initial PHP 8 Support [#67](https://github.com/opis/closure/issues/67).
+
+### v3.5.7, 2020.09.06
+
+- Fixed issue [#76](https://github.com/opis/closure/issues/76).
+- Fixed issue [#78](https://github.com/opis/closure/issues/78).
+
 ### v3.5.6, 2020.08.11
 
 - Fixed issue [#70](https://github.com/opis/closure/issues/70)

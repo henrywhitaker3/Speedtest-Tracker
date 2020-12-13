@@ -17,6 +17,7 @@ use Composer\Config;
 use Composer\Json\JsonFile;
 use Composer\Util\ProcessExecutor;
 use Composer\Util\Filesystem;
+use Composer\Util\Url;
 use Composer\Util\Svn as SvnUtil;
 use Composer\IO\IOInterface;
 use Composer\Downloader\TransportException;
@@ -27,15 +28,10 @@ use Composer\Downloader\TransportException;
  */
 class SvnDriver extends VcsDriver
 {
-    /**
-     * @var Cache
-     */
-    protected $cache;
     protected $baseUrl;
     protected $tags;
     protected $branches;
     protected $rootIdentifier;
-    protected $infoCache = array();
 
     protected $trunkPath = 'trunk';
     protected $branchesPath = 'branches';
@@ -77,7 +73,8 @@ class SvnDriver extends VcsDriver
             $this->baseUrl = substr($this->url, 0, $pos);
         }
 
-        $this->cache = new Cache($this->io, $this->config->get('cache-repo-dir').'/'.preg_replace('{[^a-z0-9.]}i', '-', $this->baseUrl));
+        $this->cache = new Cache($this->io, $this->config->get('cache-repo-dir').'/'.preg_replace('{[^a-z0-9.]}i', '-', Url::sanitize($this->baseUrl)));
+        $this->cache->setReadOnly($this->config->get('cache-read-only'));
 
         $this->getBranches();
         $this->getTags();
@@ -224,7 +221,7 @@ class SvnDriver extends VcsDriver
                     foreach ($this->process->splitLines($output) as $line) {
                         $line = trim($line);
                         if ($line && preg_match('{^\s*(\S+).*?(\S+)\s*$}', $line, $match)) {
-                            if (isset($match[1]) && isset($match[2]) && $match[2] !== './') {
+                            if (isset($match[1], $match[2]) && $match[2] !== './') {
                                 $this->tags[rtrim($match[2], '/')] = $this->buildIdentifier(
                                     '/' . $this->tagsPath . '/' . $match[2],
                                     $match[1]
@@ -258,7 +255,7 @@ class SvnDriver extends VcsDriver
                 foreach ($this->process->splitLines($output) as $line) {
                     $line = trim($line);
                     if ($line && preg_match('{^\s*(\S+).*?(\S+)\s*$}', $line, $match)) {
-                        if (isset($match[1]) && isset($match[2]) && $match[2] === './') {
+                        if (isset($match[1], $match[2]) && $match[2] === './') {
                             $this->branches['trunk'] = $this->buildIdentifier(
                                 '/' . $this->trunkPath,
                                 $match[1]
@@ -277,7 +274,7 @@ class SvnDriver extends VcsDriver
                     foreach ($this->process->splitLines(trim($output)) as $line) {
                         $line = trim($line);
                         if ($line && preg_match('{^\s*(\S+).*?(\S+)\s*$}', $line, $match)) {
-                            if (isset($match[1]) && isset($match[2]) && $match[2] !== './') {
+                            if (isset($match[1], $match[2]) && $match[2] !== './') {
                                 $this->branches[rtrim($match[2], '/')] = $this->buildIdentifier(
                                     '/' . $this->branchesPath . '/' . $match[2],
                                     $match[1]
@@ -307,9 +304,8 @@ class SvnDriver extends VcsDriver
             return false;
         }
 
-        $processExecutor = new ProcessExecutor($io);
-
-        $exit = $processExecutor->execute(
+        $process = new ProcessExecutor($io);
+        $exit = $process->execute(
             "svn info --non-interactive ".ProcessExecutor::escape($url),
             $ignoredOutput
         );
@@ -320,14 +316,14 @@ class SvnDriver extends VcsDriver
         }
 
         // Subversion client 1.7 and older
-        if (false !== stripos($processExecutor->getErrorOutput(), 'authorization failed:')) {
+        if (false !== stripos($process->getErrorOutput(), 'authorization failed:')) {
             // This is likely a remote Subversion repository that requires
             // authentication. We will handle actual authentication later.
             return true;
         }
 
         // Subversion client 1.8 and newer
-        if (false !== stripos($processExecutor->getErrorOutput(), 'Authentication failed')) {
+        if (false !== stripos($process->getErrorOutput(), 'Authentication failed')) {
             // This is likely a remote Subversion or newer repository that requires
             // authentication. We will handle actual authentication later.
             return true;

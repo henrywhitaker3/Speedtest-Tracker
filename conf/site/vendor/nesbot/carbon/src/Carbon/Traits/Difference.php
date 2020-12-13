@@ -26,7 +26,6 @@ use DateTimeInterface;
  * Depends on the following methods:
  *
  * @method bool lessThan($date)
- * @method DateInterval diff(\DateTimeInterface $date, bool $absolute = false)
  * @method static copy()
  * @method static resolveCarbon($date = null)
  * @method static Translator translator()
@@ -501,6 +500,19 @@ trait Difference
     }
 
     /**
+     * Get the difference in weeks as float (microsecond-precision).
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     *
+     * @return float
+     */
+    public function floatDiffInWeeks($date = null, $absolute = true)
+    {
+        return $this->floatDiffInDays($date, $absolute) / static::DAYS_PER_WEEK;
+    }
+
+    /**
      * Get the difference in months as float (microsecond-precision).
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
@@ -622,6 +634,19 @@ trait Difference
         $hoursDiff = $this->floatDiffInRealHours($date, $absolute);
 
         return ($hoursDiff < 0 ? -1 : 1) * $this->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
+    }
+
+    /**
+     * Get the difference in weeks as float (microsecond-precision).
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     *
+     * @return float
+     */
+    public function floatDiffInRealWeeks($date = null, $absolute = true)
+    {
+        return $this->floatDiffInRealDays($date, $absolute) / static::DAYS_PER_WEEK;
     }
 
     /**
@@ -758,14 +783,14 @@ trait Difference
     public function diffForHumans($other = null, $syntax = null, $short = false, $parts = 1, $options = null)
     {
         /* @var CarbonInterface $this */
-        if (is_array($other)) {
-            $other['syntax'] = array_key_exists('syntax', $other) ? $other['syntax'] : $syntax;
+        if (\is_array($other)) {
+            $other['syntax'] = \array_key_exists('syntax', $other) ? $other['syntax'] : $syntax;
             $syntax = $other;
             $other = $syntax['other'] ?? null;
         }
 
         $intSyntax = &$syntax;
-        if (is_array($syntax)) {
+        if (\is_array($syntax)) {
             $syntax['syntax'] = $syntax['syntax'] ?? null;
             $intSyntax = &$syntax['syntax'];
         }
@@ -958,7 +983,7 @@ trait Difference
         $other = null;
 
         if ($syntax instanceof DateTimeInterface) {
-            [$other, $syntax, $short, $parts, $options] = array_pad(func_get_args(), 5, null);
+            [$other, $syntax, $short, $parts, $options] = array_pad(\func_get_args(), 5, null);
         }
 
         return $this->from($other, $syntax, $short, $parts, $options);
@@ -1030,7 +1055,7 @@ trait Difference
         $other = null;
 
         if ($syntax instanceof DateTimeInterface) {
-            [$other, $syntax, $short, $parts, $options] = array_pad(func_get_args(), 5, null);
+            [$other, $syntax, $short, $parts, $options] = array_pad(\func_get_args(), 5, null);
         }
 
         return $this->from($other, $syntax, $short, $parts, $options);
@@ -1087,6 +1112,6 @@ trait Difference
             $format = $format($current, $other) ?? '';
         }
 
-        return $this->isoFormat(strval($format));
+        return $this->isoFormat(\strval($format));
     }
 }

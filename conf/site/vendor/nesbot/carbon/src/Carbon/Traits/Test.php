@@ -51,7 +51,24 @@ trait Test
             $testNow = null;
         }
 
-        static::$testNow = is_string($testNow) ? static::parse($testNow) : $testNow;
+        static::$testNow = \is_string($testNow) ? static::parse($testNow) : $testNow;
+    }
+
+    /**
+     * Temporarily sets a static date to be used within the callback.
+     * Using setTestNow to set the date, executing the callback, then
+     * clearing the test instance.
+     *
+     * /!\ Use this method for unit tests only.
+     *
+     * @param Closure|static|string|false|null $testNow real or mock Carbon instance
+     * @param Closure|null $callback
+     */
+    public static function withTestNow($testNow = null, $callback = null)
+    {
+        static::setTestNow($testNow);
+        $callback();
+        static::setTestNow();
     }
 
     /**

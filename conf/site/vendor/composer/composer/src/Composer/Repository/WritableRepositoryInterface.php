@@ -13,6 +13,7 @@
 namespace Composer\Repository;
 
 use Composer\Package\PackageInterface;
+use Composer\Installer\InstallationManager;
 
 /**
  * Writable repository interface.
@@ -23,8 +24,10 @@ interface WritableRepositoryInterface extends RepositoryInterface
 {
     /**
      * Writes repository (f.e. to the disc).
+     *
+     * @param bool $devMode Whether dev requirements were included or not in this installation
      */
-    public function write();
+    public function write($devMode, InstallationManager $installationManager);
 
     /**
      * Adds package to the repository.
@@ -51,4 +54,14 @@ interface WritableRepositoryInterface extends RepositoryInterface
      * Forces a reload of all packages.
      */
     public function reload();
+
+    /**
+     * @param string[] $devPackageNames
+     */
+    public function setDevPackageNames(array $devPackageNames);
+
+    /**
+     * @return string[] Names of dependencies installed through require-dev
+     */
+    public function getDevPackageNames();
 }

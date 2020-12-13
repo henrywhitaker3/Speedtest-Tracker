@@ -8,23 +8,29 @@ use ReflectionClass;
 
 class Factories
 {
-
     public static function all()
     {
         $factories = [];
 
-        $factory = app(Factory::class);
+        if (static::isLaravelSevenOrLower()) {
+            $factory = app(Factory::class);
 
-        $definitions = (new ReflectionClass(Factory::class))->getProperty('definitions');
-        $definitions->setAccessible(true);
+            $definitions = (new ReflectionClass(Factory::class))->getProperty('definitions');
+            $definitions->setAccessible(true);
 
-        foreach ($definitions->getValue($factory) as $factory_target => $config) {
-            try {
-                $factories[] = new ReflectionClass($factory_target);
-            } catch (Exception $exception) {
+            foreach ($definitions->getValue($factory) as $factory_target => $config) {
+                try {
+                    $factories[] = new ReflectionClass($factory_target);
+                } catch (Exception $exception) {
+                }
             }
         }
 
         return $factories;
+    }
+
+    protected static function isLaravelSevenOrLower()
+    {
+        return class_exists('Illuminate\Database\Eloquent\Factory');
     }
 }

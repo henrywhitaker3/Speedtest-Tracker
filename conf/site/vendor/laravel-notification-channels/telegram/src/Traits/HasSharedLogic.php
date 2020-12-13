@@ -13,10 +13,13 @@ trait HasSharedLogic
     /** @var array Inline Keyboard Buttons. */
     protected $buttons = [];
 
+    /** @var string Bot Token. */
+    public $token;
+
     /**
      * Recipient's Chat ID.
      *
-     * @param $chatId
+     * @param string|int $chatId
      *
      * @return $this
      */
@@ -36,7 +39,7 @@ trait HasSharedLogic
      *
      * @return $this
      */
-    public function button($text, $url, $columns = 2): self
+    public function button(string $text, string $url, int $columns = 2): self
     {
         $this->buttons[] = compact('text', 'url');
 
@@ -52,6 +55,7 @@ trait HasSharedLogic
      * Users will receive a notification with no sound.
      *
      * @param bool $disableNotification
+     *
      * @return $this
      */
     public function disableNotification(bool $disableNotification = true): self
@@ -59,6 +63,31 @@ trait HasSharedLogic
         $this->payload['disable_notification'] = $disableNotification;
 
         return $this;
+    }
+
+    /**
+     * Bot Token.
+     * Overrides default bot token with the given value for this notification.
+     *
+     * @param string $token
+     *
+     * @return $this
+     */
+    public function token(string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * Determine if bot token is given for this notification.
+     *
+     * @return bool
+     */
+    public function hasToken(): bool
+    {
+        return null !== $this->token;
     }
 
     /**

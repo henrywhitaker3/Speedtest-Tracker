@@ -89,6 +89,10 @@ class InvoicePaid extends Notification
             ->to($notifiable->telegram_user_id)
             // Markdown supported.
             ->content("Hello there!\nYour invoice has been *PAID*")
+            
+            // (Optional) Blade template for the content.
+            // ->view('notification', ['url' => $url])
+            
             // (Optional) Inline Buttons
             ->button('View Invoice', $url)
             ->button('Download Invoice', $url);
@@ -219,24 +223,29 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 ### Available Message methods
 
 - `to($chatId)`: (integer) Recipient's chat id.
+- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
 - `content('')`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want and they'll be placed 2 in a row.
+- `view($view, $data = [], $mergeData = [])`: (string) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
+- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently.  Users will receive a notification with no sound.
 - `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
 
 ### Available Location methods
 
 - `to($chatId)`: (integer) Recipient's chat id.
+- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
 - `latitude($latitude)`: (float|string) Latitude of the location.
 - `longitude($longitude)`: (float|string) Longitude of the location.
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want and they'll be placed 2 in a row.
+- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
 - `options([])`: (array) Allows you to add additional or override the payload.
 
 ### Available File methods
 
 - `to($chatId)`: (integer) Recipient's chat id.
+- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
 - `content('')`: (string) File caption, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
+- `view($view, $data = [], $mergeData = [])`: (string) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `file($file, $type, $filename = null)`: Local file path or remote URL, `$type` of the file (Ex:`photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note_`) and optionally filename with extension. Ex: `sample.pdf`. You can use helper methods instead of using this to make it easier to work with file attachment.
 - `photo($file)`: Helper method to attach a photo.
 - `audio($file)`: Helper method to attach an audio file (MP3 file).
@@ -245,7 +254,7 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 - `animation($file)`: Helper method to attach an animated gif file.
 - `voice($file)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
 - `videoNote($file)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want and they'll be placed 2 in a row.
+- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
 - `options([])`: (array) Allows you to add additional or override the payload.
 

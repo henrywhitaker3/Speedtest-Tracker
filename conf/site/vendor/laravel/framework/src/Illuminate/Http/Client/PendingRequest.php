@@ -87,7 +87,7 @@ class PendingRequest
     /**
      * The callbacks that should execute before the request is sent.
      *
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
     protected $beforeSendingCallbacks;
 
@@ -525,7 +525,7 @@ class PendingRequest
      * @param  array  $options
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \Throwable
+     * @throws \Exception
      */
     public function send(string $method, string $url, array $options = [])
     {

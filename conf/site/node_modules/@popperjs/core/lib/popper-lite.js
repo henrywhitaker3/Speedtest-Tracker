@@ -1,4 +1,4 @@
-import { popperGenerator, detectOverflow } from "./index.js";
+import { popperGenerator, detectOverflow } from "./createPopper.js";
 import eventListeners from "./modifiers/eventListeners.js";
 import popperOffsets from "./modifiers/popperOffsets.js";
 import computeStyles from "./modifiers/computeStyles.js";

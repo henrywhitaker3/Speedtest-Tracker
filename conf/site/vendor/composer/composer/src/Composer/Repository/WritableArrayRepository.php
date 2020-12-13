@@ -13,6 +13,7 @@
 namespace Composer\Repository;
 
 use Composer\Package\AliasPackage;
+use Composer\Installer\InstallationManager;
 
 /**
  * Writable array repository.
@@ -22,9 +23,30 @@ use Composer\Package\AliasPackage;
 class WritableArrayRepository extends ArrayRepository implements WritableRepositoryInterface
 {
     /**
+     * @var string[]
+     */
+    protected $devPackageNames = array();
+
+    /**
      * {@inheritDoc}
      */
-    public function write()
+    public function setDevPackageNames(array $devPackageNames)
+    {
+        $this->devPackageNames = $devPackageNames;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDevPackageNames()
+    {
+        return $this->devPackageNames;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function write($devMode, InstallationManager $installationManager)
     {
     }
 

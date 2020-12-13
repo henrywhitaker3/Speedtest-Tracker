@@ -1,7 +1,5 @@
 'use strict';
 
-var camelcase = require('camelcase');
-
 var debugMessage      = require('./debug-message'),
     toRegExp          = require('./to-reg-exp'),
     throwErrors       = require('./throw-errors'),
@@ -104,7 +102,7 @@ function process(context, opt, sourceMapOrSource) {
   return inputMap ? outputMap : outputSources ? outputSources[0] : undefined;
 
   function testNamedCodec(value) {
-    return (camelcase(value.name) === options.format);
+    return (value.name === options.format);
   }
 
   function insertAbstractSources(value, i) {

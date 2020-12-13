@@ -16,6 +16,7 @@ use Composer\Downloader\DownloadManager;
 use Composer\Package\PackageInterface;
 use Composer\Package\RootPackageInterface;
 use Composer\Util\Filesystem;
+use Composer\Util\Loop;
 use Composer\Json\JsonFile;
 
 /**
@@ -24,8 +25,14 @@ use Composer\Json\JsonFile;
  */
 class ArchiveManager
 {
+    /** @var DownloadManager */
     protected $downloadManager;
+    /** @var Loop */
+    protected $loop;
 
+    /**
+     * @var ArchiverInterface[]
+     */
     protected $archivers = array();
 
     /**
@@ -36,9 +43,10 @@ class ArchiveManager
     /**
      * @param DownloadManager $downloadManager A manager used to download package sources
      */
-    public function __construct(DownloadManager $downloadManager)
+    public function __construct(DownloadManager $downloadManager, Loop $loop)
     {
         $this->downloadManager = $downloadManager;
+        $this->loop = $loop;
     }
 
     /**
@@ -72,7 +80,12 @@ class ArchiveManager
      */
     public function getPackageFilename(PackageInterface $package)
     {
-        $nameParts = array(preg_replace('#[^a-z0-9-_]#i', '-', $package->getName()));
+        if ($package->getArchiveName()) {
+            $baseName = $package->getArchiveName();
+        } else {
+            $baseName = preg_replace('#[^a-z0-9-_]#i', '-', $package->getName());
+        }
+        $nameParts = array($baseName);
 
         if (preg_match('{^[a-f0-9]{40}$}', $package->getDistReference())) {
             array_push($nameParts, $package->getDistReference(), $package->getDistType());
@@ -125,6 +138,37 @@ class ArchiveManager
         }
 
         $filesystem = new Filesystem();
+
+        if ($package instanceof RootPackageInterface) {
+            $sourcePath = realpath('.');
+        } else {
+            // Directory used to download the sources
+            $sourcePath = sys_get_temp_dir().'/composer_archive'.uniqid();
+            $filesystem->ensureDirectoryExists($sourcePath);
+
+            try {
+                // Download sources
+                $promise = $this->downloadManager->download($package, $sourcePath);
+                $this->loop->wait(array($promise));
+                $this->downloadManager->install($package, $sourcePath);
+            } catch (\Exception $e) {
+                $filesystem->removeDirectory($sourcePath);
+                throw  $e;
+            }
+
+            // Check exclude from downloaded composer.json
+            if (file_exists($composerJsonPath = $sourcePath.'/composer.json')) {
+                $jsonFile = new JsonFile($composerJsonPath);
+                $jsonData = $jsonFile->read();
+                if (!empty($jsonData['archive']['name'])) {
+                    $package->setArchiveName($jsonData['archive']['name']);
+                }
+                if (!empty($jsonData['archive']['exclude'])) {
+                    $package->setArchiveExcludes($jsonData['archive']['exclude']);
+                }
+            }
+        }
+
         if (null === $fileName) {
             $packageName = $this->getPackageFilename($package);
         } else {
@@ -138,31 +182,6 @@ class ArchiveManager
 
         if (!$this->overwriteFiles && file_exists($target)) {
             return $target;
-        }
-
-        if ($package instanceof RootPackageInterface) {
-            $sourcePath = realpath('.');
-        } else {
-            // Directory used to download the sources
-            $sourcePath = sys_get_temp_dir().'/composer_archive'.uniqid();
-            $filesystem->ensureDirectoryExists($sourcePath);
-
-            try {
-                // Download sources
-                $this->downloadManager->download($package, $sourcePath);
-            } catch (\Exception $e) {
-                $filesystem->removeDirectory($sourcePath);
-                throw  $e;
-            }
-
-            // Check exclude from downloaded composer.json
-            if (file_exists($composerJsonPath = $sourcePath.'/composer.json')) {
-                $jsonFile = new JsonFile($composerJsonPath);
-                $jsonData = $jsonFile->read();
-                if (!empty($jsonData['archive']['exclude'])) {
-                    $package->setArchiveExcludes($jsonData['archive']['exclude']);
-                }
-            }
         }
 
         // Create the archive

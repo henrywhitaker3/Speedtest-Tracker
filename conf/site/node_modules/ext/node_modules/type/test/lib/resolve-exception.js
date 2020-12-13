@@ -28,4 +28,13 @@ describe("lib/handle-exception", function () {
 		// prettier-ignore
 		assert.equal(handleException(null, "%v is invalid", { "default": "bar" }), "bar");
 	});
+	it("Should support custom Error constructor", function () {
+		try {
+			handleException(12, "Invalid value", { Error: RangeError });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert(error instanceof RangeError);
+			assert.equal(error.message, "Invalid value");
+		}
+	});
 });

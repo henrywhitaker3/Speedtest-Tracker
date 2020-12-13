@@ -17,6 +17,9 @@ final class ApplicationResolver
 {
     use CreatesApplication;
 
+    /** @var mixed */
+    public static $composer;
+
     /**
      * Creates an application and registers service providers found.
      *
@@ -30,7 +33,8 @@ final class ApplicationResolver
         $composerFile = getcwd().DIRECTORY_SEPARATOR.'composer.json';
 
         if (file_exists($composerFile)) {
-            $namespace = (string) key(json_decode((string) file_get_contents($composerFile), true)['autoload']['psr-4']);
+            self::$composer = json_decode((string) file_get_contents($composerFile), true);
+            $namespace = (string) key(self::$composer['autoload']['psr-4']);
             $serviceProviders = array_values(array_filter(self::getProjectClasses($namespace, dirname($composerFile)), function (string $class) use (
                 $namespace
             ) {
@@ -66,7 +70,13 @@ final class ApplicationResolver
      */
     private static function isServiceProvider(string $class): bool
     {
-        return in_array(\Illuminate\Support\ServiceProvider::class, class_parents($class), true)
+        $classParents = class_parents($class);
+
+        if (! $classParents) {
+            return false;
+        }
+
+        return in_array(\Illuminate\Support\ServiceProvider::class, $classParents, true)
             && ! (new \ReflectionClass($class))->isAbstract();
     }
 
@@ -86,10 +96,24 @@ final class ApplicationResolver
             $maps = array_merge($maps, ClassMapGenerator::createMap($dir));
         }
 
+        // Create array of dev classes from Composer configuration.
+        $devClasses = [];
+        $autoloadDev = self::$composer['autoload-dev'] ?? [];
+        $autoloadDevPsr4 = $autoloadDev['psr-4'] ?? [];
+        foreach ($autoloadDevPsr4 as $paths) {
+            $paths = is_array($paths) ? $paths : [$paths];
+
+            foreach ($paths as $path) {
+                $devClasses = array_merge($devClasses, array_keys(ClassMapGenerator::createMap($path)));
+            }
+        }
+
         // now class list of maps are assembled, use class_exists calls to explicitly autoload them,
         // while not running them
         foreach ($maps as $class => $file) {
-            class_exists($class, true);
+            if (! in_array($class, $devClasses)) {
+                class_exists($class, true);
+            }
         }
 
         return get_declared_classes();

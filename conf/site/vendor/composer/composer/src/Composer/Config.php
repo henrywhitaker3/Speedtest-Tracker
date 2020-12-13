@@ -41,6 +41,7 @@ class Config
         'cache-ttl' => 15552000, // 6 months
         'cache-files-ttl' => null, // fallback to cache-ttl
         'cache-files-maxsize' => '300MiB',
+        'cache-read-only' => false,
         'bin-compat' => 'auto',
         'discard-changes' => false,
         'autoloader-suffix' => null,
@@ -64,6 +65,7 @@ class Config
         'htaccess-protect' => true,
         'use-github-api' => true,
         'lock' => true,
+        'platform-check' => 'php-only',
         // valid keys without defaults (auth config stuff):
         // bitbucket-oauth
         // github-oauth
@@ -136,6 +138,8 @@ class Config
             foreach ($config['config'] as $key => $val) {
                 if (in_array($key, array('bitbucket-oauth', 'github-oauth', 'gitlab-oauth', 'gitlab-token', 'http-basic', 'bearer')) && isset($this->config[$key])) {
                     $this->config[$key] = array_merge($this->config[$key], $val);
+                } elseif (in_array($key, array('gitlab-domains', 'github-domains')) && isset($this->config[$key])) {
+                    $this->config[$key] = array_unique(array_merge($this->config[$key], $val));
                 } elseif ('preferred-install' === $key && isset($this->config[$key])) {
                     if (is_array($val) || is_array($this->config[$key])) {
                         if (is_string($val)) {
@@ -210,6 +214,7 @@ class Config
     public function get($key, $flags = 0)
     {
         switch ($key) {
+            // strings/paths with env var and {$refs} support
             case 'vendor-dir':
             case 'bin-dir':
             case 'process-timeout':
@@ -233,20 +238,40 @@ class Config
 
                 return (($flags & self::RELATIVE_PATHS) == self::RELATIVE_PATHS) ? $val : $this->realpath($val);
 
+            // booleans with env var support
+            case 'cache-read-only':
             case 'htaccess-protect':
-                $value = $this->getComposerEnv('COMPOSER_HTACCESS_PROTECT');
-                if (false === $value) {
-                    $value = $this->config[$key];
-                }
-                return $value !== 'false' && (bool) $value;
+                // convert foo-bar to COMPOSER_FOO_BAR and check if it exists since it overrides the local config
+                $env = 'COMPOSER_' . strtoupper(strtr($key, '-', '_'));
 
+                $val = $this->getComposerEnv($env);
+                if (false === $val) {
+                    $val = $this->config[$key];
+                }
+
+                return $val !== 'false' && (bool) $val;
+
+            // booleans without env var support
+            case 'disable-tls':
+            case 'secure-http':
+            case 'use-github-api':
+            case 'lock':
+                // special case for secure-http
+                if ($key === 'secure-http' && $this->get('disable-tls') === true) {
+                    return false;
+                }
+
+                return $this->config[$key] !== 'false' && (bool) $this->config[$key];
+
+            // ints without env var support
             case 'cache-ttl':
                 return (int) $this->config[$key];
 
+            // numbers with kb/mb/gb support, without env var support
             case 'cache-files-maxsize':
                 if (!preg_match('/^\s*([0-9.]+)\s*(?:([kmg])(?:i?b)?)?\s*$/i', $this->config[$key], $matches)) {
                     throw new \RuntimeException(
-                        "Could not parse the value of 'cache-files-maxsize': {$this->config[$key]}"
+                        "Could not parse the value of '$key': {$this->config[$key]}"
                     );
                 }
                 $size = $matches[1];
@@ -268,6 +293,7 @@ class Config
 
                 return $size;
 
+            // special cases below
             case 'cache-files-ttl':
                 if (isset($this->config[$key])) {
                     return (int) $this->config[$key];
@@ -325,14 +351,6 @@ class Config
 
                 return $protos;
 
-            case 'disable-tls':
-                return $this->config[$key] !== 'false' && (bool) $this->config[$key];
-            case 'secure-http':
-                return $this->config[$key] !== 'false' && (bool) $this->config[$key];
-            case 'use-github-api':
-                return $this->config[$key] !== 'false' && (bool) $this->config[$key];
-            case 'lock':
-                return $this->config[$key] !== 'false' && (bool) $this->config[$key];
             default:
                 if (!isset($this->config[$key])) {
                     return null;
@@ -455,7 +473,8 @@ class Config
         if (in_array($scheme, array('http', 'git', 'ftp', 'svn'))) {
             if ($this->get('secure-http')) {
                 throw new TransportException("Your configuration does not allow connections to $url. See https://getcomposer.org/doc/06-config.md#secure-http for details.");
-            } elseif ($io) {
+            }
+            if ($io) {
                 $host = parse_url($url, PHP_URL_HOST);
                 if (!isset($this->warnedHosts[$host])) {
                     $io->writeError("<warning>Warning: Accessing $host over $scheme which is an insecure protocol.</warning>");

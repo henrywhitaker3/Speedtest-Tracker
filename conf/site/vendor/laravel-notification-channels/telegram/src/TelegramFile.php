@@ -2,8 +2,10 @@
 
 namespace NotificationChannels\Telegram;
 
+use Illuminate\Support\Facades\View;
 use JsonSerializable;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Class TelegramFile.
@@ -55,9 +57,9 @@ class TelegramFile implements JsonSerializable
      *
      * Generic method to attach files of any type based on API.
      *
-     * @param string      $file
-     * @param string      $type
-     * @param string|null $filename
+     * @param string|resource|StreamInterface $file
+     * @param string                          $type
+     * @param string|null                     $filename
      *
      * @return $this
      */
@@ -69,7 +71,7 @@ class TelegramFile implements JsonSerializable
 
         if ($filename !== null || $isLocalFile) {
             $this->payload['file'] = [
-                'filename'  => $filename,
+                'filename' => $filename,
                 'name'     => $type,
                 'contents' => $isLocalFile ? fopen($file, 'rb') : $file,
             ];
@@ -180,6 +182,21 @@ class TelegramFile implements JsonSerializable
     public function videoNote(string $file): self
     {
         return $this->file($file, 'video_note');
+    }
+
+    /**
+     * Attach a view file as the content for the notification.
+     * Supports Laravel blade template.
+     *
+     * @param string $view
+     * @param array  $data
+     * @param array  $mergeData
+     *
+     * @return $this
+     */
+    public function view(string $view, array $data = [], array $mergeData = []): self
+    {
+        return $this->content(View::make($view, $data, $mergeData)->render());
     }
 
     /**

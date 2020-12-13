@@ -2,14 +2,14 @@
 
 namespace PhpParser\Lexer\TokenEmulator;
 
-abstract class KeywordEmulator implements TokenEmulatorInterface
+abstract class KeywordEmulator extends TokenEmulator
 {
     abstract function getKeywordString(): string;
     abstract function getKeywordToken(): int;
 
     public function isEmulationNeeded(string $code): bool
     {
-        return strpos($code, $this->getKeywordString()) !== false;
+        return strpos(strtolower($code), $this->getKeywordString()) !== false;
     }
 
     public function emulate(string $code, array $tokens): array

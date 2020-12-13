@@ -1,5 +1,9 @@
 # `v8-module-cache` Changelog
 
+## 2020-10-28, Version 2.2.0
+
+* Added `V8_COMPILE_CACHE_CACHE_DIR` option [#23](https://github.com/zertosh/v8-compile-cache/pull/23).
+
 ## 2020-05-30, Version 2.1.1
 
 * Stop using process.umask() [#28](https://github.com/zertosh/v8-compile-cache/pull/28).

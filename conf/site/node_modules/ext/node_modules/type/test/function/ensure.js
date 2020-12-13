@@ -17,4 +17,13 @@ describe("function/ensure", function () {
 			assert(error.message.includes("is not a function"));
 		}
 	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureFunction(null, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a function for name, received null");
+		}
+	});
 });

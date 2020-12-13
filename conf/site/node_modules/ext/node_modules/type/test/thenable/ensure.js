@@ -14,7 +14,16 @@ describe("thenable/ensure", function () {
 			throw new Error("Unexpected");
 		} catch (error) {
 			assert.equal(error.name, "TypeError");
-			assert.equal(error.message, "[object Object] is not a thenable object");
+			assert.equal(error.message, "[object Object] is not a thenable");
+		}
+	});
+	it("Should provide alternative error message when name option is passed", function () {
+		try {
+			ensureThenable({}, { name: "name" });
+			throw new Error("Unexpected");
+		} catch (error) {
+			assert.equal(error.name, "TypeError");
+			assert.equal(error.message, "Expected a thenable for name, received [object Object]");
 		}
 	});
 });

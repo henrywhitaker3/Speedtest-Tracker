@@ -12,14 +12,10 @@
 
 namespace Composer\Downloader;
 
-use Composer\Config;
-use Composer\Cache;
-use Composer\EventDispatcher\EventDispatcher;
 use Composer\Util\IniHelper;
 use Composer\Util\Platform;
 use Composer\Util\ProcessExecutor;
-use Composer\Util\RemoteFilesystem;
-use Composer\IO\IOInterface;
+use Composer\Package\PackageInterface;
 use RarArchive;
 
 /**
@@ -31,15 +27,7 @@ use RarArchive;
  */
 class RarDownloader extends ArchiveDownloader
 {
-    protected $process;
-
-    public function __construct(IOInterface $io, Config $config, EventDispatcher $eventDispatcher = null, Cache $cache = null, ProcessExecutor $process = null, RemoteFilesystem $rfs = null)
-    {
-        $this->process = $process ?: new ProcessExecutor($io);
-        parent::__construct($io, $config, $eventDispatcher, $cache, $rfs);
-    }
-
-    protected function extract($file, $path)
+    protected function extract(PackageInterface $package, $file, $path)
     {
         $processError = null;
 

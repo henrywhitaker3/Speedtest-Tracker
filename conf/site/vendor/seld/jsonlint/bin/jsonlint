@@ -37,7 +37,7 @@ if (isset($_SERVER['argc']) && $_SERVER['argc'] > 1) {
             $quiet = true;
         } else {
             if ($arg == '-h' || $arg == '--help') {
-                showUsage();
+                showUsage($_SERVER['argv'][0]);
             } else {
                 $files[] = $arg;
             }
@@ -106,9 +106,9 @@ function lintFile($file, $quiet = false)
 }
 
 // usage text function
-function showUsage()
+function showUsage($programPath)
 {
-    echo 'Usage: jsonlint file [options]'.PHP_EOL;
+    echo 'Usage: '.$programPath.' file [options]'.PHP_EOL;
     echo PHP_EOL;
     echo 'Options:'.PHP_EOL;
     echo '  -q, --quiet     Cause jsonlint to be quiet when no errors are found'.PHP_EOL;

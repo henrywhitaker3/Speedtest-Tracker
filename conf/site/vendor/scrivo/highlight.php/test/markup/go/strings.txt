@@ -1,7 +1,0 @@
-func main() {
-	str := "Hello, 世界\nHello \"world\"\nHello 'world'"
-	char := 'a'
-	char2 := '"'
-	char3 := '\\'
-	char3 := '\''
-}

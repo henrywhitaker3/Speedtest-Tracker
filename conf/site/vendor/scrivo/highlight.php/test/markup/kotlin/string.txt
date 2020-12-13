@@ -1,8 +1,0 @@
-"astring"
-expression
-"a ${  "string" } ${'c'} b"
-"a ${  "string $var ${subs}" } b"
-"""  ${
-    ${subst}
-} """
-"""f="true""""

@@ -16,7 +16,8 @@ use Composer\IO\IOInterface;
 use Composer\Config;
 use Composer\EventDispatcher\EventDispatcher;
 use Composer\Package\PackageInterface;
-use Composer\Util\RemoteFilesystem;
+use Composer\Util\HttpDownloader;
+use Composer\Util\ProcessExecutor;
 
 /**
  * Repositories manager.
@@ -27,20 +28,30 @@ use Composer\Util\RemoteFilesystem;
  */
 class RepositoryManager
 {
+    /** @var InstalledRepositoryInterface */
     private $localRepository;
+    /** @var list<RepositoryInterface> */
     private $repositories = array();
+    /** @var array<string, string> */
     private $repositoryClasses = array();
+    /** @var IOInterface */
     private $io;
+    /** @var Config */
     private $config;
+    /** @var HttpDownloader */
+    private $httpDownloader;
+    /** @var ?EventDispatcher */
     private $eventDispatcher;
-    private $rfs;
+    /** @var ProcessExecutor */
+    private $process;
 
-    public function __construct(IOInterface $io, Config $config, EventDispatcher $eventDispatcher = null, RemoteFilesystem $rfs = null)
+    public function __construct(IOInterface $io, Config $config, HttpDownloader $httpDownloader, EventDispatcher $eventDispatcher = null, ProcessExecutor $process = null)
     {
         $this->io = $io;
         $this->config = $config;
+        $this->httpDownloader = $httpDownloader;
         $this->eventDispatcher = $eventDispatcher;
-        $this->rfs = $rfs;
+        $this->process = $process ?: new ProcessExecutor($io);
     }
 
     /**
@@ -125,25 +136,18 @@ class RepositoryManager
 
         $class = $this->repositoryClasses[$type];
 
-        $reflMethod = new \ReflectionMethod($class, '__construct');
-        $params = $reflMethod->getParameters();
-        if (isset($params[4])) {
-            $paramType = null;
-            if (\PHP_VERSION_ID >= 70000) {
-                $reflectionType = $params[4]->getType();
-                if ($reflectionType) {
-                    $paramType = $reflectionType instanceof \ReflectionNamedType ? $reflectionType->getName() : (string)$reflectionType;
-                }
-            } else {
-                $paramType = $params[4]->getClass() ? $params[4]->getClass()->getName() : null;
-            }
-
-            if ($paramType  === 'Composer\Util\RemoteFilesystem') {
-                return new $class($config, $this->io, $this->config, $this->eventDispatcher, $this->rfs);
-            }
+        if (isset($config['only']) || isset($config['exclude']) || isset($config['canonical'])) {
+            $filterConfig = $config;
+            unset($config['only'], $config['exclude'], $config['canonical']);
         }
 
-        return new $class($config, $this->io, $this->config, $this->eventDispatcher);
+        $repository = new $class($config, $this->io, $this->config, $this->httpDownloader, $this->eventDispatcher, $this->process);
+
+        if (isset($filterConfig)) {
+            $repository = new FilterRepository($repository, $filterConfig);
+        }
+
+        return $repository;
     }
 
     /**
@@ -170,9 +174,9 @@ class RepositoryManager
     /**
      * Sets local repository for the project.
      *
-     * @param WritableRepositoryInterface $repository repository instance
+     * @param InstalledRepositoryInterface $repository repository instance
      */
-    public function setLocalRepository(WritableRepositoryInterface $repository)
+    public function setLocalRepository(InstalledRepositoryInterface $repository)
     {
         $this->localRepository = $repository;
     }
@@ -180,7 +184,7 @@ class RepositoryManager
     /**
      * Returns local repository for the project.
      *
-     * @return WritableRepositoryInterface
+     * @return InstalledRepositoryInterface
      */
     public function getLocalRepository()
     {
