@@ -30,7 +30,7 @@ class GitBitbucketDriver extends BitbucketDriver
         }
 
         if (null === $this->rootIdentifier) {
-            if (! $this->getRepoData()) {
+            if (!$this->getRepoData()) {
                 return $this->fallbackDriver->getRootIdentifier();
             }
 
@@ -53,7 +53,7 @@ class GitBitbucketDriver extends BitbucketDriver
      */
     public static function supports(IOInterface $io, Config $config, $url, $deep = false)
     {
-        if (!preg_match('#^(?:https?://bitbucket\.org/|git@bitbucket\.org:)([^/]+)/(.+?)\.git$#i', $url)) {
+        if (!preg_match('#^https?://bitbucket\.org/([^/]+)/(.+?)\.git$#i', $url)) {
             return false;
         }
 

@@ -65,7 +65,7 @@ class Config
         'htaccess-protect' => true,
         'use-github-api' => true,
         'lock' => true,
-        'platform-check' => true,
+        'platform-check' => 'php-only',
         // valid keys without defaults (auth config stuff):
         // bitbucket-oauth
         // github-oauth
@@ -138,6 +138,8 @@ class Config
             foreach ($config['config'] as $key => $val) {
                 if (in_array($key, array('bitbucket-oauth', 'github-oauth', 'gitlab-oauth', 'gitlab-token', 'http-basic', 'bearer')) && isset($this->config[$key])) {
                     $this->config[$key] = array_merge($this->config[$key], $val);
+                } elseif (in_array($key, array('gitlab-domains', 'github-domains')) && isset($this->config[$key])) {
+                    $this->config[$key] = array_unique(array_merge($this->config[$key], $val));
                 } elseif ('preferred-install' === $key && isset($this->config[$key])) {
                     if (is_array($val) || is_array($this->config[$key])) {
                         if (is_string($val)) {
@@ -246,6 +248,7 @@ class Config
                 if (false === $val) {
                     $val = $this->config[$key];
                 }
+
                 return $val !== 'false' && (bool) $val;
 
             // booleans without env var support

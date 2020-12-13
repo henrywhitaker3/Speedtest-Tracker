@@ -15,6 +15,7 @@ use Barryvdh\LaravelIdeHelper\Console\EloquentCommand;
 use Barryvdh\LaravelIdeHelper\Console\GeneratorCommand;
 use Barryvdh\LaravelIdeHelper\Console\MetaCommand;
 use Barryvdh\LaravelIdeHelper\Console\ModelsCommand;
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Engines\EngineResolver;
@@ -22,15 +23,8 @@ use Illuminate\View\Engines\PhpEngine;
 use Illuminate\View\Factory;
 use Illuminate\View\FileViewFinder;
 
-class IdeHelperServiceProvider extends ServiceProvider
+class IdeHelperServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = true;
-
     /**
      * Bootstrap the application events.
      *
@@ -116,7 +110,7 @@ class IdeHelperServiceProvider extends ServiceProvider
     {
         $resolver = new EngineResolver();
         $resolver->register('php', function () {
-            if ((int) Application::VERSION < 8) {
+            if (Helpers::isLaravel() && (int) Application::VERSION < 8) {
                 return new PhpEngine();
             }
 

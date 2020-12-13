@@ -35,9 +35,9 @@ class FilesystemRepository extends WritableArrayRepository
     /**
      * Initializes filesystem repository.
      *
-     * @param JsonFile $repositoryFile repository json file
-     * @param bool $dumpVersions
-     * @param ?RootPackageInterface $rootPackage Must be provided if $dumpVersions is true
+     * @param JsonFile              $repositoryFile repository json file
+     * @param bool                  $dumpVersions
+     * @param ?RootPackageInterface $rootPackage    Must be provided if $dumpVersions is true
      */
     public function __construct(JsonFile $repositoryFile, $dumpVersions = false, RootPackageInterface $rootPackage = null)
     {
@@ -69,9 +69,8 @@ class FilesystemRepository extends WritableArrayRepository
                 $packages = $data;
             }
 
-            // forward compatibility for composer v2 installed.json
-            if (isset($packages['packages'])) {
-                $packages = $packages['packages'];
+            if (isset($data['dev-package-names'])) {
+                $this->setDevPackageNames($data['dev-package-names']);
             }
 
             if (!is_array($packages)) {
@@ -99,7 +98,7 @@ class FilesystemRepository extends WritableArrayRepository
      */
     public function write($devMode, InstallationManager $installationManager)
     {
-        $data = array('packages' => array(), 'dev' => $devMode);
+        $data = array('packages' => array(), 'dev' => $devMode, 'dev-package-names' => array());
         $dumper = new ArrayDumper();
         $fs = new Filesystem();
         $repoDir = dirname($fs->normalizePath($this->file->getPath()));
@@ -109,8 +108,15 @@ class FilesystemRepository extends WritableArrayRepository
             $path = $installationManager->getInstallPath($package);
             $pkgArray['install-path'] = ('' !== $path && null !== $path) ? $fs->findShortestPath($repoDir, $fs->isAbsolutePath($path) ? $path : getcwd() . '/' . $path, true) : null;
             $data['packages'][] = $pkgArray;
+
+            // only write to the files the names which are really installed, as we receive the full list
+            // of dev package names before they get installed during composer install
+            if (in_array($package->getName(), $this->devPackageNames, true)) {
+                $data['dev-package-names'][] = $package->getName();
+            }
         }
 
+        sort($data['dev-package-names']);
         usort($data['packages'], function ($a, $b) {
             return strcmp($a['name'], $b['name']);
         });
@@ -200,6 +206,14 @@ class FilesystemRepository extends WritableArrayRepository
             $installedVersionsClass = file_get_contents(__DIR__.'/../InstalledVersions.php');
             $installedVersionsClass = str_replace('private static $installed;', 'private static $installed = '.var_export($versions, true).';', $installedVersionsClass);
             $fs->filePutContentsIfModified($repoDir.'/InstalledVersions.php', $installedVersionsClass);
+
+            // make sure the InstalledVersions class is loaded and has the latest state
+            // not using the autoloader here to avoid loading the one from Composer's vendor dir
+            if (!class_exists('Composer\InstalledVersions', false)) {
+                include $repoDir.'/InstalledVersions.php';
+            } else {
+                \Composer\InstalledVersions::reload($versions);
+            }
         }
     }
 }

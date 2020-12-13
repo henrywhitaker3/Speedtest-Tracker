@@ -704,8 +704,10 @@ abstract class PrettyPrinterAbstract
 
         $mapKey = $parentNodeType . '->' . $subNodeName;
         $insertStr = $this->listInsertionMap[$mapKey] ?? null;
+        $isStmtList = $subNodeName === 'stmts';
 
         $beforeFirstKeepOrReplace = true;
+        $skipRemovedNode = false;
         $delayedAdd = [];
         $lastElemIndentLevel = $this->indentLevel;
 
@@ -715,7 +717,7 @@ abstract class PrettyPrinterAbstract
             $insertNewline = true;
         }
 
-        if ($subNodeName === 'stmts' && \count($origNodes) === 1 && \count($nodes) !== 1) {
+        if ($isStmtList && \count($origNodes) === 1 && \count($nodes) !== 1) {
             $startPos = $origNodes[0]->getStartTokenPos();
             $endPos = $origNodes[0]->getEndTokenPos();
             \assert($startPos >= 0 && $endPos >= 0);
@@ -754,7 +756,7 @@ abstract class PrettyPrinterAbstract
 
                 $itemStartPos = $origArrItem->getStartTokenPos();
                 $itemEndPos = $origArrItem->getEndTokenPos();
-                \assert($itemStartPos >= 0 && $itemEndPos >= 0);
+                \assert($itemStartPos >= 0 && $itemEndPos >= 0 && $itemStartPos >= $pos);
 
                 $origIndentLevel = $this->indentLevel;
                 $lastElemIndentLevel = $this->origTokens->getIndentationBefore($itemStartPos) + $indentAdjustment;
@@ -765,16 +767,25 @@ abstract class PrettyPrinterAbstract
                 $commentStartPos = $origComments ? $origComments[0]->getStartTokenPos() : $itemStartPos;
                 \assert($commentStartPos >= 0);
 
-                $commentsChanged = $comments !== $origComments;
-                if ($commentsChanged) {
-                    // Remove old comments
-                    $itemStartPos = $commentStartPos;
+                if ($commentStartPos < $pos) {
+                    // Comments may be assigned to multiple nodes if they start at the same position.
+                    // Make sure we don't try to print them multiple times.
+                    $commentStartPos = $itemStartPos;
+                }
+
+                if ($skipRemovedNode) {
+                    if ($isStmtList && $this->origTokens->haveBracesInRange($pos, $itemStartPos)) {
+                        // We'd remove the brace of a code block.
+                        // TODO: Preserve formatting.
+                        $this->setIndentLevel($origIndentLevel);
+                        return null;
+                    }
+                } else {
+                    $result .= $this->origTokens->getTokenCode(
+                        $pos, $commentStartPos, $indentAdjustment);
                 }
 
                 if (!empty($delayedAdd)) {
-                    $result .= $this->origTokens->getTokenCode(
-                        $pos, $commentStartPos, $indentAdjustment);
-
                     /** @var Node $delayedAddNode */
                     foreach ($delayedAdd as $delayedAddNode) {
                         if ($insertNewline) {
@@ -793,19 +804,20 @@ abstract class PrettyPrinterAbstract
                         }
                     }
 
-                    $result .= $this->origTokens->getTokenCode(
-                        $commentStartPos, $itemStartPos, $indentAdjustment);
-
                     $delayedAdd = [];
+                }
+
+                if ($comments !== $origComments) {
+                    if ($comments) {
+                        $result .= $this->pComments($comments) . $this->nl;
+                    }
                 } else {
                     $result .= $this->origTokens->getTokenCode(
-                        $pos, $itemStartPos, $indentAdjustment);
+                        $commentStartPos, $itemStartPos, $indentAdjustment);
                 }
 
-                if ($commentsChanged && $comments) {
-                    // Add new comments
-                    $result .= $this->pComments($comments) . $this->nl;
-                }
+                // If we had to remove anything, we have done so now.
+                $skipRemovedNode = false;
             } elseif ($diffType === DiffElem::TYPE_ADD) {
                 if (null === $insertStr) {
                     // We don't have insertion information for this list type
@@ -839,18 +851,34 @@ abstract class PrettyPrinterAbstract
                     $result .= $insertStr;
                 }
             } elseif ($diffType === DiffElem::TYPE_REMOVE) {
-                if ($i === 0) {
-                    // TODO Handle removal at the start
-                    return null;
-                }
-
                 if (!$origArrItem instanceof Node) {
                     // We only support removal for nodes
                     return null;
                 }
 
+                $itemStartPos = $origArrItem->getStartTokenPos();
                 $itemEndPos = $origArrItem->getEndTokenPos();
-                \assert($itemEndPos >= 0);
+                \assert($itemStartPos >= 0 && $itemEndPos >= 0);
+
+                // Consider comments part of the node.
+                $origComments = $origArrItem->getComments();
+                if ($origComments) {
+                    $itemStartPos = $origComments[0]->getStartTokenPos();
+                }
+
+                if ($i === 0) {
+                    // If we're removing from the start, keep the tokens before the node and drop those after it,
+                    // instead of the other way around.
+                    $result .= $this->origTokens->getTokenCode(
+                        $pos, $itemStartPos, $indentAdjustment);
+                    $skipRemovedNode = true;
+                } else {
+                    if ($isStmtList && $this->origTokens->haveBracesInRange($pos, $itemStartPos)) {
+                        // We'd remove the brace of a code block.
+                        // TODO: Preserve formatting.
+                        return null;
+                    }
+                }
 
                 $pos = $itemEndPos + 1;
                 continue;
@@ -867,6 +895,11 @@ abstract class PrettyPrinterAbstract
 
             $this->setIndentLevel($origIndentLevel);
             $pos = $itemEndPos + 1;
+        }
+
+        if ($skipRemovedNode) {
+            // TODO: Support removing single node.
+            return null;
         }
 
         if (!empty($delayedAdd)) {
@@ -1127,7 +1160,7 @@ abstract class PrettyPrinterAbstract
             Expr\PostDec::class => ['var' => self::FIXUP_PREC_LEFT],
             Expr\Instanceof_::class => [
                 'expr' => self::FIXUP_PREC_LEFT,
-                'class' => self::FIXUP_PREC_RIGHT,
+                'class' => self::FIXUP_PREC_RIGHT, // TODO: FIXUP_NEW_VARIABLE
             ],
             Expr\Ternary::class => [
                 'cond' => self::FIXUP_PREC_LEFT,
@@ -1137,6 +1170,8 @@ abstract class PrettyPrinterAbstract
             Expr\FuncCall::class => ['name' => self::FIXUP_CALL_LHS],
             Expr\StaticCall::class => ['class' => self::FIXUP_DEREF_LHS],
             Expr\ArrayDimFetch::class => ['var' => self::FIXUP_DEREF_LHS],
+            Expr\ClassConstFetch::class => ['var' => self::FIXUP_DEREF_LHS],
+            Expr\New_::class => ['class' => self::FIXUP_DEREF_LHS], // TODO: FIXUP_NEW_VARIABLE
             Expr\MethodCall::class => [
                 'var' => self::FIXUP_DEREF_LHS,
                 'name' => self::FIXUP_BRACED_NAME,
@@ -1340,6 +1375,7 @@ abstract class PrettyPrinterAbstract
             'Stmt_Unset->vars' => ', ',
             'Stmt_Use->uses' => ', ',
             'MatchArm->conds' => ', ',
+            'AttributeGroup->attrs' => ', ',
 
             // statement lists
             'Expr_Closure->stmts' => "\n",
@@ -1360,6 +1396,17 @@ abstract class PrettyPrinterAbstract
             'Stmt_Function->stmts' => "\n",
             'Stmt_If->stmts' => "\n",
             'Stmt_Namespace->stmts' => "\n",
+            'Stmt_Class->attrGroups' => "\n",
+            'Stmt_Interface->attrGroups' => "\n",
+            'Stmt_Trait->attrGroups' => "\n",
+            'Stmt_Function->attrGroups' => "\n",
+            'Stmt_ClassMethod->attrGroups' => "\n",
+            'Stmt_ClassConst->attrGroups' => "\n",
+            'Stmt_Property->attrGroups' => "\n",
+            'Expr_PrintableNewAnonClass->attrGroups' => ' ',
+            'Expr_Closure->attrGroups' => ' ',
+            'Expr_ArrowFunction->attrGroups' => ' ',
+            'Param->attrGroups' => ' ',
             'Stmt_Switch->cases' => "\n",
             'Stmt_TraitUse->adaptations' => "\n",
             'Stmt_TryCatch->stmts' => "\n",

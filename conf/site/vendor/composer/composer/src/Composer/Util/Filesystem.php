@@ -277,8 +277,8 @@ class Filesystem
     /**
      * Copies a file or directory from $source to $target.
      *
-     * @param string $source
-     * @param string $target
+     * @param  string $source
+     * @param  string $target
      * @return bool
      */
     public function copy($source, $target)
@@ -507,6 +507,23 @@ class Filesystem
     }
 
     /**
+     * Remove trailing slashes if present to avoid issues with symlinks
+     *
+     * And other possible unforeseen disasters, see https://github.com/composer/composer/pull/9422
+     *
+     * @param  string $path
+     * @return bool
+     */
+    public static function trimTrailingSlash($path)
+    {
+        if (!preg_match('{^[/\\\\]+$}', $path)) {
+            $path = rtrim($path, '/\\');
+        }
+
+        return $path;
+    }
+
+    /**
      * Return if the given path is local
      *
      * @param  string $path
@@ -547,7 +564,7 @@ class Filesystem
     protected function getProcess()
     {
         if (!$this->processExecutor) {
-             $this->processExecutor = new ProcessExecutor();
+            $this->processExecutor = new ProcessExecutor();
         }
 
         return $this->processExecutor;
@@ -580,6 +597,10 @@ class Filesystem
      */
     public function relativeSymlink($target, $link)
     {
+        if (!function_exists('symlink')) {
+            return false;
+        }
+    
         $cwd = getcwd();
 
         $relativePath = $this->findShortestPath($link, $target);

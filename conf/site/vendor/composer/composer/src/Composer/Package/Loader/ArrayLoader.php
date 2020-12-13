@@ -114,10 +114,13 @@ class ArrayLoader implements LoaderInterface
         }
 
         if (isset($config['bin'])) {
-            foreach ((array) $config['bin'] as $key => $bin) {
+            if (!\is_array($config['bin'])) {
+                $config['bin'] = array($config['bin']);
+            }
+            foreach ($config['bin'] as $key => $bin) {
                 $config['bin'][$key] = ltrim($bin, '/');
             }
-            $package->setBinaries((array) $config['bin']);
+            $package->setBinaries($config['bin']);
         }
 
         if (isset($config['installation-source'])) {
@@ -295,11 +298,11 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * @param         string       $source        source package name
-     * @param         string       $sourceVersion source package version (pretty version ideally)
-     * @param         string       $description   link description (e.g. requires, replaces, ..)
+     * @param string $source        source package name
+     * @param string $sourceVersion source package version (pretty version ideally)
+     * @param string $description   link description (e.g. requires, replaces, ..)
      * @phpstan-param Link::TYPE_* $description
-     * @param         array        $links         array of package name => constraint mappings
+     * @param  array  $links array of package name => constraint mappings
      * @return Link[]
      */
     public function parseLinks($source, $sourceVersion, $description, $links)
@@ -346,7 +349,11 @@ class ArrayLoader implements LoaderInterface
                 }
 
                 // normalize without -dev and ensure it's a numeric branch that is parseable
-                $validatedTargetBranch = $this->versionParser->normalizeBranch(substr($targetBranch, 0, -4));
+                if ($targetBranch === VersionParser::DEFAULT_BRANCH_ALIAS) {
+                    $validatedTargetBranch = VersionParser::DEFAULT_BRANCH_ALIAS;
+                } else {
+                    $validatedTargetBranch = $this->versionParser->normalizeBranch(substr($targetBranch, 0, -4));
+                }
                 if ('-dev' !== substr($validatedTargetBranch, -4)) {
                     continue;
                 }

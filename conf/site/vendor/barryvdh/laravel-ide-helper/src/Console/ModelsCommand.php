@@ -19,6 +19,16 @@ use Composer\Autoload\ClassMapGenerator;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
@@ -28,6 +38,7 @@ use ReflectionObject;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 /**
  * A command to generate autocomplete information for your IDE
@@ -36,6 +47,20 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ModelsCommand extends Command
 {
+    protected const RELATION_TYPES = [
+        'hasMany' => HasMany::class,
+        'hasManyThrough' => HasManyThrough::class,
+        'hasOneThrough' => HasOneThrough::class,
+        'belongsToMany' => BelongsToMany::class,
+        'hasOne' => HasOne::class,
+        'belongsTo' => BelongsTo::class,
+        'morphOne' => MorphOne::class,
+        'morphTo' => MorphTo::class,
+        'morphMany' => MorphMany::class,
+        'morphToMany' => MorphToMany::class,
+        'morphedByMany' => MorphToMany::class,
+    ];
+
     /**
      * @var Filesystem $files
      */
@@ -66,6 +91,7 @@ class ModelsCommand extends Command
     protected $reset;
     protected $keep_text;
     protected $phpstorm_noinspections;
+    protected $write_model_external_builder_methods;
     /**
      * @var bool[string]
      */
@@ -110,6 +136,7 @@ class ModelsCommand extends Command
             $this->keep_text = $this->reset = true;
         }
         $this->write_model_magic_where = $this->laravel['config']->get('ide-helper.write_model_magic_where', true);
+        $this->write_model_external_builder_methods = $this->laravel['config']->get('ide-helper.write_model_external_builder_methods', true);
         $this->write_model_relation_count_properties =
             $this->laravel['config']->get('ide-helper.write_model_relation_count_properties', true);
 
@@ -253,7 +280,7 @@ class ModelsCommand extends Command
                     $output                .= $this->createPhpDocs($name);
                     $ignore[]              = $name;
                     $this->nullableColumns = [];
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     $this->error('Exception: ' . $e->getMessage() .
                         "\nCould not analyze class $name.\n\nTrace:\n" .
                         $e->getTraceAsString());
@@ -280,13 +307,14 @@ class ModelsCommand extends Command
                 $dir = base_path($dir);
             }
 
-            if (!is_dir($dir)) {
-                $this->error("Cannot locate directory '{'$dir}'");
-                continue;
-            }
-
             $dirs = glob($dir, GLOB_ONLYDIR);
             foreach ($dirs as $dir) {
+
+                if (!is_dir($dir)) {
+                    $this->error("Cannot locate directory '{'$dir}'");
+                    continue;
+                }
+
                 if (file_exists($dir)) {
                     $classMap = ClassMapGenerator::createMap($dir);
 
@@ -344,6 +372,9 @@ class ModelsCommand extends Command
                     $realType = '\Illuminate\Support\Collection';
                     break;
                 default:
+                    // In case of an optional custom cast parameter , only evaluate
+                    // the `$type` until the `:`
+                    $type = strtok($type, ':');
                     $realType = class_exists($type) ? ('\\' . $type) : 'mixed';
                     break;
             }
@@ -395,7 +426,7 @@ class ModelsCommand extends Command
 
         $database = null;
         if (strpos($table, '.')) {
-            list($database, $table) = explode('.', $table);
+            [$database, $table] = explode('.', $table);
         }
 
         $columns = $schema->listTableColumns($table, $database);
@@ -459,9 +490,13 @@ class ModelsCommand extends Command
                 !$column->getNotnull()
             );
             if ($this->write_model_magic_where) {
+                $builderClass = $this->write_model_external_builder_methods
+                    ? get_class($model->newModelQuery())
+                    : '\Illuminate\Database\Eloquent\Builder';
+
                 $this->setMethod(
                     Str::camel('where_' . $name),
-                    $this->getClassNameInDestinationFile($model, \Illuminate\Database\Eloquent\Builder::class)
+                    $this->getClassNameInDestinationFile($model, $builderClass)
                     . '|'
                     . $this->getClassNameInDestinationFile($model, get_class($model)),
                     ['$value']
@@ -514,7 +549,7 @@ class ModelsCommand extends Command
                         array_shift($args);
                         $builder = $this->getClassNameInDestinationFile(
                             $reflection->getDeclaringClass(),
-                            \Illuminate\Database\Eloquent\Builder::class
+                            get_class($model->newModelQuery())
                         );
                         $modelName = $this->getClassNameInDestinationFile(
                             $reflection->getDeclaringClass(),
@@ -529,6 +564,10 @@ class ModelsCommand extends Command
                         $method,
                         $builder . '|' . $this->getClassNameInDestinationFile($model, get_class($model))
                     );
+
+                    if ($this->write_model_external_builder_methods) {
+                        $this->writeModelExternalBuilderMethods($model);
+                    }
                 } elseif (
                     !method_exists('Illuminate\Database\Eloquent\Model', $method)
                     && !Str::startsWith($method, 'get')
@@ -558,19 +597,7 @@ class ModelsCommand extends Command
                     $code = substr($code, $begin, strrpos($code, '}') - $begin + 1);
 
                     foreach (
-                        [
-                               'hasMany' => '\Illuminate\Database\Eloquent\Relations\HasMany',
-                               'hasManyThrough' => '\Illuminate\Database\Eloquent\Relations\HasManyThrough',
-                               'hasOneThrough' => '\Illuminate\Database\Eloquent\Relations\HasOneThrough',
-                               'belongsToMany' => '\Illuminate\Database\Eloquent\Relations\BelongsToMany',
-                               'hasOne' => '\Illuminate\Database\Eloquent\Relations\HasOne',
-                               'belongsTo' => '\Illuminate\Database\Eloquent\Relations\BelongsTo',
-                               'morphOne' => '\Illuminate\Database\Eloquent\Relations\MorphOne',
-                               'morphTo' => '\Illuminate\Database\Eloquent\Relations\MorphTo',
-                               'morphMany' => '\Illuminate\Database\Eloquent\Relations\MorphMany',
-                               'morphToMany' => '\Illuminate\Database\Eloquent\Relations\MorphToMany',
-                               'morphedByMany' => '\Illuminate\Database\Eloquent\Relations\MorphToMany',
-                             ] as $relation => $impl
+                        $this->getRelationTypes() as $relation => $impl
                     ) {
                         $search = '$this->' . $relation . '(';
                         if (stripos($code, $search) || ltrim($impl, '\\') === ltrim((string)$type, '\\')) {
@@ -586,7 +613,9 @@ class ModelsCommand extends Command
                             $relationObj = Relation::noConstraints(function () use ($model, $method) {
                                 try {
                                     return $model->$method();
-                                } catch (\Throwable $e) {
+                                } catch (Throwable $e) {
+                                    $this->warn(sprintf('Error resolving relation model of %s:%s() : %s', get_class($model), $method, $e->getMessage()));
+
                                     return null;
                                 }
                             });
@@ -597,14 +626,6 @@ class ModelsCommand extends Command
                                     get_class($relationObj->getRelated())
                                 );
 
-                                $relations = [
-                                    'hasManyThrough',
-                                    'belongsToMany',
-                                    'hasMany',
-                                    'morphMany',
-                                    'morphToMany',
-                                    'morphedByMany',
-                                ];
                                 if (strpos(get_class($relationObj), 'Many') !== false) {
                                     //Collection or array of models (because Collection is Arrayable)
                                     $relatedClass = '\\' . get_class($relationObj->getRelated());
@@ -877,6 +898,7 @@ class ModelsCommand extends Command
      *
      * @param $method
      * @return array
+     * @throws \ReflectionException
      */
     public function getParameters($method)
     {
@@ -884,8 +906,11 @@ class ModelsCommand extends Command
         $paramsWithDefault = [];
         /** @var \ReflectionParameter $param */
         foreach ($method->getParameters() as $param) {
-            $paramClass = $param->getClass();
-            $paramStr = (!is_null($paramClass) ? '\\' . $paramClass->getName() . ' ' : '') . '$' . $param->getName();
+            $paramStr = '$' . $param->getName();
+            if ($paramType = $this->getParamType($method, $param)) {
+                $paramStr = $paramType . ' ' . $paramStr;
+            }
+
             if ($param->isOptional() && $param->isDefaultValueAvailable()) {
                 $default = $param->getDefaultValue();
                 if (is_bool($default)) {
@@ -899,8 +924,10 @@ class ModelsCommand extends Command
                 } else {
                     $default = "'" . trim($default) . "'";
                 }
+
                 $paramStr .= " = $default";
             }
+
             $paramsWithDefault[] = $paramStr;
         }
         return $paramsWithDefault;
@@ -924,6 +951,15 @@ class ModelsCommand extends Command
         /** @var \Illuminate\Database\Eloquent\Model $model */
         $model = new $className();
         return '\\' . get_class($model->newCollection());
+    }
+
+    /**
+     * Returns the available relation types
+     */
+    protected function getRelationTypes(): array
+    {
+        $configuredRelations = $this->laravel['config']->get('ide-helper.additional_relation_types', []);
+        return array_merge(self::RELATION_TYPES, $configuredRelations);
     }
 
     /**
@@ -1059,13 +1095,17 @@ class ModelsCommand extends Command
 
         $methodReflection = new \ReflectionMethod($type, 'get');
 
-        $type = $this->getReturnTypeFromReflection($methodReflection);
+        $reflectionType = $this->getReturnTypeFromReflection($methodReflection);
 
-        if ($type === null) {
-            $type = $this->getReturnTypeFromDocBlock($methodReflection);
+        if ($reflectionType === null) {
+            $reflectionType = $this->getReturnTypeFromDocBlock($methodReflection);
         }
 
-        return $type;
+        if($reflectionType === 'static' || $reflectionType === '$this') {
+            $reflectionType = $type;
+        }
+
+        return $reflectionType;
     }
 
     protected function getTypeInModel(object $model, ?string $type): ?string
@@ -1111,5 +1151,114 @@ class ModelsCommand extends Command
         $namespaceAliases[$reflection->getName()] = $reflection->getShortName();
 
         return $namespaceAliases;
+    }
+
+    protected function writeModelExternalBuilderMethods(Model $model): void
+    {
+        $fullBuilderClass = '\\' . get_class($model->newModelQuery());
+        $newBuilderMethods = get_class_methods($fullBuilderClass);
+        $originalBuilderMethods = get_class_methods('\Illuminate\Database\Eloquent\Builder');
+
+        // diff the methods between the new builder and original one
+        // and create helpers for the ones that are new
+        $newMethodsFromNewBuilder = array_diff($newBuilderMethods, $originalBuilderMethods);
+
+        if (!$newMethodsFromNewBuilder) {
+            return;
+        }
+
+        // after we have retrieved the builder's methods
+        // get the class of the builder based on the FQCN option
+        $builderClassBasedOnFQCNOption = $this->getClassNameInDestinationFile($model, get_class($model->newModelQuery()));
+
+        foreach ($newMethodsFromNewBuilder as $builderMethod) {
+            $reflection = new \ReflectionMethod($fullBuilderClass, $builderMethod);
+            $args = $this->getParameters($reflection);
+
+            $this->setMethod(
+                $builderMethod,
+                $builderClassBasedOnFQCNOption . '|' . $this->getClassNameInDestinationFile($model, get_class($model)),
+                $args
+            );
+        }
+    }
+
+    protected function getParamType(\ReflectionMethod $method, \ReflectionParameter $parameter): ?string
+    {
+        if ($paramType = $parameter->getType()) {
+            $parameterName = $paramType->getName();
+
+            if (!$paramType->isBuiltin()) {
+                $parameterName = '\\' . $parameterName;
+            }
+
+            if ($paramType->allowsNull()) {
+                return '?' . $parameterName;
+            }
+
+            return $parameterName;
+        }
+
+        $docComment = $method->getDocComment();
+
+        if (!$docComment) {
+            return null;
+        }
+
+        preg_match(
+            '/@param ((?:(?:[\w?|\\\\<>])+(?:\[])?)+)/',
+            $docComment ?? '',
+            $matches
+        );
+        $type = $matches[1] ?? null;
+
+        if (strpos($type, '|') !== false) {
+            $types = explode('|', $type);
+
+            // if we have more than 2 types
+            // we return null as we cannot use unions in php yet
+            if (count($types) > 2) {
+                return null;
+            }
+
+            $hasNull = false;
+
+            foreach ($types as $currentType) {
+                if ($currentType === 'null') {
+                    $hasNull = true;
+                    continue;
+                }
+
+                // if we didn't find null assign the current type to the type we want
+                $type = $currentType;
+            }
+
+            // if we haven't found null type set
+            // we return null as we cannot use unions with different types yet
+            if (!$hasNull) {
+                return null;
+            }
+
+            $type = '?' . $type;
+        }
+
+        // convert to proper type hint types in php
+        $type = str_replace(['boolean', 'integer'], ['bool', 'int'], $type);
+
+        $allowedTypes = [
+            'int',
+            'bool',
+            'string',
+            'float',
+        ];
+
+        // we replace the ? with an empty string so we can check the actual type
+        if (!in_array(str_replace('?', '', $type), $allowedTypes)) {
+            return null;
+        }
+
+        // if we have a match on index 1
+        // then we have found the type of the variable if not we return null
+        return $type;
     }
 }

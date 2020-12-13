@@ -428,7 +428,18 @@ EOT
             'github-expose-hostname' => array($booleanValidator, $booleanNormalizer),
             'htaccess-protect' => array($booleanValidator, $booleanNormalizer),
             'lock' => array($booleanValidator, $booleanNormalizer),
-            'platform-check' => array($booleanValidator, $booleanNormalizer),
+            'platform-check' => array(
+                function ($val) {
+                    return in_array($val, array('php-only', 'true', 'false', '1', '0'), true);
+                },
+                function ($val) {
+                    if ('php-only' === $val) {
+                        return 'php-only';
+                    }
+
+                    return $val !== 'false' && (bool) $val;
+                },
+            ),
         );
         $multiConfigValues = array(
             'github-protocols' => array(
@@ -703,6 +714,9 @@ EOT
                 }
                 $this->configSource->removeConfigSetting($matches[1].'.'.$matches[2]);
                 $this->authConfigSource->addConfigSetting($matches[1].'.'.$matches[2], array('consumer-key' => $values[0], 'consumer-secret' => $values[1]));
+            } elseif ($matches[1] === 'gitlab-token' && 2 === count($values)) {
+                $this->configSource->removeConfigSetting($matches[1].'.'.$matches[2]);
+                $this->authConfigSource->addConfigSetting($matches[1].'.'.$matches[2], array('username' => $values[0], 'token' => $values[1]));
             } elseif (in_array($matches[1], array('github-oauth', 'gitlab-oauth', 'gitlab-token', 'bearer'), true)) {
                 if (1 !== count($values)) {
                     throw new \RuntimeException('Too many arguments, expected only one token');

@@ -2,6 +2,10 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 0.5.1 - 2020-12-07
+
+- PHP 8 Support.
+
 ## 0.5.0 - 2020-09-08
 
 - Add previous `ClientException` when constructing `CouldNotSendNotification` exception. PR [#86](https://github.com/laravel-notification-channels/telegram/pull/86).

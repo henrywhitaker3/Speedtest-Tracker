@@ -550,7 +550,6 @@ class RemoteFilesystem
                 // passing `null` to file_get_contents will convert `null` to `0` and return 0 bytes
                 $result = file_get_contents($fileUrl, false, $context);
             }
-
         } catch (\Throwable $e) {
         } catch (\Exception $e) {
         }
@@ -823,7 +822,7 @@ class RemoteFilesystem
                     $result = file_get_contents('compress.zlib://data:application/octet-stream;base64,'.base64_encode($result));
                 }
 
-                if (!$result) {
+                if ($result === false) {
                     throw new TransportException('Failed to decode zlib stream');
                 }
             }

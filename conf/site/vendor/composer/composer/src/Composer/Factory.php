@@ -335,6 +335,11 @@ class Factory
         if ($fullLoad) {
             // load auth configs into the IO instance
             $io->loadConfiguration($config);
+
+            // load existing Composer\InstalledVersions instance if available
+            if (!class_exists('Composer\InstalledVersions', false) && file_exists($installedVersionsPath = $config->get('vendor-dir').'/composer/InstalledVersions.php')) {
+                include $installedVersionsPath;
+            }
         }
 
         $httpDownloader = self::createHttpDownloader($io, $config);
@@ -422,8 +427,8 @@ class Factory
     }
 
     /**
-     * @param  IOInterface $io             IO instance
-     * @param  bool        $disablePlugins Whether plugins should not be loaded
+     * @param  IOInterface   $io             IO instance
+     * @param  bool          $disablePlugins Whether plugins should not be loaded
      * @return Composer|null
      */
     public static function createGlobal(IOInterface $io, $disablePlugins = false)
@@ -593,9 +598,9 @@ class Factory
     /**
      * If you are calling this in a plugin, you probably should instead use $composer->getLoop()->getHttpDownloader()
      *
-     * @param  IOInterface      $io      IO instance
-     * @param  Config           $config  Config instance
-     * @param  array            $options Array of options passed directly to HttpDownloader constructor
+     * @param  IOInterface    $io      IO instance
+     * @param  Config         $config  Config instance
+     * @param  array          $options Array of options passed directly to HttpDownloader constructor
      * @return HttpDownloader
      */
     public static function createHttpDownloader(IOInterface $io, Config $config, $options = array())

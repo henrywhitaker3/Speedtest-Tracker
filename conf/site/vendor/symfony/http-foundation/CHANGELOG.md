@@ -1,6 +1,20 @@
 CHANGELOG
 =========
 
+5.2.0
+-----
+
+ * added support for `X-Forwarded-Prefix` header
+ * added `HeaderUtils::parseQuery()`: it does the same as `parse_str()` but preserves dots in variable names
+ * added `File::getContent()`
+ * added ability to use comma separated ip addresses for `RequestMatcher::matchIps()`
+ * added `Request::toArray()` to parse a JSON request body to an array
+ * added `RateLimiter\RequestRateLimiterInterface` and `RateLimiter\AbstractRequestRateLimiter`
+ * deprecated not passing a `Closure` together with `FILTER_CALLBACK` to `ParameterBag::filter()`; wrap your filter in a closure instead.
+ * Deprecated the `Request::HEADER_X_FORWARDED_ALL` constant, use either `HEADER_X_FORWARDED_FOR | HEADER_X_FORWARDED_HOST | HEADER_X_FORWARDED_PORT | HEADER_X_FORWARDED_PROTO` or `HEADER_X_FORWARDED_AWS_ELB` or `HEADER_X_FORWARDED_TRAEFIK` constants instead.
+ * Deprecated `BinaryFileResponse::create()`, use `__construct()` instead
+
+
 5.1.0
 -----
 

@@ -82,7 +82,7 @@ License: MIT
  */
 
 /** @license React v16.13.1
- * react-dom.production.min.js
+ * react-is.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -90,8 +90,8 @@ License: MIT
  * LICENSE file in the root directory of this source tree.
  */
 
-/** @license React v16.13.1
- * react-is.production.min.js
+/** @license React v16.14.0
+ * react-dom.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
  *

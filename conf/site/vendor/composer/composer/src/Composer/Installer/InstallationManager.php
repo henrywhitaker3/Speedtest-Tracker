@@ -25,7 +25,6 @@ use Composer\DependencyResolver\Operation\UninstallOperation;
 use Composer\DependencyResolver\Operation\MarkAliasInstalledOperation;
 use Composer\DependencyResolver\Operation\MarkAliasUninstalledOperation;
 use Composer\EventDispatcher\EventDispatcher;
-use Composer\Util\StreamContextFactory;
 use Composer\Util\Loop;
 use React\Promise\PromiseInterface;
 
@@ -183,6 +182,7 @@ class InstallationManager
         $cleanupPromises = array();
 
         $loop = $this->loop;
+        $io = $this->io;
         $runCleanup = function () use (&$cleanupPromises, $loop) {
             $promises = array();
 
@@ -213,7 +213,8 @@ class InstallationManager
         if ($handleInterruptsUnix) {
             pcntl_async_signals(true);
             $prevHandler = pcntl_signal_get_handler(SIGINT);
-            pcntl_signal(SIGINT, function ($sig) use ($runCleanup, $prevHandler) {
+            pcntl_signal(SIGINT, function ($sig) use ($runCleanup, $prevHandler, $io) {
+                $io->writeError('Received SIGINT, aborting', true, IOInterface::DEBUG);
                 $runCleanup();
 
                 if (!in_array($prevHandler, array(SIG_DFL, SIG_IGN), true)) {
@@ -224,7 +225,11 @@ class InstallationManager
             });
         }
         if ($handleInterruptsWindows) {
-            $windowsHandler = function () use ($runCleanup) {
+            $windowsHandler = function ($event) use ($runCleanup, $io) {
+                if ($event !== PHP_WINDOWS_EVENT_CTRL_C) {
+                    return;
+                }
+                $io->writeError('Received CTRL+C, aborting', true, IOInterface::DEBUG);
                 $runCleanup();
 
                 exit(130);
@@ -287,7 +292,7 @@ class InstallationManager
     }
 
     /**
-     * @param array $operations List of operations to execute in this batch
+     * @param array $operations    List of operations to execute in this batch
      * @param array $allOperations Complete list of operations to be executed in the install job, used for event listeners
      */
     private function downloadAndExecuteBatch(RepositoryInterface $repo, array $operations, array &$cleanupPromises, $devMode, $runScripts, array $allOperations)
@@ -364,12 +369,13 @@ class InstallationManager
     }
 
     /**
-     * @param array $operations List of operations to execute in this batch
+     * @param array $operations    List of operations to execute in this batch
      * @param array $allOperations Complete list of operations to be executed in the install job, used for event listeners
      */
     private function executeBatch(RepositoryInterface $repo, array $operations, array $cleanupPromises, $devMode, $runScripts, array $allOperations)
     {
         $promises = array();
+        $postExecCallbacks = array();
 
         foreach ($operations as $index => $operation) {
             $opType = $operation->getOperationType();
@@ -411,18 +417,20 @@ class InstallationManager
             $promise = $promise->then(function () use ($opType, $installManager, $repo, $operation) {
                 return $installManager->$opType($repo, $operation);
             })->then($cleanupPromises[$index])
-            ->then(function () use ($opType, $runScripts, $dispatcher, $installManager, $devMode, $repo, $allOperations, $operation) {
+            ->then(function () use ($installManager, $devMode, $repo) {
                 $repo->write($devMode, $installManager);
-
-                $event = 'Composer\Installer\PackageEvents::POST_PACKAGE_'.strtoupper($opType);
-                if (defined($event) && $runScripts && $dispatcher) {
-                    $dispatcher->dispatchPackageEvent(constant($event), $devMode, $repo, $allOperations, $operation);
-                }
             }, function ($e) use ($opType, $package, $io) {
                 $io->writeError('    <error>' . ucfirst($opType) .' of '.$package->getPrettyName().' failed</error>');
 
                 throw $e;
             });
+
+            $postExecCallbacks[] = function () use ($opType, $runScripts, $dispatcher, $devMode, $repo, $allOperations, $operation) {
+                $event = 'Composer\Installer\PackageEvents::POST_PACKAGE_'.strtoupper($opType);
+                if (defined($event) && $runScripts && $dispatcher) {
+                    $dispatcher->dispatchPackageEvent(constant($event), $devMode, $repo, $allOperations, $operation);
+                }
+            };
 
             $promises[] = $promise;
         }
@@ -430,6 +438,10 @@ class InstallationManager
         // execute all prepare => installs/updates/removes => cleanup steps
         if (count($promises)) {
             $this->waitOnPromises($promises);
+        }
+
+        foreach ($postExecCallbacks as $cb) {
+            $cb();
         }
     }
 

@@ -128,6 +128,13 @@ class SlackAttachment
     public $timestamp;
 
     /**
+     * The attachment's callback ID.
+     *
+     * @var int
+     */
+    public $callbackId;
+
+    /**
      * Set the title of the attachment.
      *
      * @param  string  $title
@@ -342,6 +349,19 @@ class SlackAttachment
     public function timestamp($timestamp)
     {
         $this->timestamp = $this->availableAt($timestamp);
+
+        return $this;
+    }
+
+    /**
+     * Set the callback ID.
+     *
+     * @param  string  $callbackId
+     * @return $this
+     */
+    public function callbackId($callbackId)
+    {
+        $this->callbackId = $callbackId;
 
         return $this;
     }

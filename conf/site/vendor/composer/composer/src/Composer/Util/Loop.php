@@ -12,7 +12,6 @@
 
 namespace Composer\Util;
 
-use Composer\Util\HttpDownloader;
 use React\Promise\Promise;
 use Symfony\Component\Console\Helper\ProgressBar;
 
@@ -25,8 +24,10 @@ class Loop
     private $httpDownloader;
     /** @var ProcessExecutor|null */
     private $processExecutor;
-    /** @var Promise[]|null */
-    private $currentPromises;
+    /** @var Promise[][] */
+    private $currentPromises = array();
+    /** @var int */
+    private $waitIndex = 0;
 
     public function __construct(HttpDownloader $httpDownloader, ProcessExecutor $processExecutor = null)
     {
@@ -61,13 +62,17 @@ class Loop
         $uncaught = null;
 
         \React\Promise\all($promises)->then(
-            function () { },
+            function () {
+            },
             function ($e) use (&$uncaught) {
                 $uncaught = $e;
             }
         );
 
-        $this->currentPromises = $promises;
+        // keep track of every group of promises that is waited on, so abortJobs can
+        // cancel them all, even if wait() was called within a wait()
+        $waitIndex = $this->waitIndex++;
+        $this->currentPromises[$waitIndex] = $promises;
 
         if ($progress) {
             $totalJobs = 0;
@@ -101,7 +106,7 @@ class Loop
             usleep(5000);
         }
 
-        $this->currentPromises = null;
+        unset($this->currentPromises[$waitIndex]);
         if ($uncaught) {
             throw $uncaught;
         }
@@ -109,8 +114,8 @@ class Loop
 
     public function abortJobs()
     {
-        if ($this->currentPromises) {
-            foreach ($this->currentPromises as $promise) {
+        foreach ($this->currentPromises as $promiseGroup) {
+            foreach ($promiseGroup as $promise) {
                 $promise->cancel();
             }
         }

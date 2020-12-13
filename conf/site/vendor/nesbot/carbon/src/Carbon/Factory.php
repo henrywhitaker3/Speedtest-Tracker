@@ -82,7 +82,7 @@ use ReflectionMethod;
  * @method int                                                getWeekStartsAt()                                                                                                                  Get the first day of week
  * @method array                                              getWeekendDays()                                                                                                                   Get weekend days
  * @method bool                                               hasFormat($date, $format)                                                                                                          Checks if the (date)time string is in a given format.
- * @method bool                                               hasFormatWithModifiers(string $date, string $format)                                                                               Checks if the (date)time string is in a given format.
+ * @method bool                                               hasFormatWithModifiers($date, $format)                                                                                             Checks if the (date)time string is in a given format.
  * @method bool                                               hasMacro($name)                                                                                                                    Checks if macro is registered globally.
  * @method bool                                               hasRelativeKeywords($time)                                                                                                         Determine if a time string will produce a relative date.
  * @method bool                                               hasTestNow()                                                                                                                       Determine if there is a valid test instance set. A valid test instance
@@ -285,10 +285,10 @@ class Factory
 
         if ($settings && isset($settings['timezone'])) {
             $tzParameters = array_filter($method->getParameters(), function ($parameter) {
-                return in_array($parameter->getName(), ['tz', 'timezone'], true);
+                return \in_array($parameter->getName(), ['tz', 'timezone'], true);
             });
 
-            if (count($tzParameters)) {
+            if (\count($tzParameters)) {
                 array_splice($arguments, key($tzParameters), 0, [$settings['timezone']]);
                 unset($settings['timezone']);
             }

@@ -260,8 +260,26 @@ class XdebugHandler
         $this->tryEnableSignals();
         $this->notify(Status::RESTARTING, $command);
 
-        passthru($command, $exitCode);
-        $this->notify(Status::INFO, 'Restarted process exited '.$exitCode);
+        // Prefer proc_open to keep fds intact, because passthru pipes to stdout
+        if (function_exists('proc_open')) {
+            if (defined('PHP_WINDOWS_VERSION_BUILD') && PHP_VERSION_ID < 80000) {
+                $command = '"'.$command.'"';
+            }
+            $process = proc_open($command, array(), $pipes);
+            if (is_resource($process)) {
+                $exitCode = proc_close($process);
+            }
+        } else {
+            passthru($command, $exitCode);
+        }
+
+        if (!isset($exitCode)) {
+            // Unlikely that the default shell cannot be invoked
+            $this->notify(Status::ERROR, 'Unable to restart process');
+            $exitCode = -1;
+        } else {
+            $this->notify(Status::INFO, 'Restarted process exited '.$exitCode);
+        }
 
         if ($this->debug === '2') {
             $this->notify(Status::INFO, 'Temp ini saved: '.$this->tmpIni);

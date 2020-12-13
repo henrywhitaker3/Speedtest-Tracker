@@ -253,12 +253,17 @@ EOT
             ->setApcuAutoloader($apcu, $apcuPrefix)
             ->setUpdate(true)
             ->setInstall(!$input->getOption('no-install'))
-            ->setUpdateAllowList($packages)
             ->setUpdateAllowTransitiveDependencies($updateAllowTransitiveDependencies)
             ->setIgnorePlatformRequirements($ignorePlatformReqs)
             ->setRunScripts(!$input->getOption('no-scripts'))
             ->setDryRun($dryRun)
         ;
+
+        // if no lock is present, we do not do a partial update as
+        // this is not supported by the Installer
+        if ($composer->getLocker()->isLocked()) {
+            $install->setUpdateAllowList($packages);
+        }
 
         $status = $install->run();
         if ($status !== 0) {
@@ -270,6 +275,7 @@ EOT
             foreach ($packages as $package) {
                 if ($composer->getRepositoryManager()->getLocalRepository()->findPackages($package)) {
                     $io->writeError('<error>Removal failed, '.$package.' is still present, it may be required by another package. See `composer why '.$package.'`.</error>');
+
                     return 2;
                 }
             }

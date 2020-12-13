@@ -226,6 +226,9 @@ EOT
             foreach ($requirements as $package => $version) {
                 $composerDefinition[$requireKey][$package] = $version;
                 unset($composerDefinition[$removeKey][$package]);
+                if (isset($composerDefinition[$removeKey]) && count($composerDefinition[$removeKey]) === 0) {
+                    unset($composerDefinition[$removeKey]);
+                }
             }
             $this->json->write($composerDefinition);
         }
@@ -265,7 +268,6 @@ EOT
             $rootPackage->setRequires($links['require']);
             $rootPackage->setDevRequires($links['require-dev']);
         }
-
 
         $updateDevMode = !$input->getOption('update-no-dev');
         $optimize = $input->getOption('optimize-autoloader') || $composer->getConfig()->get('optimize-autoloader');
@@ -340,6 +342,8 @@ EOT
                 return false;
             }
         }
+
+        $manipulator->removeMainKeyIfEmpty($removeKey);
 
         file_put_contents($json->getPath(), $manipulator->getContents());
 

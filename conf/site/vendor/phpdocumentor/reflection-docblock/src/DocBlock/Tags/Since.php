@@ -48,7 +48,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
 
     public function __construct(?string $version = null, ?Description $description = null)
     {
-        Assert::nullOrStringNotEmpty($version);
+        Assert::nullOrNotEmpty($version);
 
         $this->version     = $version;
         $this->description = $description;
@@ -89,6 +89,14 @@ final class Since extends BaseTag implements Factory\StaticMethod
      */
     public function __toString() : string
     {
-        return (string) $this->version . ($this->description ? ' ' . (string) $this->description : '');
+        if ($this->description) {
+            $description = $this->description->render();
+        } else {
+            $description = '';
+        }
+
+        $version = (string) $this->version;
+
+        return $version . ($description !== '' ? ($version !== '' ? ' ' : '') . $description : '');
     }
 }

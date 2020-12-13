@@ -114,6 +114,11 @@
         false,
         false
     ],
+    "ANTLR-PD-fallback": [
+        "ANTLR Software Rights Notice with license fallback",
+        false,
+        false
+    ],
     "Apache-1.0": [
         "Apache License 1.0",
         false,
@@ -232,7 +237,7 @@
     "BSD-2-Clause-FreeBSD": [
         "BSD 2-Clause FreeBSD License",
         false,
-        false
+        true
     ],
     "BSD-2-Clause-NetBSD": [
         "BSD 2-Clause NetBSD License",
@@ -242,6 +247,11 @@
     "BSD-2-Clause-Patent": [
         "BSD-2-Clause Plus Patent License",
         true,
+        false
+    ],
+    "BSD-2-Clause-Views": [
+        "BSD 2-Clause with views sentence",
+        false,
         false
     ],
     "BSD-3-Clause": [
@@ -309,6 +319,11 @@
         true,
         false
     ],
+    "BUSL-1.1": [
+        "Business Source License 1.1",
+        false,
+        false
+    ],
     "bzip2-1.0.5": [
         "bzip2 and libbzip2 License v1.0.5",
         false,
@@ -359,6 +374,16 @@
         false,
         false
     ],
+    "CC-BY-3.0-AT": [
+        "Creative Commons Attribution 3.0 Austria",
+        false,
+        false
+    ],
+    "CC-BY-3.0-US": [
+        "Creative Commons Attribution 3.0 United States",
+        false,
+        false
+    ],
     "CC-BY-4.0": [
         "Creative Commons Attribution 4.0 International",
         false,
@@ -406,6 +431,11 @@
     ],
     "CC-BY-NC-ND-3.0": [
         "Creative Commons Attribution Non Commercial No Derivatives 3.0 Unported",
+        false,
+        false
+    ],
+    "CC-BY-NC-ND-3.0-IGO": [
+        "Creative Commons Attribution Non Commercial No Derivatives 3.0 IGO",
         false,
         false
     ],
@@ -474,6 +504,11 @@
         false,
         false
     ],
+    "CC-BY-SA-2.0-UK": [
+        "Creative Commons Attribution Share Alike 2.0 England and Wales",
+        false,
+        false
+    ],
     "CC-BY-SA-2.5": [
         "Creative Commons Attribution Share Alike 2.5 Generic",
         false,
@@ -481,6 +516,11 @@
     ],
     "CC-BY-SA-3.0": [
         "Creative Commons Attribution Share Alike 3.0 Unported",
+        false,
+        false
+    ],
+    "CC-BY-SA-3.0-AT": [
+        "Creative Commons Attribution-Share Alike 3.0 Austria",
         false,
         false
     ],
@@ -714,6 +754,11 @@
         true,
         false
     ],
+    "EPICS": [
+        "EPICS Open License",
+        false,
+        false
+    ],
     "EPL-1.0": [
         "Eclipse Public License 1.0",
         true,
@@ -799,6 +844,26 @@
         false,
         true
     ],
+    "GFDL-1.1-invariants-only": [
+        "GNU Free Documentation License v1.1 only - invariants",
+        false,
+        false
+    ],
+    "GFDL-1.1-invariants-or-later": [
+        "GNU Free Documentation License v1.1 or later - invariants",
+        false,
+        false
+    ],
+    "GFDL-1.1-no-invariants-only": [
+        "GNU Free Documentation License v1.1 only - no invariants",
+        false,
+        false
+    ],
+    "GFDL-1.1-no-invariants-or-later": [
+        "GNU Free Documentation License v1.1 or later - no invariants",
+        false,
+        false
+    ],
     "GFDL-1.1-only": [
         "GNU Free Documentation License v1.1 only",
         false,
@@ -814,6 +879,26 @@
         false,
         true
     ],
+    "GFDL-1.2-invariants-only": [
+        "GNU Free Documentation License v1.2 only - invariants",
+        false,
+        false
+    ],
+    "GFDL-1.2-invariants-or-later": [
+        "GNU Free Documentation License v1.2 or later - invariants",
+        false,
+        false
+    ],
+    "GFDL-1.2-no-invariants-only": [
+        "GNU Free Documentation License v1.2 only - no invariants",
+        false,
+        false
+    ],
+    "GFDL-1.2-no-invariants-or-later": [
+        "GNU Free Documentation License v1.2 or later - no invariants",
+        false,
+        false
+    ],
     "GFDL-1.2-only": [
         "GNU Free Documentation License v1.2 only",
         false,
@@ -828,6 +913,26 @@
         "GNU Free Documentation License v1.3",
         false,
         true
+    ],
+    "GFDL-1.3-invariants-only": [
+        "GNU Free Documentation License v1.3 only - invariants",
+        false,
+        false
+    ],
+    "GFDL-1.3-invariants-or-later": [
+        "GNU Free Documentation License v1.3 or later - invariants",
+        false,
+        false
+    ],
+    "GFDL-1.3-no-invariants-only": [
+        "GNU Free Documentation License v1.3 only - no invariants",
+        false,
+        false
+    ],
+    "GFDL-1.3-no-invariants-or-later": [
+        "GNU Free Documentation License v1.3 or later - no invariants",
+        false,
+        false
     ],
     "GFDL-1.3-only": [
         "GNU Free Documentation License v1.3 only",
@@ -856,6 +961,11 @@
     ],
     "Glulxe": [
         "Glulxe License",
+        false,
+        false
+    ],
+    "GLWTPL": [
+        "Good Luck With That Public License",
         false,
         false
     ],
@@ -981,6 +1091,11 @@
     ],
     "HPND-sell-variant": [
         "Historical Permission Notice and Disclaimer - sell variant",
+        false,
+        false
+    ],
+    "HTMLTIDY": [
+        "HTML Tidy License",
         false,
         false
     ],
@@ -1241,7 +1356,7 @@
     ],
     "MIT-0": [
         "MIT No Attribution",
-        false,
+        true,
         false
     ],
     "MIT-advertising": [
@@ -1261,6 +1376,11 @@
     ],
     "MIT-feh": [
         "feh License",
+        false,
+        false
+    ],
+    "MIT-open-group": [
+        "MIT Open Group variant",
         false,
         false
     ],
@@ -1377,6 +1497,16 @@
     "NGPL": [
         "Nethack General Public License",
         true,
+        false
+    ],
+    "NIST-PD": [
+        "NIST Public Domain Notice",
+        false,
+        false
+    ],
+    "NIST-PD-fallback": [
+        "NIST Public Domain Notice with license fallback",
+        false,
         false
     ],
     "NLOD-1.0": [
@@ -1601,7 +1731,7 @@
     ],
     "OLDAP-2.8": [
         "Open LDAP Public License v2.8",
-        false,
+        true,
         false
     ],
     "OML": [
@@ -1671,7 +1801,7 @@
     ],
     "PHP-3.01": [
         "PHP License v3.01",
-        false,
+        true,
         false
     ],
     "Plexus": [
@@ -1951,7 +2081,7 @@
     ],
     "Unicode-DFS-2016": [
         "Unicode License Agreement - Data Files and Software (2016)",
-        false,
+        true,
         false
     ],
     "Unicode-TOU": [
@@ -1961,7 +2091,7 @@
     ],
     "Unlicense": [
         "The Unlicense",
-        false,
+        true,
         false
     ],
     "UPL-1.0": [

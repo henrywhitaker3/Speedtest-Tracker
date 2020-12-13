@@ -17,6 +17,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Package\CompletePackage;
 use Composer\Package\Package;
+use Composer\Package\RootPackage;
 use Composer\Package\Version\VersionParser;
 use Composer\Repository\RepositoryInterface;
 use Composer\Repository\InstalledRepository;
@@ -188,7 +189,7 @@ class PluginManager
             $autoloads[] = array($autoloadPackage, $downloadPath);
         }
 
-        $map = $generator->parseAutoloads($autoloads, new Package('dummy', '1.0.0.0', '1.0.0'));
+        $map = $generator->parseAutoloads($autoloads, new RootPackage('dummy/root-package', '1.0.0.0', '1.0.0'));
         $classLoader = $generator->createLoader($map);
         $classLoader->register();
 
@@ -408,7 +409,7 @@ class PluginManager
         );
 
         foreach ($requires as $requireLink) {
-            foreach ($installedRepo->findPackagesWithReplacersAndProviders($requireLink->getTarget(), $requireLink->getConstraint()) as $requiredPackage) {
+            foreach ($installedRepo->findPackagesWithReplacersAndProviders($requireLink->getTarget()) as $requiredPackage) {
                 if (!isset($collected[$requiredPackage->getName()])) {
                     $collected[$requiredPackage->getName()] = $requiredPackage;
                     $collected = $this->collectDependencies($installedRepo, $collected, $requiredPackage);

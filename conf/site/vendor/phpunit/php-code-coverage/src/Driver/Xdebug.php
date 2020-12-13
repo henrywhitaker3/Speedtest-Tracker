@@ -38,8 +38,19 @@ final class Xdebug implements Driver
             throw new RuntimeException('This driver requires Xdebug');
         }
 
-        if (!\ini_get('xdebug.coverage_enable')) {
-            throw new RuntimeException('xdebug.coverage_enable=On has to be set in php.ini');
+        if (\version_compare(\phpversion('xdebug'), '3', '>=')) {
+            $mode = \getenv('XDEBUG_MODE');
+
+            if ($mode === false) {
+                $mode = \ini_get('xdebug.mode');
+            }
+
+            if ($mode === false ||
+                !\in_array('coverage', \explode(',', $mode), true)) {
+                throw new RuntimeException('XDEBUG_MODE=coverage or xdebug.mode=coverage has to be set');
+            }
+        } elseif (!\ini_get('xdebug.coverage_enable')) {
+            throw new RuntimeException('xdebug.coverage_enable=On has to be set');
         }
 
         if ($filter === null) {

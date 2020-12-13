@@ -18,6 +18,9 @@ use Prophecy\Prediction;
 use Prophecy\Exception\Doubler\MethodNotFoundException;
 use Prophecy\Exception\InvalidArgumentException;
 use Prophecy\Exception\Prophecy\MethodProphecyException;
+use ReflectionNamedType;
+use ReflectionType;
+use ReflectionUnionType;
 
 /**
  * Method prophecy.
@@ -70,15 +73,60 @@ class MethodProphecy
             $this->withArguments($arguments);
         }
 
-        if (version_compare(PHP_VERSION, '7.0', '>=') && true === $reflectedMethod->hasReturnType()) {
-            $type = PHP_VERSION_ID >= 70100 ? $reflectedMethod->getReturnType()->getName() : (string) $reflectedMethod->getReturnType();
+        if (true === $reflectedMethod->hasReturnType()) {
 
-            if ('void' === $type) {
+            $reflectionType = $reflectedMethod->getReturnType();
+
+            if ($reflectionType instanceof ReflectionNamedType) {
+                $types = [$reflectionType];
+            }
+            elseif ($reflectionType instanceof ReflectionUnionType) {
+                $types = $reflectionType->getTypes();
+            }
+
+            $types = array_map(
+                function(ReflectionType $type) { return $type->getName(); },
+                $types
+            );
+
+            usort(
+                $types,
+                static function(string $type1, string $type2) {
+
+                    // null is lowest priority
+                    if ($type2 == 'null') {
+                        return -1;
+                    }
+                    elseif ($type1 == 'null') {
+                        return 1;
+                    }
+
+                    // objects are higher priority than scalars
+                    $isObject = static function($type) {
+                        return class_exists($type) || interface_exists($type);
+                    };
+
+                    if($isObject($type1) && !$isObject($type2)) {
+                        return -1;
+                    }
+                    elseif(!$isObject($type1) && $isObject($type2))
+                    {
+                        return 1;
+                    }
+
+                    // don't sort both-scalars or both-objects
+                    return 0;
+                }
+            );
+
+            $defaultType = $types[0];
+
+            if ('void' === $defaultType) {
                 $this->voidReturnType = true;
             }
 
-            $this->will(function () use ($type) {
-                switch ($type) {
+            $this->will(function () use ($defaultType) {
+                switch ($defaultType) {
                     case 'void': return;
                     case 'string': return '';
                     case 'float':  return 0.0;
@@ -92,14 +140,11 @@ class MethodProphecy
 
                     case 'Traversable':
                     case 'Generator':
-                        // Remove eval() when minimum version >=5.5
-                        /** @var callable $generator */
-                        $generator = eval('return function () { yield; };');
-                        return $generator();
+                        return (function () { yield; })();
 
                     default:
                         $prophet = new Prophet;
-                        return $prophet->prophesize($type)->reveal();
+                        return $prophet->prophesize($defaultType)->reveal();
                 }
             });
         }
@@ -203,13 +248,11 @@ class MethodProphecy
             ));
         }
 
-        // Remove eval() when minimum version >=5.5
-        /** @var callable $generator */
-        $generator = eval('return function() use ($items) {
+        $generator =  function() use ($items) {
             foreach ($items as $key => $value) {
                 yield $key => $value;
             }
-        };');
+        };
 
         return $this->will($generator);
     }

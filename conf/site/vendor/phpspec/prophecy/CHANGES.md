@@ -1,3 +1,29 @@
+1.12.1 / 2020/10/29
+===================
+
+* [fixed] Incorrect handling of inherited 'self' return types [@ciaranmcnulty]
+
+1.12.0 / 2020/10/28
+===================
+
+* [added] PHP 8 support [@ciaranmcnulty]
+* [added] Argument::in() and Argument::notIn() [@viniciusalonso]
+* [added] Support for union and mixed types [@ciaranmcnulty]
+* [fixed] Issues caused by introduction of named parameters [@ciaranmcnulty]
+* [fixed] Issues caused by stricter rounding [@ciaranmcnulty]
+
+1.11.1 / 2020/07/08
+===================
+
+* [fixed] can't double objects with `self` type hints (@greg0ire)
+* [fixed] cloned doubes were not loosely comparable (@tkulka)
+
+1.11.0 / 2020/07/07
+===================
+
+* [changed] dropped support for PHP versions earlier than 7.2 (@ciaranmcnulty)
+* [fixed] removed use of Reflection APIs deprecated in PHP 8.0 (@Ayesh)
+
 1.10.3 / 2020/03/05
 ===================
 

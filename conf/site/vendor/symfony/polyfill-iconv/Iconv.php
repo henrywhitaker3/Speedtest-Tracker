@@ -541,10 +541,14 @@ final class Iconv
             $start += $slen;
         }
         if (0 > $start) {
-            return false;
+            if (\PHP_VERSION_ID < 80000) {
+                return false;
+            }
+
+            $start = 0;
         }
         if ($start >= $slen) {
-            return false;
+            return \PHP_VERSION_ID >= 80000 ? '' : false;
         }
 
         $rx = $slen - $start;
@@ -556,7 +560,7 @@ final class Iconv
             return '';
         }
         if (0 > $length) {
-            return false;
+            return \PHP_VERSION_ID >= 80000 ? '' : false;
         }
 
         if ($length > $rx) {
@@ -619,9 +623,9 @@ final class Iconv
                     trigger_error(self::ERROR_ILLEGAL_CHARACTER);
 
                     return false;
-                } else {
-                    $i += $ulen;
                 }
+
+                $i += $ulen;
 
                 $u[$j++] = $uchr[0];
 
@@ -675,9 +679,9 @@ final class Iconv
                 if ($ignore && (1 === $ulen || !($valid || preg_match('/^.$/us', $uchr)))) {
                     ++$i;
                     continue;
-                } else {
-                    $i += $ulen;
                 }
+
+                $i += $ulen;
             }
 
             if (isset($map[$uchr])) {

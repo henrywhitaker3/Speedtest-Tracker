@@ -83,7 +83,7 @@ EOF;
             $routes = $this->getRoutes();
         }
 
-        list($staticRoutes, $dynamicRoutes) = $this->groupStaticRoutes($routes);
+        [$staticRoutes, $dynamicRoutes] = $this->groupStaticRoutes($routes);
 
         $conditions = [null];
         $compiledRoutes[] = $this->compileStaticRoutes($staticRoutes, $conditions);
@@ -131,7 +131,7 @@ EOF;
 
     private function generateCompiledRoutes(): string
     {
-        list($matchHost, $staticRoutes, $regexpCode, $dynamicRoutes, $checkConditionCode) = $this->getCompiledRoutes(true);
+        [$matchHost, $staticRoutes, $regexpCode, $dynamicRoutes, $checkConditionCode] = $this->getCompiledRoutes(true);
 
         $code = self::export($matchHost).', // $matchHost'."\n";
 
@@ -186,7 +186,7 @@ EOF;
                 if ($hasTrailingSlash) {
                     $url = substr($url, 0, -1);
                 }
-                foreach ($dynamicRegex as list($hostRx, $rx, $prefix)) {
+                foreach ($dynamicRegex as [$hostRx, $rx, $prefix]) {
                     if (('' === $prefix || 0 === strpos($url, $prefix)) && (preg_match($rx, $url) || preg_match($rx, $url.'/')) && (!$host || !$hostRx || preg_match($hostRx, $host))) {
                         $dynamicRegex[] = [$hostRegex, $regex, $staticPrefix];
                         $dynamicRoutes->add($name, $route);
@@ -221,7 +221,7 @@ EOF;
 
         foreach ($staticRoutes as $url => $routes) {
             $compiledRoutes[$url] = [];
-            foreach ($routes as $name => list($route, $hasTrailingSlash)) {
+            foreach ($routes as $name => [$route, $hasTrailingSlash]) {
                 $compiledRoutes[$url][] = $this->compileRoute($route, $name, (!$route->compile()->getHostVariables() ? $route->getHost() : $route->compile()->getHostRegex()) ?: null, $hasTrailingSlash, false, $conditions);
             }
         }
@@ -242,7 +242,7 @@ EOF;
      * Paths that can match two or more routes, or have user-specified conditions are put in separate switch's cases.
      *
      * Last but not least:
-     *  - Because it is not possibe to mix unicode/non-unicode patterns in a single regexp, several of them can be generated.
+     *  - Because it is not possible to mix unicode/non-unicode patterns in a single regexp, several of them can be generated.
      *  - The same regexp can be used several times when the logic in the switch rejects the match. When this happens, the
      *    matching-but-failing subpattern is excluded by replacing its name by "(*F)", which forces a failure-to-match.
      *    To ease this backlisting operation, the name of subpatterns is also the string offset where the replacement should occur.
@@ -287,7 +287,7 @@ EOF;
             $routes->add($name, $route);
         }
 
-        foreach ($perModifiers as list($modifiers, $routes)) {
+        foreach ($perModifiers as [$modifiers, $routes]) {
             $prev = false;
             $perHost = [];
             foreach ($routes->all() as $name => $route) {
@@ -306,7 +306,7 @@ EOF;
             $state->mark += \strlen($rx);
             $state->regex = $rx;
 
-            foreach ($perHost as list($hostRegex, $routes)) {
+            foreach ($perHost as [$hostRegex, $routes]) {
                 if ($matchHost) {
                     if ($hostRegex) {
                         preg_match('#^.\^(.*)\$.[a-zA-Z]*$#', $hostRegex, $rx);
@@ -391,7 +391,7 @@ EOF;
                 continue;
             }
 
-            list($name, $regex, $vars, $route, $hasTrailingSlash, $hasTrailingVar) = $route;
+            [$name, $regex, $vars, $route, $hasTrailingSlash, $hasTrailingVar] = $route;
             $compiledRoute = $route->compile();
             $vars = array_merge($state->hostVars, $vars);
 
