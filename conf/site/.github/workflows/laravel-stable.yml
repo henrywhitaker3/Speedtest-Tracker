@@ -1,0 +1,56 @@
+name: Stable
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  laravel-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+    - name: Update .env with secrets
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        HEALTHCHECKS_UUID: ${{ secrets.HEALTHCHECKS_UUID }}
+      run: |
+        echo SLACK_WEBHOOK=$SLACK_WEBHOOK >> .env
+        echo TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN >> .env
+        echo TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID >> .env
+        echo HEALTHCHECKS_UUID=$HEALTHCHECKS_UUID >> .env
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Create Database
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+    - name: Generate key
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan key:generate
+    - name: Generate JWT key
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan jwt:secret
+    - name: Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+    - name: Download Speedtest binary
+      run: wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz && tar zxvf speedtest.tgz && mv speedtest app/Bin/
+    - name: Accept EULA
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan speedtest:eula
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: vendor/bin/phpunit
