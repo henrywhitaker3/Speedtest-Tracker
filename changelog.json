@@ -1,4 +1,46 @@
 {
+    "1.10.0": [
+        {
+            "description": "Added automated build for ARM.",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.9.10": [
+        {
+            "description": "Laravel will now log into daily files and logs will only be kept for 7 days.",
+            "link": ""
+        }
+    ],
+    "1.9.9": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.9.8": [
+        {
+            "description": "Fixed bug with minimum display setting.",
+            "link": ""
+        }
+    ],
+    "1.9.7": [
+        {
+            "description": "Added option to display minimum values on the top widgets.",
+            "link": ""
+        },
+        {
+            "description": "New general settings section.",
+            "link": ""
+        },
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
     "1.9.6": [
         {
             "description": "Clear the cache on restore.",

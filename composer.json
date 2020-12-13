@@ -15,7 +15,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0",
         "henrywhitaker3/healthchecks-io": "^1.0",
-        "laravel-notification-channels/telegram": "^0.4.0",
+        "laravel-notification-channels/telegram": "^0.5.0",
         "laravel/framework": "^7.0",
         "laravel/slack-notification-channel": "^2.0",
         "laravel/tinker": "^2.0",
