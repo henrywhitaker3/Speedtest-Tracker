@@ -8,12 +8,14 @@ import TestsTable from '../Graphics/TestsTable';
 import Settings from '../Settings/Settings';
 import Login from '../Login';
 import Authentication from '../Authentication/Authentication';
+import Navbar from '../Navbar';
 
 export default class HomePage extends Component {
 
     render() {
         return (
             <div>
+                <Navbar />
                 <div className="my-4">
                     {(window.config.auth == true && window.authenticated == false) &&
                         <Login />
