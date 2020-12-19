@@ -15,9 +15,9 @@ class SettingsController extends Controller
 {
     public function __construct()
     {
-        if((bool)SettingsHelper::get('auth')->value === true) {
+        if ((bool)SettingsHelper::get('auth')->value === true) {
             $this->middleware('auth:api')
-                 ->except([ 'config' ]);
+                ->except(['config']);
         }
     }
 
@@ -51,21 +51,21 @@ class SettingsController extends Controller
     public function store(Request $request)
     {
         $rule = [
-            'name' => [ 'required', 'string', 'min:1' ],
+            'name' => ['required', 'string', 'min:1'],
         ];
-        if($request->name == 'schedule') {
-            $rule['value'] = [ 'required', new Cron ];
+        if ($request->name == 'schedule') {
+            $rule['value'] = ['required', new Cron];
         }
 
         $validator = Validator::make($request->all(), $rule);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'method' => 'Store a setting',
                 'error' => $validator->errors()
             ], 422);
         }
 
-        if(!isset($request->value)) {
+        if (!isset($request->value)) {
             $request->value = '';
         }
 
@@ -86,12 +86,12 @@ class SettingsController extends Controller
     public function bulkStore(Request $request)
     {
         $rule = [
-            'data' => [ 'array', 'required' ],
-            'data.*.name' => [ 'string', 'required' ],
+            'data' => ['array', 'required'],
+            'data.*.name' => ['string', 'required'],
         ];
 
         $validator = Validator::make($request->all(), $rule);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'method' => 'Bulk store a setting',
                 'error' => $validator->errors()
@@ -99,14 +99,14 @@ class SettingsController extends Controller
         }
 
         $settings = [];
-        foreach($request->data as $d) {
-            if(!isset($d['value']) || $d['value'] == null) {
-                    $d['value'] = '';
+        foreach ($request->data as $d) {
+            if (!isset($d['value']) || $d['value'] == null) {
+                $d['value'] = '';
             }
 
-            if($d['name'] == 'speedtest_overview_time') {
-                $ok = [ '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23' ];
-                if(!in_array($d['value'], $ok)) {
+            if ($d['name'] == 'speedtest_overview_time') {
+                $ok = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+                if (!in_array($d['value'], $ok)) {
                     return response()->json([
                         'method' => 'Bulk store a setting',
                         'error' => 'Invalid speedtest_overview_time value'
@@ -116,9 +116,9 @@ class SettingsController extends Controller
 
             $setting = SettingsHelper::get($d['name']);
 
-            if($setting == false) {
+            if ($setting == false) {
                 $setting = SettingsHelper::set($d['name'], $d['value']);
-            } else if(SettingsHelper::settingIsEditable($setting->name)) {
+            } else if (SettingsHelper::settingIsEditable($setting->name)) {
                 $setting = SettingsHelper::set($d['name'], $d['value']);
             } else {
                 continue;
