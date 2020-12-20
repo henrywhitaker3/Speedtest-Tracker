@@ -39,6 +39,10 @@ export default class SettingsIndex extends Component {
                     type: 'text',
                 },
                 {
+                    obj: data.schedule_enabled,
+                    type: 'text',
+                },
+                {
                     obj: data.schedule,
                     type: 'text',
                 },
@@ -187,6 +191,10 @@ export default class SettingsIndex extends Component {
                 {
                     obj: data.healthchecks_enabled,
                     type: 'checkbox'
+                },
+                {
+                    obj: data.healthchecks_server_url,
+                    type: 'text'
                 },
                 {
                     obj: data.healthchecks_uuid,
