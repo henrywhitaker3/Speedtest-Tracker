@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Modal, Button, Tab } from 'react-bootstrap';
 import Axios from 'axios';
-import { toast } from 'react-toastify';
-import SettingsInput from '../SettingsInput';
 
 export default class GeneralSettings extends Component {
     constructor(props) {
@@ -14,7 +12,7 @@ export default class GeneralSettings extends Component {
         }
     }
 
-    inputHandler = () => {
+    inputHandler = (name, val) => {
         var settings = this.state.data;
         var i = 0;
         settings.forEach(ele => {
@@ -30,21 +28,14 @@ export default class GeneralSettings extends Component {
     }
 
     render() {
-        var settings = this.state.data[0];
+        var settings = this.props.generateInputs(this.state.data, this.inputHandler);
 
         return (
             <Tab.Content>
-                General
-                <SettingsInput
-                    name={settings.obj.name}
-                    id={settings.obj.id}
-                    type={settings.type}
-                    value={settings.obj.value}
-                    description={settings.obj.description}
-                    handler={this.inputHandler}
-                    label={settings.obj.name.split('_').join(' ')}
-                    description={settings.obj.description}
-                />
+                {settings}
+                <div className="mt-3">
+                    <button className="btn btn-primary" onClick={() => { this.props.save(this.state.data, 'General') }}>Save</button>
+                </div>
             </Tab.Content>
         );
     }

@@ -9,26 +9,38 @@ export default class Navbar extends Component {
 
         this.state = {
             brand: {
-                name: "Speedtest Tracker",
+                name: window.config.name,
                 url: window.config.base
             },
-            pages: [
-                {
-                    name: 'Home',
-                    url: window.config.base,
-                    authRequired: false
-                },
-                {
-                    name: 'Settings',
-                    url: window.config.base + 'settings',
-                    authRequired: true
-                }
-            ]
         }
     }
 
+    generatePagesArray() {
+        var pages = [
+            {
+                name: 'Home',
+                url: window.config.base,
+                authRequired: false
+            },
+            {
+                name: 'All Tests',
+                url: window.config.base + 'speedtests',
+                authRequired: false
+            },
+            {
+                name: 'Settings',
+                url: window.config.base + 'settings',
+                authRequired: true
+            },
+        ]
+
+        return pages;
+    }
+
     generateLinks = () => {
-        return this.state.pages.map(page => {
+        var pages = this.generatePagesArray();
+
+        return pages.map(page => {
             if(
                 page.authRequired === false ||
                 (
@@ -51,8 +63,8 @@ export default class Navbar extends Component {
         var pages = this.generateLinks();
 
         return (
-            <BootstrapNavbar variant="dark" bg="dark">
-                <BootstrapNavbar.Brand as={Link} to={brand.url}>{brand.name}</BootstrapNavbar.Brand>
+            <BootstrapNavbar variant="dark" bg="dark" expand="sm">
+                <BootstrapNavbar.Brand as={Link} to={brand.url}><img style={{width: '15%'}} src={window.config.base + 'files/icons/fav/android-icon-192x192.png'} /> {brand.name}</BootstrapNavbar.Brand>
                 <BootstrapNavbar.Toggle  aria-controls="basic-navbar-nav" />
                 <BootstrapNavbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
