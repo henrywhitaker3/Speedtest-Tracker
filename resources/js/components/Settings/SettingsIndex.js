@@ -40,7 +40,7 @@ export default class SettingsIndex extends Component {
                 },
                 {
                     obj: data.schedule_enabled,
-                    type: 'text',
+                    type: 'checkbox',
                 },
                 {
                     obj: data.schedule,
