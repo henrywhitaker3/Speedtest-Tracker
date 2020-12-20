@@ -1,10 +1,10 @@
 name: Run tests
 
 on:
-  push:
-  pull_request:
-  schedule:
-      - cron: '0 0 * * *'
+    push:
+    pull_request:
+    schedule:
+        -   cron: '0 0 * * *'
 
 jobs:
     php-tests:
@@ -12,66 +12,32 @@ jobs:
 
         strategy:
             matrix:
-                php: [7.4, 7.3, 7.2]
-                laravel: [7.*]
-                dependency-version: [prefer-lowest, prefer-stable]
-                os: [ubuntu-latest, windows-latest]
-                include:
-                    - laravel: 7.*
-                      testbench: 5.*
+                php: [ 8.0, 7.4, 7.3 ]
+                dependency-version: [ prefer-lowest, prefer-stable ]
+                os: [ ubuntu-latest, windows-latest ]
+                allow_failures:
+                    -   php: 8.0
 
-        name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v1
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
-                  coverage: none
-
-            - name: Install dependencies
-              run: |
-                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-                  composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
-
-            - name: Execute tests
-              run: vendor/bin/phpunit
-
-            - name: Send Slack notification
-              uses: 8398a7/action-slack@v2
-              if: failure()
-              with:
-                  status: ${{ job.status }}
-                  author_name: ${{ github.actor }}
-              env:
-                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    js-tests:
-        runs-on: ubuntu-latest
-
-        name: JavaScript tests
+        name: P${{ matrix.php }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
 
         steps:
             -   name: Checkout code
-                uses: actions/checkout@v1
+                uses: actions/checkout@v2
 
-            -   name: Install dependencies
-                run: yarn install --non-interactive
+            -   name: Set up PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    coverage: none
+                    tools: composer:v2
+
+            -   name: Install PHP 7 dependencies
+                run: composer update --${{ matrix.dependency-version }} --no-interaction --no-progress
+                if: "matrix.php < 8"
+
+            -   name: Install PHP 8 dependencies
+                run: composer update --prefer-stable --ignore-platform-req=php --no-interaction --no-progress
+                if: "matrix.php >= 8"
 
             -   name: Execute tests
-                run: yarn run jest
-
-            - name: Send Slack notification
-              uses: 8398a7/action-slack@v2
-              if: failure()
-              with:
-                  status: ${{ job.status }}
-                  author_name: ${{ github.actor }}
-              env:
-                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                run: vendor/bin/phpunit

@@ -2,6 +2,8 @@
 
 namespace Doctrine\DBAL;
 
+use Doctrine\DBAL\Types\Type;
+
 use function array_fill;
 use function array_fill_keys;
 use function array_key_exists;
@@ -24,6 +26,8 @@ use const PREG_OFFSET_CAPTURE;
 
 /**
  * Utility class that parses sql statements with regard to types and parameters.
+ *
+ * @internal
  */
 class SQLParserUtils
 {
@@ -64,7 +68,7 @@ class SQLParserUtils
     /**
      * Returns a zero-indexed list of placeholder position.
      *
-     * @return int[]
+     * @return list<int>
      */
     private static function getPositionalPlaceholderPositions(string $statement): array
     {
@@ -81,7 +85,7 @@ class SQLParserUtils
     /**
      * Returns a map of placeholder positions to their parameter names.
      *
-     * @return string[]
+     * @return array<int,string>
      */
     private static function getNamedPlaceholderPositions(string $statement): array
     {
@@ -128,9 +132,9 @@ class SQLParserUtils
     /**
      * For a positional query this method can rewrite the sql statement with regard to array parameters.
      *
-     * @param string                 $query  The SQL query to execute.
-     * @param mixed[]                $params The parameters to bind to the query.
-     * @param array<string|int|null> $types  The types the previous parameters are in.
+     * @param string                                                               $query  SQL query
+     * @param mixed[]                                                              $params Query parameters
+     * @param array<int, Type|int|string|null>|array<string, Type|int|string|null> $types  Parameter types
      *
      * @return mixed[]
      *

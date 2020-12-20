@@ -3,9 +3,9 @@
 namespace Doctrine\DBAL\Id;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\LockMode;
 use Throwable;
 
@@ -66,16 +66,19 @@ class TableGenerator
     /**
      * @param string $generatorTableName
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function __construct(Connection $conn, $generatorTableName = 'sequences')
     {
-        $params = $conn->getParams();
-        if ($params['driver'] === 'pdo_sqlite') {
-            throw new DBALException('Cannot use TableGenerator with SQLite.');
+        if ($conn->getDriver() instanceof Driver\PDOSqlite\Driver) {
+            throw new Exception('Cannot use TableGenerator with SQLite.');
         }
 
-        $this->conn = DriverManager::getConnection($params, $conn->getConfiguration(), $conn->getEventManager());
+        $this->conn = DriverManager::getConnection(
+            $conn->getParams(),
+            $conn->getConfiguration(),
+            $conn->getEventManager()
+        );
 
         $this->generatorTableName = $generatorTableName;
     }
@@ -87,7 +90,7 @@ class TableGenerator
      *
      * @return int
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function nextValue($sequence)
     {
@@ -108,8 +111,7 @@ class TableGenerator
             $sql      = 'SELECT sequence_value, sequence_increment_by'
                 . ' FROM ' . $platform->appendLockHint($this->generatorTableName, LockMode::PESSIMISTIC_WRITE)
                 . ' WHERE sequence_name = ? ' . $platform->getWriteLockSQL();
-            $stmt     = $this->conn->executeQuery($sql, [$sequence]);
-            $row      = $stmt->fetch(FetchMode::ASSOCIATIVE);
+            $row      = $this->conn->fetchAssociative($sql, [$sequence]);
 
             if ($row !== false) {
                 $row = array_change_key_case($row, CASE_LOWER);
@@ -129,10 +131,10 @@ class TableGenerator
                 $sql  = 'UPDATE ' . $this->generatorTableName . ' ' .
                        'SET sequence_value = sequence_value + sequence_increment_by ' .
                        'WHERE sequence_name = ? AND sequence_value = ?';
-                $rows = $this->conn->executeUpdate($sql, [$sequence, $row['sequence_value']]);
+                $rows = $this->conn->executeStatement($sql, [$sequence, $row['sequence_value']]);
 
                 if ($rows !== 1) {
-                    throw new DBALException('Race-condition detected while updating sequence. Aborting generation');
+                    throw new Exception('Race-condition detected while updating sequence. Aborting generation');
                 }
             } else {
                 $this->conn->insert(
@@ -146,7 +148,7 @@ class TableGenerator
         } catch (Throwable $e) {
             $this->conn->rollBack();
 
-            throw new DBALException(
+            throw new Exception(
                 'Error occurred while generating ID with TableGenerator, aborted generation: ' . $e->getMessage(),
                 0,
                 $e

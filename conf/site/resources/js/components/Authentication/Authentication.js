@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Collapse, Button, Modal } from 'react-bootstrap';
+import { Row, Col} from 'react-bootstrap';
 import SessionsTable from './SessionsTable';
 import ResetPassword from './ResetPassword';
 
@@ -44,34 +44,18 @@ export default class Authentication extends Component {
 
         if( (window.config.auth == true && window.authenticated == true)) {
             return (
-                <Container className="mb-4">
+                <div>
                     <Row>
-                        <Col sm={{ span: 12 }} className="mb-3 text-center">
-                            <div className="mouse"  aria-controls="testsTable" onClick={this.toggleCollapse} aria-expanded={showCollapse}>
-                                <h4 className="d-inline mr-2">Authentication</h4>
-                                {(showCollapse) ?
-                                    <span className="ti-angle-up"></span>
-                                :
-                                    <span className="ti-angle-down"></span>
-                                }
-                            </div>
+                        <Col sm={{ span: 12 }} className="text-center">
+                            <ResetPassword />
                         </Col>
                     </Row>
-                    <Collapse in={showCollapse}>
-                        <div>
-                            <Row>
-                                <Col sm={{ span: 12 }} className="text-center">
-                                    <ResetPassword />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col sm={{ span: 12 }} className="text-center">
-                                    <SessionsTable />
-                                </Col>
-                            </Row>
-                        </div>
-                    </Collapse>
-                </Container>
+                    <Row>
+                        <Col sm={{ span: 12 }} className="text-center">
+                            <SessionsTable />
+                        </Col>
+                    </Row>
+                </div>
             );
         } else {
             return (

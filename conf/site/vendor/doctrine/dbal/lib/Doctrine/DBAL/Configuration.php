@@ -11,8 +11,8 @@ use function preg_match;
 /**
  * Configuration container for the Doctrine DBAL.
  *
- * @internal When adding a new configuration option just write a getter/setter
- *           pair and add the option to the _attributes array with a proper default value.
+ * Internal note: When adding a new configuration option just write a getter/setter
+ *                pair and add the option to the _attributes array with a proper default value.
  */
 class Configuration
 {
@@ -73,7 +73,7 @@ class Configuration
      *
      * @deprecated Use Configuration::setSchemaAssetsFilter() instead
      *
-     * @param string $filterExpression
+     * @param string|null $filterExpression
      *
      * @return void
      */

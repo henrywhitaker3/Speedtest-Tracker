@@ -2,7 +2,7 @@
 
 namespace Doctrine\DBAL\Schema;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Visitor\Visitor;
 use Doctrine\DBAL\Types\Type;
 
@@ -29,7 +29,7 @@ class Table extends AbstractAsset
     /** @var Index[] */
     protected $_indexes = [];
 
-    /** @var string */
+    /** @var string|false */
     protected $_primaryKeyName = false;
 
     /** @var ForeignKeyConstraint[] */
@@ -41,7 +41,7 @@ class Table extends AbstractAsset
     ];
 
     /** @var SchemaConfig|null */
-    protected $_schemaConfig = null;
+    protected $_schemaConfig;
 
     /**
      * @param string                 $name
@@ -51,7 +51,7 @@ class Table extends AbstractAsset
      * @param int                    $idGeneratorType
      * @param mixed[]                $options
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function __construct(
         $name,
@@ -62,7 +62,7 @@ class Table extends AbstractAsset
         array $options = []
     ) {
         if (strlen($name) === 0) {
-            throw DBALException::invalidTableName($name);
+            throw Exception::invalidTableName($name);
         }
 
         $this->_setName($name);
@@ -150,6 +150,10 @@ class Table extends AbstractAsset
      */
     public function dropPrimaryKey()
     {
+        if ($this->_primaryKeyName === false) {
+            return;
+        }
+
         $this->dropIndex($this->_primaryKeyName);
         $this->_primaryKeyName = false;
     }
@@ -316,11 +320,11 @@ class Table extends AbstractAsset
      *
      * @return void
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function renameColumn($oldName, $name)
     {
-        throw new DBALException('Table#renameColumn() was removed, because it drops and recreates ' .
+        throw new Exception('Table#renameColumn() was removed, because it drops and recreates ' .
             'the column instead. There is no fix available, because a schema diff cannot reliably detect if a ' .
             'column was renamed or one column was created and another one dropped.');
     }
@@ -554,11 +558,13 @@ class Table extends AbstractAsset
 
         $this->_fkConstraints[$name] = $constraint;
 
-        // Add an explicit index on the foreign key columns.
-        // If there is already an index that fulfils this requirements drop the request.
-        // In the case of __construct calling this method during hydration from schema-details
-        // all the explicitly added indexes lead to duplicates. This creates computation overhead in this case,
-        // however no duplicate indexes are ever added (based on columns).
+        /* Add an implicit index (defined by the DBAL) on the foreign key
+           columns. If there is already a user-defined index that fulfills these
+           requirements drop the request. In the case of __construct() calling
+           this method during hydration from schema-details, all the explicitly
+           added indexes lead to duplicates. This creates computation overhead in
+           this case, however no duplicate indexes are ever added (based on
+           columns). */
         $indexName = $this->_generateIdentifierName(
             array_merge([$this->getName()], $constraint->getColumns()),
             'idx',
@@ -715,11 +721,11 @@ class Table extends AbstractAsset
      */
     public function getPrimaryKey()
     {
-        if (! $this->hasPrimaryKey()) {
-            return null;
+        if ($this->_primaryKeyName !== false) {
+            return $this->getIndex($this->_primaryKeyName);
         }
 
-        return $this->getIndex($this->_primaryKeyName);
+        return null;
     }
 
     /**
@@ -727,14 +733,14 @@ class Table extends AbstractAsset
      *
      * @return string[]
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function getPrimaryKeyColumns()
     {
         $primaryKey = $this->getPrimaryKey();
 
         if ($primaryKey === null) {
-            throw new DBALException('Table ' . $this->getName() . ' has no primary key.');
+            throw new Exception('Table ' . $this->getName() . ' has no primary key.');
         }
 
         return $primaryKey->getColumns();

@@ -16,20 +16,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get(SettingsHelper::getBase() . 'files/{path?}', function($file) {
+Route::get(SettingsHelper::getBase() . 'files/{path?}', function ($file) {
     $fileP = explode('?', $file)[0];
     $fileP = public_path() . '/' . $fileP;
-    if(file_exists($fileP)) {
+    if (file_exists($fileP)) {
         $contents = File::get($fileP);
         $mime = \GuzzleHttp\Psr7\mimetype_from_filename($fileP);
-        return Response::make(File::get($fileP), 200, [ 'Content-type' => $mime ]);
+        return Response::make(File::get($fileP), 200, ['Content-type' => $mime]);
     } else {
         abort(404);
     }
 })->where('path', '.*')
-  ->name('files');
+    ->name('files');
 
-Route::get('/{path?}', function() {
-    return view('app', [ 'title' => 'Speedtest Tracker' ]);
+Route::get('/{path?}', function () {
+    return view('app', ['title' => SettingsHelper::get('app_name')->value]);
 })->where('path', '^((?!\/api\/).)*$')
-  ->name('react');
+    ->name('react');

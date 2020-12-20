@@ -2,6 +2,10 @@
 
 All notable changes to `flare-client-php` will be documented in this file
 
+## 1.3.7 - 2020-10-21
+
+- allow PHP 8
+
 ## 1.3.6 - 2020-09-18
 
 - remove `larapack/dd` (#15)

@@ -50,7 +50,7 @@ class ShellInput extends StringInput
         $hasCodeArgument = false;
 
         if ($definition->getArgumentCount() > 0) {
-            $args    = $definition->getArguments();
+            $args = $definition->getArguments();
             $lastArg = \array_pop($args);
             foreach ($args as $arg) {
                 if ($arg instanceof CodeArgument) {
@@ -88,17 +88,17 @@ class ShellInput extends StringInput
         $cursor = 0;
         while ($cursor < $length) {
             if (\preg_match('/\s+/A', $input, $match, 0, $cursor)) {
-            } elseif (\preg_match('/([^="\'\s]+?)(=?)(' . StringInput::REGEX_QUOTED_STRING . '+)/A', $input, $match, 0, $cursor)) {
+            } elseif (\preg_match('/([^="\'\s]+?)(=?)('.StringInput::REGEX_QUOTED_STRING.'+)/A', $input, $match, 0, $cursor)) {
                 $tokens[] = [
-                    $match[1] . $match[2] . \stripcslashes(\str_replace(['"\'', '\'"', '\'\'', '""'], '', \substr($match[3], 1, \strlen($match[3]) - 2))),
+                    $match[1].$match[2].\stripcslashes(\str_replace(['"\'', '\'"', '\'\'', '""'], '', \substr($match[3], 1, \strlen($match[3]) - 2))),
                     \stripcslashes(\substr($input, $cursor)),
                 ];
-            } elseif (\preg_match('/' . StringInput::REGEX_QUOTED_STRING . '/A', $input, $match, 0, $cursor)) {
+            } elseif (\preg_match('/'.StringInput::REGEX_QUOTED_STRING.'/A', $input, $match, 0, $cursor)) {
                 $tokens[] = [
                     \stripcslashes(\substr($match[0], 1, \strlen($match[0]) - 2)),
                     \stripcslashes(\substr($input, $cursor)),
                 ];
-            } elseif (\preg_match('/' . StringInput::REGEX_STRING . '/A', $input, $match, 0, $cursor)) {
+            } elseif (\preg_match('/'.StringInput::REGEX_STRING.'/A', $input, $match, 0, $cursor)) {
                 $tokens[] = [
                     \stripcslashes($match[1]),
                     \stripcslashes(\substr($input, $cursor)),
@@ -255,7 +255,7 @@ class ShellInput extends StringInput
             if (0 === \strlen($value = \substr($name, $pos + 1))) {
                 // if no value after "=" then substr() returns "" since php7 only, false before
                 // see http://php.net/manual/fr/migration70.incompatible.php#119151
-                if (PHP_VERSION_ID < 70000 && false === $value) {
+                if (\PHP_VERSION_ID < 70000 && false === $value) {
                     $value = '';
                 }
                 \array_unshift($this->parsed, [$value, null]);
@@ -315,7 +315,7 @@ class ShellInput extends StringInput
             }
         }
 
-        if (null === $value) {
+        if ($value === null) {
             if ($option->isValueRequired()) {
                 throw new \RuntimeException(\sprintf('The "--%s" option requires a value.', $name));
             }

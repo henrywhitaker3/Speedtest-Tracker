@@ -52,19 +52,19 @@ class SpeedtestJob implements ShouldQueue
      */
     public function handle()
     {
-        if($this->config['healthchecks_enabled'] === true) {
+        if ($this->config['healthchecks_enabled'] === true) {
             $this->healthcheck('start');
         }
         $output = SpeedtestHelper::output();
         $speedtest = SpeedtestHelper::runSpeedtest($output, $this->scheduled);
-        if($speedtest == false) {
-            if($this->config['healthchecks_enabled'] === true) {
+        if ($speedtest == false) {
+            if ($this->config['healthchecks_enabled'] === true) {
                 $this->healthcheck('fail');
             }
 
             event(new SpeedtestFailedEvent());
         } else {
-            if($this->config['healthchecks_enabled'] === true) {
+            if ($this->config['healthchecks_enabled'] === true) {
                 $this->healthcheck('success');
             }
 
@@ -82,19 +82,19 @@ class SpeedtestJob implements ShouldQueue
     private function healthcheck(String $method)
     {
         try {
-            $hc = new Healthchecks(SettingsHelper::get('healthchecks_uuid')->value);
-            if($method === 'start') {
+            $hc = new Healthchecks(SettingsHelper::get('healthchecks_uuid')->value, SettingsHelper::get('healthchecks_server_url')->value);
+            if ($method === 'start') {
                 $hc->start();
             }
 
-            if($method === 'success') {
+            if ($method === 'success') {
                 $hc->success();
             }
 
-            if($method === 'fail') {
+            if ($method === 'fail') {
                 $hc->fail();
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         }
     }

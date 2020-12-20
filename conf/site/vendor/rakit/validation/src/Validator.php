@@ -51,7 +51,7 @@ class Validator
      */
     public function getValidator($key)
     {
-        return isset($this->validators[$key])? $this->validators[$key] : null;
+        return isset($this->validators[$key]) ? $this->validators[$key] : null;
     }
 
     /**
@@ -137,6 +137,7 @@ class Validator
             'between'                   => new Rules\Between,
             'url'                       => new Rules\Url,
             'integer'                   => new Rules\Integer,
+            'boolean'                   => new Rules\Boolean,
             'ip'                        => new Rules\Ip,
             'ipv4'                      => new Rules\Ipv4,
             'ipv6'                      => new Rules\Ipv6,

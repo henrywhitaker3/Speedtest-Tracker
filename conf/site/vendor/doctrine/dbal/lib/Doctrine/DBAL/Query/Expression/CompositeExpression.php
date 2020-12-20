@@ -4,6 +4,7 @@ namespace Doctrine\DBAL\Query\Expression;
 
 use Countable;
 
+use function array_merge;
 use function count;
 use function implode;
 
@@ -37,6 +38,8 @@ class CompositeExpression implements Countable
     private $parts = [];
 
     /**
+     * @internal Use the and() / or() factory methods.
+     *
      * @param string          $type  Instance type of composite expression.
      * @param self[]|string[] $parts Composition of expressions to be joined on composite expression.
      */
@@ -48,7 +51,27 @@ class CompositeExpression implements Countable
     }
 
     /**
+     * @param self|string $part
+     * @param self|string ...$parts
+     */
+    public static function and($part, ...$parts): self
+    {
+        return new self(self::TYPE_AND, array_merge([$part], $parts));
+    }
+
+    /**
+     * @param self|string $part
+     * @param self|string ...$parts
+     */
+    public static function or($part, ...$parts): self
+    {
+        return new self(self::TYPE_OR, array_merge([$part], $parts));
+    }
+
+    /**
      * Adds multiple parts to composite expression.
+     *
+     * @deprecated This class will be made immutable. Use with() instead.
      *
      * @param self[]|string[] $parts
      *
@@ -65,6 +88,8 @@ class CompositeExpression implements Countable
 
     /**
      * Adds an expression to composite expression.
+     *
+     * @deprecated This class will be made immutable. Use with() instead.
      *
      * @param mixed $part
      *
@@ -83,6 +108,25 @@ class CompositeExpression implements Countable
         $this->parts[] = $part;
 
         return $this;
+    }
+
+    /**
+     * Returns a new CompositeExpression with the given parts added.
+     *
+     * @param self|string $part
+     * @param self|string ...$parts
+     */
+    public function with($part, ...$parts): self
+    {
+        $that = clone $this;
+
+        $that->parts[] = $part;
+
+        foreach ($parts as $part) {
+            $that->parts[] = $part;
+        }
+
+        return $that;
     }
 
     /**
