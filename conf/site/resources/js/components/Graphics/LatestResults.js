@@ -26,6 +26,10 @@ export default class LatestResults extends Component {
         });
     }
 
+    componentWillUnmount() {
+        clearInterval(this.state.interval);
+    }
+
     getData = () => {
         var url = 'api/speedtest/latest';
 

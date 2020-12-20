@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Modal, Button } from 'react-bootstrap';
-import SettingsModalCard from './SettingsModalCard';
+import { Button } from 'react-bootstrap';
 import Axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -10,15 +9,6 @@ export default class ResetSettings extends Component {
         super(props)
 
         this.state = {
-            show: false,
-        }
-    }
-
-    toggleShow = () => {
-        if(this.state.show) {
-            this.setState({ show: false });
-        } else {
-            this.setState({ show:true });
         }
     }
 
@@ -45,17 +35,9 @@ export default class ResetSettings extends Component {
 
         return (
             <>
-                <SettingsModalCard title={title} description="Bulk delete speedtests from the database." toggleShow={this.toggleShow} />
-                <Modal show={show} onHide={this.toggleShow}>
-                    <Modal.Header>
-                        <Modal.Title>{title}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <h4>Clear all speedtests</h4>
-                        <p className="text-muted">If using SQLite, a backup of the database will be stored in the location of the current database.</p>
-                        <Button onClick={this.deleteAll} variant="danger">Delete all</Button>
-                    </Modal.Body>
-                </Modal>
+                <h4>Clear all speedtests</h4>
+                <p className="text-muted">If using SQLite, a backup of the database will be stored in the location of the current database.</p>
+                <Button onClick={this.deleteAll} variant="danger">Delete all</Button>
             </>
         );
     }

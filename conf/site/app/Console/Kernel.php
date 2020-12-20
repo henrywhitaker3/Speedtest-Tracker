@@ -28,7 +28,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(new SpeedtestJob(true, config('integrations')))->cron(SettingsHelper::get('schedule')['value']);
+        if ((bool)SettingsHelper::get('schedule_enabled')->value) {
+            $schedule->job(new SpeedtestJob(true, config('integrations')))->cron(SettingsHelper::get('schedule')['value']);
+        }
         $schedule->command('speedtest:overview')->cron('0 ' . SettingsHelper::get('speedtest_overview_time')->value . ' * * *');
         $schedule->command('speedtest:clear-sessions')->everyMinute();
     }
@@ -40,7 +42,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
