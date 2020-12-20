@@ -2,6 +2,9 @@
 
 namespace Doctrine\DBAL\Driver\SQLAnywhere;
 
+use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Driver\FetchUtils;
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Driver\StatementIterator;
 use Doctrine\DBAL\FetchMode;
@@ -42,7 +45,7 @@ use const SASQL_BOTH;
 /**
  * SAP SQL Anywhere implementation of the Statement interface.
  */
-class SQLAnywhereStatement implements IteratorAggregate, Statement
+class SQLAnywhereStatement implements IteratorAggregate, Statement, Result
 {
     /** @var resource The connection resource. */
     private $conn;
@@ -67,6 +70,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
 
     /**
      * Prepares given statement for given connection.
+     *
+     * @internal The statement can be only instantiated by its driver connection.
      *
      * @param resource $conn The connection resource to use.
      * @param string   $sql  The SQL statement to prepare.
@@ -138,6 +143,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      *
+     * @deprecated Use free() instead.
+     *
      * @throws SQLAnywhereException
      */
     public function closeCursor()
@@ -159,6 +166,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated The error information is available via exceptions.
      */
     public function errorCode()
     {
@@ -167,6 +176,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated The error information is available via exceptions.
      */
     public function errorInfo()
     {
@@ -203,6 +214,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use fetchNumeric(), fetchAssociative() or fetchOne() instead.
      *
      * @throws SQLAnywhereException
      */
@@ -255,6 +268,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use fetchAllNumeric(), fetchAllAssociative() or fetchFirstColumn() instead.
      */
     public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
@@ -286,6 +301,8 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use fetchOne() instead.
      */
     public function fetchColumn($columnIndex = 0)
     {
@@ -300,10 +317,76 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use iterateNumeric(), iterateAssociative() or iterateColumn() instead.
      */
     public function getIterator()
     {
         return new StatementIterator($this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function fetchNumeric()
+    {
+        if (! is_resource($this->result)) {
+            return false;
+        }
+
+        return sasql_fetch_row($this->result);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetchAssociative()
+    {
+        if (! is_resource($this->result)) {
+            return false;
+        }
+
+        return sasql_fetch_assoc($this->result);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function fetchOne()
+    {
+        return FetchUtils::fetchOne($this);
+    }
+
+    /**
+     * @return array<int,array<int,mixed>>
+     *
+     * @throws Exception
+     */
+    public function fetchAllNumeric(): array
+    {
+        return FetchUtils::fetchAllNumeric($this);
+    }
+
+    /**
+     * @return array<int,array<string,mixed>>
+     *
+     * @throws Exception
+     */
+    public function fetchAllAssociative(): array
+    {
+        return FetchUtils::fetchAllAssociative($this);
+    }
+
+    /**
+     * @return array<int,mixed>
+     *
+     * @throws Exception
+     */
+    public function fetchFirstColumn(): array
+    {
+        return FetchUtils::fetchFirstColumn($this);
     }
 
     /**
@@ -314,8 +397,15 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
         return sasql_stmt_affected_rows($this->stmt);
     }
 
+    public function free(): void
+    {
+        sasql_stmt_reset($this->stmt);
+    }
+
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use one of the fetch- or iterate-related methods.
      */
     public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
     {
@@ -329,9 +419,9 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
     /**
      * Casts a stdClass object to the given class name mapping its' properties.
      *
-     * @param stdClass      $sourceObject     Object to cast from.
-     * @param string|object $destinationClass Name of the class or class instance to cast to.
-     * @param mixed[]       $ctorArgs         Arguments to use for constructing the destination class instance.
+     * @param stdClass            $sourceObject     Object to cast from.
+     * @param class-string|object $destinationClass Name of the class or class instance to cast to.
+     * @param mixed[]             $ctorArgs         Arguments to use for constructing the destination class instance.
      *
      * @return object
      *

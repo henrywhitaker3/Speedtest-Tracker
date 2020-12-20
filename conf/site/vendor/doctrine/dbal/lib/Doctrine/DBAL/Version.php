@@ -8,13 +8,16 @@ use function version_compare;
 
 /**
  * Class to store and retrieve the version of Doctrine.
+ *
+ * @internal
+ * @deprecated Refrain from checking the DBAL version at runtime.
  */
 class Version
 {
     /**
      * Current Doctrine Version.
      */
-    public const VERSION = '2.10.4';
+    public const VERSION = '2.12.1';
 
     /**
      * Compares a Doctrine version with the current one.

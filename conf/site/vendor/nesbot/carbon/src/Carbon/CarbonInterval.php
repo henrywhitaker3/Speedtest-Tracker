@@ -583,7 +583,13 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
             $interval = new static(0);
             $localStrictModeEnabled = $interval->localStrictModeEnabled;
             $interval->localStrictModeEnabled = true;
-            $result = $interval->$method(...$parameters);
+
+            $result = static::hasMacro($method)
+                ? static::bindMacroContext(null, function () use (&$method, &$parameters, &$interval) {
+                    return $interval->callMacro($method, $parameters);
+                })
+                : $interval->$method(...$parameters);
+
             $interval->localStrictModeEnabled = $localStrictModeEnabled;
 
             return $result;
@@ -594,6 +600,16 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
 
             return null;
         }
+    }
+
+    /**
+     * Return the current context from inside a macro callee or a new one if static.
+     *
+     * @return static
+     */
+    protected static function this()
+    {
+        return end(static::$macroContextStack) ?: new static(0);
     }
 
     /**
@@ -811,7 +827,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
         }
 
         if ($interval instanceof self && is_a($className, self::class, true)) {
-            $instance->setStep($interval->getStep());
+            static::copyStep($interval, $instance);
         }
 
         static::copyNegativeUnits($interval, $instance);
@@ -819,7 +835,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
         return $instance;
     }
 
-    private static function copyNegativeUnits(DateInterval $from, DateInterval $to)
+    private static function copyNegativeUnits(DateInterval $from, DateInterval $to): void
     {
         $to->invert = $from->invert;
 
@@ -828,6 +844,11 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
                 $to->$unit *= -1;
             }
         }
+    }
+
+    private static function copyStep(self $from, self $to): void
+    {
+        $to->setStep($from->getStep());
     }
 
     /**
@@ -1228,10 +1249,10 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
         if ($macro instanceof Closure) {
             $boundMacro = @$macro->bindTo($this, static::class) ?: @$macro->bindTo(null, static::class);
 
-            return \call_user_func_array($boundMacro ?: $macro, $parameters);
+            return ($boundMacro ?: $macro)(...$parameters);
         }
 
-        return \call_user_func_array($macro, $parameters);
+        return $macro(...$parameters);
     }
 
     /**

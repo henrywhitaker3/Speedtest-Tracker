@@ -657,9 +657,9 @@ class Mock implements MockInterface
     {
         $rfc = new \ReflectionClass($this);
 
-        // HHVM has a Stringish interface and PHP 8 has Stringable
+        // PHP 8 has Stringable interface
         $interfaces = array_filter($rfc->getInterfaces(), function ($i) {
-            return $i->getName() !== 'Stringish' && $i->getName() !== 'Stringable';
+            return $i->getName() !== 'Stringable';
         });
 
         return false === $rfc->getParentClass() && 2 === count($interfaces);
@@ -705,10 +705,6 @@ class Mock implements MockInterface
      */
     public function mockery_returnValueForMethod($name)
     {
-        if (\PHP_VERSION_ID < 70000) {
-            return null;
-        }
-
         $rm = $this->mockery_getMethod($name);
 
         // Default return value for methods with nullable type is null

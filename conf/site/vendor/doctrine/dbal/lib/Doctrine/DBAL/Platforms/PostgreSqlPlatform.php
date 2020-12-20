@@ -36,6 +36,8 @@ use function trim;
 /**
  * PostgreSqlPlatform.
  *
+ * @deprecated Use PostgreSQL 9.4 or newer
+ *
  * @todo   Rename: PostgreSQLPlatform
  */
 class PostgreSqlPlatform extends AbstractPlatform
@@ -208,6 +210,8 @@ class PostgreSqlPlatform extends AbstractPlatform
 
     /**
      * {@inheritDoc}
+     *
+     * @deprecated
      */
     public function prefersSequences()
     {
@@ -440,6 +444,8 @@ SQL
      *
      * This is useful to force DROP DATABASE operations which could fail because of active connections.
      *
+     * @deprecated
+     *
      * @param string $database The name of the database to disallow new connections for.
      *
      * @return string
@@ -453,6 +459,8 @@ SQL
      * Returns the SQL statement for closing currently active connections on the given database.
      *
      * This is useful to force DROP DATABASE operations which could fail because of active connections.
+     *
+     * @deprecated
      *
      * @param string $database The name of the database to close currently active connections for.
      *
@@ -1088,6 +1096,8 @@ SQL
      * {@inheritDoc}
      *
      * PostgreSQL returns all column names in SQL result sets in lowercase.
+     *
+     * @deprecated
      */
     public function getSQLResultCasing($column)
     {

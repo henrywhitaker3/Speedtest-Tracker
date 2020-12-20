@@ -2,7 +2,8 @@
 
 namespace Doctrine\DBAL\Driver\OCI8;
 
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
+use Doctrine\DBAL\Driver\OCI8\Exception\SequenceDoesNotExist;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\ParameterType;
 use UnexpectedValueException;
@@ -26,8 +27,10 @@ use const OCI_NO_AUTO_COMMIT;
 
 /**
  * OCI8 implementation of the Connection interface.
+ *
+ * @deprecated Use {@link Connection} instead
  */
-class OCI8Connection implements Connection, ServerInfoAwareConnection
+class OCI8Connection implements ConnectionInterface, ServerInfoAwareConnection
 {
     /** @var resource */
     protected $dbh;
@@ -37,6 +40,8 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
 
     /**
      * Creates a Connection to an Oracle Database using oci8 extension.
+     *
+     * @internal The connection can be only instantiated by its driver.
      *
      * @param string $username
      * @param string $password
@@ -106,7 +111,7 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
      */
     public function prepare($sql)
     {
-        return new OCI8Statement($this->dbh, $sql, $this);
+        return new Statement($this->dbh, $sql, $this);
     }
 
     /**
@@ -164,7 +169,7 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
         $result = $stmt->fetchColumn();
 
         if ($result === false) {
-            throw new OCI8Exception('lastInsertId failed: Query was executed but no result was returned.');
+            throw SequenceDoesNotExist::new();
         }
 
         return (int) $result;
@@ -172,6 +177,8 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
 
     /**
      * Returns the current execution mode.
+     *
+     * @internal
      *
      * @return int
      */
@@ -220,6 +227,8 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated The error information is available via exceptions.
      */
     public function errorCode()
     {
@@ -234,6 +243,8 @@ class OCI8Connection implements Connection, ServerInfoAwareConnection
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated The error information is available via exceptions.
      */
     public function errorInfo()
     {

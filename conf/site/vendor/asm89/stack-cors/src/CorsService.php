@@ -84,7 +84,7 @@ class CorsService
     public function addPreflightRequestHeaders(Response $response, Request $request): Response
     {
         $this->configureAllowedOrigin($response, $request);
-        
+
         if ($response->headers->has('Access-Control-Allow-Origin')) {
             $this->configureAllowCredentials($response, $request);
 

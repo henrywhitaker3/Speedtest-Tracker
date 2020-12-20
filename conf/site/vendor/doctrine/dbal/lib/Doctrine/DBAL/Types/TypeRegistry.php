@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\DBAL\Types;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 
 use function array_search;
 use function in_array;
@@ -18,17 +18,25 @@ use function in_array;
 final class TypeRegistry
 {
     /** @var array<string, Type> Map of type names and their corresponding flyweight objects. */
-    private $instances = [];
+    private $instances;
+
+    /**
+     * @param array<string, Type> $instances
+     */
+    public function __construct(array $instances = [])
+    {
+        $this->instances = $instances;
+    }
 
     /**
      * Finds a type by the given name.
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function get(string $name): Type
     {
         if (! isset($this->instances[$name])) {
-            throw DBALException::unknownColumnType($name);
+            throw Exception::unknownColumnType($name);
         }
 
         return $this->instances[$name];
@@ -37,14 +45,14 @@ final class TypeRegistry
     /**
      * Finds a name for the given type.
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function lookupName(Type $type): string
     {
         $name = $this->findTypeName($type);
 
         if ($name === null) {
-            throw DBALException::typeNotRegistered($type);
+            throw Exception::typeNotRegistered($type);
         }
 
         return $name;
@@ -61,16 +69,16 @@ final class TypeRegistry
     /**
      * Registers a custom type to the type map.
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function register(string $name, Type $type): void
     {
         if (isset($this->instances[$name])) {
-            throw DBALException::typeExists($name);
+            throw Exception::typeExists($name);
         }
 
         if ($this->findTypeName($type) !== null) {
-            throw DBALException::typeAlreadyRegistered($type);
+            throw Exception::typeAlreadyRegistered($type);
         }
 
         $this->instances[$name] = $type;
@@ -79,16 +87,16 @@ final class TypeRegistry
     /**
      * Overrides an already defined type to use a different implementation.
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function override(string $name, Type $type): void
     {
         if (! isset($this->instances[$name])) {
-            throw DBALException::typeNotFound($name);
+            throw Exception::typeNotFound($name);
         }
 
         if (! in_array($this->findTypeName($type), [$name, null], true)) {
-            throw DBALException::typeAlreadyRegistered($type);
+            throw Exception::typeAlreadyRegistered($type);
         }
 
         $this->instances[$name] = $type;

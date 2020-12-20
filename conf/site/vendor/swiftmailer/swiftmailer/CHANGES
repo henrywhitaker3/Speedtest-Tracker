@@ -1,7 +1,14 @@
 Changelog
 =========
 
-6.2.2 (2019-11-12)
+6.2.4 (2020-12-08)
+------------------
+
+ * Prevent flushing of the bubble queue when event handler raises another event
+ * Add support for PHP 8
+ * Code cleanups
+
+6.2.3 (2019-11-12)
 ------------------
 
  * no changes
@@ -9,7 +16,7 @@ Changelog
 6.2.2 (2019-11-12)
 ------------------
 
- * fixed cmopat with PHP 7.4
+ * fixed compat with PHP 7.4
  * fixed error message when connecting to a stream raises an error before connect()
 
 6.2.1 (2019-04-21)
