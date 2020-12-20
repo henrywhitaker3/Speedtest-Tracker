@@ -26,6 +26,10 @@ export default class TestsTable extends Component {
         });
     }
 
+    componentWillUnmount() {
+        clearInterval(this.state.interval);
+    }
+
     getData = (page = this.state.page, refresh = true) => {
         var url = 'api/speedtest/?page=' + page;
 
@@ -83,59 +87,48 @@ export default class TestsTable extends Component {
 
         if(data.length > 0) {
             return (
-                <Container className="mb-4 mt-4" fluid>
-                    <Row>
-                        <Col sm={{ span: 12 }} className="mb-3 text-center">
-                            <div className="mouse"  aria-controls="testsTable" onClick={this.toggleCollapse} aria-expanded={show}>
-                                <h4 className="d-inline mr-2">All tests</h4>
-                                {(show) ?
-                                    <span className="ti-angle-up"></span>
-                                :
-                                    <span className="ti-angle-down"></span>
-                                }
-                            </div>
-                            {(show) &&
-                                <div className="my-1">
+                <div>
+                    <Container className="mb-4 mt-4 px-5">
+                        <Row>
+                            <Col sm={{ span: 12 }} className="mb-3 text-center">
+                                <div>
+                                    <h4 className="d-inline mr-2">All tests</h4>
                                     <span className="text-muted">Auto refresh: {(refresh) ? 'On' : 'Off'}</span>
                                 </div>
-                            }
-                        </Col>
-                    </Row>
-                    <Collapse in={show}>
-                        <div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm={{ span: 12 }} id="testsTable">
+                                <Table responsive>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Time</th>
+                                            <th>Download (Mbit/s)</th>
+                                            <th>Upload (Mbit/s)</th>
+                                            <th>Ping (ms)</th>
+                                            <th>More</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {data.map((e,i) => {
+                                            return (
+                                                <TableRow key={e.id} data={e} />
+                                            );
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </Col>
+                        </Row>
+                        {page < lastPage &&
                             <Row>
-                                <Col sm={{ span: 12 }} id="testsTable">
-                                    <Table responsive>
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Time</th>
-                                                <th>Download (Mbit/s)</th>
-                                                <th>Upload (Mbit/s)</th>
-                                                <th>Ping (ms)</th>
-                                                <th>More</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {data.map((e,i) => {
-                                                return (
-                                                    <TableRow key={e.id} data={e} />
-                                                );
-                                            })}
-                                        </tbody>
-                                    </Table>
+                                <Col sm={{ span: 12 }} className="text-center">
+                                    <Button variant="primary" onClick={this.getMoreData}>Show more</Button>
                                 </Col>
                             </Row>
-                            {page < lastPage &&
-                                <Row>
-                                    <Col sm={{ span: 12 }} className="text-center">
-                                        <Button variant="primary" onClick={this.getMoreData}>Show more</Button>
-                                    </Col>
-                                </Row>
-                            }
-                        </div>
-                    </Collapse>
-                </Container>
+                        }
+                    </Container>
+                </div>
             );
         } else {
             return (

@@ -44,7 +44,7 @@ class IntegrationsServiceProvider extends ServiceProvider
                         SettingsHelper::loadIntegrationConfig();
 
                         App::bind('healthcheck', function () use ($setting) {
-                            return new Healthchecks($setting->value);
+                            return new Healthchecks($setting->value, SettingsHelper::get('healthchecks_server_url')->value);
                         });
                     } catch (InvalidUuidStringException $e) {
                         Log::error('Invalid healthchecks UUID');

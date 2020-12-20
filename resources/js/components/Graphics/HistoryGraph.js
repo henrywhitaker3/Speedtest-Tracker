@@ -37,6 +37,10 @@ export default class HistoryGraph extends Component {
         });
     }
 
+    componentWillUnmount() {
+        clearInterval(this.state.interval);
+    }
+
     getDLULPing = (days) => {
         var url = 'api/speedtest/time/' + days;
 
