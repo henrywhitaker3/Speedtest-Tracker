@@ -22,7 +22,7 @@
         "react-dom": "^16.14.0",
         "resolve-url-loader": "^3.1.2",
         "sass-loader": "^10.1.0",
-        "sass": "^1.30.0"
+        "sass": "^1.32.4"
     },
     "dependencies": {
         "@babel/plugin-proposal-class-properties": "^7.12.1",
