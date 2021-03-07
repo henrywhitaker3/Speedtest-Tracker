@@ -23,9 +23,12 @@ class SpeedtestServiceProvider extends ServiceProvider
                 switch (SettingsHelper::get('speedtest_provider')) {
                     case 'ookla':
                     default:
-                        $this->app->singleton(SpeedtestProvider::class, function () {
-                            return new OoklaTester();
-                        });
+                        $this->app->singleton(
+                            SpeedtestProvider::class,
+                            function () {
+                                return new OoklaTester();
+                            }
+                        );
                         break;
                 }
             }
