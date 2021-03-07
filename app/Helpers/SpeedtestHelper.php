@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Speedtest;
+use App\Utils\OoklaTester;
 use Carbon\Carbon;
 use Exception;
 use Henrywhitaker3\Healthchecks\Healthchecks;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use JsonException;
 
-class SpeedtestHelper {
+class SpeedtestHelper
+{
 
     /**
      * Runs/processes speedtest output to created a Speedtest object
@@ -21,79 +23,10 @@ class SpeedtestHelper {
      * @param   boolean|string  $output If false, new speedtest runs. If anything else, will try to parse as JSON for speedtest results.
      * @return \App\Speedtest|bool
      */
-    public static function runSpeedtest($output = false, $scheduled = true)
+    public static function runSpeedtest()
     {
-        if($output === false) {
-            $output = SpeedtestHelper::output();
-        }
-
-        try {
-            $output = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-
-            if(!SpeedtestHelper::checkOutputIsComplete($output)) {
-                $test = false;
-            }
-
-            $test = Speedtest::create([
-                'ping' => $output['ping']['latency'],
-                'download' => SpeedtestHelper::convert($output['download']['bandwidth']),
-                'upload' => SpeedtestHelper::convert($output['upload']['bandwidth']),
-                'server_id' => $output['server']['id'],
-                'server_name' => $output['server']['name'],
-                'server_host' => $output['server']['host'] . ':' . $output['server']['port'],
-                'url' => $output['result']['url'],
-                'scheduled' => $scheduled
-            ]);
-        } catch(JsonException $e) {
-            Log::error('Failed to parse speedtest JSON');
-            Log::error($output);
-            $test = false;
-        } catch(Exception $e) {
-            Log::error($e->getMessage());
-            $test = false;
-        }
-
-        if($test == false) {
-            Speedtest::create([
-                'ping' => 0,
-                'upload' => 0,
-                'download' => 0,
-                'failed' => true,
-                'scheduled' => $scheduled,
-            ]);
-
-            return false;
-        }
-
-        Cache::flush();
-
-        return $test;
-    }
-
-    /**
-     * Gets the output of executing speedtest binary.
-     *
-     * @return boolean|string
-     */
-    public static function output()
-    {
-        $server = SettingsHelper::get('server')['value'];
-
-        $binPath = app_path() . DIRECTORY_SEPARATOR . 'Bin' . DIRECTORY_SEPARATOR . 'speedtest';
-        $homePrefix = config('speedtest.home') . ' && ';
-
-        if($server != '' && $server != false) {
-            $server = explode(',', $server);
-            $server = $server[array_rand($server)];
-            if($server == false) {
-                Log::error('Speedtest server undefined');
-                return false;
-            }
-
-            return shell_exec($homePrefix . $binPath . ' -f json -s ' . $server);
-        }
-
-        return shell_exec($homePrefix . $binPath . ' -f json');
+        $tester = new OoklaTester();
+        return $tester->run();
     }
 
     /**
@@ -105,10 +38,10 @@ class SpeedtestHelper {
     {
         $t = Carbon::now()->subDay();
         $s = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
-                      ->where('created_at', '>=', $t)
-                      ->where('failed', false)
-                      ->first()
-                      ->toArray();
+            ->where('created_at', '>=', $t)
+            ->where('failed', false)
+            ->first()
+            ->toArray();
 
         return $s;
     }
@@ -119,8 +52,9 @@ class SpeedtestHelper {
      * @param   int|float   $bytes
      * @return int|float
      */
-    public static function convert($bytes) {
-        return ( $bytes * 8 ) / 1000000;
+    public static function convert($bytes)
+    {
+        return ($bytes * 8) / 1000000;
     }
 
     /**
@@ -132,7 +66,7 @@ class SpeedtestHelper {
     {
         $data = Speedtest::latest()->get();
 
-        if($data->isEmpty()) {
+        if ($data->isEmpty()) {
             return false;
         }
 
@@ -152,7 +86,7 @@ class SpeedtestHelper {
         $val = (float)$input[0];
         $unit = explode('/', $input[1])[0];
 
-        switch($unit) {
+        switch ($unit) {
             case 'Mbyte':
                 $val = $val * 8;
                 break;
@@ -174,48 +108,6 @@ class SpeedtestHelper {
     }
 
     /**
-     * Checks that the speedtest JSON output is complete/valid
-     *
-     * @param array $output
-     * @return boolean
-     */
-    public static function checkOutputIsComplete($output)
-    {
-        /**
-         * Array of indexes that must exist in $output
-         */
-        $checks = [
-            'type' => 'result',
-            'download' => [ 'bandwidth' => '*' ],
-            'upload' => [ 'bandwidth' => '*' ],
-            'ping' => [ 'latency' => '*' ],
-            'server' => [
-                'id' => '*',
-                'name' => '*',
-                'host' => '*',
-                'port' => '*'
-            ],
-            'result' => [
-                'url' => '*'
-            ],
-        ];
-        /**
-         * Array of indexes that must not exist
-         */
-        $checkMissing = [
-            'type' => 'error'
-        ];
-
-        foreach($checks as $key => $value) {
-            if(!isset($output[$key])) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Get a percentage rate of failure by days
      *
      * @param integer $days number of days to get rate for
@@ -228,7 +120,7 @@ class SpeedtestHelper {
             $range = [
                 Carbon::today()
             ];
-            for($i = 0; $i < ($days - 1); $i++) {
+            for ($i = 0; $i < ($days - 1); $i++) {
                 $prev = end($range);
                 $new = $prev->copy()->subDays(1);
                 array_push($range, $new);
@@ -236,7 +128,7 @@ class SpeedtestHelper {
 
             $rate = [];
 
-            foreach($range as $day) {
+            foreach ($range as $day) {
                 $success = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', false)->get()[0]['rate'];
                 $fail = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', true)->get()[0]['rate'];
 
@@ -260,14 +152,14 @@ class SpeedtestHelper {
      */
     public static function dbBackup()
     {
-        if(env('DB_CONNECTION') === 'sqlite') {
-            if(env('DB_DATABASE') !== null) {
+        if (env('DB_CONNECTION') === 'sqlite') {
+            if (env('DB_DATABASE') !== null) {
                 $current = env('DB_DATABASE');
                 try {
-                    if(File::copy($current, $current . '.bak')) {
+                    if (File::copy($current, $current . '.bak')) {
                         return true;
                     }
-                }catch(Exception $e) {
+                } catch (Exception $e) {
                     return false;
                 }
             }
@@ -289,8 +181,8 @@ class SpeedtestHelper {
 
         SpeedtestHelper::dbBackup();
 
-        if(sizeof(Speedtest::whereNotNull('id')->get()) > 0) {
-            if(Speedtest::whereNotNull('id')->delete()) {
+        if (sizeof(Speedtest::whereNotNull('id')->get()) > 0) {
+            if (Speedtest::whereNotNull('id')->delete()) {
                 return [
                     'success' => true,
                 ];
@@ -311,31 +203,31 @@ class SpeedtestHelper {
      */
     public static function testIsLowerThanThreshold(String $type, Speedtest $test)
     {
-        if($type == 'percentage') {
+        if ($type == 'percentage') {
             $avg = Speedtest::select(DB::raw('AVG(ping) as ping, AVG(download) as download, AVG(upload) as upload'))
-                        ->where('failed', false)
-                        ->get()
-                        ->toArray()[0];
+                ->where('failed', false)
+                ->get()
+                ->toArray()[0];
 
             $threshold = SettingsHelper::get('threshold_alert_percentage')->value;
 
-            if($threshold == '') {
+            if ($threshold == '') {
                 return [];
             }
 
             $errors = [];
 
-            foreach($avg as $key => $value) {
-                if($key == 'ping') {
-                    $threshold = (float)$value * (1 + ( $threshold / 100 ));
+            foreach ($avg as $key => $value) {
+                if ($key == 'ping') {
+                    $threshold = (float)$value * (1 + ($threshold / 100));
 
-                    if($test->$key > $threshold) {
+                    if ($test->$key > $threshold) {
                         array_push($errors, $key);
                     }
-                } else  {
-                    $threshold = (float)$value * (1 - ( $threshold / 100 ));
+                } else {
+                    $threshold = (float)$value * (1 - ($threshold / 100));
 
-                    if($test->$key < $threshold) {
+                    if ($test->$key < $threshold) {
                         array_push($errors, $key);
                     }
                 }
@@ -344,7 +236,7 @@ class SpeedtestHelper {
             return $errors;
         }
 
-        if($type == 'absolute') {
+        if ($type == 'absolute') {
             $thresholds = [
                 'download' => SettingsHelper::get('threshold_alert_absolute_download')->value,
                 'upload' => SettingsHelper::get('threshold_alert_absolute_upload')->value,
@@ -353,17 +245,17 @@ class SpeedtestHelper {
 
             $errors = [];
 
-            foreach($thresholds as $key => $value) {
-                if($value == '') {
+            foreach ($thresholds as $key => $value) {
+                if ($value == '') {
                     continue;
                 }
 
-                if($key == 'ping') {
-                    if($test->$key > $value) {
+                if ($key == 'ping') {
+                    if ($test->$key > $value) {
                         array_push($errors, $key);
                     }
                 } else {
-                    if($test->$key < $value) {
+                    if ($test->$key < $value) {
                         array_push($errors, $key);
                     }
                 }
