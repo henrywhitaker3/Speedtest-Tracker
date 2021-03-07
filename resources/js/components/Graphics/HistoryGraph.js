@@ -11,7 +11,10 @@ export default class HistoryGraph extends Component {
         super(props)
 
         this.state = {
-            days: 7,
+            days: props.days,
+            time: props.dlUl,
+            fail: props.fail,
+            config: props.config,
             duData: {},
             duOptions: {},
             pingData: {},
@@ -26,233 +29,233 @@ export default class HistoryGraph extends Component {
             graph_failure_width: 6,
             graph_ping_enabled: true,
             graph_ping_width: 6,
+            firstUpdate: false,
         }
     }
 
     componentDidMount = () => {
-        this.getData();
-        var int = setInterval(this.getData, 10000);
+    }
+
+    componentDidUpdate() {
+        if(
+            this.state.time != this.props.dlUl ||
+            this.state.fail != this.props.fail ||
+            this.state.config != this.props.config ||
+            this.state.days != this.props.days
+        ) {
+            this.setState({
+                time: this.props.dlUl,
+                fail: this.props.fail,
+                config: this.props.config,
+                days: this.props.days
+            });
+
+            if(this.state.config !== null) {
+                this.processData();
+            }
+        }
+
+        if(
+            !this.state.firstUpdate &&
+            this.state.config !== null
+        ) {
+            this.processData();
+            this.setState({
+                firstUpdate: true,
+            });
+        }
+    }
+
+    processData() {
+        this.processConfig();
+        this.processDlUlPing();
+        this.processFailure();
+    }
+
+    processConfig() {
         this.setState({
-            interval: int,
+            graph_ul_dl_enabled: Boolean(Number(this.state.config.graphs.download_upload_graph_enabled.value)),
+            graph_ul_dl_width: this.state.config.graphs.download_upload_graph_width.value,
+            graph_ping_enabled: Boolean(Number(this.state.config.graphs.ping_graph_enabled.value)),
+            graph_ping_width: this.state.config.graphs.ping_graph_width.value,
+            graph_failure_enabled: Boolean(Number(this.state.config.graphs.failure_graph_enabled.value)),
+            graph_failure_width: this.state.config.graphs.failure_graph_width.value,
         });
     }
 
-    componentWillUnmount() {
-        clearInterval(this.state.interval);
-    }
+    processDlUlPing() {
+        let days = this.state.days;
 
-    getDLULPing = (days) => {
-        var url = 'api/speedtest/time/' + days;
-
-        Axios.get(url)
-        .then((resp) => {
-            var duData = {
-                labels: [],
-                datasets:[
-                    {
-                        data: [],
-                        label: 'Download',
-                        borderColor: "#fca503",
-                        fill: false,
-                    },
-                    {
-                        data: [],
-                        label: 'Upload',
-                        borderColor: "#3e95cd",
-                        fill: false,
-                    }
-                ],
-            };
-            var duOptions = {
-                maintainAspectRatio: false,
-                responsive: true,
-                tooltips: {
-                    callbacks: {
-                      label: (item) => `${item.yLabel} Mbit/s`,
-                    },
+        var duData = {
+            labels: [],
+            datasets:[
+                {
+                    data: [],
+                    label: 'Download',
+                    borderColor: "#fca503",
+                    fill: false,
                 },
-                title: {
-                    display: false,
-                    text: 'Speedtests results for the last ' + days + ' days',
-                },
-                scales: {
-                    xAxes: [{
-                        display: false,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'DateTime'
-                        }
-                    }],
-                },
-                elements: {
-                    point:{
-                        radius: 0,
-                        hitRadius: 8
-                    }
+                {
+                    data: [],
+                    label: 'Upload',
+                    borderColor: "#3e95cd",
+                    fill: false,
                 }
-            };
-
-            var pingData = {
-                labels: [],
-                datasets:[
-                    {
-                        data: [],
-                        label: 'Ping',
-                        borderColor: "#07db71",
-                        fill: false,
-                    },
-                ],
-            };
-            var pingOptions = {
-                maintainAspectRatio: false,
-                responsive: true,
-                tooltips: {
-                    callbacks: {
-                      label: (item) => `${item.yLabel} ms`,
-                    },
+            ],
+        };
+        var duOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            tooltips: {
+                callbacks: {
+                  label: (item) => `${item.yLabel} Mbit/s`,
                 },
-                title: {
+            },
+            title: {
+                display: false,
+                text: 'Speedtests results for the last ' + days + ' days',
+            },
+            scales: {
+                xAxes: [{
                     display: false,
-                    text: 'Ping results for the last ' + days + ' days',
-                },
-                scales: {
-                    xAxes: [{
-                        display: false,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'DateTime'
-                        }
-                    }],
-                },
-                elements: {
-                    point:{
-                        radius: 0,
-                        hitRadius: 8
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'DateTime'
                     }
+                }],
+            },
+            elements: {
+                point:{
+                    radius: 0,
+                    hitRadius: 8
                 }
             }
+        };
 
-            resp.data.data.forEach(e => {
-                var download = {
-                    t: new Date(e.created_at),
-                    y: e.download,
-                };
-                var upload = {
-                    t: new Date(e.created_at),
-                    y: e.upload,
-                };
-                var ping = {
-                    t: new Date(e.created_at),
-                    y: parseFloat(e.ping)
-                }
-                duData.datasets[0].data.push(download);
-                duData.datasets[1].data.push(upload);
-                pingData.datasets[0].data.push(ping);
-                duData.labels.push(new Date(e.created_at).toLocaleString());
-                pingData.labels.push(new Date(e.created_at).toLocaleString());
-            });
-
-            this.setState({
-                duData: duData,
-                duOptions: duOptions,
-                pingData: pingData,
-                pingOptions: pingOptions,
-                loading: false,
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-        })
-    }
-
-    getFailure = (days) => {
-        var url = 'api/speedtest/fail/' + days;
-        Axios.get(url)
-        .then((resp) => {
-            var failData = {
-                labels: [],
-                datasets: [
-                    {
-                        data: [],
-                        label: 'Successful',
-                        backgroundColor: '#07db71'
-                    },
-                    {
-                        data: [],
-                        label: 'Failed',
-                        backgroundColor: '#E74C3C'
-                    },
-                ],
-            };
-            var failOptions = {
-                maintainAspectRatio: false,
-                responsive: true,
-                tooltips: {
-                    callbacks: {
-                      label: (item) => `${item.yLabel} speedtests`,
-                    },
+        var pingData = {
+            labels: [],
+            datasets:[
+                {
+                    data: [],
+                    label: 'Ping',
+                    borderColor: "#07db71",
+                    fill: false,
                 },
-                scales: {
-                    xAxes: [{
-                        stacked: true
-                    }],
-                    yAxes: [{
-                        stacked: true
-                    }]
+            ],
+        };
+        var pingOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            tooltips: {
+                callbacks: {
+                  label: (item) => `${item.yLabel} ms`,
+                },
+            },
+            title: {
+                display: false,
+                text: 'Ping results for the last ' + days + ' days',
+            },
+            scales: {
+                xAxes: [{
+                    display: false,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'DateTime'
+                    }
+                }],
+            },
+            elements: {
+                point:{
+                    radius: 0,
+                    hitRadius: 8
                 }
+            }
+        }
+
+        this.state.time.forEach(e => {
+            var download = {
+                t: new Date(e.created_at),
+                y: e.download,
             };
+            var upload = {
+                t: new Date(e.created_at),
+                y: e.upload,
+            };
+            var ping = {
+                t: new Date(e.created_at),
+                y: parseFloat(e.ping)
+            }
+            duData.datasets[0].data.push(download);
+            duData.datasets[1].data.push(upload);
+            pingData.datasets[0].data.push(ping);
+            duData.labels.push(new Date(e.created_at).toLocaleString());
+            pingData.labels.push(new Date(e.created_at).toLocaleString());
+        });
 
-            resp.data.data.forEach(e => {
-                var success = {x: e.date, y: e.success};
-                var fail = {x: e.date, y: e.failure};
-                failData.datasets[0].data.push(success);
-                failData.datasets[1].data.push(fail);
-                failData.labels.push(new Date(e.date).toLocaleString([], {year: '2-digit', month:'2-digit', day:'2-digit'}));
-            })
-
-            this.setState({
-                failData: failData,
-                failOptions: failOptions
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+        this.setState({
+            duData: duData,
+            duOptions: duOptions,
+            pingData: pingData,
+            pingOptions: pingOptions,
+            loading: false,
+        });
     }
 
-    getData = (days = this.state.days) => {
-        Axios.get('api/settings/config')
-        .then((resp) => {
-            var data = resp.data.graphs;
-            this.setState({
-                graph_ul_dl_enabled: Boolean(Number(data.download_upload_graph_enabled.value)),
-                graph_ul_dl_width: data.download_upload_graph_width.value,
-                graph_ping_enabled: Boolean(Number(data.ping_graph_enabled.value)),
-                graph_ping_width: data.ping_graph_width.value,
-                graph_failure_enabled: Boolean(Number(data.failure_graph_enabled.value)),
-                graph_failure_width: data.failure_graph_width.value,
-            });
+    processFailure() {
+        let days = this.state.days;
 
-            this.getDLULPing(days);
-            this.getFailure(days);
+        var failData = {
+            labels: [],
+            datasets: [
+                {
+                    data: [],
+                    label: 'Successful',
+                    backgroundColor: '#07db71'
+                },
+                {
+                    data: [],
+                    label: 'Failed',
+                    backgroundColor: '#E74C3C'
+                },
+            ],
+        };
+        var failOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            tooltips: {
+                callbacks: {
+                  label: (item) => `${item.yLabel} speedtests`,
+                },
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
+            }
+        };
+
+        this.state.fail.forEach(e => {
+            var success = {x: e.date, y: e.success};
+            var fail = {x: e.date, y: e.failure};
+            failData.datasets[0].data.push(success);
+            failData.datasets[1].data.push(fail);
+            failData.labels.push(new Date(e.date).toLocaleString([], {year: '2-digit', month:'2-digit', day:'2-digit'}));
         })
-        .catch((err) => {
-            console.log('Couldn\'t get the site config');
-            console.log(err);
-        })
+
+        this.setState({
+            failData: failData,
+            failOptions: failOptions
+        });
     }
 
     updateDays = (e) => {
         var days = e.target.value;
         if(days) {
-            this.getData(days);
-            clearInterval(this.state.int);
-            var int = setInterval(this.getData, 10000);
             toast.info('Showing results for the last ' + days + ' days');
-            this.setState({
-                days: days,
-                interval: int
-            });
+            this.props.updateDays(days);
         }
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\GetFailedSpeedtestData;
 use App\Actions\GetLatestSpeedtestData;
 use App\Actions\GetSpeedtestTimeData;
+use App\Helpers\SettingsHelper;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -28,6 +29,7 @@ class HomepageDataController extends Controller
             'latest' => run(GetLatestSpeedtestData::class),
             'time' => run(GetSpeedtestTimeData::class),
             'fail' => run(GetFailedSpeedtestData::class),
+            'config' => SettingsHelper::getConfig(),
         ];
     }
 }
