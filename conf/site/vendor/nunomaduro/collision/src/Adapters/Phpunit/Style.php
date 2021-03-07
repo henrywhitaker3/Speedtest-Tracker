@@ -1,23 +1,16 @@
 <?php
 
-/**
- * This file is part of Collision.
- *
- * (c) Nuno Maduro <enunomaduro@gmail.com>
- *
- *  For the full copyright and license information, please view the LICENSE
- *  file that was distributed with this source code.
- */
+declare(strict_types=1);
 
 namespace NunoMaduro\Collision\Adapters\Phpunit;
 
+use NunoMaduro\Collision\Exceptions\ShouldNotHappen;
 use NunoMaduro\Collision\Writer;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\ExceptionWrapper;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Throwable;
 use Whoops\Exception\Inspector;
 
@@ -32,18 +25,23 @@ final class Style
     private $output;
 
     /**
-     * @var ConsoleSectionOutput
-     */
-    private $footer;
-
-    /**
      * Style constructor.
      */
-    public function __construct(ConsoleOutput $output)
+    public function __construct(ConsoleOutputInterface $output)
     {
-        $this->output = $output;
+        if (!$output instanceof ConsoleOutput) {
+            throw new ShouldNotHappen();
+        }
 
-        $this->footer = $output->section();
+        $this->output = $output;
+    }
+
+    /**
+     * Prints the content.
+     */
+    public function write(string $content): void
+    {
+        $this->output->write($content);
     }
 
     /**
@@ -54,22 +52,24 @@ final class Style
      *    ✓ basic test
      * ```
      */
-    public function writeCurrentRecap(State $state): void
+    public function writeCurrentTestCaseSummary(State $state): void
     {
-        if (!$state->testCaseTestsCount()) {
+        if ($state->testCaseTestsCount() === 0) {
             return;
         }
 
-        $this->footer->clear();
-
-        $this->output->writeln($this->titleLineFrom(
-            $state->getTestCaseTitle() === 'FAIL' ? 'white' : 'black',
-            $state->getTestCaseTitleColor(),
-            $state->getTestCaseTitle(),
-            $state->testCaseName
-        ));
+        if (!$state->headerPrinted) {
+            $this->output->writeln($this->titleLineFrom(
+                $state->getTestCaseTitle() === 'FAIL' ? 'white' : 'black',
+                $state->getTestCaseTitleColor(),
+                $state->getTestCaseTitle(),
+                $state->testCaseName
+            ));
+            $state->headerPrinted = true;
+        }
 
         $state->eachTestCaseTests(function (TestResult $testResult) {
+            usleep(20000);
             $this->output->writeln($this->testLineFrom(
                 $testResult->color,
                 $testResult->icon,
@@ -80,85 +80,97 @@ final class Style
     }
 
     /**
-     * Prints the content similar too on the footer. Where
-     * we are updating the current test.
+     * Prints the content similar too:.
      *
      * ```
-     *    Runs  Unit\ExampleTest
-     *    • basic test
+     *    PASS  Unit\ExampleTest
+     *    ✓ basic test
      * ```
      */
-    public function updateFooter(State $state, TestCase $testCase = null): void
+    public function writeErrorsSummary(State $state, bool $onFailure): void
     {
-        $runs = [];
+        $errors = array_filter($state->suiteTests, function (TestResult $testResult) {
+            return $testResult->type === TestResult::FAIL;
+        });
 
-        if ($testCase) {
-            $runs[] = $this->titleLineFrom(
-                'black',
-                'yellow',
-                'RUNS',
-                get_class($testCase)
-            );
-
-            $testResult = TestResult::fromTestCase($testCase, TestResult::RUNS);
-            $runs[]     = $this->testLineFrom(
-                $testResult->color,
-                $testResult->icon,
-                $testResult->description
-            );
+        if (!$onFailure) {
+            $this->output->writeln(['', "  \e[2m---\e[22m", '']);
         }
 
-        $types = [TestResult::FAIL, TestResult::WARN, TestResult::RISKY, TestResult::INCOMPLETE, TestResult::SKIPPED, TestResult::PASS];
+        array_map(function (TestResult $testResult) use ($onFailure) {
+            if (!$onFailure) {
+                $this->output->write(sprintf(
+                    '  <fg=red;options=bold>• %s </>> <fg=red;options=bold>%s</>',
+                    $testResult->testCaseName,
+                    $testResult->description
+                ));
+            }
 
+            if (!$testResult->throwable instanceof Throwable) {
+                throw new ShouldNotHappen();
+            }
+
+            $this->writeError($testResult->throwable);
+        }, $errors);
+    }
+
+    /**
+     * Writes the final recap.
+     */
+    public function writeRecap(State $state, Timer $timer = null): void
+    {
+        $types = [TestResult::FAIL, TestResult::WARN, TestResult::RISKY, TestResult::INCOMPLETE, TestResult::SKIPPED, TestResult::PASS];
         foreach ($types as $type) {
-            if ($countTests = $state->countTestsInTestSuiteBy($type)) {
+            if (($countTests = $state->countTestsInTestSuiteBy($type)) !== 0) {
                 $color   = TestResult::makeColor($type);
                 $tests[] = "<fg=$color;options=bold>$countTests $type</>";
             }
         }
 
         $pending = $state->suiteTotalTests - $state->testSuiteTestsCount();
-        if ($pending) {
+        if ($pending !== 0) {
             $tests[] = "\e[2m$pending pending\e[22m";
         }
 
         if (!empty($tests)) {
-            $this->footer->overwrite(array_merge($runs, [
-                '',
+            $this->output->write([
+                "\n",
                 sprintf(
                     '  <fg=white;options=bold>Tests:  </><fg=default>%s</>',
                     implode(', ', $tests)
                 ),
-            ]));
+            ]);
         }
+
+        if ($timer !== null) {
+            $timeElapsed = number_format($timer->result(), 2, '.', '');
+            $this->output->writeln([
+                    '',
+                    sprintf(
+                        '  <fg=white;options=bold>Time:   </><fg=default>%ss</>',
+                        $timeElapsed
+                    ),
+                ]
+            );
+        }
+
+        $this->output->writeln('');
     }
 
     /**
-     * Writes the final recap.
+     * Displays a warning message.
      */
-    public function writeRecap(Timer $timer): void
+    public function writeWarning(string $message): void
     {
-        $timeElapsed = number_format($timer->result(), 2, '.', '');
-        $this->footer->writeln(
-            sprintf(
-                '  <fg=white;options=bold>Time:   </><fg=default>%ss</>',
-                $timeElapsed
-            )
-        );
+        $this->output->writeln($this->testLineFrom('yellow', $message, ''));
     }
 
     /**
      * Displays the error using Collision's writer
      * and terminates with exit code === 1.
-     *
-     * @return void
      */
-    public function writeError(State $state, Throwable $throwable)
+    public function writeError(Throwable $throwable): void
     {
-        $this->writeCurrentRecap($state);
-
-        $this->updateFooter($state);
-
         $writer = (new Writer())->setOutput($this->output);
 
         if ($throwable instanceof AssertionFailedError) {
@@ -167,8 +179,10 @@ final class Style
         }
 
         $writer->ignoreFilesIn([
+            '/vendor\/pestphp\/pest/',
             '/vendor\/phpunit\/phpunit\/src/',
             '/vendor\/mockery\/mockery/',
+            '/vendor\/laravel\/dusk/',
             '/vendor\/laravel\/framework\/src\/Illuminate\/Testing/',
             '/vendor\/laravel\/framework\/src\/Illuminate\/Foundation\/Testing/',
         ]);
@@ -182,10 +196,12 @@ final class Style
         $writer->write($inspector);
 
         if ($throwable instanceof ExpectationFailedException && $comparisionFailure = $throwable->getComparisonFailure()) {
-            $this->output->write($comparisionFailure->getDiff());
+            $diff  = $comparisionFailure->getDiff();
+            $diff  = trim((string) preg_replace("/\r|\n/", "\n  ", $diff));
+            $this->output->write("  $diff");
         }
 
-        exit(1);
+        $this->output->writeln('');
     }
 
     /**
@@ -193,20 +209,6 @@ final class Style
      */
     private function titleLineFrom(string $fg, string $bg, string $title, string $testCaseName): string
     {
-        if (class_exists($testCaseName)) {
-            $nameParts          = explode('\\', $testCaseName);
-            $highlightedPart    = array_pop($nameParts);
-            $nonHighlightedPart = implode('\\', $nameParts);
-            $testCaseName       = sprintf("\e[2m%s\e[22m<fg=white;options=bold>%s</>", "$nonHighlightedPart\\", $highlightedPart);
-        } elseif (file_exists($testCaseName)) {
-            $testCaseName       = substr($testCaseName, strlen((string) getcwd()) + 1);
-            $nameParts          = explode(DIRECTORY_SEPARATOR, $testCaseName);
-            $highlightedPart    = (string) array_pop($nameParts);
-            $highlightedPart    = substr($highlightedPart, 0, (int) strrpos($highlightedPart, '.'));
-            $nonHighlightedPart = implode('\\', $nameParts);
-            $testCaseName       = sprintf("\e[2m%s\e[22m<fg=white;options=bold>%s</>", "$nonHighlightedPart\\", $highlightedPart);
-        }
-
         return sprintf(
             "\n  <fg=%s;bg=%s;options=bold> %s </><fg=default> %s</>",
             $fg,

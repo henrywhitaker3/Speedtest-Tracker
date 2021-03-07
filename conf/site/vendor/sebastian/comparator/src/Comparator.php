@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -31,7 +31,7 @@ abstract class Comparator
         $this->exporter = new Exporter;
     }
 
-    public function setFactory(Factory $factory)
+    public function setFactory(Factory $factory)/*: void*/
     {
         $this->factory = $factory;
     }

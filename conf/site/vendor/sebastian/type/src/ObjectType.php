@@ -9,6 +9,9 @@
  */
 namespace SebastianBergmann\Type;
 
+use function is_subclass_of;
+use function strcasecmp;
+
 final class ObjectType extends Type
 {
     /**
@@ -34,11 +37,11 @@ final class ObjectType extends Type
         }
 
         if ($other instanceof self) {
-            if (0 === \strcasecmp($this->className->getQualifiedName(), $other->className->getQualifiedName())) {
+            if (0 === strcasecmp($this->className->qualifiedName(), $other->className->qualifiedName())) {
                 return true;
             }
 
-            if (\is_subclass_of($other->className->getQualifiedName(), $this->className->getQualifiedName(), true)) {
+            if (is_subclass_of($other->className->qualifiedName(), $this->className->qualifiedName(), true)) {
                 return true;
             }
         }
@@ -46,9 +49,9 @@ final class ObjectType extends Type
         return false;
     }
 
-    public function getReturnTypeDeclaration(): string
+    public function name(): string
     {
-        return ': ' . ($this->allowsNull ? '?' : '') . $this->className->getQualifiedName();
+        return $this->className->qualifiedName();
     }
 
     public function allowsNull(): bool

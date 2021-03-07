@@ -19,6 +19,9 @@ namespace Ramsey\Collection;
  *
  * Some collections allow duplicate elements and others do not. Some are ordered
  * and others unordered.
+ *
+ * @template T
+ * @template-extends ArrayInterface<T>
  */
 interface CollectionInterface extends ArrayInterface
 {
@@ -52,18 +55,20 @@ interface CollectionInterface extends ArrayInterface
      * (rather than returning `false`). This preserves the invariant that a
      * collection always contains the specified element after this call returns.
      *
-     * @param mixed $element The element to add to the collection.
+     * @param T $element The element to add to the collection.
      *
      * @return bool `true` if this collection changed as a result of the call.
      */
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function add($element): bool;
 
     /**
      * Returns `true` if this collection contains the specified element.
      *
-     * @param mixed $element The element to check whether the collection contains.
+     * @param T $element The element to check whether the collection contains.
      * @param bool $strict Whether to perform a strict type check on the value.
      */
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function contains($element, bool $strict = true): bool;
 
     /**
@@ -75,10 +80,11 @@ interface CollectionInterface extends ArrayInterface
      * Removes a single instance of the specified element from this collection,
      * if it is present.
      *
-     * @param mixed $element The element to remove from the collection.
+     * @param T $element The element to remove from the collection.
      *
      * @return bool `true` if an element was removed as a result of this call.
      */
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function remove($element): bool;
 
     /**
@@ -86,21 +92,21 @@ interface CollectionInterface extends ArrayInterface
      *
      * @param string $propertyOrMethod The property or method name to filter by.
      *
-     * @return mixed[]
+     * @return list<mixed>
      */
     public function column(string $propertyOrMethod): array;
 
     /**
      * Returns the first item of the collection.
      *
-     * @return mixed
+     * @return T
      */
     public function first();
 
     /**
      * Returns the last item of the collection.
      *
-     * @return mixed
+     * @return T
      */
     public function last();
 
@@ -114,7 +120,7 @@ interface CollectionInterface extends ArrayInterface
      * @param string $order The sort order for the resulting collection (one of
      *     this interface's `SORT_*` constants).
      *
-     * @return CollectionInterface<mixed, mixed>
+     * @return CollectionInterface<T>
      */
     public function sort(string $propertyOrMethod, string $order = self::SORT_ASC): self;
 
@@ -128,9 +134,9 @@ interface CollectionInterface extends ArrayInterface
      * See the {@link http://php.net/manual/en/function.array-filter.php PHP array_filter() documentation}
      * for examples of how the `$callback` parameter works.
      *
-     * @param callable $callback A callable to use for filtering elements.
+     * @param callable(T):bool $callback A callable to use for filtering elements.
      *
-     * @return CollectionInterface<mixed, mixed>
+     * @return CollectionInterface<T>
      */
     public function filter(callable $callback): self;
 
@@ -141,25 +147,28 @@ interface CollectionInterface extends ArrayInterface
      * a new one.
      *
      * @param string $propertyOrMethod The property or method to evaluate.
-     * @param mixed  $value The value to match.
+     * @param mixed $value The value to match.
      *
-     * @return CollectionInterface<mixed, mixed>
+     * @return CollectionInterface<T>
      */
     public function where(string $propertyOrMethod, $value): self;
 
     /**
      * Apply a given callback method on each item of the collection.
      *
-     * This will always leave the original collection untouched and will return
-     * a new one.
+     * This will always leave the original collection untouched. The new
+     * collection is created by mapping the callback to each item of the
+     * original collection.
      *
      * See the {@link http://php.net/manual/en/function.array-map.php PHP array_map() documentation}
      * for examples of how the `$callback` parameter works.
      *
-     * @param callable $callback A callable to apply to each item of the
-     *     collection.
+     * @param callable(T):TCallbackReturn $callback A callable to apply to each
+     *     item of the collection.
      *
-     * @return CollectionInterface<mixed, mixed>
+     * @return CollectionInterface<TCallbackReturn>
+     *
+     * @template TCallbackReturn
      */
     public function map(callable $callback): self;
 
@@ -167,10 +176,10 @@ interface CollectionInterface extends ArrayInterface
      * Create a new collection with divergent items between current and given
      * collection.
      *
-     * @param CollectionInterface<mixed, mixed> $other The collection to check for divergent
+     * @param CollectionInterface<T> $other The collection to check for divergent
      *     items.
      *
-     * @return CollectionInterface<mixed, mixed>
+     * @return CollectionInterface<T>
      */
     public function diff(CollectionInterface $other): self;
 
@@ -178,19 +187,19 @@ interface CollectionInterface extends ArrayInterface
      * Create a new collection with intersecting item between current and given
      * collection.
      *
-     * @param CollectionInterface<mixed, mixed> $other The collection to check for
+     * @param CollectionInterface<T> $other The collection to check for
      *     intersecting items.
      *
-     * @return CollectionInterface<mixed, mixed>
+     * @return CollectionInterface<T>
      */
     public function intersect(CollectionInterface $other): self;
 
     /**
      * Merge current items and items of given collections into a new one.
      *
-     * @param CollectionInterface<mixed, mixed> ...$collections The collections to merge.
+     * @param CollectionInterface<T> ...$collections The collections to merge.
      *
-     * @return CollectionInterface<mixed, mixed>
+     * @return CollectionInterface<T>
      */
     public function merge(CollectionInterface ...$collections): self;
 }

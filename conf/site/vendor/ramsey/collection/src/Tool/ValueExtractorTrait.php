@@ -29,7 +29,7 @@ trait ValueExtractorTrait
     /**
      * Extracts the value of the given property or method from the object.
      *
-     * @param object $object The object to extract the value from.
+     * @param mixed $object The object to extract the value from.
      * @param string $propertyOrMethod The property or method for which the
      *     value should be extracted.
      *
@@ -37,8 +37,12 @@ trait ValueExtractorTrait
      *
      * @throws ValueExtractionException if the method or property is not defined.
      */
-    protected function extractValue(object $object, string $propertyOrMethod)
+    protected function extractValue($object, string $propertyOrMethod)
     {
+        if (!is_object($object)) {
+            throw new ValueExtractionException('Unable to extract a value from a non-object');
+        }
+
         if (property_exists($object, $propertyOrMethod)) {
             return $object->$propertyOrMethod;
         }

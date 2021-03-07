@@ -9,7 +9,7 @@ parameters:
         - stubs/Gate.stub
         - stubs/Relation.stub
         - stubs/BelongsTo.stub
-        - stubs/BelongstoMany.stub
+        - stubs/BelongsToMany.stub
         - stubs/HasOneOrMany.stub
         - stubs/HasMany.stub
         - stubs/HasOne.stub
@@ -29,13 +29,14 @@ parameters:
         - stubs/Contracts/Pagination.stub
         - stubs/Contracts/Support.stub
         - stubs/Redis/Connection.stub
+        - stubs/Logger.stub
     scopeClass: NunoMaduro\Larastan\Analyser\Scope
     universalObjectCratesClasses:
         - Illuminate\Http\Request
     earlyTerminatingFunctionCalls:
         - abort
         - dd
-    excludes_analyse:
+    excludePaths:
         - *.blade.php
     mixinExcludeClasses:
         - Eloquent
@@ -45,14 +46,14 @@ parameters:
     noUnnecessaryCollectionCall: true
     noUnnecessaryCollectionCallOnly: []
     noUnnecessaryCollectionCallExcept: []
-    databaseMigrationsPath: null
+    databaseMigrationsPath: []
     checkModelProperties: false
 
 parametersSchema:
     noUnnecessaryCollectionCall: bool()
     noUnnecessaryCollectionCallOnly: listOf(string())
     noUnnecessaryCollectionCallExcept: listOf(string())
-    databaseMigrationsPath: schema(anyOf(string()), nullable())
+    databaseMigrationsPath: listOf(string())
     checkModelProperties: bool()
 
 conditionalTags:

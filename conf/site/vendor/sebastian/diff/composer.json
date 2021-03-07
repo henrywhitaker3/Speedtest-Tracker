@@ -14,12 +14,20 @@
             "email": "mail@kore-nordmann.de"
         }
     ],
+    "prefer-stable": true,
+    "config": {
+        "platform": {
+            "php": "7.3.0"
+        },
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.5 || ^8.0",
-        "symfony/process": "^2 || ^3.3 || ^4"
+        "phpunit/phpunit": "^9.3",
+        "symfony/process": "^4.2 || ^5"
     },
     "autoload": {
         "classmap": [
@@ -33,7 +41,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0-dev"
+            "dev-master": "4.0-dev"
         }
     }
 }

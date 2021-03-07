@@ -9,6 +9,20 @@
  */
 namespace SebastianBergmann\Type;
 
+use function assert;
+use function class_exists;
+use function count;
+use function explode;
+use function function_exists;
+use function is_array;
+use function is_object;
+use function is_string;
+use function strpos;
+use Closure;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionObject;
+
 final class CallableType extends Type
 {
     /**
@@ -61,9 +75,9 @@ final class CallableType extends Type
         return false;
     }
 
-    public function getReturnTypeDeclaration(): string
+    public function name(): string
     {
-        return ': ' . ($this->allowsNull ? '?' : '') . 'callable';
+        return 'callable';
     }
 
     public function allowsNull(): bool
@@ -73,7 +87,7 @@ final class CallableType extends Type
 
     private function isClosure(ObjectType $type): bool
     {
-        return !$type->className()->isNamespaced() && $type->className()->getSimpleName() === \Closure::class;
+        return !$type->className()->isNamespaced() && $type->className()->simpleName() === Closure::class;
     }
 
     /**
@@ -81,10 +95,13 @@ final class CallableType extends Type
      */
     private function hasInvokeMethod(ObjectType $type): bool
     {
+        $className = $type->className()->qualifiedName();
+        assert(class_exists($className));
+
         try {
-            $class = new \ReflectionClass($type->className()->getQualifiedName());
+            $class = new ReflectionClass($className);
             // @codeCoverageIgnoreStart
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             throw new RuntimeException(
                 $e->getMessage(),
                 (int) $e->getCode(),
@@ -102,65 +119,63 @@ final class CallableType extends Type
 
     private function isFunction(SimpleType $type): bool
     {
-        if (!\is_string($type->value())) {
+        if (!is_string($type->value())) {
             return false;
         }
 
-        return \function_exists($type->value());
+        return function_exists($type->value());
     }
 
     private function isObjectCallback(SimpleType $type): bool
     {
-        if (!\is_array($type->value())) {
+        if (!is_array($type->value())) {
             return false;
         }
 
-        if (\count($type->value()) !== 2) {
+        if (count($type->value()) !== 2) {
             return false;
         }
 
-        if (!\is_object($type->value()[0]) || !\is_string($type->value()[1])) {
+        if (!is_object($type->value()[0]) || !is_string($type->value()[1])) {
             return false;
         }
 
         [$object, $methodName] = $type->value();
 
-        $reflector = new \ReflectionObject($object);
-
-        return $reflector->hasMethod($methodName);
+        return (new ReflectionObject($object))->hasMethod($methodName);
     }
 
     private function isClassCallback(SimpleType $type): bool
     {
-        if (!\is_string($type->value()) && !\is_array($type->value())) {
+        if (!is_string($type->value()) && !is_array($type->value())) {
             return false;
         }
 
-        if (\is_string($type->value())) {
-            if (\strpos($type->value(), '::') === false) {
+        if (is_string($type->value())) {
+            if (strpos($type->value(), '::') === false) {
                 return false;
             }
 
-            [$className, $methodName] = \explode('::', $type->value());
+            [$className, $methodName] = explode('::', $type->value());
         }
 
-        if (\is_array($type->value())) {
-            if (\count($type->value()) !== 2) {
+        if (is_array($type->value())) {
+            if (count($type->value()) !== 2) {
                 return false;
             }
 
-            if (!\is_string($type->value()[0]) || !\is_string($type->value()[1])) {
+            if (!is_string($type->value()[0]) || !is_string($type->value()[1])) {
                 return false;
             }
 
             [$className, $methodName] = $type->value();
         }
 
-        \assert(isset($className) && \is_string($className));
-        \assert(isset($methodName) && \is_string($methodName));
+        assert(isset($className) && is_string($className) && class_exists($className));
+        assert(isset($methodName) && is_string($methodName));
 
         try {
-            $class = new \ReflectionClass($className);
+            $class = new ReflectionClass($className);
 
             if ($class->hasMethod($methodName)) {
                 $method = $class->getMethod($methodName);
@@ -168,7 +183,7 @@ final class CallableType extends Type
                 return $method->isPublic() && $method->isStatic();
             }
             // @codeCoverageIgnoreStart
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             throw new RuntimeException(
                 $e->getMessage(),
                 (int) $e->getCode(),

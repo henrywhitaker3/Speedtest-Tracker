@@ -16,6 +16,21 @@ final class UnknownType extends Type
         return true;
     }
 
+    public function name(): string
+    {
+        return 'unknown type';
+    }
+
+    public function asString(): string
+    {
+        return '';
+    }
+
+    /**
+     * @deprecated
+     *
+     * @codeCoverageIgnore
+     */
     public function getReturnTypeDeclaration(): string
     {
         return '';

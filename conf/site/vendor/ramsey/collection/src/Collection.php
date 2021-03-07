@@ -69,6 +69,9 @@ namespace Ramsey\Collection;
  *     // the collection is a collection of My\Foo objects
  * }
  * ```
+ *
+ * @template T
+ * @template-extends AbstractCollection<T>
  */
 class Collection extends AbstractCollection
 {
@@ -88,7 +91,7 @@ class Collection extends AbstractCollection
      *
      * @param string $collectionType The type (FQCN) associated with this
      *     collection.
-     * @param mixed[] $data The initial items to store in the collection.
+     * @param array<array-key, T> $data The initial items to store in the collection.
      */
     public function __construct(string $collectionType, array $data = [])
     {
@@ -96,9 +99,6 @@ class Collection extends AbstractCollection
         parent::__construct($data);
     }
 
-    /**
-     * Returns the type associated with this collection.
-     */
     public function getType(): string
     {
         return $this->collectionType;

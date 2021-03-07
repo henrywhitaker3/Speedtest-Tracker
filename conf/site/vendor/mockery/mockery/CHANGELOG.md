@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.4.3 (2021-02-24)
+* Fixes calls to fetchMock before initialisation #1113
+* Allow shouldIgnoreMissing() to behave in a recursive fashion #1097
+* Custom object formatters #766 (Needs Docs)
+* Fix crash on a union type including null #1106
+
+## 1.3.4 (2021-02-24)
+* Fixes calls to fetchMock before initialisation #1113
+* Fix crash on a union type including null #1106
+
 ## 1.4.2 (2020-08-11)
 * Fix array to string conversion in ConstantsPass (#1086)
 * Fixed nullable PHP 8.0 union types (#1088, #1089)
@@ -11,6 +21,19 @@
 
 * Allow quick definitions to use 'at least once' expectation
   `\Mockery::getConfiguration()->getQuickDefinitions()->shouldBeCalledAtLeastOnce(true)` (#1056)
+* Added provisional support for PHP 8.0 (#1068, #1072,#1079)
+* Fix mocking methods with iterable return type without specifying a return value (#1075)
+
+## 1.3.3 (2020-08-11)
+* Fix array to string conversion in ConstantsPass (#1086)
+* Fixed nullable PHP 8.0 union types (#1088)
+* Fixed support for PHP 8.0 parent type (#1088)
+* Fixed PHP 8.0 mixed type support (#1088)
+* Fixed PHP 8.0 union return types (#1088)
+
+## 1.3.2 (2020-07-09)
+* Fix mocking with anonymous classes (#1039)
+* Fix andAnyOthers() to properly match earlier expectations (#1051)
 * Added provisional support for PHP 8.0 (#1068, #1072,#1079)
 * Fix mocking methods with iterable return type without specifying a return value (#1075)
 

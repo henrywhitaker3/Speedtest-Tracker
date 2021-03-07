@@ -1,13 +1,6 @@
 <?php
 
-/**
- * This file is part of Collision.
- *
- * (c) Nuno Maduro <enunomaduro@gmail.com>
- *
- *  For the full copyright and license information, please view the LICENSE
- *  file that was distributed with this source code.
- */
+declare(strict_types=1);
 
 namespace NunoMaduro\Collision\Adapters\Phpunit;
 
@@ -48,6 +41,20 @@ final class State
     public $testCaseTests = [];
 
     /**
+     * The current test case tests.
+     *
+     * @var array<int, TestResult>
+     */
+    public $toBePrintedCaseTests = [];
+
+    /**
+     * Header printed.
+     *
+     * @var bool
+     */
+    public $headerPrinted = false;
+
+    /**
      * The state constructor.
      */
     private function __construct(string $testCaseName)
@@ -68,7 +75,8 @@ final class State
      */
     public function add(TestResult $test): void
     {
-        $this->testCaseTests[] = $test;
+        $this->testCaseTests[]        = $test;
+        $this->toBePrintedCaseTests[] = $test;
 
         $this->suiteTests[] = $test;
     }
@@ -145,6 +153,8 @@ final class State
         $this->testCaseName = self::getPrintableTestCaseName($testCase);
 
         $this->testCaseTests = [];
+
+        $this->headerPrinted = false;
     }
 
     /**
@@ -152,9 +162,11 @@ final class State
      */
     public function eachTestCaseTests(callable $callback): void
     {
-        foreach ($this->testCaseTests as $test) {
+        foreach ($this->toBePrintedCaseTests as $test) {
             $callback($test);
         }
+
+        $this->toBePrintedCaseTests = [];
     }
 
     public function countTestsInTestSuiteBy(string $type): int
@@ -181,14 +193,10 @@ final class State
     /**
      * Returns the printable test case name from the given `TestCase`.
      */
-    private static function getPrintableTestCaseName(TestCase $test): string
+    public static function getPrintableTestCaseName(TestCase $test): string
     {
-        if ($test instanceof HasPrintableTestCaseName) {
-            $name = $test->getPrintableTestCaseName();
-        } else {
-            $name = get_class($test);
-        }
-
-        return $name;
+        return $test instanceof HasPrintableTestCaseName
+            ? $test->getPrintableTestCaseName()
+            : get_class($test);
     }
 }
