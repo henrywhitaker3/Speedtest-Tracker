@@ -8,6 +8,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import HomePage from './components/Home/HomePage';
 import Cookies from 'js-cookie';
+import SettingsIndex from './components/Settings/SettingsIndex';
+import SpeedtestsPage from './components/SpeedtestsPage';
 
 export default class Index extends Component {
     constructor(props) {
@@ -82,6 +84,18 @@ export default class Index extends Component {
                                 <Route exact path={window.config.base} render={(props) => (
                                     <div>
                                         <HomePage />
+                                    </div>
+                                )} />
+                                <Route exact path={window.config.base + 'speedtests'} render={(props) => (
+                                    <div>
+                                        <SpeedtestsPage />
+
+                                    </div>
+                                )} />
+                                <Route exact path={window.config.base + 'settings'} render={(props) => (
+                                    <div>
+                                        <SettingsIndex />
+
                                     </div>
                                 )} />
                                 <Route exact path={window.config.base + "error/:code"} render={(props) => ( <ErrorPage code={props.match.params.code} /> )} />

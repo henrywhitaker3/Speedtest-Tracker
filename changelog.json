@@ -1,4 +1,28 @@
 {
+    "1.10.4": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
+    "1.10.3": [
+        {
+            "description": "Moved stuff into pages.",
+            "link": ""
+        }
+    ],
+    "1.10.2": [
+        {
+            "description": "Added option to disable scheduled tests.",
+            "link": ""
+        }
+    ],
+    "1.10.1": [
+        {
+            "description": "Fixed integrations config being empty causing healthchecks to not run on scheduled tests.",
+            "link": ""
+        }
+    ],
     "1.10.0": [
         {
             "description": "Added automated build for ARM.",
