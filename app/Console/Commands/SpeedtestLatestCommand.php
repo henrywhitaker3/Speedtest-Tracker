@@ -67,7 +67,7 @@ class SpeedtestLatestCommand extends Command
 
             $this->info('Running speedtest, this might take a while...');
 
-            $results = SpeedtestHelper::runSpeedtest();
+            $results = $this->speedtestProvider->run();
 
             $this->info('Ping: ' . $results->ping . ' ms');
             $this->info('Download: ' . $results->download . ' Mbit/s');
