@@ -1,4 +1,18 @@
 {
+    "1.11.0": [
+        {
+            "description": "Upgrade to Laravel 8.",
+            "link": ""
+        },
+        {
+            "description": "Refactor loads of back-end stuff.",
+            "link": ""
+        },
+        {
+            "description": "Refactor front-end stuff.",
+            "link": ""
+        }
+    ],
     "1.10.4": [
         {
             "description": "Updated dependencies.",

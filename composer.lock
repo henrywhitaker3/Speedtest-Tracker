@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ad8d03c7090b8725a7d7f639409a8de",
+    "content-hash": "102adc5121f97ad3ad15009f410fb8fa",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1251,6 +1251,63 @@
                 "source": "https://github.com/henrywhitaker3/PHP-healthchecks.io/tree/v1.0.2"
             },
             "time": "2020-08-21T23:17:42+00:00"
+        },
+        {
+            "name": "henrywhitaker3/laravel-actions",
+            "version": "v1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/henrywhitaker3/laravel-actions.git",
+                "reference": "2a8a7c0a0be7083c0c1fcbea0ba6a57220a17939"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/henrywhitaker3/laravel-actions/zipball/2a8a7c0a0be7083c0c1fcbea0ba6a57220a17939",
+                "reference": "2a8a7c0a0be7083c0c1fcbea0ba6a57220a17939",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~7|~8"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~5|~6",
+                "phpunit/phpunit": "~9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Henrywhitaker3\\LaravelActions\\LaravelActionsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Henrywhitaker3\\LaravelActions\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Henry Whitaker",
+                    "email": "henrywhitaker3@outlook.com",
+                    "homepage": "https://github.com/henrywhitaker3"
+                }
+            ],
+            "description": "Simple actions package for Laravel",
+            "homepage": "https://github.com/henrywhitaker3/laravel-actions",
+            "keywords": [
+                "LaravelActions",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/henrywhitaker3/laravel-actions/issues",
+                "source": "https://github.com/henrywhitaker3/laravel-actions/tree/v1.0.5"
+            },
+            "time": "2021-02-06T09:50:49+00:00"
         },
         {
             "name": "laravel-notification-channels/telegram",
