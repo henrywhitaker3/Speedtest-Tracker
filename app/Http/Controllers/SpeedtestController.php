@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\GetFailedSpeedtestData;
 use App\Actions\GetLatestSpeedtestData;
 use App\Actions\GetSpeedtestTimeData;
 use App\Actions\QueueSpeedtest;
@@ -94,7 +95,7 @@ class SpeedtestController extends Controller
             ], 422);
         }
 
-        $data = SpeedtestHelper::failureRate($days);
+        $data = run(GetFailedSpeedtestData::class, $days);
 
         return response()->json([
             'method' => 'get speedtests in last x days',

@@ -108,44 +108,6 @@ class SpeedtestHelper
     }
 
     /**
-     * Get a percentage rate of failure by days
-     *
-     * @param integer $days number of days to get rate for
-     * @return integer percentage fail rate
-     */
-    public static function failureRate(int $days)
-    {
-        $ttl = Carbon::now()->addDays(1);
-        $rate = Cache::remember('failure-rate-' . $days, $ttl, function () use ($days) {
-            $range = [
-                Carbon::today()
-            ];
-            for ($i = 0; $i < ($days - 1); $i++) {
-                $prev = end($range);
-                $new = $prev->copy()->subDays(1);
-                array_push($range, $new);
-            }
-
-            $rate = [];
-
-            foreach ($range as $day) {
-                $success = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', false)->get()[0]['rate'];
-                $fail = Speedtest::select(DB::raw('COUNT(id) as rate'))->whereDate('created_at', $day)->where('failed', true)->get()[0]['rate'];
-
-                array_push($rate, [
-                    'date' => $day->toDateString(),
-                    'success' => $success,
-                    'failure' => $fail,
-                ]);
-            }
-
-            return array_reverse($rate);
-        });
-
-        return $rate;
-    }
-
-    /**
      * Create a backup of the SQLite database
      *
      * @return null|boolean
