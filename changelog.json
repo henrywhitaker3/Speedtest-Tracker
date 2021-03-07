@@ -1,4 +1,10 @@
 {
+    "1.10.4": [
+        {
+            "description": "Updated dependencies.",
+            "link": ""
+        }
+    ],
     "1.10.3": [
         {
             "description": "Moved stuff into pages.",
