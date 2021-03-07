@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -8,6 +8,8 @@
  * file that was distributed with this source code.
  */
 namespace SebastianBergmann\Comparator;
+
+use SplObjectStorage;
 
 /**
  * Compares \SplObjectStorage instances for equality.
@@ -24,7 +26,7 @@ class SplObjectStorageComparator extends Comparator
      */
     public function accepts($expected, $actual)
     {
-        return $expected instanceof \SplObjectStorage && $actual instanceof \SplObjectStorage;
+        return $expected instanceof SplObjectStorage && $actual instanceof SplObjectStorage;
     }
 
     /**
@@ -38,7 +40,7 @@ class SplObjectStorageComparator extends Comparator
      *
      * @throws ComparisonFailure
      */
-    public function assertEquals($expected, $actual, $delta = 0.0, $canonicalize = false, $ignoreCase = false)
+    public function assertEquals($expected, $actual, $delta = 0.0, $canonicalize = false, $ignoreCase = false)/*: void*/
     {
         foreach ($actual as $object) {
             if (!$expected->contains($object)) {

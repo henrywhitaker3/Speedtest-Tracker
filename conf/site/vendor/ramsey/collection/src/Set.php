@@ -34,6 +34,9 @@ namespace Ramsey\Collection;
  * $bar = new \My\Foo();
  * $set->add($bar); // returns TRUE, $bar !== $foo
  * ```
+ *
+ * @template T
+ * @template-extends AbstractSet<T>
  */
 class Set extends AbstractSet
 {
@@ -51,7 +54,7 @@ class Set extends AbstractSet
      * specified data.
      *
      * @param string $setType The type (FQCN) associated with this set.
-     * @param mixed[] $data The initial items to store in the set.
+     * @param array<array-key, T> $data The initial items to store in the set.
      */
     public function __construct(string $setType, array $data = [])
     {
@@ -59,9 +62,6 @@ class Set extends AbstractSet
         parent::__construct($data);
     }
 
-    /**
-     * Returns the type associated with this set.
-     */
     public function getType(): string
     {
         return $this->setType;

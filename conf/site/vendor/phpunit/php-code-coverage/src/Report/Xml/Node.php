@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /*
- * This file is part of the php-code-coverage package.
+ * This file is part of phpunit/php-code-coverage.
  *
  * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
@@ -9,34 +9,40 @@
  */
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
+use DOMDocument;
+use DOMElement;
+
+/**
+ * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
+ */
 abstract class Node
 {
     /**
-     * @var \DOMDocument
+     * @var DOMDocument
      */
     private $dom;
 
     /**
-     * @var \DOMElement
+     * @var DOMElement
      */
     private $contextNode;
 
-    public function __construct(\DOMElement $context)
+    public function __construct(DOMElement $context)
     {
         $this->setContextNode($context);
     }
 
-    public function getDom(): \DOMDocument
+    public function dom(): DOMDocument
     {
         return $this->dom;
     }
 
-    public function getTotals(): Totals
+    public function totals(): Totals
     {
-        $totalsContainer = $this->getContextNode()->firstChild;
+        $totalsContainer = $this->contextNode()->firstChild;
 
         if (!$totalsContainer) {
-            $totalsContainer = $this->getContextNode()->appendChild(
+            $totalsContainer = $this->contextNode()->appendChild(
                 $this->dom->createElementNS(
                     'https://schema.phpunit.de/coverage/1.0',
                     'totals'
@@ -49,38 +55,38 @@ abstract class Node
 
     public function addDirectory(string $name): Directory
     {
-        $dirNode = $this->getDom()->createElementNS(
+        $dirNode = $this->dom()->createElementNS(
             'https://schema.phpunit.de/coverage/1.0',
             'directory'
         );
 
         $dirNode->setAttribute('name', $name);
-        $this->getContextNode()->appendChild($dirNode);
+        $this->contextNode()->appendChild($dirNode);
 
         return new Directory($dirNode);
     }
 
     public function addFile(string $name, string $href): File
     {
-        $fileNode = $this->getDom()->createElementNS(
+        $fileNode = $this->dom()->createElementNS(
             'https://schema.phpunit.de/coverage/1.0',
             'file'
         );
 
         $fileNode->setAttribute('name', $name);
         $fileNode->setAttribute('href', $href);
-        $this->getContextNode()->appendChild($fileNode);
+        $this->contextNode()->appendChild($fileNode);
 
         return new File($fileNode);
     }
 
-    protected function setContextNode(\DOMElement $context): void
+    protected function setContextNode(DOMElement $context): void
     {
         $this->dom         = $context->ownerDocument;
         $this->contextNode = $context;
     }
 
-    protected function getContextNode(): \DOMElement
+    protected function contextNode(): DOMElement
     {
         return $this->contextNode;
     }

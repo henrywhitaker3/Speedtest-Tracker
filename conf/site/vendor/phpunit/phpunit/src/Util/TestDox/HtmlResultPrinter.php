@@ -9,6 +9,9 @@
  */
 namespace PHPUnit\Util\TestDox;
 
+use function sprintf;
+use PHPUnit\Framework\TestResult;
+
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
@@ -76,6 +79,10 @@ EOT;
 </html>
 EOT;
 
+    public function printResult(TestResult $result): void
+    {
+    }
+
     /**
      * Handler for 'start run' event.
      */
@@ -90,7 +97,7 @@ EOT;
     protected function startClass(string $name): void
     {
         $this->write(
-            \sprintf(
+            sprintf(
                 self::CLASS_HEADER,
                 $name,
                 $this->currentTestClassPrettified
@@ -101,10 +108,10 @@ EOT;
     /**
      * Handler for 'on test' event.
      */
-    protected function onTest($name, bool $success = true): void
+    protected function onTest(string $name, bool $success = true): void
     {
         $this->write(
-            \sprintf(
+            sprintf(
                 "            <li style=\"color: %s;\">%s %s</li>\n",
                 $success ? '#555753' : '#ef2929',
                 $success ? '✓' : '❌',

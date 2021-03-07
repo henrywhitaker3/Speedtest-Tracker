@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.org/nunomaduro/collision"><img src="https://img.shields.io/travis/nunomaduro/collision/stable.svg" alt="Build Status"></img></a>
+  <a href="https://github.com/nunomaduro/collision/actions"><img src="https://img.shields.io/github/workflow/status/nunomaduro/collision/Tests.svg" alt="Build Status"></img></a>
   <a href="https://scrutinizer-ci.com/g/nunomaduro/collision"><img src="https://img.shields.io/scrutinizer/g/nunomaduro/collision.svg" alt="Quality Score"></img></a>
   <a href="https://packagist.org/packages/nunomaduro/collision"><img src="https://poser.pugx.org/nunomaduro/collision/d/total.svg" alt="Total Downloads"></a>
   <a href="https://packagist.org/packages/nunomaduro/collision"><img src="https://poser.pugx.org/nunomaduro/collision/v/stable.svg" alt="Latest Stable Version"></a>
@@ -22,7 +22,7 @@ Collision was created by, and is maintained by **[Nuno Maduro](https://github.co
 
 ## Installation & Usage
 
-> **Requires [PHP 7.2.5+](https://php.net/releases/)**
+> **Requires [PHP 7.3+](https://php.net/releases/)**
 
 Require Collision using [Composer](https://getcomposer.org):
 
@@ -40,7 +40,7 @@ $app->register(\NunoMaduro\Collision\Adapters\Laravel\CollisionServiceProvider::
 
 ## Phpunit adapter
 
-Phpunit must be 8.5.1 or higher.
+Phpunit must be 9.0 or higher.
 
 Add the Collision `printerClass` to your `phpunit.xml` in the `phpunit` section:
 

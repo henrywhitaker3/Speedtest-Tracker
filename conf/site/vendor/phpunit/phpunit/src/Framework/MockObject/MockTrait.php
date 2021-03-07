@@ -9,6 +9,8 @@
  */
 namespace PHPUnit\Framework\MockObject;
 
+use function class_exists;
+
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
@@ -20,19 +22,25 @@ final class MockTrait implements MockType
     private $classCode;
 
     /**
-     * @var string
+     * @var class-string
      */
     private $mockName;
 
+    /**
+     * @psalm-param class-string $mockName
+     */
     public function __construct(string $classCode, string $mockName)
     {
         $this->classCode = $classCode;
         $this->mockName  = $mockName;
     }
 
+    /**
+     * @psalm-return class-string
+     */
     public function generate(): string
     {
-        if (!\class_exists($this->mockName, false)) {
+        if (!class_exists($this->mockName, false)) {
             eval($this->classCode);
         }
 

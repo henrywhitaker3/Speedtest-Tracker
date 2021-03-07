@@ -555,7 +555,7 @@ class Filesystem
             } elseif (is_dir($file)) {
                 $this->mkdir($target);
             } elseif (is_file($file)) {
-                $this->copy($file, $target, isset($options['override']) ? $options['override'] : false);
+                $this->copy($file, $target, $options['override'] ?? false);
             } else {
                 throw new IOException(sprintf('Unable to guess "%s" file type.', $file), 0, null, $file);
             }
@@ -667,7 +667,9 @@ class Filesystem
 
             $this->rename($tmpFile, $filename, true);
         } finally {
-            @unlink($tmpFile);
+            if (file_exists($tmpFile)) {
+                @unlink($tmpFile);
+            }
         }
     }
 
@@ -715,14 +717,16 @@ class Filesystem
     }
 
     /**
+     * @param mixed ...$args
+     *
      * @return mixed
      */
-    private static function box(callable $func)
+    private static function box(callable $func, ...$args)
     {
         self::$lastError = null;
         set_error_handler(__CLASS__.'::handleError');
         try {
-            $result = $func(...\array_slice(\func_get_args(), 1));
+            $result = $func(...$args);
             restore_error_handler();
 
             return $result;

@@ -32,8 +32,8 @@ composer require "rakit/validation"
 
 #### Usage
 
-There are two ways to validating data with this library. Using `make` to make validation object, 
-then validate it using `validate`. Or just use `validate`. 
+There are two ways to validating data with this library. Using `make` to make validation object,
+then validate it using `validate`. Or just use `validate`.
 Examples:
 
 Using `make`:
@@ -112,7 +112,7 @@ if ($validation->fails()) {
 
 ```
 
-In this case, 2 examples above will output the same results. 
+In this case, 2 examples above will output the same results.
 
 But with `make` you can setup something like custom invalid message, custom attribute alias, etc before validation running.
 
@@ -234,7 +234,7 @@ $validation_a->validate();
 
 #### Custom Message for Specific Attribute Rule
 
-Sometimes you may want to set custom message for specific rule attribute. 
+Sometimes you may want to set custom message for specific rule attribute.
 To do this you can use `:` as message separator or using chaining methods.
 
 Examples:
@@ -270,12 +270,12 @@ $validation_a->validate();
 
 ## Translation
 
-Translation is different with custom messages. 
+Translation is different with custom messages.
 Translation may needed when you use custom message for rule `in`, `not_in`, `mimes`, and `uploaded_file`.
 
-For example if you use rule `in:1,2,3` we will set invalid message like "The Attribute only allows '1', '2', or '3'" 
+For example if you use rule `in:1,2,3` we will set invalid message like "The Attribute only allows '1', '2', or '3'"
 where part "'1', '2', or '3'" is comes from ":allowed_values" tag.
-So if you have custom Indonesian message ":attribute hanya memperbolehkan :allowed_values", 
+So if you have custom Indonesian message ":attribute hanya memperbolehkan :allowed_values",
 we will set invalid message like "Attribute hanya memperbolehkan '1', '2', or '3'" which is the "or" word is not part of Indonesian language.
 
 So, to solve this problem, we can use translation like this:
@@ -295,7 +295,7 @@ $validation = $validator->validate($inputs, [
     'nomor' => 'in:1,2,3'
 ]);
 
-$message = $validation->errors()->first('nomor'); // "Nomor hanya memperbolehkan '1', '2', atau '3'" 
+$message = $validation->errors()->first('nomor'); // "Nomor hanya memperbolehkan '1', '2', atau '3'"
 ```
 
 > Actually, our built-in rules only use words 'and' and 'or' that you may need to translates.
@@ -319,7 +319,7 @@ Get all messages as flatten array.
 Examples:
 
 ```php
-$messages = $errors->all(); 
+$messages = $errors->all();
 // [
 //     'Email is not valid email',
 //     'Password minimum 6 character',
@@ -341,7 +341,7 @@ Get only first message from all existing keys.
 Examples:
 
 ```php
-$messages = $errors->firstOfAll(); 
+$messages = $errors->firstOfAll();
 // [
 //     'email' => Email is not valid email',
 //     'password' => 'Password minimum 6 character',
@@ -354,13 +354,13 @@ $messages = $errors->firstOfAll('<li>:message</li>');
 // ]
 ```
 
-Argument `$dotNotation` is for array validation. 
+Argument `$dotNotation` is for array validation.
 If it is `false` it will return original array structure, if it `true` it will return flatten array with dot notation keys.
 
 For example:
 
 ```php
-$messages = $errors->firstOfAll(':message', false); 
+$messages = $errors->firstOfAll(':message', false);
 // [
 //     'contacts' => [
 //          1 => [
@@ -470,7 +470,7 @@ The field under this validation must be present and not 'empty'.
 Here are some examples:
 
 | Value         | Valid |
-|---------------|-------|
+| ------------- | ----- |
 | `'something'` | true  |
 | `'0'`         | true  |
 | `0`           | true  |
@@ -524,18 +524,18 @@ The field under validation must be present and not empty only when all of the ot
 
 <details><summary><strong>uploaded_file</strong>:min_size,max_size,extension_a,extension_b,...</summary>
 
-This rule will validate data from `$_FILES`. 
+This rule will validate data from `$_FILES`.
 Field under this rule must be follows rules below to be valid:
 
-* `$_FILES['key']['error']` must be `UPLOAD_ERR_OK` or `UPLOAD_ERR_NO_FILE`. For `UPLOAD_ERR_NO_FILE` you can validate it with `required` rule. 
+* `$_FILES['key']['error']` must be `UPLOAD_ERR_OK` or `UPLOAD_ERR_NO_FILE`. For `UPLOAD_ERR_NO_FILE` you can validate it with `required` rule.
 * If min size is given, uploaded file size **MUST NOT** be lower than min size.
 * If max size is given, uploaded file size **MUST NOT** be higher than max size.
 * If file types is given, mime type must be one of those given types.
 
 Here are some example definitions and explanations:
 
-* `uploaded_file`: uploaded file is optional. When it is not empty, it must be `ERR_UPLOAD_OK`. 
-* `required|uploaded_file`: uploaded file is required, and it must be `ERR_UPLOAD_OK`. 
+* `uploaded_file`: uploaded file is optional. When it is not empty, it must be `ERR_UPLOAD_OK`.
+* `required|uploaded_file`: uploaded file is required, and it must be `ERR_UPLOAD_OK`.
 * `uploaded_file:0,1M`: uploaded file size must be between 0 - 1 MB, but uploaded file is optional.
 * `required|uploaded_file:0,1M,png,jpeg`: uploaded file size must be between 0 - 1MB and mime types must be `image/jpeg` or `image/png`.
 
@@ -600,7 +600,7 @@ The `$_FILES` item under validation must have a MIME type corresponding to one o
 
 <details><summary><strong>default/defaults</strong></summary>
 
-This is special rule that doesn't validate anything. 
+This is special rule that doesn't validate anything.
 It just set default value to your attribute if that attribute is empty or not present.
 
 For example if you have validation like this
@@ -684,15 +684,15 @@ The field under this rule may have alpha characters, as well as spaces.
 
 The field under this rule must be included in the given list of values.
 
-This rule is using `in_array` to check the value. 
-By default `in_array` disable strict checking. 
+This rule is using `in_array` to check the value.
+By default `in_array` disable strict checking.
 So it doesn't check data type.
 If you want enable strict checking, you can invoke validator like this:
 
 ```php
 $validation = $validator->validate($data, [
     'enabled' => [
-        'required', 
+        'required',
         $validator('in', [true, 1])->strict()
     ]
 ]);
@@ -712,7 +712,7 @@ This rule also using `in_array`. You can enable strict checking by invoking vali
 
 <details><summary><strong>min</strong>:number</summary>
 
-The field under this rule must have a size greater or equal than the given number. 
+The field under this rule must have a size greater or equal than the given number.
 
 For string value, size corresponds to the number of characters. For integer or float value, size corresponds to its numerical value. For an array, size corresponds to the count of the array. If your value is numeric string, you can put `numeric` rule to treat its size by numeric value instead of number of characters.
 
@@ -731,7 +731,7 @@ $validation = $validator->validate([
 
 <details><summary><strong>max</strong>:number</summary>
 
-The field under this rule must have a size lower or equal than the given number. 
+The field under this rule must have a size lower or equal than the given number.
 Value size calculated in same way like `min` rule.
 
 You can also validate uploaded file using this rule to validate maximum size of uploaded file.
@@ -749,7 +749,7 @@ $validation = $validator->validate([
 
 <details><summary><strong>between</strong>:min,max</summary>
 
-The field under this rule must have a size between min and max params. 
+The field under this rule must have a size between min and max params.
 Value size calculated in same way like `min` and `max` rule.
 
 You can also validate uploaded file using this rule to validate size of uploaded file.
@@ -797,13 +797,19 @@ $validation = $validator->validate($inputs, [
 ]);
 ```
 
-> For common URL scheme and mailto, we combine `FILTER_VALIDATE_URL` to validate URL format and `preg_match` to validate it's scheme. 
+> For common URL scheme and mailto, we combine `FILTER_VALIDATE_URL` to validate URL format and `preg_match` to validate it's scheme.
   Except for JDBC URL, currently it just check a valid JDBC scheme.
 
 </details>
 
 <details><summary><strong>integer</strong></summary>
 The field under t rule must be integer.
+
+</details>
+
+<details><summary><strong>boolean</strong></summary>
+
+The field under this rule must be boolean. Accepted input are `true`, `false`, `1`, `0`, `"1"`, and `"0"`.
 
 </details>
 
@@ -911,7 +917,7 @@ $validation = $validator->validate($_POST, [
 ]);
 ```
 
-You can set invalid message by returning a string. 
+You can set invalid message by returning a string.
 For example, example above would be:
 
 ```php
@@ -931,7 +937,7 @@ $validation = $validator->validate($_POST, [
 ]);
 ```
 
-> Note: `Rakit\Validation\Rules\Callback` instance is binded into your Closure. 
+> Note: `Rakit\Validation\Rules\Callback` instance is binded into your Closure.
   So you can access rule properties and methods using `$this`.
 
 </details>
@@ -944,10 +950,10 @@ Field under this rule may be empty.
 
 ## Register/Override Rule
 
-Another way to use custom validation rule is to create a class extending `Rakit\Validation\Rule`. 
+Another way to use custom validation rule is to create a class extending `Rakit\Validation\Rule`.
 Then register it using `setValidator` or `addValidator`.
 
-For example, you want to create `unique` validator that check field availability from database. 
+For example, you want to create `unique` validator that check field availability from database.
 
 First, lets create `UniqueRule` class:
 
@@ -959,36 +965,36 @@ use Rakit\Validation\Rule;
 class UniqueRule extends Rule
 {
     protected $message = ":attribute :value has been used";
-    
+
     protected $fillableParams = ['table', 'column', 'except'];
-    
+
     protected $pdo;
-    
+
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
-    
+
     public function check($value): bool
     {
         // make sure required parameters exists
         $this->requireParameters(['table', 'column']);
-    
+
         // getting parameters
         $column = $this->parameter('column');
         $table = $this->parameter('table');
         $except = $this->parameter('except');
-	
+
         if ($except AND $except == $value) {
             return true;
         }
-	
+
         // do query
         $stmt = $this->pdo->prepare("select count(*) as count from `{$table}` where `{$column}` = :value");
         $stmt->bindParam(':value', $value);
         $stmt->execute();
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
-	
+
         // true for valid, false for invalid
         return intval($data['count']) === 0;
     }
@@ -1022,7 +1028,7 @@ $params['column'] = 'email';
 $params['except'] = 'exception@mail.com';
 ```
 
-> If you want your custom rule accept parameter list like `in`,`not_in`, or `uploaded_file` rules, 
+> If you want your custom rule accept parameter list like `in`,`not_in`, or `uploaded_file` rules,
   you just need to override `fillParameters(array $params)` method in your custom rule class.
 
 Note that `unique` rule that we created above also can be used like this:
@@ -1046,25 +1052,25 @@ use Rakit\Validation\Rule;
 class UniqueRule extends Rule
 {
     ...
-    
+
     public function table($table)
     {
         $this->params['table'] = $table;
         return $this;
     }
-    
+
     public function column($column)
     {
         $this->params['column'] = $column;
         return $this;
     }
-    
+
     public function except($value)
     {
         $this->params['except'] = $value;
         return $this;
     }
-    
+
     ...
 }
 
@@ -1098,11 +1104,11 @@ class YourCustomRule extends Rule
     protected $implicit = true;
 
 }
-``` 
+```
 
 #### Modify Value
 
-In some case, you may want your custom rule to be able to modify it's attribute value like our `default/defaults` rule. So in current and next rules checks, your modified value will be used. 
+In some case, you may want your custom rule to be able to modify it's attribute value like our `default/defaults` rule. So in current and next rules checks, your modified value will be used.
 
 To do this, you should implements `Rakit\Validation\Rules\Interfaces\ModifyValue` and create method `modifyValue($value)` to your custom rule class.
 

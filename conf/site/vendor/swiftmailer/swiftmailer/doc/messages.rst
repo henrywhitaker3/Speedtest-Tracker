@@ -100,7 +100,7 @@ with a strict format, you only need to pass a DateTimeInterface instance to
 +-------------------------------+------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
 | ``Date``                      | Specifies the date at which the message was sent                                                                                   | ``getDate()`` / ``setDate()``               |
 +-------------------------------+------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
-| ``Content-Type``              | Specifies the format of the message (usually text/plain or text/html)                                                              | ``getContentType()`` / ``setContentType()`` |
+| ``Content-Type``              | Specifies the format of the message (usually ``text/plain`` or ``text/html``)                                                              | ``getContentType()`` / ``setContentType()`` |
 +-------------------------------+------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
 | ``Content-Transfer-Encoding`` | Specifies the encoding scheme in the message                                                                                       | ``getEncoder()`` / ``setEncoder()``         |
 +-------------------------------+------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
@@ -820,7 +820,7 @@ Requesting a Read Receipt
 
 It is possible to request a read-receipt to be sent to an address when the
 email is opened. To request a read receipt set the address with
-``setReadReceiptTo()``:
+``setReadReceiptTo()``::
 
     $message->setReadReceiptTo('your@address.tld');
 

@@ -96,7 +96,10 @@ final class BigDecimal extends BigNumber
      */
     public static function zero() : BigDecimal
     {
-        /** @psalm-suppress ImpureStaticVariable */
+        /**
+         * @psalm-suppress ImpureStaticVariable
+         * @var BigDecimal|null $zero
+         */
         static $zero;
 
         if ($zero === null) {
@@ -115,7 +118,10 @@ final class BigDecimal extends BigNumber
      */
     public static function one() : BigDecimal
     {
-        /** @psalm-suppress ImpureStaticVariable */
+        /**
+         * @psalm-suppress ImpureStaticVariable
+         * @var BigDecimal|null $one
+         */
         static $one;
 
         if ($one === null) {
@@ -134,7 +140,10 @@ final class BigDecimal extends BigNumber
      */
     public static function ten() : BigDecimal
     {
-        /** @psalm-suppress ImpureStaticVariable */
+        /**
+         * @psalm-suppress ImpureStaticVariable
+         * @var BigDecimal|null $ten
+         */
         static $ten;
 
         if ($ten === null) {
@@ -677,11 +686,7 @@ final class BigDecimal extends BigNumber
      */
     public function toBigInteger() : BigInteger
     {
-        if ($this->scale === 0) {
-            $zeroScaleDecimal = $this;
-        } else {
-            $zeroScaleDecimal = $this->dividedBy(1, 0);
-        }
+        $zeroScaleDecimal = $this->scale === 0 ? $this : $this->dividedBy(1, 0);
 
         return BigInteger::create($zeroScaleDecimal->value);
     }
@@ -763,6 +768,7 @@ final class BigDecimal extends BigNumber
      * This method is only here to implement interface Serializable and cannot be accessed directly.
      *
      * @internal
+     * @psalm-suppress RedundantPropertyInitializationCheck
      *
      * @param string $value
      *

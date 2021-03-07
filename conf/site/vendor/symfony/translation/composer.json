@@ -1,7 +1,7 @@
 {
     "name": "symfony/translation",
     "type": "library",
-    "description": "Symfony Translation Component",
+    "description": "Provides tools to internationalize your application",
     "keywords": [],
     "homepage": "https://symfony.com",
     "license": "MIT",
@@ -40,7 +40,7 @@
         "symfony/yaml": "<4.4"
     },
     "provide": {
-        "symfony/translation-implementation": "2.0"
+        "symfony/translation-implementation": "2.3"
     },
     "suggest": {
         "symfony/config": "",

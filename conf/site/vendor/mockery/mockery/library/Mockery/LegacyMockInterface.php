@@ -69,7 +69,7 @@ interface LegacyMockInterface
     /**
      * Set mock to defer unexpected methods to its parent if possible
      *
-     * @deprecated 2.0.0 Please use makePartial() instead
+     * @deprecated since 1.4.0. Please use makePartial() instead.
      *
      * @return Mock
      */
@@ -84,7 +84,7 @@ interface LegacyMockInterface
 
     /**
      * @param null|string $method
-     * @param null $args
+     * @param null|array|Closure $args
      * @return mixed
      */
     public function shouldHaveReceived($method, $args = null);
@@ -96,7 +96,7 @@ interface LegacyMockInterface
 
     /**
      * @param null|string $method
-     * @param null $args
+     * @param null|array|Closure $args
      * @return mixed
      */
     public function shouldNotHaveReceived($method, $args = null);

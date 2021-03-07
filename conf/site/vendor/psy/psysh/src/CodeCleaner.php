@@ -25,6 +25,7 @@ use Psy\CodeCleaner\FunctionContextPass;
 use Psy\CodeCleaner\FunctionReturnInWriteContextPass;
 use Psy\CodeCleaner\ImplicitReturnPass;
 use Psy\CodeCleaner\InstanceOfPass;
+use Psy\CodeCleaner\IssetPass;
 use Psy\CodeCleaner\LabelContextPass;
 use Psy\CodeCleaner\LeavePsyshAlonePass;
 use Psy\CodeCleaner\ListPass;
@@ -64,11 +65,11 @@ class CodeCleaner
     {
         if ($parser === null) {
             $parserFactory = new ParserFactory();
-            $parser        = $parserFactory->createParser();
+            $parser = $parserFactory->createParser();
         }
 
-        $this->parser    = $parser;
-        $this->printer   = $printer ?: new Printer();
+        $this->parser = $parser;
+        $this->printer = $printer ?: new Printer();
         $this->traverser = $traverser ?: new NodeTraverser();
 
         foreach ($this->getDefaultPasses() as $pass) {
@@ -84,7 +85,7 @@ class CodeCleaner
     private function getDefaultPasses()
     {
         $useStatementPass = new UseStatementPass();
-        $namespacePass    = new NamespacePass($this);
+        $namespacePass = new NamespacePass($this);
 
         // Try to add implicit `use` statements and an implicit namespace,
         // based on the file in which the `debug` call was made.
@@ -100,6 +101,7 @@ class CodeCleaner
             new FunctionContextPass(),
             new FunctionReturnInWriteContextPass(),
             new InstanceOfPass(),
+            new IssetPass(),
             new LabelContextPass(),
             new LeavePsyshAlonePass(),
             new ListPass(),
@@ -173,7 +175,7 @@ class CodeCleaner
      */
     private static function getDebugFile()
     {
-        $trace = \debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $trace = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS);
 
         foreach (\array_reverse($trace) as $stackFrame) {
             if (!self::isDebugCall($stackFrame)) {
@@ -199,7 +201,7 @@ class CodeCleaner
      */
     private static function isDebugCall(array $stackFrame)
     {
-        $class    = isset($stackFrame['class']) ? $stackFrame['class'] : null;
+        $class = isset($stackFrame['class']) ? $stackFrame['class'] : null;
         $function = isset($stackFrame['function']) ? $stackFrame['function'] : null;
 
         return ($class === null && $function === 'Psy\\debug') ||
@@ -218,7 +220,7 @@ class CodeCleaner
      */
     public function clean(array $codeLines, $requireSemicolons = false)
     {
-        $stmts = $this->parse('<?php ' . \implode(PHP_EOL, $codeLines) . PHP_EOL, $requireSemicolons);
+        $stmts = $this->parse('<?php '.\implode(\PHP_EOL, $codeLines).\PHP_EOL, $requireSemicolons);
         if ($stmts === false) {
             return false;
         }
@@ -227,13 +229,13 @@ class CodeCleaner
         $stmts = $this->traverser->traverse($stmts);
 
         // Work around https://github.com/nikic/PHP-Parser/issues/399
-        $oldLocale = \setlocale(LC_NUMERIC, 0);
-        \setlocale(LC_NUMERIC, 'C');
+        $oldLocale = \setlocale(\LC_NUMERIC, 0);
+        \setlocale(\LC_NUMERIC, 'C');
 
         $code = $this->printer->prettyPrint($stmts);
 
         // Now put the locale back
-        \setlocale(LC_NUMERIC, $oldLocale);
+        \setlocale(\LC_NUMERIC, $oldLocale);
 
         return $code;
     }
@@ -300,7 +302,7 @@ class CodeCleaner
 
             try {
                 // Unexpected EOF, try again with an implicit semicolon
-                return $this->parser->parse($code . ';');
+                return $this->parser->parse($code.';');
             } catch (\PhpParser\Error $e) {
                 return false;
             }
@@ -333,7 +335,7 @@ class CodeCleaner
         }
 
         try {
-            $this->parser->parse($code . "';");
+            $this->parser->parse($code."';");
         } catch (\Exception $e) {
             return false;
         }

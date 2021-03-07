@@ -2,11 +2,47 @@
 
 All notable changes are documented in this file using the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## [3.0.3] - 2020-11-30
+## [4.0.6] - 2020-10-26
+
+### Fixed
+
+* `SebastianBergmann\Comparator\Exception` now correctly extends `\Throwable`
+
+## [4.0.5] - 2020-09-30
+
+### Fixed
+
+* [#89](https://github.com/sebastianbergmann/comparator/pull/89): Handle PHP 8 `ValueError`
+
+## [4.0.4] - 2020-09-28
 
 ### Changed
 
-* Changed PHP version constraint in `composer.json` from `^7.1` to `>=7.1`
+* Changed PHP version constraint in `composer.json` from `^7.3 || ^8.0` to `>=7.3`
+
+## [4.0.3] - 2020-06-26
+
+### Added
+
+* This component is now supported on PHP 8
+
+## [4.0.2] - 2020-06-15
+
+### Fixed
+
+* [#85](https://github.com/sebastianbergmann/comparator/issues/85): Version 4.0.1 breaks backward compatibility
+
+## [4.0.1] - 2020-06-15
+
+### Changed
+
+* Tests etc. are now ignored for archive exports
+
+## [4.0.0] - 2020-02-07
+
+### Removed
+
+* Removed support for PHP 7.1 and PHP 7.2
 
 ## [3.0.2] - 2018-07-12
 
@@ -18,8 +54,8 @@ All notable changes are documented in this file using the [Keep a CHANGELOG](htt
 
 ### Fixed
 
-* Fixed [#53](https://github.com/sebastianbergmann/comparator/pull/53): `DOMNodeComparator` ignores `$ignoreCase` parameter
-* Fixed [#58](https://github.com/sebastianbergmann/comparator/pull/58): `ScalarComparator` does not handle extremely ugly string comparison edge cases
+* [#53](https://github.com/sebastianbergmann/comparator/pull/53): `DOMNodeComparator` ignores `$ignoreCase` parameter
+* [#58](https://github.com/sebastianbergmann/comparator/pull/58): `ScalarComparator` does not handle extremely ugly string comparison edge cases
 
 ## [3.0.0] - 2018-04-18
 
@@ -56,7 +92,13 @@ All notable changes are documented in this file using the [Keep a CHANGELOG](htt
 * Added `SebastianBergmann\Comparator\Factory::reset()` to unregister all non-default comparators
 * Added support for `phpunit/phpunit-mock-objects` version `^5.0`
 
-[3.0.3]: https://github.com/sebastianbergmann/comparator/compare/3.0.2...3.0.3
+[4.0.6]: https://github.com/sebastianbergmann/comparator/compare/4.0.5...4.0.6
+[4.0.5]: https://github.com/sebastianbergmann/comparator/compare/4.0.4...4.0.5
+[4.0.4]: https://github.com/sebastianbergmann/comparator/compare/4.0.3...4.0.4
+[4.0.3]: https://github.com/sebastianbergmann/comparator/compare/4.0.2...4.0.3
+[4.0.2]: https://github.com/sebastianbergmann/comparator/compare/4.0.1...4.0.2
+[4.0.1]: https://github.com/sebastianbergmann/comparator/compare/4.0.0...4.0.1
+[4.0.0]: https://github.com/sebastianbergmann/comparator/compare/3.0.2...4.0.0
 [3.0.2]: https://github.com/sebastianbergmann/comparator/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/sebastianbergmann/comparator/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/sebastianbergmann/comparator/compare/2.1.3...3.0.0

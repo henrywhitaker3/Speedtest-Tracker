@@ -91,6 +91,11 @@ class SettingsHelper
      */
     public static function settingIsEditable(string $key)
     {
+        // Manual override for app_name
+        if ($key === 'app_name') {
+            return true;
+        }
+
         $results = [];
 
         // Try exact key
@@ -139,6 +144,7 @@ class SettingsHelper
     {
         return [
             'base' => SettingsHelper::getBase(),
+            'name' => SettingsHelper::get('app_name')->value,
             'widgets' => [
                 'show_average' => (bool)SettingsHelper::get('show_average')->value,
                 'show_max' => (bool)SettingsHelper::get('show_max')->value,

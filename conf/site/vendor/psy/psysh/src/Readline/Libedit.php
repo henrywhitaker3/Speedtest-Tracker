@@ -19,6 +19,9 @@ use Psy\Util\Str;
  * This is largely the same as the Readline implementation, but it emulates
  * support for `readline_list_history` since PHP decided it was a good idea to
  * ship a fake Readline implementation that is missing history support.
+ *
+ * NOTE: As of PHP 7.4, PHP sometimes has history support in the Libedit
+ * wrapper, so it will use the GNUReadline implementation rather than this one.
  */
 class Libedit extends GNUReadline
 {
@@ -47,9 +50,9 @@ class Libedit extends GNUReadline
         // libedit doesn't seem to support non-unix line separators.
         $history = \explode("\n", $history);
 
-        // shift the history signature, ensure it's valid
-        if (\array_shift($history) !== '_HiStOrY_V2_') {
-            return [];
+        // remove history signature if it exists
+        if ($history[0] === '_HiStOrY_V2_') {
+            \array_shift($history);
         }
 
         // decode the line
@@ -73,7 +76,7 @@ class Libedit extends GNUReadline
             if (\is_file($this->historyFile) && \is_writable($this->historyFile)) {
                 $this->hasWarnedOwnership = true;
                 $msg = \sprintf('Error writing history file, check file ownership: %s', $this->historyFile);
-                \trigger_error($msg, E_USER_NOTICE);
+                \trigger_error($msg, \E_USER_NOTICE);
             }
         }
 

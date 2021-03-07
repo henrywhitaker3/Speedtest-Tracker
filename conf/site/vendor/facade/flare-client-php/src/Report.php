@@ -60,7 +60,7 @@ class Report
     private $openFrameIndex;
 
     /** @var string */
-    private $groupBy;
+    private $groupBy ;
 
     public static function createForThrowable(Throwable $throwable, ContextInterface $context, ?string $applicationPath = null): self
     {
@@ -221,6 +221,7 @@ class Report
         return $this;
     }
 
+    /** @deprecated  */
     public function groupByTopFrame()
     {
         $this->groupBy = GroupingTypes::TOP_FRAME;
@@ -228,6 +229,7 @@ class Report
         return $this;
     }
 
+    /** @deprecated  */
     public function groupByException()
     {
         $this->groupBy = GroupingTypes::EXCEPTION;
@@ -270,7 +272,6 @@ class Report
             'stage' => $this->stage,
             'message_level' => $this->messageLevel,
             'open_frame_index' => $this->openFrameIndex,
-            'group_by' => $this->groupBy ?? GroupingTypes::TOP_FRAME,
             'application_path' => $this->applicationPath,
         ];
     }

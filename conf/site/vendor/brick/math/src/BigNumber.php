@@ -67,13 +67,10 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
             return new BigInteger((string) $value);
         }
 
-        if (\is_float($value)) {
-            $value = self::floatToString($value);
-        } else {
-            $value = (string) $value;
-        }
+        /** @psalm-suppress RedundantCastGivenDocblockType We cannot trust the untyped $value here! */
+        $value = \is_float($value) ? self::floatToString($value) : (string) $value;
 
-        $throw = function() use ($value) : void {
+        $throw = static function() use ($value) : void {
             throw new NumberFormatException(\sprintf(
                 'The given value "%s" does not represent a valid number.',
                 $value
@@ -84,7 +81,7 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
             $throw();
         }
 
-        $getMatch = function(string $value) use ($matches) : ?string {
+        $getMatch = static function(string $value) use ($matches) : ?string {
             return isset($matches[$value]) && $matches[$value] !== '' ? $matches[$value] : null;
         };
 
@@ -93,7 +90,13 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
         $denominator = $getMatch('denominator');
 
         if ($numerator !== null) {
-            $numerator   = self::cleanUp($sign . $numerator);
+            assert($denominator !== null);
+
+            if ($sign !== null) {
+                $numerator = $sign . $numerator;
+            }
+
+            $numerator   = self::cleanUp($numerator);
             $denominator = self::cleanUp($denominator);
 
             if ($denominator === '0') {
@@ -121,14 +124,14 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
         }
 
         if ($point !== null || $exponent !== null) {
-            $fractional = $fractional ?? '';
-            $exponent = $exponent !== null ? (int) $exponent : 0;
+            $fractional = ($fractional ?? '');
+            $exponent = ($exponent !== null) ? (int) $exponent : 0;
 
             if ($exponent === PHP_INT_MIN || $exponent === PHP_INT_MAX) {
                 throw new NumberFormatException('Exponent too large.');
             }
 
-            $unscaledValue = self::cleanUp($sign . $integral . $fractional);
+            $unscaledValue = self::cleanUp(($sign ?? ''). $integral . $fractional);
 
             $scale = \strlen($fractional) - $exponent;
 
@@ -142,7 +145,7 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
             return new BigDecimal($unscaledValue, $scale);
         }
 
-        $integral = self::cleanUp($sign . $integral);
+        $integral = self::cleanUp(($sign ?? '') . $integral);
 
         return new BigInteger($integral);
     }
@@ -181,10 +184,11 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
      * @return static
      *
      * @psalm-pure
+     * @psalm-suppress TooManyArguments
+     * @psalm-suppress UnsafeInstantiation
      */
     protected static function create(... $args) : BigNumber
     {
-        /** @psalm-suppress TooManyArguments */
         return new static(... $args);
     }
 
@@ -199,6 +203,8 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
      * @throws \InvalidArgumentException If no values are given.
      * @throws MathException             If an argument is not valid.
      *
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
      * @psalm-pure
      */
     public static function min(...$values) : BigNumber
@@ -231,6 +237,8 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
      * @throws \InvalidArgumentException If no values are given.
      * @throws MathException             If an argument is not valid.
      *
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
      * @psalm-pure
      */
     public static function max(...$values) : BigNumber
@@ -263,6 +271,8 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
      * @throws \InvalidArgumentException If no values are given.
      * @throws MathException             If an argument is not valid.
      *
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
      * @psalm-pure
      */
     public static function sum(...$values) : BigNumber
@@ -273,11 +283,7 @@ abstract class BigNumber implements \Serializable, \JsonSerializable
         foreach ($values as $value) {
             $value = static::of($value);
 
-            if ($sum === null) {
-                $sum = $value;
-            } else {
-                $sum = self::add($sum, $value);
-            }
+            $sum = $sum === null ? $value : self::add($sum, $value);
         }
 
         if ($sum === null) {

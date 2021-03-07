@@ -1,0 +1,47 @@
+{
+  "presets": [
+    [
+      "jason",
+      {
+        "debug": true,
+        "targets": {
+          "browsers": [
+            ">= .25%",
+            "ie 11",
+            "not dead",
+            "not op_mini all",
+            "not Android 4.4.3-4.4.4",
+            "not ios_saf < 10",
+            "not Chrome < 50", // caniuse lastest is reporting chrome 29
+            "firefox ESR"
+          ]
+        }
+      }
+    ],
+    "@babel/preset-typescript"
+  ],
+  "env": {
+    "esm": {
+      "presets": [
+        [
+          "jason",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": [
+                ">= .25%",
+                "ie 11",
+                "not dead",
+                "not op_mini all",
+                "not Android 4.4.3-4.4.4",
+                "not ios_saf < 10",
+                "not Chrome < 50", // caniuse lastest is reporting chrome 29
+                "firefox ESR"
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+}

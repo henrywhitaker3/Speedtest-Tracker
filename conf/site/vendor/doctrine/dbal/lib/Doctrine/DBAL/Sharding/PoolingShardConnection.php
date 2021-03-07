@@ -33,6 +33,8 @@ use function is_string;
  *
  * Instantiation through the DriverManager looks like:
  *
+ * @deprecated
+ *
  * @example
  *
  * $conn = DriverManager::getConnection(array(
@@ -62,6 +64,8 @@ class PoolingShardConnection extends Connection
 
     /**
      * {@inheritDoc}
+     *
+     * @internal The connection can be only instantiated by the driver manager.
      *
      * @throws InvalidArgumentException
      */

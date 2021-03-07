@@ -23,9 +23,9 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class TraceableUrlMatcher extends UrlMatcher
 {
-    const ROUTE_DOES_NOT_MATCH = 0;
-    const ROUTE_ALMOST_MATCHES = 1;
-    const ROUTE_MATCHES = 2;
+    public const ROUTE_DOES_NOT_MATCH = 0;
+    public const ROUTE_ALMOST_MATCHES = 1;
+    public const ROUTE_MATCHES = 2;
 
     protected $traces;
 
@@ -146,7 +146,7 @@ class TraceableUrlMatcher extends UrlMatcher
 
             $this->addTrace('Route matches!', self::ROUTE_MATCHES, $name, $route);
 
-            return $this->getAttributes($route, $name, array_replace($matches, $hostMatches, isset($status[1]) ? $status[1] : []));
+            return $this->getAttributes($route, $name, array_replace($matches, $hostMatches, $status[1] ?? []));
         }
 
         return [];

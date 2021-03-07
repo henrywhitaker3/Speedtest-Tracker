@@ -56,6 +56,7 @@ trait Rounding
             'microsecond' => [0, 999999],
         ]);
         $factor = 1;
+        $initialMonth = $this->month;
 
         if ($normalizedUnit === 'week') {
             $normalizedUnit = 'day';
@@ -92,7 +93,9 @@ trait Rounding
                 $factor /= $delta;
                 $fraction *= $delta;
                 $arguments[0] += $this->$unit * $factor;
-                $changes[$unit] = round($minimum + ($fraction ? $fraction * \call_user_func($function, ($this->$unit - $minimum) / $fraction) : 0));
+                $changes[$unit] = round(
+                    $minimum + ($fraction ? $fraction * $function(($this->$unit - $minimum) / $fraction) : 0)
+                );
 
                 // Cannot use modulo as it lose double precision
                 while ($changes[$unit] >= $delta) {
@@ -104,14 +107,19 @@ trait Rounding
         }
 
         [$value, $minimum] = $arguments;
+        $normalizedValue = floor($function(($value - $minimum) / $precision) * $precision + $minimum);
+
         /** @var CarbonInterface $result */
-        $result = $this->$normalizedUnit(floor(\call_user_func($function, ($value - $minimum) / $precision) * $precision + $minimum));
+        $result = $this->$normalizedUnit($normalizedValue);
 
         foreach ($changes as $unit => $value) {
             $result = $result->$unit($value);
         }
 
-        return $result;
+        return $normalizedUnit === 'month' && $precision <= 1 && abs($result->month - $initialMonth) === 2
+            // Re-run the change in case an overflow occurred
+            ? $result->$normalizedUnit($normalizedValue)
+            : $result;
     }
 
     /**

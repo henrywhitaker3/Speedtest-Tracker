@@ -35,7 +35,7 @@ use Symfony\Component\Console\Terminal;
  */
 class SymfonyStyle extends OutputStyle
 {
-    const MAX_LINE_LENGTH = 120;
+    public const MAX_LINE_LENGTH = 120;
 
     private $input;
     private $questionHelper;
@@ -300,7 +300,7 @@ class SymfonyStyle extends OutputStyle
     {
         if (null !== $default) {
             $values = array_flip($choices);
-            $default = isset($values[$default]) ? $values[$default] : $default;
+            $default = $values[$default] ?? $default;
         }
 
         return $this->askQuestion(new ChoiceQuestion($question, $choices, $default));

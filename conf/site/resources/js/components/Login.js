@@ -39,6 +39,9 @@ export default class Login extends Component {
             Cookies.set('auth', token, { expires: expires })
             window.location.reload(true);
         })
+        .catch((err) => {
+            toast.error('Something went wrong logging in.');
+        })
     }
 
     toggleShow = () => {

@@ -3,6 +3,10 @@ import eventListeners from "./modifiers/eventListeners.js";
 import popperOffsets from "./modifiers/popperOffsets.js";
 import computeStyles from "./modifiers/computeStyles.js";
 import applyStyles from "./modifiers/applyStyles.js";
+/*:: export type * from './types'; */
+
+/*;; export * from './types'; */
+
 var defaultModifiers = [eventListeners, popperOffsets, computeStyles, applyStyles];
 var createPopper = /*#__PURE__*/popperGenerator({
   defaultModifiers: defaultModifiers

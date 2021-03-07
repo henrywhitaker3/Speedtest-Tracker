@@ -2,8 +2,8 @@
 
 namespace Doctrine\DBAL\Tools\Console\Command;
 
-use Doctrine\DBAL\Driver\PDOConnection;
-use Doctrine\DBAL\Driver\PDOStatement;
+use Doctrine\DBAL\Driver\PDO\Connection as PDOConnection;
+use Doctrine\DBAL\Driver\PDO\Statement as PDOStatement;
 use InvalidArgumentException;
 use PDOException;
 use RuntimeException;
@@ -85,9 +85,14 @@ EOT
             $sql = @file_get_contents($filePath);
 
             if ($sql === false) {
-                throw new RuntimeException(
-                    sprintf("Unable to read SQL file '<info>%s</info>': %s", $filePath, error_get_last()['message'])
-                );
+                $message = sprintf("Unable to read SQL file '<info>%s</info>'", $filePath);
+                $error   = error_get_last();
+
+                if ($error !== null) {
+                    $message .= ': ' . $error['message'];
+                }
+
+                throw new RuntimeException($message);
             }
 
             if ($conn instanceof PDOConnection) {

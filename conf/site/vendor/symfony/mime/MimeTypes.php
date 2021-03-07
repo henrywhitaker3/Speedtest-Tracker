@@ -87,7 +87,7 @@ final class MimeTypes implements MimeTypesInterface
             $extensions = $this->extensions[$mimeType] ?? $this->extensions[$lcMimeType = strtolower($mimeType)] ?? null;
         }
 
-        return $extensions ?? self::$map[$mimeType] ?? self::$map[$lcMimeType ?? strtolower($mimeType)] ?? [];
+        return $extensions ?? self::MAP[$mimeType] ?? self::MAP[$lcMimeType ?? strtolower($mimeType)] ?? [];
     }
 
     /**
@@ -99,7 +99,7 @@ final class MimeTypes implements MimeTypesInterface
             $mimeTypes = $this->mimeTypes[$ext] ?? $this->mimeTypes[$lcExt = strtolower($ext)] ?? null;
         }
 
-        return $mimeTypes ?? self::$reverseMap[$ext] ?? self::$reverseMap[$lcExt ?? strtolower($ext)] ?? [];
+        return $mimeTypes ?? self::REVERSE_MAP[$ext] ?? self::REVERSE_MAP[$lcExt ?? strtolower($ext)] ?? [];
     }
 
     /**
@@ -150,7 +150,7 @@ final class MimeTypes implements MimeTypesInterface
      *
      * @see Resources/bin/update_mime_types.php
      */
-    private static $map = [
+    private const MAP = [
         'application/acrobat' => ['pdf'],
         'application/andrew-inset' => ['ez'],
         'application/annodex' => ['anx'],
@@ -173,6 +173,7 @@ final class MimeTypes implements MimeTypesInterface
         'application/cdmi-queue' => ['cdmiq'],
         'application/cdr' => ['cdr'],
         'application/coreldraw' => ['cdr'],
+        'application/csv' => ['csv'],
         'application/cu-seeme' => ['cu'],
         'application/dash+xml' => ['mpd'],
         'application/davmount+xml' => ['davmount'],
@@ -1741,7 +1742,7 @@ final class MimeTypes implements MimeTypesInterface
         'zz-application/zz-winassoc-xls' => ['xls', 'xlc', 'xll', 'xlm', 'xlw', 'xla', 'xlt', 'xld'],
     ];
 
-    private static $reverseMap = [
+    private const REVERSE_MAP = [
         '1km' => ['application/vnd.1000minds.decision-model+xml'],
         '32x' => ['application/x-genesis-32x-rom'],
         '3dml' => ['text/vnd.in3d.3dml'],
@@ -1960,7 +1961,7 @@ final class MimeTypes implements MimeTypesInterface
         'csp' => ['application/vnd.commonspace'],
         'css' => ['text/css'],
         'cst' => ['application/x-director'],
-        'csv' => ['text/csv', 'text/x-comma-separated-values', 'text/x-csv'],
+        'csv' => ['text/csv', 'text/x-comma-separated-values', 'text/x-csv', 'application/csv'],
         'csvs' => ['text/csv-schema'],
         'cu' => ['application/cu-seeme'],
         'cue' => ['application/x-cue'],

@@ -9,11 +9,17 @@
  */
 namespace PHPUnit\Util\TestDox;
 
+use PHPUnit\Framework\TestResult;
+
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
 final class TextResultPrinter extends ResultPrinter
 {
+    public function printResult(TestResult $result): void
+    {
+    }
+
     /**
      * Handler for 'start class' event.
      */
@@ -25,7 +31,7 @@ final class TextResultPrinter extends ResultPrinter
     /**
      * Handler for 'on test' event.
      */
-    protected function onTest($name, bool $success = true): void
+    protected function onTest(string $name, bool $success = true): void
     {
         if ($success) {
             $this->write(' [x] ');

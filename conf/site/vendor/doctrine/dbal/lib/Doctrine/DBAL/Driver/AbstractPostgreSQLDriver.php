@@ -3,9 +3,20 @@
 namespace Doctrine\DBAL\Driver;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\DriverException as DeprecatedDriverException;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception\ConnectionException;
+use Doctrine\DBAL\Exception\DeadlockException;
+use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
+use Doctrine\DBAL\Exception\InvalidFieldNameException;
+use Doctrine\DBAL\Exception\NonUniqueFieldNameException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Doctrine\DBAL\Exception\SyntaxErrorException;
+use Doctrine\DBAL\Exception\TableExistsException;
+use Doctrine\DBAL\Exception\TableNotFoundException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
 use Doctrine\DBAL\Platforms\PostgreSQL91Platform;
 use Doctrine\DBAL\Platforms\PostgreSQL92Platform;
@@ -27,49 +38,51 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
     /**
      * {@inheritdoc}
      *
+     * @deprecated
+     *
      * @link http://www.postgresql.org/docs/9.3/static/errcodes-appendix.html
      */
-    public function convertException($message, DriverException $exception)
+    public function convertException($message, DeprecatedDriverException $exception)
     {
         $sqlState = $exception->getSQLState();
 
         switch ($sqlState) {
             case '40001':
             case '40P01':
-                return new Exception\DeadlockException($message, $exception);
+                return new DeadlockException($message, $exception);
 
             case '0A000':
                 // Foreign key constraint violations during a TRUNCATE operation
                 // are considered "feature not supported" in PostgreSQL.
                 if (strpos($exception->getMessage(), 'truncate') !== false) {
-                    return new Exception\ForeignKeyConstraintViolationException($message, $exception);
+                    return new ForeignKeyConstraintViolationException($message, $exception);
                 }
 
                 break;
 
             case '23502':
-                return new Exception\NotNullConstraintViolationException($message, $exception);
+                return new NotNullConstraintViolationException($message, $exception);
 
             case '23503':
-                return new Exception\ForeignKeyConstraintViolationException($message, $exception);
+                return new ForeignKeyConstraintViolationException($message, $exception);
 
             case '23505':
-                return new Exception\UniqueConstraintViolationException($message, $exception);
+                return new UniqueConstraintViolationException($message, $exception);
 
             case '42601':
-                return new Exception\SyntaxErrorException($message, $exception);
+                return new SyntaxErrorException($message, $exception);
 
             case '42702':
-                return new Exception\NonUniqueFieldNameException($message, $exception);
+                return new NonUniqueFieldNameException($message, $exception);
 
             case '42703':
-                return new Exception\InvalidFieldNameException($message, $exception);
+                return new InvalidFieldNameException($message, $exception);
 
             case '42P01':
-                return new Exception\TableNotFoundException($message, $exception);
+                return new TableNotFoundException($message, $exception);
 
             case '42P07':
-                return new Exception\TableExistsException($message, $exception);
+                return new TableExistsException($message, $exception);
 
             case '08006':
                 return new Exception\ConnectionException($message, $exception);
@@ -80,13 +93,13 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
                 // The exception code would be always set to 7 here.
                 // We have to match against the SQLSTATE in the error message in these cases.
                 if (strpos($exception->getMessage(), 'SQLSTATE[08006]') !== false) {
-                    return new Exception\ConnectionException($message, $exception);
+                    return new ConnectionException($message, $exception);
                 }
 
                 break;
         }
 
-        return new Exception\DriverException($message, $exception);
+        return new DriverException($message, $exception);
     }
 
     /**
@@ -95,7 +108,7 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
     public function createDatabasePlatformForVersion($version)
     {
         if (! preg_match('/^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<patch>\d+))?)?/', $version, $versionParts)) {
-            throw DBALException::invalidPlatformVersionSpecified(
+            throw Exception::invalidPlatformVersionSpecified(
                 $version,
                 '<major_version>.<minor_version>.<patch_version>'
             );
@@ -122,6 +135,8 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use Connection::getDatabase() instead.
      */
     public function getDatabase(Connection $conn)
     {

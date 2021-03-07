@@ -160,14 +160,10 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
     {
         if (isset($this->out) && !feof($this->out)) {
             $line = fgets($this->out);
-            if (0 == strlen($line)) {
+            if (0 == \strlen($line)) {
                 $metas = stream_get_meta_data($this->out);
                 if ($metas['timed_out']) {
-                    throw new Swift_IoException(
-                        'Connection to '.
-                            $this->getReadConnectionDescription().
-                        ' Timed Out'
-                    );
+                    throw new Swift_IoException('Connection to '.$this->getReadConnectionDescription().' Timed Out');
                 }
             }
 
@@ -192,14 +188,10 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
     {
         if (isset($this->out) && !feof($this->out)) {
             $ret = fread($this->out, $length);
-            if (0 == strlen($ret)) {
+            if (0 == \strlen($ret)) {
                 $metas = stream_get_meta_data($this->out);
                 if ($metas['timed_out']) {
-                    throw new Swift_IoException(
-                        'Connection to '.
-                            $this->getReadConnectionDescription().
-                        ' Timed Out'
-                    );
+                    throw new Swift_IoException('Connection to '.$this->getReadConnectionDescription().' Timed Out');
                 }
             }
 
@@ -224,7 +216,7 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
     protected function doCommit($bytes)
     {
         if (isset($this->in)) {
-            $bytesToWrite = strlen($bytes);
+            $bytesToWrite = \strlen($bytes);
             $totalBytesWritten = 0;
 
             while ($totalBytesWritten < $bytesToWrite) {
@@ -299,9 +291,7 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
         $this->stream = proc_open($command, $descriptorSpec, $pipes);
         stream_set_blocking($pipes[2], 0);
         if ($err = stream_get_contents($pipes[2])) {
-            throw new Swift_TransportException(
-                'Process could not be started ['.$err.']'
-                );
+            throw new Swift_TransportException('Process could not be started ['.$err.']');
         }
         $this->in = &$pipes[0];
         $this->out = &$pipes[1];

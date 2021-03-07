@@ -23,7 +23,7 @@ final class ParameterizedHeader extends UnstructuredHeader
      *
      * @var string
      */
-    const TOKEN_REGEX = '(?:[\x21\x23-\x27\x2A\x2B\x2D\x2E\x30-\x39\x41-\x5A\x5E-\x7E]+)';
+    public const TOKEN_REGEX = '(?:[\x21\x23-\x27\x2A\x2B\x2D\x2E\x30-\x39\x41-\x5A\x5E-\x7E]+)';
 
     private $encoder;
     private $parameters = [];
@@ -102,7 +102,7 @@ final class ParameterizedHeader extends UnstructuredHeader
     }
 
     /**
-     * Render a RFC 2047 compliant header parameter from the $name and $value.
+     * Render an RFC 2047 compliant header parameter from the $name and $value.
      */
     private function createParameter(string $name, string $value): string
     {
