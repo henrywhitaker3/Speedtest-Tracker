@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class SettingsHelper
 {
+    private static $settings = null;
 
     /**
      * Get a Setting object by name
@@ -18,12 +19,16 @@ class SettingsHelper
      */
     public static function get(String $name)
     {
-        $name = Setting::where('name', $name)->get();
+        if (self::$settings === null) {
+            self::$settings = Setting::get();
+        }
+
+        $name = self::$settings->where('name', $name);
 
         if (sizeof($name) == 0) {
             return false;
         } else if (sizeof($name) == 1) {
-            return $name[0];
+            return $name->first();
         } else {
             $name = $name->keyBy('name');
             return $name->all();
