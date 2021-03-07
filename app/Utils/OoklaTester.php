@@ -23,7 +23,7 @@ class OoklaTester implements SpeedtestProvider
         try {
             $output = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
 
-            if (!$this->isOutputIsComplete($output)) {
+            if (!$this->isOutputComplete($output)) {
                 $test = false;
             }
 
@@ -55,7 +55,7 @@ class OoklaTester implements SpeedtestProvider
                 'scheduled' => $scheduled,
             ]);
 
-            throw new SpeedtestFailureException($output);
+            throw new SpeedtestFailureException((string)$output);
         }
 
         Cache::flush();
@@ -90,7 +90,7 @@ class OoklaTester implements SpeedtestProvider
      * @param array $output
      * @return boolean
      */
-    private static function isOutputIsComplete($output)
+    public static function isOutputComplete($output)
     {
         /**
          * Array of indexes that must exist in $output

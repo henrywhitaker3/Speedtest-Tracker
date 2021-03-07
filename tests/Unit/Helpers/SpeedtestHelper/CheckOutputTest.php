@@ -2,11 +2,18 @@
 
 namespace Tests\Unit\Helpers\SpeedtestHelper;
 
-use App\Helpers\SpeedtestHelper;
+use App\Utils\OoklaTester;
 use PHPUnit\Framework\TestCase;
 
 class CheckOutputTest extends TestCase
 {
+    private OoklaTester $speedtestProvider;
+
+    public function __construct()
+    {
+        $this->speedtestProvider = new OoklaTester();
+    }
+
     /**
      * A basic unit test example.
      *
@@ -16,9 +23,9 @@ class CheckOutputTest extends TestCase
     {
         $expected = [
             'type' => 'result',
-            'download' => [ 'bandwidth' => '*' ],
-            'upload' => [ 'bandwidth' => '*' ],
-            'ping' => [ 'latency' => '*' ],
+            'download' => ['bandwidth' => '*'],
+            'upload' => ['bandwidth' => '*'],
+            'ping' => ['latency' => '*'],
             'server' => [
                 'id' => '*',
                 'name' => '*',
@@ -30,7 +37,7 @@ class CheckOutputTest extends TestCase
             ]
         ];
 
-        $this->assertTrue(SpeedtestHelper::checkOutputIsComplete($expected));
+        $this->assertTrue($this->speedtestProvider->isOutputComplete($expected));
     }
 
     /**
@@ -42,7 +49,7 @@ class CheckOutputTest extends TestCase
     {
         $expected = [
             'type' => 'result',
-            'download' => [ 'bandwidth' => '*' ],
+            'download' => ['bandwidth' => '*'],
             'server' => [
                 'id' => '*',
                 'name' => '*',
@@ -54,6 +61,6 @@ class CheckOutputTest extends TestCase
             ]
         ];
 
-        $this->assertFalse(SpeedtestHelper::checkOutputIsComplete($expected));
+        $this->assertFalse($this->speedtestProvider->isOutputComplete($expected));
     }
 }
