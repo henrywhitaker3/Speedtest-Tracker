@@ -1,0 +1,9 @@
+language: node_js
+cache: yarn
+notifications:
+  email: false
+node_js:
+  - "stable"
+branches:
+  only:
+    - master
