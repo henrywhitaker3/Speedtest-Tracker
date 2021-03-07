@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Helpers\SpeedtestHelper;
+use App\Interfaces\SpeedtestProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -22,13 +23,17 @@ class SpeedtestLatestCommand extends Command
      */
     protected $description = 'Returns the latest speedtest result';
 
+    private SpeedtestProvider $speedtestProvider;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(SpeedtestProvider $speedtestProvider)
     {
+        $this->speedtestProvider = $speedtestProvider;
+
         parent::__construct();
     }
 
@@ -41,8 +46,8 @@ class SpeedtestLatestCommand extends Command
     {
         $latest = SpeedtestHelper::latest();
 
-        if($latest) {
-            if($latest->scheduled) {
+        if ($latest) {
+            if ($latest->scheduled) {
                 $extra = '(scheduled)';
             } else {
                 $extra = '(manual)';
@@ -50,7 +55,7 @@ class SpeedtestLatestCommand extends Command
 
             $this->info('Last speedtest run at: ' . $latest->created_at . ' ' . $extra);
 
-            if($latest->failed) {
+            if ($latest->failed) {
                 $this->error('Speedtest failed');
             } else {
                 $this->info('Ping: ' . $latest->ping . ' ms');

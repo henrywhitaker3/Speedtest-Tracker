@@ -18,20 +18,11 @@ class SpeedtestServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (File::exists(env('DB_DATABASE'))) {
-            if (Schema::hasTable('settings')) {
-                switch (SettingsHelper::get('speedtest_provider')) {
-                    case 'ookla':
-                    default:
-                        $this->app->singleton(
-                            SpeedtestProvider::class,
-                            function () {
-                                return new OoklaTester();
-                            }
-                        );
-                        break;
-                }
+        $this->app->singleton(
+            SpeedtestProvider::class,
+            function () {
+                return new OoklaTester();
             }
-        }
+        );
     }
 }
