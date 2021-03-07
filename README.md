@@ -100,4 +100,4 @@ After enabling, you should change the password through the web UI.
     
 ### Manual Install
 
-For manual installtions, please follow the instrucitons [here](https://github.com/henrywhitaker3/Speedtest-Tracker/wiki/Manual-Installation).
+For manual installations, please follow the instructions [here](https://github.com/henrywhitaker3/Speedtest-Tracker/wiki/Manual-Installation).
