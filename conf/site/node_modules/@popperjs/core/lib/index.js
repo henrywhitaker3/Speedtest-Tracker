@@ -1,3 +1,6 @@
+/*:: export type * from './types'; */
+
+/*;; export * from './types'; */
 export * from "./enums.js";
 export * from "./modifiers/index.js"; // eslint-disable-next-line import/no-unused-modules
 

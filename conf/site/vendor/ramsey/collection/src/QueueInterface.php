@@ -92,6 +92,9 @@ use Ramsey\Collection\Exception\NoSuchElementException;
  * Even in the implementations that permit it, `null` should not be inserted
  * into a queue, as `null` is also used as a special return value by the
  * `poll()` method to indicate that the queue contains no elements.
+ *
+ * @template T
+ * @template-extends ArrayInterface<T>
  */
 interface QueueInterface extends ArrayInterface
 {
@@ -116,7 +119,7 @@ interface QueueInterface extends ArrayInterface
      *
      * @see self::offer()
      *
-     * @param mixed $element The element to add to this queue.
+     * @param T $element The element to add to this queue.
      *
      * @return bool `true` if this queue changed as a result of the call.
      *
@@ -125,6 +128,7 @@ interface QueueInterface extends ArrayInterface
      *     Implementations should use a more-specific exception that extends
      *     `\RuntimeException`.
      */
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function add($element): bool;
 
     /**
@@ -135,7 +139,7 @@ interface QueueInterface extends ArrayInterface
      *
      * @see self::peek()
      *
-     * @return mixed the head of this queue.
+     * @return T the head of this queue.
      *
      * @throws NoSuchElementException if this queue is empty.
      */
@@ -151,10 +155,11 @@ interface QueueInterface extends ArrayInterface
      *
      * @see self::add()
      *
-     * @param mixed $element The element to add to this queue.
+     * @param T $element The element to add to this queue.
      *
      * @return bool `true` if the element was added to this queue, else `false`.
      */
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function offer($element): bool;
 
     /**
@@ -163,7 +168,7 @@ interface QueueInterface extends ArrayInterface
      *
      * @see self::element()
      *
-     * @return mixed|null the head of this queue, or `null` if this queue is empty.
+     * @return T|null the head of this queue, or `null` if this queue is empty.
      */
     public function peek();
 
@@ -173,7 +178,7 @@ interface QueueInterface extends ArrayInterface
      *
      * @see self::remove()
      *
-     * @return mixed|null the head of this queue, or `null` if this queue is empty.
+     * @return T|null the head of this queue, or `null` if this queue is empty.
      */
     public function poll();
 
@@ -185,7 +190,7 @@ interface QueueInterface extends ArrayInterface
      *
      * @see self::poll()
      *
-     * @return mixed the head of this queue.
+     * @return T the head of this queue.
      *
      * @throws NoSuchElementException if this queue is empty.
      */

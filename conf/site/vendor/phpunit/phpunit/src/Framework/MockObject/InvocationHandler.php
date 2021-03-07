@@ -9,10 +9,11 @@
  */
 namespace PHPUnit\Framework\MockObject;
 
+use function strtolower;
 use Exception;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
+use Throwable;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
@@ -40,7 +41,7 @@ final class InvocationHandler
     private $returnValueGeneration;
 
     /**
-     * @var \Throwable
+     * @var Throwable
      */
     private $deferredError;
 
@@ -82,14 +83,12 @@ final class InvocationHandler
      * @param string  $id      The identification of the matcher
      * @param Matcher $matcher The builder which is being registered
      *
-     * @throws RuntimeException
+     * @throws MatcherAlreadyRegisteredException
      */
     public function registerMatcher(string $id, Matcher $matcher): void
     {
         if (isset($this->matcherMap[$id])) {
-            throw new RuntimeException(
-                'Matcher with id <' . $id . '> is already registered.'
-            );
+            throw new MatcherAlreadyRegisteredException($id);
         }
 
         $this->matcherMap[$id] = $matcher;
@@ -109,8 +108,7 @@ final class InvocationHandler
 
     /**
      * @throws Exception
-     *
-     * @return mixed|void
+     * @throws RuntimeException
      */
     public function invoke(Invocation $invocation)
     {
@@ -142,15 +140,9 @@ final class InvocationHandler
         }
 
         if (!$this->returnValueGeneration) {
-            $exception = new ExpectationFailedException(
-                \sprintf(
-                    'Return value inference disabled and no expectation set up for %s::%s()',
-                    $invocation->getClassName(),
-                    $invocation->getMethodName()
-                )
-            );
+            $exception = new ReturnValueNotConfiguredException($invocation);
 
-            if (\strtolower($invocation->getMethodName()) === '__tostring') {
+            if (strtolower($invocation->getMethodName()) === '__tostring') {
                 $this->deferredError = $exception;
 
                 return '';
@@ -174,7 +166,7 @@ final class InvocationHandler
     }
 
     /**
-     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws Throwable
      */
     public function verify(): void
     {

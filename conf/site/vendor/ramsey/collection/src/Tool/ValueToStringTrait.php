@@ -71,7 +71,12 @@ trait ValueToStringTrait
             return '(' . get_resource_type($value) . ' resource #' . (int) $value . ')';
         }
 
-        // after this line $value is an object since is not null, scalar, array or resource
+        // If we don't know what it is, use var_export().
+        if (!is_object($value)) {
+            return '(' . var_export($value, true) . ')';
+        }
+
+        // From here, $value should be an object.
 
         // __toString() is implemented
         if (is_callable([$value, '__toString'])) {

@@ -10,29 +10,29 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
+        "@babel/preset-react": "^7.12.13",
         "axios": "^0.21",
-        "@babel/preset-react": "^7.12.10",
-        "bootstrap": "^4.5.3",
+        "bootstrap": "^4.6.0",
         "cross-env": "^7.0",
         "jquery": "^3.5",
         "laravel-mix": "^5.0.9",
-        "lodash": "^4.17.20",
+        "lodash": "^4.17.21",
         "popper.js": "^1.12",
-        "react": "^16.14.0",
-        "react-dom": "^16.14.0",
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
         "resolve-url-loader": "^3.1.2",
-        "sass-loader": "^10.1.0",
-        "sass": "^1.30.0"
+        "sass": "^1.32.8",
+        "sass-loader": "^10.1.1"
     },
     "dependencies": {
-        "@babel/plugin-proposal-class-properties": "^7.12.1",
+        "@babel/plugin-proposal-class-properties": "^7.13.0",
         "chart.js": "^2.9.4",
         "csv-file-validator": "^1.10.1",
         "js-cookie": "^2.2.1",
-        "react-bootstrap": "^1.4.0",
+        "react-bootstrap": "^1.5.1",
         "react-chartjs-2": "^2.11.1",
         "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",
-        "react-toastify": "^6.2.0"
+        "react-toastify": "^7.0.3"
     }
 }

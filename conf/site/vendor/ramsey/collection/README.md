@@ -1,12 +1,22 @@
-# ramsey/collection
+<h1 align="center">ramsey/collection</h1>
 
-[![Source Code][badge-source]][source]
-[![Latest Version][badge-release]][packagist]
-[![Software License][badge-license]][license]
-[![PHP Version][badge-php]][php]
-[![Build Status][badge-build]][build]
-[![Coverage Status][badge-coverage]][coverage]
-[![Total Downloads][badge-downloads]][downloads]
+<p align="center">
+    <strong>A PHP library for representing and manipulating collections.</strong>
+</p>
+
+<p align="center">
+    <a href="https://github.com/ramsey/collection"><img src="http://img.shields.io/badge/source-ramsey/collection-blue.svg?style=flat-square" alt="Source Code"></a>
+    <a href="https://packagist.org/packages/ramsey/collection"><img src="https://img.shields.io/packagist/v/ramsey/collection.svg?style=flat-square&label=release" alt="Download Package"></a>
+    <a href="https://php.net"><img src="https://img.shields.io/packagist/php-v/ramsey/collection.svg?style=flat-square&colorB=%238892BF" alt="PHP Programming Language"></a>
+    <a href="https://github.com/ramsey/collection/actions?query=workflow%3ACI"><img src="https://img.shields.io/github/workflow/status/ramsey/collection/CI?label=CI&logo=github&style=flat-square" alt="Build Status"></a>
+    <a href="https://codecov.io/gh/ramsey/collection"><img src="https://img.shields.io/codecov/c/gh/ramsey/collection?label=codecov&logo=codecov&style=flat-square" alt="Codecov Code Coverage"></a>
+    <a href="https://shepherd.dev/github/ramsey/collection"><img src="https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fshepherd.dev%2Fgithub%2Framsey%2Fcollection%2Fcoverage" alt="Psalm Type Coverage"></a>
+    <a href="https://github.com/ramsey/collection/blob/master/LICENSE"><img src="https://img.shields.io/packagist/l/ramsey/collection.svg?style=flat-square&colorB=darkcyan" alt="Read License"></a>
+    <a href="https://packagist.org/packages/ramsey/collection/stats"><img src="https://img.shields.io/packagist/dt/ramsey/collection.svg?style=flat-square&colorB=darkmagenta" alt="Package downloads on Packagist"></a>
+    <a href="https://phpc.chat/channel/ramsey"><img src="https://img.shields.io/badge/phpc.chat-%23ramsey-darkslateblue?style=flat-square" alt="Chat with the maintainers"></a>
+</p>
+
+## About
 
 ramsey/collection is a PHP 7.2+ library for representing and manipulating collections.
 
@@ -15,7 +25,6 @@ Much inspiration for this library came from the [Java Collections Framework][jav
 This project adheres to a [code of conduct](CODE_OF_CONDUCT.md).
 By participating in this project and its community, you are expected to
 uphold this code.
-
 
 ## Installation
 
@@ -26,8 +35,6 @@ composer require ramsey/collection
 ```
 
 ## Usage
-
-The [latest class API documentation][apidocs] is available online.
 
 Examples of how to use this framework can be found in the
 [Wiki pages](https://github.com/ramsey/collection/wiki/Examples).
@@ -49,99 +56,22 @@ composer install
 
 Now, you are ready to develop!
 
-### Tooling
+## Coordinated Disclosure
 
-This project uses [CaptainHook](https://github.com/CaptainHookPhp/captainhook)
-to validate all staged changes prior to commit.
+Keeping user information safe and secure is a top priority, and we welcome the
+contribution of external security researchers. If you believe you've found a
+security issue in software that is maintained in this repository, please read
+[SECURITY.md][] for instructions on submitting a vulnerability report.
 
-#### Composer Commands
+## ramsey/collection for Enterprise
 
-To see all the commands available in the project `br` namespace for
-Composer, type:
+Available as part of the Tidelift Subscription.
 
-``` bash
-composer list br
-```
-
-##### Composer Command Autocompletion
-
-If you'd like to have Composer command auto-completion, you may use
-[bamarni/symfony-console-autocomplete](https://github.com/bamarni/symfony-console-autocomplete).
-Install it globally with Composer:
-
-``` bash
-composer global require bamarni/symfony-console-autocomplete
-```
-
-Then, in your shell configuration file — usually `~/.bash_profile` or `~/.zshrc`,
-but it could be different depending on your settings — ensure that your global
-Composer `bin` directory is in your `PATH`, and evaluate the
-`symfony-autocomplete` command. This will look like this:
-
-``` bash
-export PATH="$(composer config home)/vendor/bin:$PATH"
-eval "$(symfony-autocomplete)"
-```
-
-Now, you can use the `tab` key to auto-complete Composer commands:
-
-``` bash
-composer br:[TAB][TAB]
-```
-
-#### Coding Standards
-
-This project follows a superset of [PSR-12](https://www.php-fig.org/psr/psr-12/)
-coding standards, enforced by [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer).
-The project PHP_CodeSniffer configuration may be found in `phpcs.xml.dist`.
-
-CaptainHook will run PHP_CodeSniffer before committing. It will attempt to fix
-any errors it can, and it will reject the commit if there are any un-fixable
-issues. Many issues can be fixed automatically and will be done so pre-commit.
-
-You may lint the entire codebase using PHP_CodeSniffer with the following
-commands:
-
-``` bash
-# Lint
-composer br:lint
-
-# Lint and autofix
-composer br:lint:fix
-```
-
-#### Static Analysis
-
-This project uses a combination of [PHPStan](https://github.com/phpstan/phpstan)
-and [Psalm](https://github.com/vimeo/psalm) to provide static analysis of PHP
-code. Configurations for these are in `phpstan.neon.dist` and `psalm.xml`,
-respectively.
-
-CaptainHook will run PHPStan and Psalm before committing. The pre-commit hook
-does not attempt to fix any static analysis errors. Instead, the commit will
-fail, and you must fix the errors manually.
-
-You may run static analysis manually across the whole codebase with the
-following command:
-
-``` bash
-# Static analysis
-composer br:analyze
-```
-
-### Project Structure
-
-This project uses [pds/skeleton](https://github.com/php-pds/skeleton) as its
-base folder structure and layout.
-
-| Name              | Description                                    |
-| ------------------| ---------------------------------------------- |
-| **bin/**          | Commands and scripts for this project          |
-| **build/**        | Cache, logs, reports, etc. for project builds  |
-| **docs/**         | Project-specific documentation                 |
-| **resources/**    | Additional resources for this project          |
-| **src/**          | Project library and application source code    |
-| **tests/**        | Tests for this project                         |
+The maintainers of ramsey/collection and thousands of other packages are working
+with Tidelift to deliver commercial support and maintenance for the open source
+packages you use to build your applications. Save time, reduce risk, and improve
+code health, while paying the maintainers of the exact packages you use.
+[Learn more.](https://tidelift.com/subscription/pkg/packagist-ramsey-collection?utm_source=undefined&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
 
 ## Copyright and License
 
@@ -151,20 +81,4 @@ MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 
 
 [java]: http://docs.oracle.com/javase/8/docs/technotes/guides/collections/index.html
-[apidocs]: https://docs.benramsey.com/ramsey-collection/latest/
-
-[badge-source]: http://img.shields.io/badge/source-ramsey/collection-blue.svg?style=flat-square
-[badge-release]: https://img.shields.io/packagist/v/ramsey/collection.svg?style=flat-square&label=release
-[badge-license]: https://img.shields.io/packagist/l/ramsey/collection.svg?style=flat-square
-[badge-php]: https://img.shields.io/packagist/php-v/ramsey/collection.svg?style=flat-square
-[badge-build]: https://img.shields.io/travis/ramsey/collection/master.svg?style=flat-square
-[badge-coverage]: https://img.shields.io/coveralls/github/ramsey/collection/master.svg?style=flat-square
-[badge-downloads]: https://img.shields.io/packagist/dt/ramsey/collection.svg?style=flat-square&colorB=mediumvioletred
-
-[source]: https://github.com/ramsey/collection
-[packagist]: https://packagist.org/packages/ramsey/collection
-[license]: https://github.com/ramsey/collection/blob/master/LICENSE
-[php]: https://php.net
-[build]: https://travis-ci.org/ramsey/collection
-[coverage]: https://coveralls.io/r/ramsey/collection?branch=master
-[downloads]: https://packagist.org/packages/ramsey/collection
+[security.md]: https://github.com/ramsey/collection/blob/master/SECURITY.md

@@ -97,7 +97,7 @@ export default class SettingsTabs extends Component {
                         options={setting.type == 'select' ? setting.options : []}
                         hideDescription={setting.hideDescription ? setting.hideDescription : false}
                         min={setting.min ? setting.min : false}
-                        min={setting.max ? setting.max : false}
+                        max={setting.max ? setting.max : false}
                         btnType={setting.btnType}
                         inline={setting.inline}
                         url={setting.url}

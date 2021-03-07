@@ -56,6 +56,7 @@ trait Rounding
             'microsecond' => [0, 999999],
         ]);
         $factor = 1;
+        $initialMonth = $this->month;
 
         if ($normalizedUnit === 'week') {
             $normalizedUnit = 'day';
@@ -106,16 +107,19 @@ trait Rounding
         }
 
         [$value, $minimum] = $arguments;
+        $normalizedValue = floor($function(($value - $minimum) / $precision) * $precision + $minimum);
+
         /** @var CarbonInterface $result */
-        $result = $this->$normalizedUnit(
-            floor($function(($value - $minimum) / $precision) * $precision + $minimum)
-        );
+        $result = $this->$normalizedUnit($normalizedValue);
 
         foreach ($changes as $unit => $value) {
             $result = $result->$unit($value);
         }
 
-        return $result;
+        return $normalizedUnit === 'month' && $precision <= 1 && abs($result->month - $initialMonth) === 2
+            // Re-run the change in case an overflow occurred
+            ? $result->$normalizedUnit($normalizedValue)
+            : $result;
     }
 
     /**

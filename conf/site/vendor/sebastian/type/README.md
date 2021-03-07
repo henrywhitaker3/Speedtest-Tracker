@@ -1,5 +1,8 @@
 # sebastian/type
 
+[![CI Status](https://github.com/sebastianbergmann/type/workflows/CI/badge.svg)](https://github.com/sebastianbergmann/type/actions)
+[![Type Coverage](https://shepherd.dev/github/sebastianbergmann/type/coverage.svg)](https://shepherd.dev/github/sebastianbergmann/type)
+
 Collection of value objects that represent the types of the PHP type system.
 
 ## Installation

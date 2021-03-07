@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of sebastian/comparator.
  *
@@ -8,6 +8,8 @@
  * file that was distributed with this source code.
  */
 namespace SebastianBergmann\Comparator;
+
+use function array_unshift;
 
 /**
  * Factory for comparators which compare values for equality.
@@ -35,7 +37,7 @@ class Factory
     public static function getInstance()
     {
         if (self::$instance === null) {
-            self::$instance = new self;
+            self::$instance = new self; // @codeCoverageIgnore
         }
 
         return self::$instance;
@@ -70,6 +72,8 @@ class Factory
                 return $comparator;
             }
         }
+
+        throw new RuntimeException('No suitable Comparator implementation found');
     }
 
     /**
@@ -82,9 +86,9 @@ class Factory
      *
      * @param Comparator $comparator The comparator to be registered
      */
-    public function register(Comparator $comparator)
+    public function register(Comparator $comparator)/*: void*/
     {
-        \array_unshift($this->customComparators, $comparator);
+        array_unshift($this->customComparators, $comparator);
 
         $comparator->setFactory($this);
     }
@@ -96,7 +100,7 @@ class Factory
      *
      * @param Comparator $comparator The comparator to be unregistered
      */
-    public function unregister(Comparator $comparator)
+    public function unregister(Comparator $comparator)/*: void*/
     {
         foreach ($this->customComparators as $key => $_comparator) {
             if ($comparator === $_comparator) {
@@ -108,12 +112,12 @@ class Factory
     /**
      * Unregisters all non-default comparators.
      */
-    public function reset()
+    public function reset()/*: void*/
     {
         $this->customComparators = [];
     }
 
-    private function registerDefaultComparators()
+    private function registerDefaultComparators(): void
     {
         $this->registerDefaultComparator(new MockObjectComparator);
         $this->registerDefaultComparator(new DateTimeComparator);
@@ -129,7 +133,7 @@ class Factory
         $this->registerDefaultComparator(new TypeComparator);
     }
 
-    private function registerDefaultComparator(Comparator $comparator)
+    private function registerDefaultComparator(Comparator $comparator): void
     {
         $this->defaultComparators[] = $comparator;
 
