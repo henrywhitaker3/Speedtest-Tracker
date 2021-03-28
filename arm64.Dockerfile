@@ -1,7 +1,7 @@
 FROM linuxserver/nginx:arm64v8-latest
 LABEL maintainer=henrywhitaker3@outlook.com
 
-ENV arch='arm64'
+ENV arch='aarch64'
 
 COPY conf/ /
 
