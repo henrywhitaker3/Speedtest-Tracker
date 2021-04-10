@@ -43,12 +43,14 @@ class InfluxDBVersion1Wrapper implements InfluxDBWrapperInterface
     public function createDatabase(string $database): bool
     {
         try {
-            $this->database->create(new RetentionPolicy(
-                'speedtest_retention_policy',
-                config('services.influxdb.retention'),
-                1,
-                true
-            ));
+            $this->database->create(
+                new RetentionPolicy(
+                    'speedtest_retention_policy',
+                    config('services.influxdb.retention'),
+                    1,
+                    true
+                )
+            );
 
             return true;
         } catch (Exception $e) {
