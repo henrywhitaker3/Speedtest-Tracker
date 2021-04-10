@@ -28,7 +28,7 @@ export default class TableRow extends Component {
     }
 
     delete = (id) => {
-        var url = 'api/speedtest/delete/' + id;
+        var url = 'api/speedtest/delete/' + id + '?token=' + window.token;
 
         Axios.delete(url)
         .then((resp) => {
