@@ -55,7 +55,7 @@ class OoklaTester implements SpeedtestProvider
                 'scheduled' => $scheduled,
             ]);
 
-            throw new SpeedtestFailureException((string)$output);
+            throw new SpeedtestFailureException(json_encode($output));
         }
 
         Cache::flush();

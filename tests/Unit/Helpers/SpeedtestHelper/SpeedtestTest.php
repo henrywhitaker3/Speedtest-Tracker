@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Helpers\SpeedtestHelper;
 
+use App\Exceptions\SpeedtestFailureException;
 use App\Helpers\SpeedtestHelper;
 use App\Utils\OoklaTester;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use JsonException;
 use Tests\TestCase;
 
 class SpeedtestTest extends TestCase
@@ -58,11 +58,11 @@ class SpeedtestTest extends TestCase
      */
     public function testInvaidJson()
     {
+        $this->expectException(SpeedtestFailureException::class);
+
         $json = '{hi: hi}';
 
         $o = $this->speedtestProvider->run($json);
-
-        $this->assertFalse($o);
     }
 
     /**
@@ -72,10 +72,10 @@ class SpeedtestTest extends TestCase
      */
     public function testIncompleteJson()
     {
+        $this->expectException(SpeedtestFailureException::class);
+
         $json = '{"hi": "hi"}';
 
         $o = $this->speedtestProvider->run($json);
-
-        $this->assertFalse($o);
     }
 }

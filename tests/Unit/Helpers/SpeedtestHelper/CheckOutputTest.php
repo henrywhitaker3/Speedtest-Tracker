@@ -9,7 +9,7 @@ class CheckOutputTest extends TestCase
 {
     private OoklaTester $speedtestProvider;
 
-    public function __construct()
+    public function setUp(): void
     {
         $this->speedtestProvider = new OoklaTester();
     }
