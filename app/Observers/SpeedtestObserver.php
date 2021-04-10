@@ -18,12 +18,11 @@ class SpeedtestObserver
      */
     public function created(Speedtest $speedtest)
     {
-        info('trying influx');
         try {
             InfluxDB::connect()
                 ->store($speedtest);
         } catch (InfluxDBNotEnabledException $e) {
-            info('not enabled');
+            // /
         } catch (Exception $e) {
             Log::error($e);
         }
