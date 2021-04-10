@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '1d6aa796d23f0c6255c258917c51833c66262012',
+    'reference' => '95d95973d9d0f5d39e190408f4081a0bea445413',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -589,7 +589,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '1d6aa796d23f0c6255c258917c51833c66262012',
+      'reference' => '95d95973d9d0f5d39e190408f4081a0bea445413',
     ),
     'laravel/slack-notification-channel' => 
     array (

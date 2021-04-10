@@ -126,3 +126,4 @@ cp /defaults/crontab /etc/crontabs/root
 
 chown -R abc:abc /config
 chmod +x /config/www/app/Bin/speedtest
+chmod -R 777 /config/www/storage/clockwork
