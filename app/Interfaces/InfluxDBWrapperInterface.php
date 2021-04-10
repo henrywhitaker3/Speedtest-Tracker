@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utils\InfluxDB;
+namespace App\Interfaces;
 
 use App\Models\Speedtest;
 

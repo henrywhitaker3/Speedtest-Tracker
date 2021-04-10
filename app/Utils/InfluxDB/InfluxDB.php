@@ -8,7 +8,7 @@ use App\Helpers\SettingsHelper;
 use App\Models\Speedtest;
 use InfluxDB\Client as Version1;
 use InfluxDB2\Client as Version2;
-use App\Utils\InfluxDB\InfluxDBWrapperInterface as Client;
+use App\Interfaces\InfluxDBWrapperInterface as Client;
 
 class InfluxDB
 {
