@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Events\SpeedtestOverviewEvent;
 use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
+use App\Interfaces\SpeedtestProvider;
 use App\Jobs\SpeedtestJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -29,9 +30,17 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         if ((bool)SettingsHelper::get('schedule_enabled')->value) {
-            $schedule->job(new SpeedtestJob(true, config('integrations')))->cron(SettingsHelper::get('schedule')['value']);
+            $schedule->job(
+                new SpeedtestJob(
+                    true,
+                    config('integrations'),
+                    app()->make(SpeedtestProvider::class)
+                )
+            )
+                ->cron(SettingsHelper::get('schedule')['value'])
+                ->timezone(env('TZ', 'UTC'));
         }
-        $schedule->command('speedtest:overview')->cron('0 ' . SettingsHelper::get('speedtest_overview_time')->value . ' * * *');
+        $schedule->command('speedtest:overview')->cron('0 ' . SettingsHelper::get('speedtest_overview_time')->value . ' * * *')->timezone(env('TZ', 'UTC'));
         $schedule->command('speedtest:clear-sessions')->everyMinute();
     }
 
