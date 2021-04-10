@@ -1,3 +1,4 @@
 *.sqlite
 *.sqlite-journal
 *.bak
+*.db_test*
