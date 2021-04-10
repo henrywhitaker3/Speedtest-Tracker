@@ -2348,78 +2348,6 @@
             "install-path": "../henrywhitaker3/laravel-actions"
         },
         {
-            "name": "itsgoingd/clockwork",
-            "version": "v5.0.6",
-            "version_normalized": "5.0.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/itsgoingd/clockwork.git",
-                "reference": "1de3f9f9fc22217aa024f79ecbdf0fde418fc0a1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/1de3f9f9fc22217aa024f79ecbdf0fde418fc0a1",
-                "reference": "1de3f9f9fc22217aa024f79ecbdf0fde418fc0a1",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "php": ">=5.6",
-                "psr/log": "1.*"
-            },
-            "time": "2020-12-27T00:18:25+00:00",
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Clockwork\\Support\\Laravel\\ClockworkServiceProvider"
-                    ],
-                    "aliases": {
-                        "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "Clockwork\\": "Clockwork/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "itsgoingd",
-                    "email": "itsgoingd@luzer.sk",
-                    "homepage": "https://twitter.com/itsgoingd"
-                }
-            ],
-            "description": "php dev tools in your browser",
-            "homepage": "https://underground.works/clockwork",
-            "keywords": [
-                "Devtools",
-                "debugging",
-                "laravel",
-                "logging",
-                "lumen",
-                "profiling",
-                "slim"
-            ],
-            "support": {
-                "issues": "https://github.com/itsgoingd/clockwork/issues",
-                "source": "https://github.com/itsgoingd/clockwork/tree/v5.0.6"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/itsgoingd",
-                    "type": "github"
-                }
-            ],
-            "install-path": "../itsgoingd/clockwork"
-        },
-        {
             "name": "justinrainbow/json-schema",
             "version": "5.2.10",
             "version_normalized": "5.2.10.0",
@@ -9515,7 +9443,6 @@
         "filp/whoops",
         "fzaninotto/faker",
         "hamcrest/hamcrest-php",
-        "itsgoingd/clockwork",
         "justinrainbow/json-schema",
         "mockery/mockery",
         "myclabs/deep-copy",

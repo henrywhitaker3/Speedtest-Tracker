@@ -30,7 +30,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '95d95973d9d0f5d39e190408f4081a0bea445413',
+    'reference' => 'a3f9593c294593d3efae8549d9ea92fae5bd24e1',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -563,15 +563,6 @@ private static $installed = array (
         0 => 'v8.31.0',
       ),
     ),
-    'itsgoingd/clockwork' => 
-    array (
-      'pretty_version' => 'v5.0.6',
-      'version' => '5.0.6.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '1de3f9f9fc22217aa024f79ecbdf0fde418fc0a1',
-    ),
     'justinrainbow/json-schema' => 
     array (
       'pretty_version' => '5.2.10',
@@ -613,7 +604,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '95d95973d9d0f5d39e190408f4081a0bea445413',
+      'reference' => 'a3f9593c294593d3efae8549d9ea92fae5bd24e1',
     ),
     'laravel/slack-notification-channel' => 
     array (
