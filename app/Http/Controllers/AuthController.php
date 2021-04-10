@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Auth\EmailVerification;
-use App\Auth\LoginSession as AuthLoginSession;
+use App\Models\Auth\EmailVerification;
+use App\Models\Auth\LoginSession as AuthLoginSession;
 use App\Helpers\EmailVerificationHelper;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;

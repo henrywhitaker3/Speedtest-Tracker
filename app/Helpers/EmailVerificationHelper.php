@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Auth\EmailVerification;
+use App\Models\Auth\EmailVerification;
 use App\Models\User;
 
 class EmailVerificationHelper {
