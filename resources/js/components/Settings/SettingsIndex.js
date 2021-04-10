@@ -278,7 +278,7 @@ export default class SettingsIndex extends Component {
                     {loading ?
                         <Loader />
                         :
-                        <SettingsTabs data={data} />
+                        <SettingsTabs data={data} refreshConfig={this.props.refreshConfig} />
                     }
                 </div>
                 <Footer />

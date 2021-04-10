@@ -16,7 +16,6 @@ export default class TableSettings extends Component {
     }
 
     handleOnDragEnd = (result) => {
-        console.log(result);
         if (!result.destination) return;
 
         let visible = this.state.visible;
@@ -50,9 +49,11 @@ export default class TableSettings extends Component {
             ],
         })
         .then((resp) => {
-            console.log(resp);
+            toast.success('Table settings updated');
+            this.props.refreshConfig();
         })
         .catch((err) => {
+            toast.error('Something went wrong');
             console.log(err);
         })
     }
@@ -67,38 +68,45 @@ export default class TableSettings extends Component {
                     <p>{visible.obj.description}</p>
 
                     <DragDropContext onDragEnd={this.handleOnDragEnd}>
-                        <Droppable droppableId="visibleColumns">
-                            {(provided) => (
-                                <ul className="visibleColumns" {...provided.droppableProps} ref={provided.innerRef}>
-                                    {visible.obj.value.map((e, i) => {
-                                        return (
-                                            <Draggable draggableId={e} index={i} key={e}>
-                                                {(provided) => (
-                                                    <li key={e} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>{e}</li>
-                                                )}
-                                            </Draggable>
-                                        );
-                                    })}
-                                    {provided.placeholder}
-                                </ul>
-                            )}
-                        </Droppable>
-                        <Droppable droppableId="hiddenColumns">
-                            {(provided) => (
-                                <ul className="hiddenColumns" {...provided.droppableProps} ref={provided.innerRef}>
-                                    {hidden.obj.value.map((e, i) => {
-                                        return (
-                                            <Draggable draggableId={e} index={i} key={e}>
-                                                {(provided) => (
-                                                    <li key={e} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>{e}</li>
-                                                )}
-                                            </Draggable>
-                                        );
-                                    })}
-                                    {provided.placeholder}
-                                </ul>
-                            )}
-                        </Droppable>
+                        <div className="card pt-4 pb-2 px-4 mb-4">
+                            <h4>Visible Columns</h4>
+                            <Droppable droppableId="visibleColumns">
+                                {(provided) => (
+                                    <ul className="visibleColumns pl-0" {...provided.droppableProps} ref={provided.innerRef}>
+                                        {visible.obj.value.map((e, i) => {
+                                            return (
+                                                <Draggable draggableId={e} index={i} key={e}>
+                                                    {(provided) => (
+                                                        <li className="card bg-secondary py-2 px-3 my-2" key={e} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>{e}</li>
+                                                    )}
+                                                </Draggable>
+                                            );
+                                        })}
+                                        {provided.placeholder}
+                                    </ul>
+                                )}
+                            </Droppable>
+                        </div>
+
+                        <div className="card pt-4 pb-2 px-4">
+                            <h4>Hidden Columns</h4>
+                            <Droppable droppableId="hiddenColumns pl-0">
+                                {(provided) => (
+                                    <ul className="hiddenColumns pl-0" {...provided.droppableProps} ref={provided.innerRef}>
+                                        {hidden.obj.value.map((e, i) => {
+                                            return (
+                                                <Draggable draggableId={e} index={i} key={e}>
+                                                    {(provided) => (
+                                                        <li className="card bg-secondary py-2 px-3 my-2" key={e} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>{e}</li>
+                                                    )}
+                                                </Draggable>
+                                            );
+                                        })}
+                                        {provided.placeholder}
+                                    </ul>
+                                )}
+                            </Droppable>
+                        </div>
                     </DragDropContext>
 
                     <div className="mt-3">

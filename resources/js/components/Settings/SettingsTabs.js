@@ -126,6 +126,7 @@ export default class SettingsTabs extends Component {
             case 'Tables':
                 return <TableSettings
                             data={data.Tables}
+                            refreshConfig={this.props.refreshConfig}
                             save={this.save} />
             case 'Notifications':
                 return <NotificationsSettings
