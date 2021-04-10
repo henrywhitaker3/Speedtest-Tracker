@@ -52,7 +52,7 @@ class PendingCommand
     protected $expectedExitCode;
 
     /**
-     * Determine if command has executed.
+     * Determine if the command has executed.
      *
      * @var bool
      */
@@ -134,6 +134,19 @@ class PendingCommand
     }
 
     /**
+     * Specify output that should never be printed when the command runs.
+     *
+     * @param  string  $output
+     * @return $this
+     */
+    public function doesntExpectOutput($output)
+    {
+        $this->test->unexpectedOutput[$output] = false;
+
+        return $this;
+    }
+
+    /**
      * Specify a table that should be printed when the command runs.
      *
      * @param  array  $headers
@@ -144,12 +157,24 @@ class PendingCommand
      */
     public function expectsTable($headers, $rows, $tableStyle = 'default', array $columnStyles = [])
     {
-        $this->test->expectedTables[] = [
-            'headers' => (array) $headers,
-            'rows' => $rows instanceof Arrayable ? $rows->toArray() : $rows,
-            'tableStyle' => $tableStyle,
-            'columnStyles' => $columnStyles,
-        ];
+        $table = (new Table($output = new BufferedOutput))
+            ->setHeaders((array) $headers)
+            ->setRows($rows instanceof Arrayable ? $rows->toArray() : $rows)
+            ->setStyle($tableStyle);
+
+        foreach ($columnStyles as $columnIndex => $columnStyle) {
+            $table->setColumnStyle($columnIndex, $columnStyle);
+        }
+
+        $table->render();
+
+        $lines = array_filter(
+            explode(PHP_EOL, $output->fetch())
+        );
+
+        foreach ($lines as $line) {
+            $this->expectsOutput($line);
+        }
 
         return $this;
     }
@@ -208,6 +233,7 @@ class PendingCommand
         }
 
         $this->verifyExpectations();
+        $this->flushExpectations();
 
         return $exitCode;
     }
@@ -237,6 +263,10 @@ class PendingCommand
 
         if (count($this->test->expectedOutput)) {
             $this->test->fail('Output "'.Arr::first($this->test->expectedOutput).'" was not printed.');
+        }
+
+        if ($output = array_search(true, $this->test->unexpectedOutput)) {
+            $this->test->fail('Output "'.$output.'" was printed.');
         }
     }
 
@@ -287,8 +317,6 @@ class PendingCommand
                 ->shouldAllowMockingProtectedMethods()
                 ->shouldIgnoreMissing();
 
-        $this->applyTableOutputExpectations($mock);
-
         foreach ($this->test->expectedOutput as $i => $output) {
             $mock->shouldReceive('doWrite')
                 ->once()
@@ -299,37 +327,31 @@ class PendingCommand
                 });
         }
 
+        foreach ($this->test->unexpectedOutput as $output => $displayed) {
+            $mock->shouldReceive('doWrite')
+                ->once()
+                ->ordered()
+                ->with($output, Mockery::any())
+                ->andReturnUsing(function () use ($output) {
+                    $this->test->unexpectedOutput[$output] = true;
+                });
+        }
+
         return $mock;
     }
 
     /**
-     * Apply the output table expectations to the mock.
+     * Flush the expectations from the test case.
      *
-     * @param  \Mockery\MockInterface  $mock
      * @return void
      */
-    private function applyTableOutputExpectations($mock)
+    protected function flushExpectations()
     {
-        foreach ($this->test->expectedTables as $consoleTable) {
-            $table = (new Table($output = new BufferedOutput))
-                ->setHeaders($consoleTable['headers'])
-                ->setRows($consoleTable['rows'])
-                ->setStyle($consoleTable['tableStyle']);
-
-            foreach ($consoleTable['columnStyles'] as $columnIndex => $columnStyle) {
-                $table->setColumnStyle($columnIndex, $columnStyle);
-            }
-
-            $table->render();
-
-            $lines = array_filter(
-                preg_split("/\n/", $output->fetch())
-            );
-
-            foreach ($lines as $line) {
-                $this->expectsOutput($line);
-            }
-        }
+        $this->test->expectedOutput = [];
+        $this->test->unexpectedOutput = [];
+        $this->test->expectedTables = [];
+        $this->test->expectedQuestions = [];
+        $this->test->expectedChoices = [];
     }
 
     /**

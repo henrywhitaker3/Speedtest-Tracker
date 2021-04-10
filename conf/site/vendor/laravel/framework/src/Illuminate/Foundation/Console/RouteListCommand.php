@@ -36,14 +36,14 @@ class RouteListCommand extends Command
     /**
      * The table headers for the command.
      *
-     * @var array
+     * @var string[]
      */
     protected $headers = ['Domain', 'Method', 'URI', 'Name', 'Action', 'Middleware'];
 
     /**
      * The columns to display when using the "compact" flag.
      *
-     * @var array
+     * @var string[]
      */
     protected $compactColumns = ['method', 'uri', 'action'];
 
@@ -67,6 +67,8 @@ class RouteListCommand extends Command
      */
     public function handle()
     {
+        $this->router->flushMiddlewareGroups();
+
         if (empty($this->router->getRoutes())) {
             return $this->error("Your application doesn't have any routes.");
         }
@@ -163,7 +165,7 @@ class RouteListCommand extends Command
     }
 
     /**
-     * Get before filters.
+     * Get the middleware for the route.
      *
      * @param  \Illuminate\Routing\Route  $route
      * @return string

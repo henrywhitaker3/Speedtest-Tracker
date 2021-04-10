@@ -3,8 +3,11 @@
 namespace Illuminate\Database\Concerns;
 
 use Illuminate\Container\Container;
+use Illuminate\Database\MultipleRecordsFoundException;
+use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 
 trait BuildsQueries
 {
@@ -49,6 +52,26 @@ trait BuildsQueries
     }
 
     /**
+     * Run a map over each item while chunking.
+     *
+     * @param  callable  $callback
+     * @param  int  $count
+     * @return \Illuminate\Support\Collection
+     */
+    public function chunkMap(callable $callback, $count = 1000)
+    {
+        $collection = Collection::make();
+
+        $this->chunk($count, function ($items) use ($collection, $callback) {
+            $items->each(function ($item) use ($collection, $callback) {
+                $collection->push($callback($item));
+            });
+        });
+
+        return $collection;
+    }
+
+    /**
      * Execute a callback over each item while chunking.
      *
      * @param  callable  $callback
@@ -83,6 +106,8 @@ trait BuildsQueries
 
         $lastId = null;
 
+        $page = 1;
+
         do {
             $clone = clone $this;
 
@@ -100,13 +125,15 @@ trait BuildsQueries
             // On each chunk result set, we will pass them to the callback and then let the
             // developer take care of everything within the callback, which allows us to
             // keep the memory low for spinning through large result sets for working.
-            if ($callback($results) === false) {
+            if ($callback($results, $page) === false) {
                 return false;
             }
 
             $lastId = $results->last()->{$alias};
 
             unset($results);
+
+            $page++;
         } while ($countResults == $count);
 
         return true;
@@ -123,9 +150,9 @@ trait BuildsQueries
      */
     public function eachById(callable $callback, $count = 1000, $column = null, $alias = null)
     {
-        return $this->chunkById($count, function ($results) use ($callback) {
+        return $this->chunkById($count, function ($results, $page) use ($callback, $count) {
             foreach ($results as $key => $value) {
-                if ($callback($value, $key) === false) {
+                if ($callback($value, (($page - 1) * $count) + $key) === false) {
                     return false;
                 }
             }
@@ -141,6 +168,30 @@ trait BuildsQueries
     public function first($columns = ['*'])
     {
         return $this->take(1)->get($columns)->first();
+    }
+
+    /**
+     * Execute the query and get the first result if it's the sole matching record.
+     *
+     * @param  array|string  $columns
+     * @return \Illuminate\Database\Eloquent\Model|object|static|null
+     *
+     * @throws \Illuminate\Database\RecordsNotFoundException
+     * @throws \Illuminate\Database\MultipleRecordsFoundException
+     */
+    public function sole($columns = ['*'])
+    {
+        $result = $this->take(2)->get($columns);
+
+        if ($result->isEmpty()) {
+            throw new RecordsNotFoundException;
+        }
+
+        if ($result->count() > 1) {
+            throw new MultipleRecordsFoundException;
+        }
+
+        return $result->first();
     }
 
     /**

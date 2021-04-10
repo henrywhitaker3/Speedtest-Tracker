@@ -345,8 +345,6 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
         $totallyGuarded = $this->totallyGuarded();
 
         foreach ($this->fillableFromArray($attributes) as $key => $value) {
-            $key = $this->removeTableFromKey($key);
-
             // The developers may choose to place some attributes in the "fillable" array
             // which means only those attributes may be set through mass assignment to
             // the model, and all others will just get ignored for security reasons.
@@ -389,19 +387,6 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
         }
 
         return $this->getTable().'.'.$column;
-    }
-
-    /**
-     * Remove the table name from a given key.
-     *
-     * @param  string  $key
-     * @return string
-     *
-     * @deprecated This method is deprecated and will be removed in a future Laravel version.
-     */
-    protected function removeTableFromKey($key)
-    {
-        return $key;
     }
 
     /**
@@ -531,6 +516,10 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
      */
     public function loadMorph($relation, $relations)
     {
+        if (! $this->{$relation}) {
+            return $this;
+        }
+
         $className = get_class($this->{$relation});
 
         $this->{$relation}->load($relations[$className] ?? []);
@@ -554,6 +543,21 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
     }
 
     /**
+     * Eager load relation's column aggregations on the model.
+     *
+     * @param  array|string  $relations
+     * @param  string  $column
+     * @param  string  $function
+     * @return $this
+     */
+    public function loadAggregate($relations, $column, $function = null)
+    {
+        $this->newCollection([$this])->loadAggregate($relations, $column, $function);
+
+        return $this;
+    }
+
+    /**
      * Eager load relation counts on the model.
      *
      * @param  array|string  $relations
@@ -563,7 +567,75 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
     {
         $relations = is_string($relations) ? func_get_args() : $relations;
 
-        $this->newCollection([$this])->loadCount($relations);
+        return $this->loadAggregate($relations, '*', 'count');
+    }
+
+    /**
+     * Eager load relation max column values on the model.
+     *
+     * @param  array|string  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadMax($relations, $column)
+    {
+        return $this->loadAggregate($relations, $column, 'max');
+    }
+
+    /**
+     * Eager load relation min column values on the model.
+     *
+     * @param  array|string  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadMin($relations, $column)
+    {
+        return $this->loadAggregate($relations, $column, 'min');
+    }
+
+    /**
+     * Eager load relation's column summations on the model.
+     *
+     * @param  array|string  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadSum($relations, $column)
+    {
+        return $this->loadAggregate($relations, $column, 'sum');
+    }
+
+    /**
+     * Eager load relation average column values on the model.
+     *
+     * @param  array|string  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadAvg($relations, $column)
+    {
+        return $this->loadAggregate($relations, $column, 'avg');
+    }
+
+    /**
+     * Eager load relationship column aggregation on the polymorphic relation of a model.
+     *
+     * @param  string  $relation
+     * @param  array  $relations
+     * @param  string  $column
+     * @param  string  $function
+     * @return $this
+     */
+    public function loadMorphAggregate($relation, $relations, $column, $function = null)
+    {
+        if (! $this->{$relation}) {
+            return $this;
+        }
+
+        $className = get_class($this->{$relation});
+
+        $this->{$relation}->loadAggregate($relations[$className] ?? [], $column, $function);
 
         return $this;
     }
@@ -577,11 +649,59 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
      */
     public function loadMorphCount($relation, $relations)
     {
-        $className = get_class($this->{$relation});
+        return $this->loadMorphAggregate($relation, $relations, '*', 'count');
+    }
 
-        $this->{$relation}->loadCount($relations[$className] ?? []);
+    /**
+     * Eager load relationship max column values on the polymorphic relation of a model.
+     *
+     * @param  string  $relation
+     * @param  array  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadMorphMax($relation, $relations, $column)
+    {
+        return $this->loadMorphAggregate($relation, $relations, $column, 'max');
+    }
 
-        return $this;
+    /**
+     * Eager load relationship min column values on the polymorphic relation of a model.
+     *
+     * @param  string  $relation
+     * @param  array  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadMorphMin($relation, $relations, $column)
+    {
+        return $this->loadMorphAggregate($relation, $relations, $column, 'min');
+    }
+
+    /**
+     * Eager load relationship column summations on the polymorphic relation of a model.
+     *
+     * @param  string  $relation
+     * @param  array  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadMorphSum($relation, $relations, $column)
+    {
+        return $this->loadMorphAggregate($relation, $relations, $column, 'sum');
+    }
+
+    /**
+     * Eager load relationship average column values on the polymorphic relation of a model.
+     *
+     * @param  string  $relation
+     * @param  array  $relations
+     * @param  string  $column
+     * @return $this
+     */
+    public function loadMorphAvg($relation, $relations, $column)
+    {
+        return $this->loadMorphAggregate($relation, $relations, $column, 'avg');
     }
 
     /**
@@ -627,29 +747,23 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
             return $query->{$method}($column, $amount, $extra);
         }
 
-        $this->incrementOrDecrementAttributeValue($column, $amount, $extra, $method);
-
-        return $query->where(
-            $this->getKeyName(), $this->getKey()
-        )->{$method}($column, $amount, $extra);
-    }
-
-    /**
-     * Increment the underlying attribute value and sync with original.
-     *
-     * @param  string  $column
-     * @param  float|int  $amount
-     * @param  array  $extra
-     * @param  string  $method
-     * @return void
-     */
-    protected function incrementOrDecrementAttributeValue($column, $amount, $extra, $method)
-    {
-        $this->{$column} = $this->{$column} + ($method === 'increment' ? $amount : $amount * -1);
+        $this->{$column} = $this->isClassDeviable($column)
+            ? $this->deviateClassCastableAttribute($method, $column, $amount)
+            : $this->{$column} + ($method === 'increment' ? $amount : $amount * -1);
 
         $this->forceFill($extra);
 
-        $this->syncOriginalAttribute($column);
+        if ($this->fireModelEvent('updating') === false) {
+            return false;
+        }
+
+        return tap($this->setKeysForSaveQuery($query)->{$method}($column, $amount, $extra), function () use ($column) {
+            $this->syncChanges();
+
+            $this->fireModelEvent('updated', false);
+
+            $this->syncOriginalAttribute($column);
+        });
     }
 
     /**
@@ -694,6 +808,19 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
         }
 
         return true;
+    }
+
+    /**
+     * Save the model to the database without raising any events.
+     *
+     * @param  array  $options
+     * @return bool
+     */
+    public function saveQuietly(array $options = [])
+    {
+        return static::withoutEvents(function () use ($options) {
+            return $this->save($options);
+        });
     }
 
     /**
@@ -816,12 +943,35 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
     }
 
     /**
+     * Set the keys for a select query.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function setKeysForSelectQuery($query)
+    {
+        $query->where($this->getKeyName(), '=', $this->getKeyForSelectQuery());
+
+        return $query;
+    }
+
+    /**
+     * Get the primary key value for a select query.
+     *
+     * @return mixed
+     */
+    protected function getKeyForSelectQuery()
+    {
+        return $this->original[$this->getKeyName()] ?? $this->getKey();
+    }
+
+    /**
      * Set the keys for a save update query.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function setKeysForSaveQuery(Builder $query)
+    protected function setKeysForSaveQuery($query)
     {
         $query->where($this->getKeyName(), '=', $this->getKeyForSaveQuery());
 
@@ -835,8 +985,7 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
      */
     protected function getKeyForSaveQuery()
     {
-        return $this->original[$this->getKeyName()]
-                        ?? $this->getKey();
+        return $this->original[$this->getKeyName()] ?? $this->getKey();
     }
 
     /**
@@ -912,21 +1061,22 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
      */
     public static function destroy($ids)
     {
-        // We'll initialize a count here so we will return the total number of deletes
-        // for the operation. The developers can then check this number as a boolean
-        // type value or get this total count of records deleted for logging, etc.
-        $count = 0;
-
         if ($ids instanceof BaseCollection) {
             $ids = $ids->all();
         }
 
         $ids = is_array($ids) ? $ids : func_get_args();
 
+        if (count($ids) === 0) {
+            return 0;
+        }
+
         // We will actually pull the models from the database table and call delete on
         // each of them individually so that their events get fired properly with a
         // correct set of attributes in case the developers wants to check these.
         $key = ($instance = new static)->getKeyName();
+
+        $count = 0;
 
         foreach ($instance->whereIn($key, $ids)->get() as $model) {
             if ($model->delete()) {
@@ -981,7 +1131,7 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
     /**
      * Force a hard delete on a soft deleted model.
      *
-     * This method protects developers from running forceDelete when trait is missing.
+     * This method protects developers from running forceDelete when the trait is missing.
      *
      * @return bool|null
      */
@@ -1217,9 +1367,8 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
             return;
         }
 
-        return static::newQueryWithoutScopes()
+        return $this->setKeysForSelectQuery($this->newQueryWithoutScopes())
                         ->with(is_string($with) ? func_get_args() : $with)
-                        ->where($this->getKeyName(), $this->getKey())
                         ->first();
     }
 
@@ -1235,7 +1384,7 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
         }
 
         $this->setRawAttributes(
-            static::newQueryWithoutScopes()->findOrFail($this->getKey())->attributes
+            $this->setKeysForSelectQuery($this->newQueryWithoutScopes())->firstOrFail()->attributes
         );
 
         $this->load(collect($this->relations)->reject(function ($relation) {
