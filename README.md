@@ -101,3 +101,7 @@ After enabling, you should change the password through the web UI.
 ### Manual Install
 
 For manual installations, please follow the instructions [here](https://github.com/henrywhitaker3/Speedtest-Tracker/wiki/Manual-Installation).
+
+### Kubernetes
+
+There is a 3rd party helm chart available [here](https://github.com/sOblivionsCall/charts).
