@@ -20,7 +20,7 @@ use InvalidArgumentException;
  * @method \Illuminate\Routing\RouteRegistrar domain(string $value)
  * @method \Illuminate\Routing\RouteRegistrar middleware(array|string|null $middleware)
  * @method \Illuminate\Routing\RouteRegistrar name(string $value)
- * @method \Illuminate\Routing\RouteRegistrar namespace(string $value)
+ * @method \Illuminate\Routing\RouteRegistrar namespace(string|null $value)
  * @method \Illuminate\Routing\RouteRegistrar prefix(string  $prefix)
  * @method \Illuminate\Routing\RouteRegistrar where(array  $where)
  */
@@ -43,7 +43,7 @@ class RouteRegistrar
     /**
      * The methods to dynamically pass through to the router.
      *
-     * @var array
+     * @var string[]
      */
     protected $passthru = [
         'get', 'post', 'put', 'patch', 'delete', 'options', 'any',
@@ -52,7 +52,7 @@ class RouteRegistrar
     /**
      * The attributes that can be set through this class.
      *
-     * @var array
+     * @var string[]
      */
     protected $allowedAttributes = [
         'as', 'domain', 'middleware', 'name', 'namespace', 'prefix', 'where',
@@ -184,6 +184,9 @@ class RouteRegistrar
         if (is_array($action) &&
             ! Arr::isAssoc($action) &&
             Reflector::isCallable($action)) {
+            if (strncmp($action[0], '\\', 1)) {
+                $action[0] = '\\'.$action[0];
+            }
             $action = [
                 'uses' => $action[0].'@'.$action[1],
                 'controller' => $action[0].'@'.$action[1],

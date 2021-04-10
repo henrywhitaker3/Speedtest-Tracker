@@ -192,7 +192,7 @@ class RedisManager implements Factory
         }
 
         return array_filter($parsed, function ($key) {
-            return ! in_array($key, ['driver', 'username'], true);
+            return ! in_array($key, ['driver'], true);
         }, ARRAY_FILTER_USE_KEY);
     }
 
@@ -235,6 +235,19 @@ class RedisManager implements Factory
     public function setDriver($driver)
     {
         $this->driver = $driver;
+    }
+
+    /**
+     * Disconnect the given connection and remove from local cache.
+     *
+     * @param  string|null  $name
+     * @return void
+     */
+    public function purge($name = null)
+    {
+        $name = $name ?: 'default';
+
+        unset($this->connections[$name]);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Illuminate\Http\Client;
 
 use ArrayAccess;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
 use LogicException;
 
@@ -50,15 +51,21 @@ class Response implements ArrayAccess
     /**
      * Get the JSON decoded body of the response as an array or scalar value.
      *
+     * @param  string|null  $key
+     * @param  mixed  $default
      * @return mixed
      */
-    public function json()
+    public function json($key = null, $default = null)
     {
         if (! $this->decoded) {
             $this->decoded = json_decode($this->body(), true);
         }
 
-        return $this->decoded;
+        if (is_null($key)) {
+            return $this->decoded;
+        }
+
+        return data_get($this->decoded, $key, $default);
     }
 
     /**
@@ -69,6 +76,17 @@ class Response implements ArrayAccess
     public function object()
     {
         return json_decode($this->body(), false);
+    }
+
+    /**
+     * Get the JSON decoded body of the response as a collection.
+     *
+     * @param  string|null  $key
+     * @return \Illuminate\Support\Collection
+     */
+    public function collect($key = null)
+    {
+        return Collection::make($this->json($key));
     }
 
     /**
@@ -175,6 +193,21 @@ class Response implements ArrayAccess
     }
 
     /**
+     * Execute the given callback if there was a server or client error.
+     *
+     * @param  \Closure|callable $callback
+     * @return $this
+     */
+    public function onError(callable $callback)
+    {
+        if ($this->failed()) {
+            $callback($this);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get the response cookies.
      *
      * @return \GuzzleHttp\Cookie\CookieJar
@@ -182,6 +215,16 @@ class Response implements ArrayAccess
     public function cookies()
     {
         return $this->cookies;
+    }
+
+    /**
+     * Get the handler stats of the response.
+     *
+     * @return array
+     */
+    public function handlerStats()
+    {
+        return $this->transferStats->getHandlerStats();
     }
 
     /**
@@ -197,14 +240,21 @@ class Response implements ArrayAccess
     /**
      * Throw an exception if a server or client error occurred.
      *
+     * @param  \Closure|null  $callback
      * @return $this
      *
      * @throws \Illuminate\Http\Client\RequestException
      */
     public function throw()
     {
-        if ($this->serverError() || $this->clientError()) {
-            throw new RequestException($this);
+        $callback = func_get_args()[0] ?? null;
+
+        if ($this->failed()) {
+            throw tap(new RequestException($this), function ($exception) use ($callback) {
+                if ($callback && is_callable($callback)) {
+                    $callback($this, $exception);
+                }
+            });
         }
 
         return $this;

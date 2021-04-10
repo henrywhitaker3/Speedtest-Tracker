@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class SettingsHelper
 {
+    private static $settings = null;
 
     /**
      * Get a Setting object by name
@@ -23,7 +24,7 @@ class SettingsHelper
         if (sizeof($name) == 0) {
             return false;
         } else if (sizeof($name) == 1) {
-            return $name[0];
+            return $name->first();
         } else {
             $name = $name->keyBy('name');
             return $name->all();
@@ -162,6 +163,10 @@ class SettingsHelper
                 'slack_webhook' => SettingsHelper::settingIsEditable('slack_webhook'),
                 'telegram_bot_token' => SettingsHelper::settingIsEditable('telegram_bot_token'),
                 'telegram_chat_id' => SettingsHelper::settingIsEditable('telegram_chat_id'),
+            ],
+            'tables' => [
+                'visible_columns' => SettingsHelper::get('visible_columns')->value,
+                'hidden_columns' => SettingsHelper::get('hidden_columns')->value,
             ],
             'auth' => (bool)SettingsHelper::get('auth')->value
         ];

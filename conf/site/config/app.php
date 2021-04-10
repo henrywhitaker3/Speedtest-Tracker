@@ -182,6 +182,7 @@ return [
          * Custom providers...
          */
         App\Providers\IntegrationsServiceProvider::class,
+        App\Providers\SpeedtestServiceProvider::class,
 
     ],
 
