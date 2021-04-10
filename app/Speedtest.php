@@ -25,4 +25,18 @@ class Speedtest extends Model
     ];
 
     protected $table = 'speedtests';
+
+    public function formatForInfluxDB()
+    {
+        return [
+            'id' => (int) $this->id,
+            'download' => (float) $this->download,
+            'upload' => (float) $this->upload,
+            'ping' => (float) $this->ping,
+            'server_id' => (int) $this->server_id,
+            'server_host' => $this->server_host,
+            'server_name' => $this->server_name,
+            'scheduled' => (bool) $this->scheduled,
+        ];
+    }
 }
