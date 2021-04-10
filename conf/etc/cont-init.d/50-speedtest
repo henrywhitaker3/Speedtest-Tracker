@@ -120,6 +120,9 @@ fi
 echo "Clearing old jobs from queue"
 php /config/www/artisan queue:clear
 
+echo 'Discovering packages'
+php /config/www/artisan package:discover
+
 mkdir -p /config/log/speedtest
 
 cp /defaults/crontab /etc/crontabs/root
