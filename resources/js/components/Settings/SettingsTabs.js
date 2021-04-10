@@ -18,7 +18,7 @@ export default class SettingsTabs extends Component {
         super(props)
 
         this.state = {
-            tab: "Tables",
+            tab: "General",
             data: this.props.data
         }
     }
