@@ -113,7 +113,7 @@ export default class TestsTable extends Component {
                                     <tbody>
                                         {data.map((e,i) => {
                                             return (
-                                                <TableRow key={e.id} data={e} />
+                                                <TableRow key={e.id} data={e} refresh={this.getData} />
                                             );
                                         })}
                                     </tbody>

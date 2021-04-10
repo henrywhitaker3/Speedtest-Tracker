@@ -1,4 +1,10 @@
 {
+    "1.11.1": [
+        {
+            "description": "Add option to delete failed tests.",
+            "link": ""
+        }
+    ],
     "1.11.0": [
         {
             "description": "Upgrade to Laravel 8.",

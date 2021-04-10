@@ -43,6 +43,7 @@ export default class TableRow extends Component {
             }
         })
 
+        this.props.refresh();
         this.toggleShow();
     }
 
@@ -90,7 +91,7 @@ export default class TableRow extends Component {
                     <td><span className="ti-close text-danger"></span></td>
                     <td><span className="ti-close text-danger"></span></td>
                     <td><span className="ti-close text-danger"></span></td>
-                    <td></td>
+                    <td><Button variant="danger" onClick={() => { this.delete(e.id) }}>Delete</Button></td>
                 </tr>
             );
         }
