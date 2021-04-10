@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\SpeedtestFailureException;
 use App\Helpers\SpeedtestHelper;
 use App\Interfaces\SpeedtestProvider;
 use Illuminate\Console\Command;
@@ -45,9 +46,9 @@ class SpeedtestCommand extends Command
     {
         $this->info('Running speedtest, this might take a while...');
 
-        $results = $this->speedtestProvider->run(false, false);
-
-        if (!is_object($results)) {
+        try {
+            $results = $this->speedtestProvider->run(false, false);
+        } catch (SpeedtestFailureException $e) {
             $this->error('Something went wrong running the speedtest.');
             exit();
         }
