@@ -16,28 +16,38 @@ export default class TableSettings extends Component {
     }
 
     handleOnDragEnd = (result) => {
+        console.log(result);
         if (!result.destination) return;
 
-        let data = this.state.visible;
-        let array = data.obj.value;
+        let visible = this.state.visible;
+        let hidden = this.state.hidden;
 
-        let reorderedItem = array.splice(result.source.index, 1);
-        array.splice(result.destination.index, 0, reorderedItem[0]);
-        data.obj.value = array;
+        let from = result.source.droppableId == 'visibleColumns' ? visible.obj.value : hidden.obj.value;
+        let to = result.destination.droppableId == 'visibleColumns' ? visible.obj.value : hidden.obj.value;
 
-        console.log(array);
+        let [reorderedItem] = from.splice(result.source.index, 1);
+        to.splice(result.destination.index, 0, reorderedItem);
 
         this.setState({
-            visible: data
+            visible: visible,
+            hidden: hidden
         });
     }
 
     save = () => {
-        var url = 'api/settings?token=' + window.token;
+        var url = 'api/settings/bulk?token=' + window.token;
 
         Axios.post(url, {
-            name: 'visible_columns',
-            value: this.state.data.obj.value
+            data: [
+                {
+                    name: 'visible_columns',
+                    value: this.state.visible.obj.value
+                },
+                {
+                    name: 'hidden_columns',
+                    value: this.state.hidden.obj.value
+                }
+            ],
         })
         .then((resp) => {
             console.log(resp);
