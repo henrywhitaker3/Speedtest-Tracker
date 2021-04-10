@@ -28,7 +28,7 @@ export default class TableRow extends Component {
     }
 
     delete = (id) => {
-        var url = 'api/speedtest/delete/' + id;
+        var url = 'api/speedtest/delete/' + id + '?token=' + window.token;
 
         Axios.delete(url)
         .then((resp) => {
@@ -134,12 +134,23 @@ export default class TableRow extends Component {
         } else {
             return (
                 <tr>
-                    <td>{e.id}</td>
-                    <td>{new Date(e.created_at).toLocaleString()}</td>
-                    <td><span className="ti-close text-danger"></span></td>
-                    <td><span className="ti-close text-danger"></span></td>
-                    <td><span className="ti-close text-danger"></span></td>
-                    <td><Button variant="danger" onClick={() => { this.delete(e.id) }}>Delete</Button></td>
+                    {fields.visible.map((e, i) => {
+                        console.log(e);
+                        if(e.name === 'created_at') {
+                            return <td key={i}>{new Date(e.value).toLocaleString()}</td>
+                        } else if (e.name === 'id') {
+                            return <td key={i}>{e.value}</td>
+                        }
+
+                        return (
+                            <td key={i}><span className="ti-close text-danger"></span></td>
+                        );
+                    })}
+                    {(window.config.auth && window.authenticated) || !window.config.auth ?
+                        <td><Button variant="danger" onClick={() => { this.delete(e.id) }}>Delete</Button></td>
+                    :
+                        <td></td>
+                    }
                 </tr>
             );
         }
