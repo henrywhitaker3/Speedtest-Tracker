@@ -63,6 +63,16 @@ export default class SettingsIndex extends Component {
                     type: 'checkbox',
                 }
             ],
+            Tables: [
+                {
+                    obj: data.visible_columns,
+                    type: 'list'
+                },
+                {
+                    obj: data.hidden_columns,
+                    type: 'list'
+                }
+            ],
             Graphs: [
                 {
                     obj: data.download_upload_graph_enabled,
@@ -268,7 +278,7 @@ export default class SettingsIndex extends Component {
                     {loading ?
                         <Loader />
                         :
-                        <SettingsTabs data={data} />
+                        <SettingsTabs data={data} refreshConfig={this.props.refreshConfig} />
                     }
                 </div>
                 <Footer />

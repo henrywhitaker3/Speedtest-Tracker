@@ -168,6 +168,10 @@ class SettingsHelper
                 'telegram_bot_token' => SettingsHelper::settingIsEditable('telegram_bot_token'),
                 'telegram_chat_id' => SettingsHelper::settingIsEditable('telegram_chat_id'),
             ],
+            'tables' => [
+                'visible_columns' => SettingsHelper::get('visible_columns')->value,
+                'hidden_columns' => SettingsHelper::get('hidden_columns')->value,
+            ],
             'auth' => (bool)SettingsHelper::get('auth')->value
         ];
     }
