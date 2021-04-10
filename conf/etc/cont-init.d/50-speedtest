@@ -121,7 +121,8 @@ echo "Clearing old jobs from queue"
 php /config/www/artisan queue:clear
 
 echo 'Discovering packages'
-php /config/www/artisan package:discover
+apk add composer
+composer dumpautoload
 
 mkdir -p /config/log/speedtest
 
