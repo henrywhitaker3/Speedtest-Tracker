@@ -19,11 +19,7 @@ class SettingsHelper
      */
     public static function get(String $name)
     {
-        if (self::$settings === null) {
-            self::$settings = Setting::get();
-        }
-
-        $name = self::$settings->where('name', $name);
+        $name = Setting::where('name', $name)->get();
 
         if (sizeof($name) == 0) {
             return false;
