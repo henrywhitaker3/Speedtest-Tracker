@@ -6,6 +6,8 @@ use App\Events\SpeedtestCompleteEvent;
 use App\Events\SpeedtestFailedEvent;
 use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
+use App\Interfaces\SpeedtestProvider;
+use App\Utils\OoklaTester;
 use Exception;
 use Healthcheck;
 use Henrywhitaker3\Healthchecks\Healthchecks;
@@ -34,15 +36,18 @@ class SpeedtestJob implements ShouldQueue
      */
     private $config;
 
+    private SpeedtestProvider $speedtestProvider;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($scheduled = true, $config = [])
+    public function __construct($scheduled = true, $config = [], SpeedtestProvider $speedtestProvider)
     {
         $this->scheduled = $scheduled;
         $this->config = $config;
+        $this->speedtestProvider = $speedtestProvider;
     }
 
     /**
@@ -55,8 +60,8 @@ class SpeedtestJob implements ShouldQueue
         if ($this->config['healthchecks_enabled'] === true) {
             $this->healthcheck('start');
         }
-        $output = SpeedtestHelper::output();
-        $speedtest = SpeedtestHelper::runSpeedtest($output, $this->scheduled);
+        $output = $this->speedtestProvider->output();
+        $speedtest = $this->speedtestProvider->run($output, $this->scheduled);
         if ($speedtest == false) {
             if ($this->config['healthchecks_enabled'] === true) {
                 $this->healthcheck('fail');

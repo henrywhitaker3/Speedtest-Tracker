@@ -2,9 +2,10 @@
 
 namespace Tests\Unit\Helpers\SpeedtestHelper;
 
+use App\Exceptions\SpeedtestFailureException;
 use App\Helpers\SpeedtestHelper;
+use App\Utils\OoklaTester;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use JsonException;
 use Tests\TestCase;
 
 class SpeedtestTest extends TestCase
@@ -13,11 +14,15 @@ class SpeedtestTest extends TestCase
 
     private $output;
 
-    public function setUp() : void
+    private OoklaTester $speedtestProvider;
+
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->output = SpeedtestHelper::output();
+        $this->speedtestProvider = new OoklaTester();
+
+        $this->output = $this->speedtestProvider->output();
     }
 
     /**
@@ -39,7 +44,7 @@ class SpeedtestTest extends TestCase
     {
         $output = json_decode($this->output, true);
 
-        $test = SpeedtestHelper::runSpeedtest($this->output);
+        $test = $this->speedtestProvider->run($this->output);
 
         $this->assertEquals($output['ping']['latency'], $test->ping);
         $this->assertEquals(SpeedtestHelper::convert($output['download']['bandwidth']), $test->download);
@@ -53,11 +58,11 @@ class SpeedtestTest extends TestCase
      */
     public function testInvaidJson()
     {
+        $this->expectException(SpeedtestFailureException::class);
+
         $json = '{hi: hi}';
 
-        $o = SpeedtestHelper::runSpeedtest($json);
-
-        $this->assertFalse($o);
+        $o = $this->speedtestProvider->run($json);
     }
 
     /**
@@ -67,10 +72,10 @@ class SpeedtestTest extends TestCase
      */
     public function testIncompleteJson()
     {
+        $this->expectException(SpeedtestFailureException::class);
+
         $json = '{"hi": "hi"}';
 
-        $o = SpeedtestHelper::runSpeedtest($json);
-
-        $this->assertFalse($o);
+        $o = $this->speedtestProvider->run($json);
     }
 }

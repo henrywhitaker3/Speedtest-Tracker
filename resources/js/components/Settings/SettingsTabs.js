@@ -11,6 +11,7 @@ import GraphsSettings from './tabs/GraphsSettings';
 import HealthchecksSettings from './tabs/HealthchecksSettings';
 import NotificationsSettings from './tabs/NotificationsSettings';
 import Authentication from '../Authentication/Authentication';
+import TableSettings from './tabs/TableSettings';
 
 export default class SettingsTabs extends Component {
     constructor(props) {
@@ -26,6 +27,7 @@ export default class SettingsTabs extends Component {
         var tabs = [
             'General',
             'Graphs',
+            'Tables',
             'Notifications',
             'healthchecks.io',
             'Reset',
@@ -120,6 +122,11 @@ export default class SettingsTabs extends Component {
                 return <GraphsSettings
                             data={data.Graphs}
                             generateInputs={this.generateInputs}
+                            save={this.save} />
+            case 'Tables':
+                return <TableSettings
+                            data={data.Tables}
+                            refreshConfig={this.props.refreshConfig}
                             save={this.save} />
             case 'Notifications':
                 return <NotificationsSettings

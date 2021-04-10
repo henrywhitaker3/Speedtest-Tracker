@@ -10,8 +10,8 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "axios": "^0.21",
         "@babel/preset-react": "^7.12.13",
+        "axios": "^0.21",
         "bootstrap": "^4.6.0",
         "cross-env": "^7.0",
         "jquery": "^3.5",
@@ -29,6 +29,7 @@
         "chart.js": "^2.9.4",
         "csv-file-validator": "^1.10.1",
         "js-cookie": "^2.2.1",
+        "react-beautiful-dnd": "^13.1.0",
         "react-bootstrap": "^1.5.1",
         "react-chartjs-2": "^2.11.1",
         "react-router": "^5.2.0",

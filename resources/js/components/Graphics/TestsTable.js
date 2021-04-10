@@ -14,7 +14,51 @@ export default class TestsTable extends Component {
             data: [],
             showTable: false,
             refresh: true,
-            interval: null
+            interval: null,
+            allFields: {
+                id: {
+                    type: 'int',
+                    alias: 'ID'
+                },
+                created_at: {
+                    type: 'date',
+                    alias: 'Time'
+                },
+                download: {
+                    type: 'float',
+                    alias: 'Download (Mbit/s)'
+                },
+                upload: {
+                    type: 'float',
+                    alias: 'Upload (Mbit/s)'
+                },
+                ping: {
+                    type: 'float',
+                    alias: 'Ping (ms)'
+                },
+                server_id: {
+                    type: 'int',
+                    alias: 'Server ID'
+                },
+                server_name: {
+                    type: 'string',
+                    alias: 'Name'
+                },
+                server_host: {
+                    type: 'string',
+                    alias: 'Host'
+                },
+                url: {
+                    type: 'url',
+                    alias: 'URL'
+                },
+                scheduled: {
+                    type: 'bool',
+                    alias: 'Type',
+                    if_true: 'scheduled',
+                    if_false: 'manual'
+                }
+            }
         }
     }
 
@@ -84,6 +128,7 @@ export default class TestsTable extends Component {
         var data = this.state.data;
         var show = this.state.showTable;
         var refresh = this.state.refresh;
+        let allFields = this.state.allFields;
 
         if(data.length > 0) {
             return (
@@ -102,18 +147,18 @@ export default class TestsTable extends Component {
                                 <Table responsive>
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Time</th>
-                                            <th>Download (Mbit/s)</th>
-                                            <th>Upload (Mbit/s)</th>
-                                            <th>Ping (ms)</th>
+                                            {window.config.tables.visible_columns.map((e, i) => {
+                                                return (
+                                                    <th key={i}>{allFields[e].alias}</th>
+                                                );
+                                            })}
                                             <th>More</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {data.map((e,i) => {
                                             return (
-                                                <TableRow key={e.id} data={e} />
+                                                <TableRow key={e.id} data={e} allFields={allFields} refresh={this.getData} />
                                             );
                                         })}
                                     </tbody>

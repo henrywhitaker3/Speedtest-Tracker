@@ -56,7 +56,6 @@ class APISpeedtestTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'method',
             'data' => [
                 'id',
                 'ping',
