@@ -37,16 +37,25 @@ class InfluxDB
 
         $host = SettingsHelper::get('influx_db_host')->value;
         $port = SettingsHelper::get('influx_db_port')->value;
-        $token = '';
+        $username = SettingsHelper::get('influx_db_username')->value;
+        $password = SettingsHelper::get('influx_db_password')->value;
         $database = SettingsHelper::get('influx_db_database')->value;
         $version = (int) SettingsHelper::get('influx_db_version')->value;
 
         $wrapper = $version === 1
             ? new InfluxDBVersion1Wrapper(
-                new Version1(str_replace(['http://', 'https://'], '', $host), $port)
+                new Version1(
+                    str_replace(['http://', 'https://'], '', $host),
+                    $port,
+                    $username,
+                    $password
+                )
             )
             : new InfluxDBVersion2Wrapper(
-                new Version2([])
+                new Version2([
+                    'url' => $host . ':' . $port,
+                    'token' => '',
+                ])
             );
 
         return (new self($wrapper))->setDatabase($database)

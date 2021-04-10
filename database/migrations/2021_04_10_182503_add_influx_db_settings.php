@@ -47,6 +47,22 @@ class AddInfluxDbSettings extends Migration
             ]);
         }
 
+        if (!SettingsHelper::get('influx_db_username')) {
+            Setting::create([
+                'name' => 'influx_db_username',
+                'value' => '',
+                'description' => 'InfluxDB username'
+            ]);
+        }
+
+        if (!SettingsHelper::get('influx_db_password')) {
+            Setting::create([
+                'name' => 'influx_db_password',
+                'value' => '',
+                'description' => 'InfluxDB password'
+            ]);
+        }
+
         if (!SettingsHelper::get('influx_db_version')) {
             Setting::create([
                 'name' => 'influx_db_version',
@@ -68,6 +84,8 @@ class AddInfluxDbSettings extends Migration
             'influx_db_host',
             'influx_db_port',
             'influx_db_database',
+            'influx_db_username',
+            'influx_db_password',
             'influx_db_version',
         ])->delete();
     }
