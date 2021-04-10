@@ -120,9 +120,9 @@ fi
 echo "Clearing old jobs from queue"
 php /config/www/artisan queue:clear
 
-echo 'Discovering packages'
+echo 'Updating packages'
 apk add composer
-cd /config/www && composer dumpautoload
+cd /config/www && composer install
 
 mkdir -p /config/log/speedtest
 
