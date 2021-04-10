@@ -11,7 +11,7 @@ use App\Listeners\SpeedtestFailedListener;
 use App\Listeners\SpeedtestOverviewListener;
 use App\Listeners\TestNotificationListener;
 use App\Observers\SpeedtestObserver;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

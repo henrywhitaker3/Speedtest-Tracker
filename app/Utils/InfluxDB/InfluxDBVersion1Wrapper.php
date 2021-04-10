@@ -2,7 +2,7 @@
 
 namespace App\Utils\InfluxDB;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 use Exception;
 use InfluxDB\Client;
 use InfluxDB\Database;

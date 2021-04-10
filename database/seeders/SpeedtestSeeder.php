@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 use Illuminate\Database\Seeder;
 
 class SpeedtestSeeder extends Seeder

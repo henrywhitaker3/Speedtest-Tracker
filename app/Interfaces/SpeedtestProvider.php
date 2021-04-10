@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 
 interface SpeedtestProvider
 {

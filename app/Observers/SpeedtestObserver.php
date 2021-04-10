@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Exceptions\InfluxDBNotEnabledException;
-use App\Speedtest;
+use App\Models\Speedtest;
 use App\Utils\InfluxDB\InfluxDB;
 use Exception;
 use Log;

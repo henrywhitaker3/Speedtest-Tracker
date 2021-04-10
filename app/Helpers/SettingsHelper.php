@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use App\Events\TestNotificationEvent;
-use App\Setting;
+use App\Models\Setting;
 use Cache;
 use Carbon\Carbon;
 

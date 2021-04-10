@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 use App\Utils\OoklaTester;
 use Carbon\Carbon;
 use Exception;

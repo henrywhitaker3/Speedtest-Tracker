@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SpeedtestFactory extends Factory

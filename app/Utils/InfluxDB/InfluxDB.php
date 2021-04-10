@@ -5,7 +5,7 @@ namespace App\Utils\InfluxDB;
 use App\Exceptions\InfluxDBConnectionErrorException;
 use App\Exceptions\InfluxDBNotEnabledException;
 use App\Helpers\SettingsHelper;
-use App\Speedtest;
+use App\Models\Speedtest;
 use InfluxDB\Client as Version1;
 use InfluxDB2\Client as Version2;
 use App\Utils\InfluxDB\InfluxDBWrapperInterface as Client;

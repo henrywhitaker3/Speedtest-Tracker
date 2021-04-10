@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\Helpers\SettingsHelper;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Cache;
 use Carbon\Carbon;
 use Henrywhitaker3\LaravelActions\Interfaces\ActionInterface;
