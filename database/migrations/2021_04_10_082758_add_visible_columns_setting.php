@@ -18,7 +18,9 @@ class AddVisibleColumnsSetting extends Migration
         if (!SettingsHelper::get('visible_columns')) {
             Setting::create([
                 'name' => 'visible_columns',
-                'value' => 'id,created_at,download,upload,ping',
+                'value' => [
+                    'id', 'created_at', 'download', 'upload', 'ping'
+                ],
                 'description' => 'Choose and order the columns shown in the "All Tests" table.'
             ]);
         }

@@ -18,7 +18,9 @@ class AddHiddenColumnsSetting extends Migration
         if (!SettingsHelper::get('hidden_columns')) {
             Setting::create([
                 'name' => 'hidden_columns',
-                'value' => 'server_id,server_name,server_host,url,scheduled',
+                'value' => [
+                    'server_id', 'server_name', 'server_host', 'url', 'scheduled',
+                ],
                 'description' => 'Columns hidden from the "All Tests" table.'
             ]);
         }
