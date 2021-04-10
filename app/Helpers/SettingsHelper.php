@@ -170,6 +170,7 @@ class SettingsHelper
             ],
             'tables' => [
                 'visible_columns' => SettingsHelper::get('visible_columns')->value,
+                'hidden_columns' => SettingsHelper::get('hidden_columns')->value,
             ],
             'auth' => (bool)SettingsHelper::get('auth')->value
         ];

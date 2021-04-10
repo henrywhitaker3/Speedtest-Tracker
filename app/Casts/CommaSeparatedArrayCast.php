@@ -11,6 +11,7 @@ class CommaSeparatedArrayCast implements CastsAttributes
      */
     private array $shouldCast = [
         'visible_columns',
+        'hidden_columns',
     ];
 
     /**
