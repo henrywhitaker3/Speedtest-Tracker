@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;

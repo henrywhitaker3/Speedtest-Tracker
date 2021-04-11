@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Auth\LoginSession;
+use App\Models\Auth\LoginSession;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Log;

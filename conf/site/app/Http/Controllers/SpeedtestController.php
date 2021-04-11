@@ -9,7 +9,7 @@ use App\Actions\QueueSpeedtest;
 use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
 use App\Jobs\SpeedtestJob;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;

@@ -16,6 +16,8 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "henrywhitaker3/healthchecks-io": "^1.0",
         "henrywhitaker3/laravel-actions": "^1.0",
+        "influxdata/influxdb-client-php": "^1.12",
+        "influxdb/influxdb-php": "^1.15",
         "laravel-notification-channels/telegram": "^0.5.0",
         "laravel/framework": "^8.0",
         "laravel/slack-notification-channel": "^2.0",
@@ -45,12 +47,10 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
-        },
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ]
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
