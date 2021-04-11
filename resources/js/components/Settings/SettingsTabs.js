@@ -107,6 +107,7 @@ export default class SettingsTabs extends Component {
                         url={setting.url}
                         earlyReturn={setting.earlyReturn ? true : false}
                         classes={setting.classes ? setting.classes : ''}
+                        autoComplete={setting.autoComplete ? true : false}
                     />
         })
     }

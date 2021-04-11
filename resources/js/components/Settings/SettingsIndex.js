@@ -279,11 +279,13 @@ export default class SettingsIndex extends Component {
                 },
                 {
                     obj: data.influx_db_username,
-                    type: 'text'
+                    type: 'text',
+                    autoComplete: false,
                 },
                 {
                     obj: data.influx_db_password,
-                    type: 'password'
+                    type: 'password',
+                    autoComplete: false,
                 }
             ],
         };

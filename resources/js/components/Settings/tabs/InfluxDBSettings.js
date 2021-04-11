@@ -32,7 +32,11 @@ export default class InfluxDBSettings extends Component {
 
         return (
             <Tab.Content>
-                {settings}
+                <form onSubmit={(e) => { e.preventDefault() }} autoComplete="off">
+                    <input type="text" autoComplete="username" style={{ display: 'none' }} />
+                    <input type="password" name="password" autoComplete="passoword" style={{ display: 'none' }} />
+                    {settings}
+                </form>
                 <div className="mt-3">
                     <button className="btn btn-primary" onClick={() => { this.props.save(this.state.data, 'healthchecks.io') }}>Save</button>
                 </div>

@@ -24,6 +24,7 @@ export default class SettingsInput extends Component {
             inline: this.props.inline ? 'd-inline-block' : 'd-block',
             btnType: this.props.btnType,
             earlyReturn: this.props.earlyReturn ? true : false,
+            autoComplete: String(this.props.autoComplete ? true : Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7)),
         }
     }
 
@@ -72,7 +73,8 @@ export default class SettingsInput extends Component {
             disabled={disabled}
             min={this.state.min}
             max={this.state.max}
-            onInput={this.handleInput} />
+            onInput={this.handleInput}
+            autoComplete={this.state.autoComplete} />
     }
 
     generateSelectInput(disabled) {
@@ -109,7 +111,8 @@ export default class SettingsInput extends Component {
             type={this.state.type}
             defaultValue={this.state.value}
             disabled={disabled}
-            onInput={this.handleInput} />
+            onInput={this.handleInput}
+            autoComplete={this.state.autoComplete} />
     }
 
     generatePasswordInput(disabled) {
@@ -118,7 +121,8 @@ export default class SettingsInput extends Component {
             type={this.state.type}
             defaultValue={this.state.value}
             disabled={disabled}
-            onInput={this.handleInput} />
+            onInput={this.handleInput}
+            autoComplete={this.state.autoComplete} />
     }
 
     generateButtonGetInput() {
