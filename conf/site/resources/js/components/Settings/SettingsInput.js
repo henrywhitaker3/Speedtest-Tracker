@@ -112,6 +112,15 @@ export default class SettingsInput extends Component {
             onInput={this.handleInput} />
     }
 
+    generatePasswordInput(disabled) {
+        return <Form.Control
+            name={this.state.name}
+            type={this.state.type}
+            defaultValue={this.state.value}
+            disabled={disabled}
+            onInput={this.handleInput} />
+    }
+
     generateButtonGetInput() {
         var url = this.state.url;
 
@@ -144,6 +153,10 @@ export default class SettingsInput extends Component {
 
         if(this.state.type === 'text') {
             input = this.generateTextInput(disabled);
+        }
+
+        if(this.state.type === 'password') {
+            input = this.generatePasswordInput(disabled);
         }
 
         if(this.state.type === 'btn-get') {
