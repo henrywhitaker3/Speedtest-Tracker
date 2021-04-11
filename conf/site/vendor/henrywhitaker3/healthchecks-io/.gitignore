@@ -1,5 +1,0 @@
-/vendor/
-.env
-.phpunit.result.cache
-/reports/
-tests/tinker.php
