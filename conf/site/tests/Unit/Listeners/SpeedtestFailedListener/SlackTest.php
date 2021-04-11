@@ -4,7 +4,7 @@ namespace Tests\Unit\Listeners\SpeedtestFailedListener;
 
 use App\Helpers\SettingsHelper;
 use App\Listeners\SpeedtestFailedListener;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use stdClass;

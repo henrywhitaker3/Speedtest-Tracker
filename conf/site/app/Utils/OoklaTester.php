@@ -6,7 +6,7 @@ use App\Exceptions\SpeedtestFailureException;
 use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
 use App\Interfaces\SpeedtestProvider;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Cache;
 use Exception;
 use JsonException;

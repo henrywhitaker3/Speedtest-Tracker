@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Auth\EmailVerification;
-use App\Auth\LoginSession as AuthLoginSession;
+use App\Models\Auth\EmailVerification;
+use App\Models\Auth\LoginSession as AuthLoginSession;
 use App\Helpers\EmailVerificationHelper;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\LoginSession;
 use App\Rules\CurrentPasswordMatches;
-use App\User;
+use App\Models\User;
 use DateTime;
 use Hash;
 use Illuminate\Support\Facades\Request as RequestFacade;

@@ -6,6 +6,7 @@ use App\Exceptions\SpeedtestFailureException;
 use App\Helpers\SpeedtestHelper;
 use App\Utils\OoklaTester;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Mocks\OoklaTesterMocker;
 use Tests\TestCase;
 
 class SpeedtestTest extends TestCase
@@ -22,17 +23,7 @@ class SpeedtestTest extends TestCase
 
         $this->speedtestProvider = new OoklaTester();
 
-        $this->output = $this->speedtestProvider->output();
-    }
-
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function testOutputFunction()
-    {
-        $this->assertJson($this->output);
+        $this->output = (new OoklaTesterMocker())->output();
     }
 
     /**
