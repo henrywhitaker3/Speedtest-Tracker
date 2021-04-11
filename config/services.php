@@ -34,4 +34,9 @@ return [
         'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
     ],
 
+    'influxdb' => [
+        'retention' => env('INFLUXDB_RETENTION', '30d'),
+        'host' => env('INFLUXDB_HOST_TAG', 'speedtest'),
+    ],
+
 ];

@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 use Cache;
 use Carbon\Carbon;
 use DB;

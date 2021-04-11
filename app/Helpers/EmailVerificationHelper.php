@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
-use App\Auth\EmailVerification;
-use App\User;
+use App\Models\Auth\EmailVerification;
+use App\Models\User;
 
 class EmailVerificationHelper {
     public static function checkVerificationAttempt($userID, $token)

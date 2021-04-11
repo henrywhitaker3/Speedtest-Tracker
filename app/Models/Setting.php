@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Casts\CommaSeparatedArrayCast;
 use App\Helpers\SettingsHelper;

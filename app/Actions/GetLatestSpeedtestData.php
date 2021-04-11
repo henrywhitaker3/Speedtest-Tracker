@@ -4,7 +4,7 @@ namespace App\Actions;
 
 use App\Helpers\SettingsHelper;
 use App\Helpers\SpeedtestHelper;
-use App\Speedtest;
+use App\Models\Speedtest;
 use DB;
 use Henrywhitaker3\LaravelActions\Interfaces\ActionInterface;
 

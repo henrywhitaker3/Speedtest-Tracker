@@ -259,7 +259,35 @@ export default class SettingsIndex extends Component {
                     classes: 'mr-2'
                 },
 
-            ]
+            ],
+            influxdb: [
+                {
+                    obj: data.influx_db_enabled,
+                    type: 'checkbox'
+                },
+                {
+                    obj: data.influx_db_host,
+                    type: 'text'
+                },
+                {
+                    obj: data.influx_db_port,
+                    type: 'number'
+                },
+                {
+                    obj: data.influx_db_database,
+                    type: 'text'
+                },
+                {
+                    obj: data.influx_db_username,
+                    type: 'text',
+                    autoComplete: false,
+                },
+                {
+                    obj: data.influx_db_password,
+                    type: 'password',
+                    autoComplete: false,
+                }
+            ],
         };
     }
 

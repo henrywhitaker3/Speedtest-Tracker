@@ -1,4 +1,10 @@
 {
+    "1.12.0": [
+        {
+            "description": "Added InfluxDB intergation.",
+            "link": ""
+        }
+    ],
     "1.11.1": [
         {
             "description": "Add option to show/hide columns in the all tests table.",

@@ -7,7 +7,7 @@ use App\Http\Controllers\HomepageDataController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SpeedtestController;
 use App\Http\Controllers\UpdateController;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
