@@ -26,6 +26,7 @@ class SpeedtestFactory extends Factory
             'upload' => rand(15, 900),
             'ping' => rand(1, 25),
             'scheduled' => (bool) rand(0, 1),
+            'failed' => false,
         ];
     }
 }

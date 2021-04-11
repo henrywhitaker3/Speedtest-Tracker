@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Interfaces\SpeedtestProvider;
 use App\Models\Speedtest;
 use App\Utils\OoklaTester;
 use Carbon\Carbon;
@@ -25,7 +26,7 @@ class SpeedtestHelper
      */
     public static function runSpeedtest()
     {
-        $tester = new OoklaTester();
+        $tester = app()->make(SpeedtestProvider::class);
         return $tester->run();
     }
 

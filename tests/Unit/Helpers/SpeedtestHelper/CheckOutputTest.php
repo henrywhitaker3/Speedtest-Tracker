@@ -4,6 +4,7 @@ namespace Tests\Unit\Helpers\SpeedtestHelper;
 
 use App\Utils\OoklaTester;
 use PHPUnit\Framework\TestCase;
+use Tests\Mocks\OoklaTesterMocker;
 
 class CheckOutputTest extends TestCase
 {
@@ -12,6 +13,7 @@ class CheckOutputTest extends TestCase
     public function setUp(): void
     {
         $this->speedtestProvider = new OoklaTester();
+        $this->mocker = new OoklaTesterMocker();
     }
 
     /**
