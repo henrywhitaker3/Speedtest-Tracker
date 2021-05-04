@@ -22,7 +22,7 @@ else
     if [ ! -f /config/www/app/Bin/speedtest ]; then
         echo "Ookla GDPR and EULA accepted. Downloading Speedtest CLI."
         cd /tmp
-        wget https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-$arch-linux.tgz -O speedtest.tgz > /dev/null
+        wget https://install.speedtest.net/app/cli/ookla-speedtest-1.0.0-$arch-linux.tgz -O speedtest.tgz > /dev/null
         tar zxvf speedtest.tgz > /dev/null
         cp speedtest /site/app/Bin/
 
