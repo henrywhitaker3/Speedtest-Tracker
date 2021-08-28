@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\SpeedtestFailureException;
 use App\Helpers\SpeedtestHelper;
+use App\Interfaces\SpeedtestProvider;
 use Illuminate\Console\Command;
 
 class SpeedtestCommand extends Command
@@ -21,13 +23,17 @@ class SpeedtestCommand extends Command
      */
     protected $description = 'Performs a new speedtest';
 
+    private SpeedtestProvider $speedtestProvider;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(SpeedtestProvider $speedtestProvider)
     {
+        $this->speedtestProvider = $speedtestProvider;
+
         parent::__construct();
     }
 
@@ -40,14 +46,14 @@ class SpeedtestCommand extends Command
     {
         $this->info('Running speedtest, this might take a while...');
 
-        $results = SpeedtestHelper::runSpeedtest(false, false);
-
-        if(!is_object($results)) {
+        try {
+            $results = $this->speedtestProvider->run(false, false);
+        } catch (SpeedtestFailureException $e) {
             $this->error('Something went wrong running the speedtest.');
             exit();
         }
 
-        if(property_exists($results, 'ping') && property_exists($results, 'download') && property_exists($results, 'upload')) {
+        if (property_exists($results, 'ping') && property_exists($results, 'download') && property_exists($results, 'upload')) {
             $this->error('Something went wrong running the speedtest.');
             exit();
         }

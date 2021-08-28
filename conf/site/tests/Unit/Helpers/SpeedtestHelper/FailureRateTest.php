@@ -3,7 +3,7 @@
 namespace Tests\Unit\Helpers\SpeedtestHelper;
 
 use App\Helpers\SpeedtestHelper;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

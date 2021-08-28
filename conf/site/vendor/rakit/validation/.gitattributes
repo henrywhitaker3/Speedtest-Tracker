@@ -1,4 +1,0 @@
-# Exclude unused files
-/tests              export-ignore
-/phpunit.xml.dist   export-ignore
-/.travis.yml        export-ignore

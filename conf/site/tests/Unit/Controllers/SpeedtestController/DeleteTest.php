@@ -3,7 +3,7 @@
 namespace Tests\Unit\Controllers\SpeedtestController;
 
 use App\Http\Controllers\SpeedtestController;
-use App\Speedtest;
+use App\Models\Speedtest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

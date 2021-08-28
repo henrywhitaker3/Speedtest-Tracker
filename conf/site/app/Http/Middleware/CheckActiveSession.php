@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Auth\LoginSession;
+use App\Models\Auth\LoginSession;
 use Closure;
 use Exception;
 

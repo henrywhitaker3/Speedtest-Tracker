@@ -55,6 +55,15 @@ else
     echo "Env file exists"
 fi
 
+if [ ! -f /config/www/.composer-time ]; then
+    echo 'Removing old packages'
+    rm -rf /config/www/vendor/
+fi
+
+echo 'Updating packages'
+apk add composer
+cd /config/www && composer install && echo date > /config/www/.composer-time
+
 sed "s,DB_DATABASE=.*,DB_DATABASE=/config/speed.db," -i.bak /config/www/.env
 
 echo "Running database migrations"
@@ -126,3 +135,4 @@ cp /defaults/crontab /etc/crontabs/root
 
 chown -R abc:abc /config
 chmod +x /config/www/app/Bin/speedtest
+chmod -R 777 /config/www/storage/clockwork
