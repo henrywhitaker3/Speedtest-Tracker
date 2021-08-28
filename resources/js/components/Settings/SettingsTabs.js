@@ -11,6 +11,8 @@ import GraphsSettings from './tabs/GraphsSettings';
 import HealthchecksSettings from './tabs/HealthchecksSettings';
 import NotificationsSettings from './tabs/NotificationsSettings';
 import Authentication from '../Authentication/Authentication';
+import TableSettings from './tabs/TableSettings';
+import InfluxDBSettings from './tabs/InfluxDBSettings';
 
 export default class SettingsTabs extends Component {
     constructor(props) {
@@ -26,8 +28,10 @@ export default class SettingsTabs extends Component {
         var tabs = [
             'General',
             'Graphs',
+            'Tables',
             'Notifications',
             'healthchecks.io',
+            'InfluxDB',
             'Reset',
             'Backup/Restore',
         ];
@@ -103,6 +107,7 @@ export default class SettingsTabs extends Component {
                         url={setting.url}
                         earlyReturn={setting.earlyReturn ? true : false}
                         classes={setting.classes ? setting.classes : ''}
+                        autoComplete={setting.autoComplete ? true : false}
                     />
         })
     }
@@ -121,6 +126,11 @@ export default class SettingsTabs extends Component {
                             data={data.Graphs}
                             generateInputs={this.generateInputs}
                             save={this.save} />
+            case 'Tables':
+                return <TableSettings
+                            data={data.Tables}
+                            refreshConfig={this.props.refreshConfig}
+                            save={this.save} />
             case 'Notifications':
                 return <NotificationsSettings
                             data={data.Notifications}
@@ -129,6 +139,11 @@ export default class SettingsTabs extends Component {
             case 'healthchecks.io':
                 return <HealthchecksSettings
                             data={data.healthchecks}
+                            generateInputs={this.generateInputs}
+                            save={this.save} />
+            case 'InfluxDB':
+                return <InfluxDBSettings
+                            data={data.influxdb}
                             generateInputs={this.generateInputs}
                             save={this.save} />
             case 'Reset':

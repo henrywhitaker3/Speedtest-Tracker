@@ -12,40 +12,23 @@ export default class LatestResults extends Component {
         super(props)
 
         this.state = {
-            data: {},
+            data: props.data,
             interval: null,
             loading: true,
         }
     }
 
-    componentDidMount = () => {
-        this.getData();
-        var int = setInterval(this.getData, 10000);
-        this.setState({
-            interval: int,
-        });
+    componentDidUpdate() {
+        if(this.state.data !== this.props.data) {
+            this.setState({
+                data: this.props.data,
+                loading: false,
+            });
+        }
     }
 
     componentWillUnmount() {
         clearInterval(this.state.interval);
-    }
-
-    getData = () => {
-        var url = 'api/speedtest/latest';
-
-        Axios.get(url)
-        .then((resp) => {
-            this.setState({
-                data: resp.data,
-                loading: false
-            });
-        })
-        .catch((err) => {
-            this.setState({
-                data: false
-            });
-            console.log(err);
-        })
     }
 
     newScan = () => {

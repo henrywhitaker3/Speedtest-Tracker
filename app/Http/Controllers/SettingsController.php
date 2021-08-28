@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\SettingsHelper;
 use App\Rules\Cron;
-use App\Setting;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;

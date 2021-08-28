@@ -94,7 +94,7 @@ export default class Index extends Component {
                                 )} />
                                 <Route exact path={window.config.base + 'settings'} render={(props) => (
                                     <div>
-                                        <SettingsIndex />
+                                        <SettingsIndex refreshConfig={this.getConfig} />
 
                                     </div>
                                 )} />

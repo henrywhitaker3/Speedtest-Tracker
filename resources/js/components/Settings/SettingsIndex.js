@@ -63,6 +63,16 @@ export default class SettingsIndex extends Component {
                     type: 'checkbox',
                 }
             ],
+            Tables: [
+                {
+                    obj: data.visible_columns,
+                    type: 'list'
+                },
+                {
+                    obj: data.hidden_columns,
+                    type: 'list'
+                }
+            ],
             Graphs: [
                 {
                     obj: data.download_upload_graph_enabled,
@@ -249,7 +259,35 @@ export default class SettingsIndex extends Component {
                     classes: 'mr-2'
                 },
 
-            ]
+            ],
+            influxdb: [
+                {
+                    obj: data.influx_db_enabled,
+                    type: 'checkbox'
+                },
+                {
+                    obj: data.influx_db_host,
+                    type: 'text'
+                },
+                {
+                    obj: data.influx_db_port,
+                    type: 'number'
+                },
+                {
+                    obj: data.influx_db_database,
+                    type: 'text'
+                },
+                {
+                    obj: data.influx_db_username,
+                    type: 'text',
+                    autoComplete: false,
+                },
+                {
+                    obj: data.influx_db_password,
+                    type: 'password',
+                    autoComplete: false,
+                }
+            ],
         };
     }
 
@@ -268,7 +306,7 @@ export default class SettingsIndex extends Component {
                     {loading ?
                         <Loader />
                         :
-                        <SettingsTabs data={data} />
+                        <SettingsTabs data={data} refreshConfig={this.props.refreshConfig} />
                     }
                 </div>
                 <Footer />

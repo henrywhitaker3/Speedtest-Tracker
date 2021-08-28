@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use App\Casts\CommaSeparatedArrayCast;
 use App\Helpers\SettingsHelper;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,4 +18,8 @@ class Setting extends Model
     ];
 
     protected $table = 'settings';
+
+    protected $casts = [
+        'value' => CommaSeparatedArrayCast::class,
+    ];
 }

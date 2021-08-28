@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Speedtest;
+use App\Models\Speedtest;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -56,7 +56,6 @@ class APISpeedtestTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'method',
             'data' => [
                 'id',
                 'ping',

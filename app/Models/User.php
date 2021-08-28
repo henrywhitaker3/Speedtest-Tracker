@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -107,7 +107,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function setPasswordAttribute($password)
     {
-        if ( !empty($password) ) {
+        if (!empty($password)) {
             $this->attributes['password'] = Hash::make($password);
         }
     }

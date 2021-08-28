@@ -1,4 +1,34 @@
 {
+    "1.12.0": [
+        {
+            "description": "Added InfluxDB intergation.",
+            "link": ""
+        }
+    ],
+    "1.11.1": [
+        {
+            "description": "Add option to show/hide columns in the all tests table.",
+            "link": ""
+        },
+        {
+            "description": "Add option to delete failed tests.",
+            "link": ""
+        }
+    ],
+    "1.11.0": [
+        {
+            "description": "Upgrade to Laravel 8.",
+            "link": ""
+        },
+        {
+            "description": "Refactor loads of back-end stuff.",
+            "link": ""
+        },
+        {
+            "description": "Refactor front-end stuff.",
+            "link": ""
+        }
+    ],
     "1.10.4": [
         {
             "description": "Updated dependencies.",
