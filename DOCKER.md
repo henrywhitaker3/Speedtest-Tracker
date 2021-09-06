@@ -105,12 +105,20 @@ To get the base image, you have 2 options:
 
 Run `docker pull henrywhitaker3/speedtest-tracker`
 
-<!-- ### Dockerfile
+### Self-built Image
 
-Clone the required files from the github repo [here](https://github.com/henrywhitaker3/Speedtest-Tracker/tree/docker) making sure to use the `docker` branch of the repo.
+Clone this repo and use docker build:
 
-Build the image from the docker file by running (within the cloned git repo):
+```
+git clone -b master --single-branch https://github.com/henrywhitaker3/Speedtest-Tracker
+cd Speedtest-Tracker
+docker build -t henrywhitaker3/speedtest-tracker:latest .
+```
+
+If you want to build for all architectures using qemu:
 
 ```bash
-docker build . -f Dockerfile --tag=henrywhitaker3/speedtest-tracker:<tag>
-``` -->
+docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+docker buildx create --use
+docker buildx build --platform linux/arm64/v8,linux/amd64 -t henrywhitaker3/speedtest-tracker:latest .
+```
