@@ -78,10 +78,10 @@ class OoklaTester implements SpeedtestProvider
                 return false;
             }
 
-            return shell_exec($homePrefix . $binPath . ' -f json -s ' . $server);
+            return shell_exec($homePrefix . $binPath . ' --accept-license --accept-gdpr -f json -s ' . $server);
         }
 
-        return shell_exec($homePrefix . $binPath . ' -f json');
+        return shell_exec($homePrefix . $binPath . ' --accept-license --accept-gdpr -f json');
     }
 
     /**
