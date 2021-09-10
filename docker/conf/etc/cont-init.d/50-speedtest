@@ -26,10 +26,10 @@ else
         tar zxvf speedtest.tgz > /dev/null
         cp speedtest /site/app/Bin/
 
-        HOME=/config && timeout 10s s6-setuidgid abc /site/artisan speedtest:eula > /dev/null
+        HOME=/config && s6-setuidgid abc /site/artisan speedtest:eula > /dev/null
         HOME=/root
     else
-        HOME=/config && timeout 10s s6-setuidgid abc /config/www/artisan speedtest:eula > /dev/null
+        HOME=/config && s6-setuidgid abc /config/www/artisan speedtest:eula > /dev/null
         HOME=/root
     fi
 fi
