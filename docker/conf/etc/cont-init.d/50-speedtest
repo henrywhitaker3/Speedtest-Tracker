@@ -26,6 +26,7 @@ else
         tar zxvf speedtest.tgz > /dev/null
         cp speedtest /site/app/Bin/
 
+        chmod +x /site/artisan
         HOME=/config && s6-setuidgid abc /site/artisan speedtest:eula > /dev/null
         HOME=/root
     else
