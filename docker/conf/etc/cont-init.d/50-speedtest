@@ -27,10 +27,10 @@ else
         cp speedtest /site/app/Bin/
 
         chmod +x /site/artisan
-        HOME=/config && s6-setuidgid abc /site/artisan speedtest:eula > /dev/null
+        HOME=/config && s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
         HOME=/root
     else
-        HOME=/config && s6-setuidgid abc /config/www/artisan speedtest:eula > /dev/null
+        HOME=/config && s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
         HOME=/root
     fi
 fi
