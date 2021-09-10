@@ -27,7 +27,7 @@ class HomepageDataController extends Controller
 
         return [
             'latest' => run(GetLatestSpeedtestData::class),
-            'time' => run(GetSpeedtestTimeData::class),
+            'time' => run(GetSpeedtestTimeData::class, $days),
             'fail' => run(GetFailedSpeedtestData::class),
             'config' => SettingsHelper::getConfig(),
         ];
