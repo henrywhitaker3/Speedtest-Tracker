@@ -39,6 +39,6 @@ class AcceptEULACommand extends Command
     public function handle()
     {
         $this->info('Acceping EULA');
-        shell_exec(config('speedtest.home') . ' && timeout 3s ' . app_path() . '/Bin/speedtest --accept-license --accept-gdpr');
+        shell_exec(config('speedtest.home') . ' && timeout 10s ' . app_path() . '/Bin/speedtest --accept-license --accept-gdpr');
     }
 }

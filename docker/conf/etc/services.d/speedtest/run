@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+
+exec s6-setuidgid abc php /config/www/artisan queue:work --timeout=120 >> /config/log/speedtest/queue.log
