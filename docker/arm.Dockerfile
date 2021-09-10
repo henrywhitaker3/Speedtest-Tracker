@@ -3,7 +3,8 @@ LABEL maintainer=henrywhitaker3@outlook.com
 
 ENV arch='arm'
 
-COPY conf/ /
+COPY docker/conf/ /
+COPY . /site
 
 EXPOSE 80 443
 
