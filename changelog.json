@@ -1,4 +1,10 @@
 {
+    "1.12.1": [
+        {
+            "description": "Fixed a bug where the latest X days widget would not update (#680)",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/pull/680"
+        }
+    ],
     "1.12.0": [
         {
             "description": "Added InfluxDB intergation.",

@@ -6,14 +6,14 @@ object-assign
 
 /* @license
 Papa Parse
-v5.2.0
+v5.3.0
 https://github.com/mholt/PapaParse
 License: MIT
 */
 
 /*!
-  * Bootstrap v4.5.3 (https://getbootstrap.com/)
-  * Copyright 2011-2020 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap v4.6.0 (https://getbootstrap.com/)
+  * Copyright 2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -72,7 +72,7 @@ License: MIT
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
 
-/** @license React v0.19.1
+/** @license React v0.20.1
  * scheduler.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -90,7 +90,7 @@ License: MIT
  * LICENSE file in the root directory of this source tree.
  */
 
-/** @license React v16.14.0
+/** @license React v17.0.1
  * react-dom.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -99,7 +99,7 @@ License: MIT
  * LICENSE file in the root directory of this source tree.
  */
 
-/** @license React v16.14.0
+/** @license React v17.0.1
  * react.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
