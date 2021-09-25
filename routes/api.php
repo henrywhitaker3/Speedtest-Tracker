@@ -4,6 +4,7 @@ use App\Helpers\SpeedtestHelper;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\HomepageDataController;
+use App\Http\Controllers\IntegrationsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SpeedtestController;
 use App\Http\Controllers\UpdateController;
@@ -78,9 +79,9 @@ Route::group([
 ], function () {
     Route::get('/config', [SettingsController::class, 'config'])
         ->name('settings.config');
-    Route::get('/test-notification', 'IntegrationsController@testNotification')
+    Route::get('/test-notification', [IntegrationsController::class, 'testNotification'])
         ->name('settings.test_notification');
-    Route::get('/test-healthchecks/{method}', 'IntegrationsController@testHealthchecks')
+    Route::get('/test-healthchecks/{method}', [IntegrationsController::class, 'testHealthchecks'])
         ->name('settings.test_notification');
     Route::get('/', [SettingsController::class, 'index'])
         ->name('settings.index');

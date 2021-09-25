@@ -52,6 +52,8 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: php artisan speedtest:eula
+    - name: Test route validation
+      run: php artisan route:list
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
         DB_CONNECTION: sqlite
