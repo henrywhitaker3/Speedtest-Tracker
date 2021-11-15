@@ -27,7 +27,6 @@
         "@inertiajs/inertia": "^0.10.1",
         "@inertiajs/inertia-vue": "^0.7.2",
         "@inertiajs/progress": "^0.2.6",
-        "chart.js": "^2.9.4",
         "dayjs": "^1.10.7",
         "laravel-mix-tailwind": "^0.1.2"
     }
