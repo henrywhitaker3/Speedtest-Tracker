@@ -14,10 +14,10 @@ Vue.use(InertiaProgress);
 createInertiaApp({
     resolve: name => require(`./Pages/${name}`),
     setup({ el, App, props }) {
-      new Vue({
-        render: h => h(App, props),
-      }).$mount(el)
+        new Vue({
+            render: h => h(App, props),
+        }).$mount(el)
     },
-  })
+});
 
 InertiaProgress.init({ color: "#4B5563" });
