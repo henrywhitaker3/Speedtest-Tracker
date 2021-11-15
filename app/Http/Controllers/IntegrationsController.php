@@ -15,7 +15,7 @@ class IntegrationsController extends Controller
 {
     public function __construct()
     {
-        if((bool)SettingsHelper::get('auth')->value === true) {
+        if ((bool)SettingsHelper::get('auth')->value === true) {
             $this->middleware('auth:api');
         }
     }
@@ -31,15 +31,15 @@ class IntegrationsController extends Controller
 
         try {
             // SettingsHelper::loadIntegrationConfig();
-            if($method == 'success') {
+            if ($method == 'success') {
                 Healthcheck::success();
             }
 
-            if($method == 'fail') {
+            if ($method == 'fail') {
                 Healthcheck::fail();
             }
 
-            if($method == 'start') {
+            if ($method == 'start') {
                 Healthcheck::start();
             }
 
@@ -47,19 +47,19 @@ class IntegrationsController extends Controller
                 'method' => $methodResp,
                 'success' => true
             ], 200);
-        } catch(InvalidUuidStringException $e) {
+        } catch (InvalidUuidStringException $e) {
             return response()->json([
                 'method' => $methodResp,
                 'success' => false,
                 'error' => 'Invalid UUID'
             ], 422);
-        } catch(HealthchecksUuidNotFoundException $e) {
+        } catch (HealthchecksUuidNotFoundException $e) {
             return response()->json([
                 'method' => $methodResp,
                 'success' => false,
                 'error' => 'UUID not found'
             ], 404);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'method' => $methodResp,
                 'success' => false,

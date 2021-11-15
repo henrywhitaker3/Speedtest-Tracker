@@ -16,6 +16,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "henrywhitaker3/healthchecks-io": "^1.0",
         "henrywhitaker3/laravel-actions": "^1.0",
+        "inertiajs/inertia-laravel": "^0.4.5",
         "influxdata/influxdb-client-php": "^1.12",
         "influxdb/influxdb-php": "^1.15",
         "laravel-notification-channels/telegram": "^0.5.0",
@@ -23,6 +24,7 @@
         "laravel/slack-notification-channel": "^2.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.0",
+        "tightenco/ziggy": "^1.4",
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {

@@ -7,35 +7,34 @@
         <meta name="author" content="Henry Whitaker">
         <meta name="version" content="{{ config('speedtest.version', 'Unknown') }}">
 
-        <link href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/themify/themify-icons.css" rel="stylesheet">
-        <link rel="stylesheet" href="{{ App\Helpers\SettingsHelper::getBase() }}files/css/bootstrap.dark.min.css">
-        <link rel="stylesheet" href="{{ App\Helpers\SettingsHelper::getBase() }}files/css/main.css?v={{ str_replace('.', '-', config('speedtest.version')) }}">
+        <link href="/icons/themify/themify-icons.css" rel="stylesheet">
 
-        <link rel="apple-touch-icon" sizes="57x57" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-57x57.png">
-        <link rel="apple-touch-icon" sizes="60x60" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-60x60.png">
-        <link rel="apple-touch-icon" sizes="72x72" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-72x72.png">
-        <link rel="apple-touch-icon" sizes="76x76" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-76x76.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-114x114.png">
-        <link rel="apple-touch-icon" sizes="120x120" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-120x120.png">
-        <link rel="apple-touch-icon" sizes="144x144" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-144x144.png">
-        <link rel="apple-touch-icon" sizes="152x152" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-152x152.png">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/apple-icon-180x180.png">
-        <link rel="icon" type="image/png" sizes="192x192"  href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/android-icon-192x192.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="96x96" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/favicon-96x96.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/favicon-16x16.png">
-        <link rel="manifest" href="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/manifest.json">
+        <link rel="apple-touch-icon" sizes="57x57" href="/icons/fav/apple-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="/icons/fav/apple-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="/icons/fav/apple-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/icons/fav/apple-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="/icons/fav/apple-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/icons/fav/apple-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="/icons/fav/apple-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/fav/apple-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/fav/apple-icon-180x180.png">
+        <link rel="icon" type="image/png" sizes="192x192"  href="/icons/fav/android-icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/fav/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="/icons/fav/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/fav/favicon-16x16.png">
+        <link rel="manifest" href="/icons/fav/manifest.json">
         <meta name="msapplication-TileColor" content="#303030">
-        <meta name="msapplication-TileImage" content="{{ App\Helpers\SettingsHelper::getBase() }}files/icons/fav/ms-icon-144x144.png">
+        <meta name="msapplication-TileImage" content="/icons/fav/ms-icon-144x144.png">
         <meta name="theme-color" content="#303030">
 
-        <title>{{ $title }}</title>
-    </head>
-    <body>
-        <div id="main"></div>
+        <title>{{ config('app.name') }}</title>
 
-        <script src="{{ App\Helpers\SettingsHelper::getBase() }}files/js/jquery.min.js"></script>
-        <script src="{{ App\Helpers\SettingsHelper::getBase() }}files/js/popper.min.js"></script>
-        <script src="{{ App\Helpers\SettingsHelper::getBase() }}files/js/app.js?v={{ str_replace('.', '-', config('speedtest.version')) }}"></script>
+        <!-- Styles -->
+        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+
+        <script src="{{ mix('js/app.js') }}"></script>
+    </head>
+    <body class="font-sans antialiased">
+        @inertia
     </body>
 </html>
