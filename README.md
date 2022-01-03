@@ -24,7 +24,7 @@ Disclaimer: You will need to accept Ookla's EULA and privacy agreements in order
 
 ### Using Docker
 
-A docker image is available [here](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker), you can create a new conatiner by running:
+A docker image is available [here](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker), you can create a new container by running:
 
 ```bash
 docker create \
@@ -86,7 +86,7 @@ Container images are configured using parameters passed at runtime (such as thos
 |     `-e PGID`             |   Optional. Supply a local group ID for volume permissions  |
 |     `-e AUTH`             |   Optional. Set to 'true' to enable authentication for the app |
 |     `-e INFLUXDB_RETENTION`|  Optional. Sets the InfluxDB retention period, defaults to `30d` |
-|     `-e INFLUXDB_HOST_TAG |   Optional. Sets the InfluxDB host tag value, defaults to `speedtest` |
+|     `-e INFLUXDB_HOST_TAG` |   Optional. Sets the InfluxDB host tag value, defaults to `speedtest` |
 
 ### Authentication
 
@@ -98,9 +98,9 @@ The default credentials are:
 |   ---         |   ---             |
 |   username    |   admin@admin.com |
 |   password    |   password        |
-    
+
 After enabling, you should change the password through the web UI.
-    
+
 ### Manual Install
 
 For manual installations, please follow the instructions [here](https://github.com/henrywhitaker3/Speedtest-Tracker/wiki/Manual-Installation).
