@@ -16,7 +16,6 @@
         "guzzlehttp/guzzle": "^7.5",
         "henrywhitaker3/healthchecks-io": "^1.0",
         "influxdata/influxdb-client-php": "^3.2",
-        "influxdb/influxdb-php": "^1.15",
         "laravel-notification-channels/telegram": "^3.0",
         "laravel/framework": "^9.42",
         "laravel/sanctum": "^3.0",

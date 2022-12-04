@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d0d848eb4fd064717daf6cde0e905036",
+    "content-hash": "4442a7f9db8298c9f0f855c220af889e",
     "packages": [
         {
             "name": "brick/math",
@@ -1542,72 +1542,6 @@
                 "source": "https://github.com/influxdata/influxdb-client-php/tree/3.2.0"
             },
             "time": "2022-12-01T15:15:35+00:00"
-        },
-        {
-            "name": "influxdb/influxdb-php",
-            "version": "1.15.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/influxdata/influxdb-php.git",
-                "reference": "d6e59f4f04ab9107574fda69c2cbe36671253d03"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/influxdata/influxdb-php/zipball/d6e59f4f04ab9107574fda69c2cbe36671253d03",
-                "reference": "d6e59f4f04ab9107574fda69c2cbe36671253d03",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^6.0|^7.0",
-                "php": "^5.5 || ^7.0 || ^8.0"
-            },
-            "require-dev": {
-                "dms/phpunit-arraysubset-asserts": "^0.2.1",
-                "phpunit/phpunit": "^9.5"
-            },
-            "suggest": {
-                "ext-curl": "Curl extension, needed for Curl driver",
-                "stefanotorresi/influxdb-php-async": "An asyncronous client for InfluxDB, implemented via ReactPHP."
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "InfluxDB\\": "src/InfluxDB"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Stephen Hoogendijk",
-                    "email": "stephen@tca0.nl"
-                },
-                {
-                    "name": "Daniel Martinez",
-                    "email": "danimartcas@hotmail.com"
-                },
-                {
-                    "name": "Gianluca Arbezzano",
-                    "email": "gianarb92@gmail.com"
-                }
-            ],
-            "description": "InfluxDB client library for PHP",
-            "keywords": [
-                "client",
-                "influxdata",
-                "influxdb",
-                "influxdb class",
-                "influxdb client",
-                "influxdb library",
-                "time series"
-            ],
-            "support": {
-                "issues": "https://github.com/influxdata/influxdb-php/issues",
-                "source": "https://github.com/influxdata/influxdb-php/tree/1.15.2"
-            },
-            "time": "2020-12-26T17:45:17+00:00"
         },
         {
             "name": "laravel-notification-channels/telegram",
