@@ -1,4 +1,14 @@
 {
+    "1.12.3": [
+        {
+            "description": "Updated to PHP 8.2",
+            "link": ""
+        },
+        {
+            "description": "Updated speedtest cli to 1.2.0 (#1119)",
+            "link": "https://github.com/henrywhitaker3/Speedtest-Tracker/issues/1119"
+        }
+    ],
     "1.12.2": [
         {
             "description": "Fixed a bug where the latest X days widget would not update for the failure graph",
