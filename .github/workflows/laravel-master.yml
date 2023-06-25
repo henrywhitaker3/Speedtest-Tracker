@@ -24,6 +24,6 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: henrywhitaker3/speedtest-tracker:latest,henrywhitaker3/speedtest-tracker:latest-arm
