@@ -30,6 +30,6 @@ class QueueSpeedtest implements ActionInterface
     {
         SettingsHelper::loadIntegrationConfig();
 
-        SpeedtestJob::dispatch(false, config('integrations'), $this->speedtestProvider);
+        SpeedtestJob::dispatch($this->speedtestProvider, false, config('integrations'));
     }
 }

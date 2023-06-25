@@ -43,7 +43,7 @@ class SpeedtestJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($scheduled = true, $config = [], SpeedtestProvider $speedtestProvider)
+    public function __construct(SpeedtestProvider $speedtestProvider, $scheduled = true, $config = [])
     {
         $this->scheduled = $scheduled;
         $this->config = $config;
