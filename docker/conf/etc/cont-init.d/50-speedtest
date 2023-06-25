@@ -16,7 +16,7 @@ function downloadSpeedtestCli()
     if [ $(uname -m) == "x86_64" ]; then
         wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz -O speedtest.tgz > /dev/null
     else
-        wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-arm.tgz -O speedtest.tgz > /dev/null
+        wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz -O speedtest.tgz > /dev/null
     fi
 
     tar zxvf speedtest.tgz > /dev/null
@@ -52,6 +52,9 @@ else
         HOME=/root
     fi
 fi
+
+# Copy latest nginx config
+cp /defaults/nginx/nginx.conf.sample /config/nginx/nginx.conf
 
 # Copy site files to /config
 echo "Copying latest site files to config"
