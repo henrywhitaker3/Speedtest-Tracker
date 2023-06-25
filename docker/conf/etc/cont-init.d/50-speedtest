@@ -11,6 +11,18 @@ function eulaError()
     exit 1
 }
 
+function downloadSpeedtestCli()
+{
+    if [ $(uname -m) == "x86_64" ]; then
+        wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz -O speedtest.tgz > /dev/null
+    else
+        wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz -O speedtest.tgz > /dev/null
+    fi
+
+    tar zxvf speedtest.tgz > /dev/null
+    cp speedtest /site/app/Bin/
+}
+
 # Do Ookla stuff
 if [ -z ${OOKLA_EULA_GDPR+x} ]; then
     eulaError
@@ -23,23 +35,26 @@ else
         echo "Ookla GDPR and EULA accepted. Downloading Speedtest CLI."
         cd /tmp
 
-        if [ $(uname -m) == "x86_64" ]; then
-            wget https://install.speedtest.net/app/cli/ookla-speedtest-1.0.0-x86_64-linux.tgz -O speedtest.tgz > /dev/null
-        else
-            wget https://install.speedtest.net/app/cli/ookla-speedtest-1.0.0-arm-linux.tgz -O speedtest.tgz > /dev/null
-        fi
-
-        tar zxvf speedtest.tgz > /dev/null
-        cp speedtest /site/app/Bin/
+        downloadSpeedtestCli
 
         chmod +x /site/artisan
         HOME=/config && s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
         HOME=/root
     else
+        /config/www/app/Bin/speedtest --version | grep -E "1\.2\.0"
+        rc=$?
+
+        if [ $rc -ne 0 ]; then
+            downloadSpeedtestCli
+        fi
+
         HOME=/config && s6-setuidgid abc /site/app/Bin/speedtest --accept-license --accept-gdpr > /dev/null
         HOME=/root
     fi
 fi
+
+# Copy latest nginx config
+cp /defaults/nginx/nginx.conf.sample /config/nginx/nginx.conf
 
 # Copy site files to /config
 echo "Copying latest site files to config"
@@ -69,19 +84,19 @@ fi
 
 echo 'Updating packages'
 apk add composer
-cd /config/www && composer install && echo date > /config/www/.composer-time
+cd /config/www && php82 /usr/bin/composer.phar install && echo date > /config/www/.composer-time
 
 sed "s,DB_DATABASE=.*,DB_DATABASE=/config/speed.db," -i.bak /config/www/.env
 
 echo "Running database migrations"
-php /config/www/artisan migrate
+php82 /config/www/artisan migrate
 
 # Check app key exists
 if grep -E "APP_KEY=[0-9A-Za-z:+\/=]{1,}" /config/www/.env > /dev/null; then
     echo "App key exists"
 else
     echo "Generating app key"
-    php /config/www/artisan key:generate
+    php82 /config/www/artisan key:generate
 fi
 
 # Check JWT secret exists
@@ -89,7 +104,7 @@ if grep -E "JWT_SECRET=[0-9A-Za-z:+\/=]{1,}" /config/www/.env > /dev/null ; then
     echo "JWT secret exists"
 else
     echo "Generating JWT secret"
-    php /config/www/artisan jwt:secret
+    php82 /config/www/artisan jwt:secret
 fi
 
 if [ -z ${SLACK_WEBHOOK+x} ]; then
@@ -98,7 +113,7 @@ if [ -z ${SLACK_WEBHOOK+x} ]; then
 else
     echo "Slack webhook set, updating db"
     sed "s,SLACK_WEBHOOK=.*,SLACK_WEBHOOK=$SLACK_WEBHOOK," -i.bak /config/www/.env
-    php /config/www/artisan speedtest:slack $SLACK_WEBHOOK
+    php82 /config/www/artisan speedtest:slack $SLACK_WEBHOOK
 fi
 
 if [ -z ${TELEGRAM_BOT_TOKEN+x} ] && [ -z ${TELEGRAM_CHAT_ID+x} ]; then
@@ -109,7 +124,7 @@ else
     echo "Telegram chat id and bot token set, updating .env"
     sed "s,TELEGRAM_BOT_TOKEN=.*,TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN," -i.bak /config/www/.env
     sed "s,TELEGRAM_CHAT_ID=.*,TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID," -i.bak /config/www/.env
-    php /config/www/artisan speedtest:telegram --chat=$TELEGRAM_CHAT_ID --bot=$TELEGRAM_BOT_TOKEN
+    php82 /config/www/artisan speedtest:telegram --chat=$TELEGRAM_CHAT_ID --bot=$TELEGRAM_BOT_TOKEN
 fi
 
 if [ -z ${BASE_PATH+x} ]; then
@@ -122,19 +137,19 @@ fi
 
 if [ -z ${AUTH+x} ]; then
     echo "AUTH variable not set. Disabling authentication"
-    php /config/www/artisan speedtest:auth --disable
+    php82 /config/www/artisan speedtest:auth --disable
 else
     if [ $AUTH == 'true' ]; then
         echo "AUTH variable set. Enabling authentication"
-        php /config/www/artisan speedtest:auth --enable
+        php82 /config/www/artisan speedtest:auth --enable
     else
         echo "AUTH variable set, but not to 'true'. Disabling authentication"
-        php /config/www/artisan speedtest:auth --disable
+        php82 /config/www/artisan speedtest:auth --disable
     fi
 fi
 
 echo "Clearing old jobs from queue"
-php /config/www/artisan queue:clear
+php82 /config/www/artisan queue:clear
 
 mkdir -p /config/log/speedtest
 

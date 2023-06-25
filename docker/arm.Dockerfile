@@ -3,6 +3,8 @@ LABEL maintainer=henrywhitaker3@outlook.com
 
 ENV arch='arm'
 
+RUN apk add php82-tokenizer
+
 COPY docker/conf/ /
 COPY . /site
 

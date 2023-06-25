@@ -1,0 +1,15 @@
+version: "3"
+
+vars:
+  RTAG:
+    sh: head -n 25 /dev/random | md5sum | head -c 8
+
+tasks:
+  build:
+    cmds:
+      - docker build . -f docker/Dockerfile --tag henrywhitaker3/speedtest-tracker:{{ .RTAG }}
+
+  run:
+    deps: [build]
+    cmds:
+      - docker run --rm -p 8765:80 -e OOKLA_EULA_GDPR=true henrywhitaker3/speedtest-tracker:{{ .RTAG }}
