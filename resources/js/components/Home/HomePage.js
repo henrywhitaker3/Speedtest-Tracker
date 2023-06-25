@@ -38,9 +38,8 @@ export default class HomePage extends Component {
 
     updateDays = (days) => {
         this.setState({ days: days });
-        this.getData();
+        this.setState({ days: days }, () => { this.getData() });
     }
-
 
     getData = () => {
         axios.get('api/speedtest/home/' + this.state.days)

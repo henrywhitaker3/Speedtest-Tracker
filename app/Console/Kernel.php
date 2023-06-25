@@ -32,9 +32,9 @@ class Kernel extends ConsoleKernel
         if ((bool)SettingsHelper::get('schedule_enabled')->value) {
             $schedule->job(
                 new SpeedtestJob(
+                    app()->make(SpeedtestProvider::class),
                     true,
                     config('integrations'),
-                    app()->make(SpeedtestProvider::class)
                 )
             )
                 ->cron(SettingsHelper::get('schedule')['value'])
