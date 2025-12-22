@@ -96,7 +96,7 @@ The default credentials are:
 
 |   Field       |   Function        |
 |   ---         |   ---             |
-|   username    |   admin@admin.com |
+|   username    |   admin@example.com |
 |   password    |   password        |
     
 After enabling, you should change the password through the web UI.
