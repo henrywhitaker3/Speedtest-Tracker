@@ -4,7 +4,7 @@ WORKDIR /build/ui
 
 COPY frontend/mise.toml frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
 
-RUN apk add --no-cache bash libgcc
+RUN apk add --no-cache bash libgcc libstdc++
 
 ENV MISE_ALL_COMPILE=false
 
