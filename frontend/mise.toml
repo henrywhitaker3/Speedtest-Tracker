@@ -1,0 +1,16 @@
+#:schema https://mise.jdx.dev/schema/mise.json
+
+[tools]
+pnpm = "12.15.0"
+node = "26.12.0"
+
+[tasks.ui]
+run = "pnpm run dev"
+
+[tasks.client]
+description = "Generate the api client"
+run = "pnpm run client"
+
+[tasks.build]
+description = "Build the frontend"
+run = "pnpm run build"
