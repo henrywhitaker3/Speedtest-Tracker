@@ -59,9 +59,9 @@ func Bootstrap(
 }
 
 func runtime(db config.Database, conf config.Runtime) (*local.Host, error) {
-	hostname, err := os.Hostname()
+	hostname, err := hostname(conf)
 	if err != nil {
-		return nil, fmt.Errorf("get hostname: %w", err)
+		return nil, err
 	}
 
 	var dbOpt local.HostOption
@@ -86,4 +86,15 @@ func runtime(db config.Database, conf config.Runtime) (*local.Host, error) {
 		return nil, fmt.Errorf("init host: %w", err)
 	}
 	return host, nil
+}
+
+func hostname(conf config.Runtime) (string, error) {
+	if conf.Hostname != "" {
+		return conf.Hostname, nil
+	}
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", fmt.Errorf("get hostname: %w", err)
+	}
+	return hostname, nil
 }

@@ -22,7 +22,8 @@ type Database struct {
 }
 
 type Runtime struct {
-	PSK config.RedactedString `env:"PSK"`
+	Hostname string                `env:"HOSTNAME"`
+	PSK      config.RedactedString `env:"PSK"`
 }
 
 type Config struct {
