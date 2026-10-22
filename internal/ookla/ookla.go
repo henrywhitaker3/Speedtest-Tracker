@@ -19,11 +19,42 @@ import (
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+var (
+	speedtestsRun = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "speedtest_run_total",
+		},
+		[]string{"server_id"},
+	)
+	speedtestErrors = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "speedtest_errors_total",
+		},
+	)
+	speedtestDurationSeconds = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:                           "speedtest_duration_seconds",
+			NativeHistogramBucketFactor:    1.1,
+			NativeHistogramMaxBucketNumber: 160,
+		},
+		[]string{"server_id"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(speedtestsRun)
+	prometheus.MustRegister(speedtestErrors)
+	prometheus.MustRegister(speedtestDurationSeconds)
+}
 
 func Run(ctx context.Context, server int, result *results.Result) error {
 	ctx, span := tracing.NewSpan(ctx, "Run speedtest")
 	defer span.End()
+
+	start := time.Now()
 
 	execArgs := append([]string{}, agrs...)
 	if server != 0 {
@@ -33,15 +64,21 @@ func Run(ctx context.Context, server int, result *results.Result) error {
 	cmd := exec.CommandContext(ctx, binaryFile, execArgs...)
 	raw, err := cmd.Output()
 	if err != nil {
+		speedtestErrors.Inc()
 		return fmt.Errorf("run speedtest: %w", err)
 	}
 
 	slog.DebugContext(ctx, "got raw speedtest output", "output", string(raw))
 	var output ooklaOutput
 	if err := json.Unmarshal(raw, &output); err != nil {
+		speedtestErrors.Inc()
 		return fmt.Errorf("unmarshal output: %w", err)
 	}
 	slog.DebugContext(ctx, "got parsed speedtest output", "output", output)
+
+	speedtestsRun.WithLabelValues(fmt.Sprint(output.Server.ID)).Inc()
+	speedtestDurationSeconds.WithLabelValues(fmt.Sprint(output.Server.ID)).
+		Observe(time.Since(start).Seconds())
 
 	result.Ping = new(output.Ping.Latency)
 	result.Download = new(int64(output.Download.Bandwidth))

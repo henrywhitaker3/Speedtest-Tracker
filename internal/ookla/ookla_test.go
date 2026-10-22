@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	dto "github.com/prometheus/client_model/go"
 )
 
 func TestDownloadURLForPlatform(t *testing.T) {
@@ -120,5 +122,21 @@ func TestOoklaOutputUnmarshalsFractionalPacketLoss(t *testing.T) {
 	}
 	if output.PacketLoss != packetLoss {
 		t.Errorf("packet loss = %v, want %v", output.PacketLoss, packetLoss)
+	}
+}
+
+func TestSpeedtestDurationSecondsUsesNativeHistogram(t *testing.T) {
+	histogram := newSpeedtestDurationSeconds()
+	histogram.Observe(1.5)
+
+	metric := &dto.Metric{}
+	if err := histogram.Write(metric); err != nil {
+		t.Fatal(err)
+	}
+	if metric.Histogram == nil || metric.Histogram.Schema == nil {
+		t.Fatal("histogram does not expose a native histogram schema")
+	}
+	if metric.Histogram.GetSampleCount() != 1 {
+		t.Errorf("sample count = %d, want 1", metric.Histogram.GetSampleCount())
 	}
 }

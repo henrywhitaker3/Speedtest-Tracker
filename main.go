@@ -11,6 +11,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/api"
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/bootstrap"
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/config"
+	"github.com/henrywhitaker3/Speedtest-Tracker/internal/meta"
 )
 
 const (
@@ -34,6 +35,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	go func() {
+		if err := meta.New().Run(ctx); err != nil {
+			slog.Error("run meta server", "error", err)
+			os.Exit(1)
+		}
+	}()
+
 	api := api.New(conf.App.URL, version, db, host.Service())
 	go func() {
 		if err := api.Start(ctx); err != nil {
@@ -45,6 +53,11 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 		defer cancel()
 		_ = api.Stop(ctx)
+	}()
+
+	go func() {
+		<-host.Ready()
+		meta.Ready = true
 	}()
 
 	if err := host.Run(ctx); err != nil {
