@@ -1,0 +1,55 @@
+// Package config
+package config
+
+import (
+	"fmt"
+	"slices"
+
+	"github.com/henrywhitaker3/windowframe/v2/config"
+	"github.com/henrywhitaker3/windowframe/v2/log"
+	"github.com/joho/godotenv"
+)
+
+type App struct {
+	URL string `env:"URL,default=http://localhost:8080"`
+}
+
+type Database struct {
+	Driver string                `env:"DRIVER, default=sqlite"`
+	URL    config.RedactedString `env:"URL, default=db.sqlite"`
+}
+
+type Runtime struct {
+	PSK config.RedactedString `env:"PSK"`
+}
+
+type Config struct {
+	App App `env:",prefix=APP_"`
+
+	LogLevel   string `env:"LOG_LEVEL"`
+	AcceptUELA bool   `env:"ACCEPT_EULA"`
+
+	Database Database `env:",prefix=DB_"`
+	Runtime  Runtime  `env:",prefix=RUNTIME_"`
+}
+
+func Load() (*Config, error) {
+	godotenv.Load()
+	conf, err := config.NewParser[Config]().WithExtractors(
+		config.NewEnvExtractor[Config](),
+	).Parse()
+	if err != nil {
+		return nil, fmt.Errorf("parse env: %w", err)
+	}
+
+	log.Setup(log.SlogLevel(conf.LogLevel))
+
+	if !conf.AcceptUELA {
+		return nil, fmt.Errorf("must accep eula")
+	}
+	if !slices.Contains([]string{"sqlite", "postgres"}, conf.Database.Driver) {
+		return nil, fmt.Errorf("unknown db driver %s", conf.Database.Driver)
+	}
+
+	return &conf, nil
+}

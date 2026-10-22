@@ -1,0 +1,18 @@
+#:schema https://mise.jdx.dev/schema/mise.json
+
+[tools]
+go = "1.27.3"
+gotestsum = "1.13.0"
+jq = "1.8.2"
+
+[tasks.serve]
+description = "Run the app"
+run = "go run main.go | jq"
+
+[tasks.psk]
+description = "Generate a runtime PSK"
+run = "openssl rand -hex 32"
+
+[tasks.queue]
+description = "Queue a speedtest"
+run = "curl -X POST http://localhost:8080/speedtest/run"
