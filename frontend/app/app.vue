@@ -28,7 +28,7 @@
       </template>
     </UHeader>
 
-    <UMain class="mx-auto mt-8 flex w-9/12 flex-col gap-8">
+    <UMain class="mx-auto mt-8 flex w-11/12 flex-col gap-8 md:w-9/12">
       <NuxtPage />
     </UMain>
 

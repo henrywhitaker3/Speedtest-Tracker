@@ -1,0 +1,4 @@
+<template>
+  <ResultsPing />
+  <ResultsBandwidth />
+</template>

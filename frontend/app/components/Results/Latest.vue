@@ -27,14 +27,14 @@
         :result="latest"
       />
     </div>
-    <div
-      v-if="latest.created_at"
-      class="flex justify-center"
-    >
-      <p class="text-muted">
-        Last run {{ relativeDate(new Date(latest.created_at)) }}
-      </p>
-    </div>
+    <!-- <div -->
+    <!--   v-if="latest.created_at" -->
+    <!--   class="flex justify-center" -->
+    <!-- > -->
+    <!--   <p class="text-muted text-sm"> -->
+    <!--     Last run {{ relativeDate(new Date(latest.created_at)) }} -->
+    <!--   </p> -->
+    <!-- </div> -->
   </div>
 </template>
 
