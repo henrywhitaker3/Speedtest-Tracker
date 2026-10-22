@@ -9,6 +9,8 @@ import (
 )
 
 func Register(h *http.HTTP, db *gorm.DB, service *actor.Service) {
+	repo := results.NewRepo(db)
 	h.Register(&runHandler{service: service})
-	h.Register(&getHandler{repo: results.NewRepo(db)})
+	h.Register(&getHandler{repo: repo})
+	h.Register(&listHandler{repo: repo})
 }

@@ -72,6 +72,33 @@ func (r *Repository) Update(ctx context.Context, result *Result) error {
 	return nil
 }
 
+type ListOpts struct {
+	Page  int
+	Limit int
+}
+
+func (r *Repository) List(
+	ctx context.Context,
+	opts ListOpts,
+) (*database.Pagination[Result], error) {
+	out := &database.Pagination[Result]{
+		Page:  opts.Page,
+		Limit: opts.Limit,
+	}
+	paginator, err := database.Paginate(ctx, out, r.db)
+	if err != nil {
+		return nil, fmt.Errorf("build results paginator: %w", err)
+	}
+
+	results, err := gorm.G[Result](r.db).Scopes(paginator).Order("id DESC").Find(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list results paginated: %w", err)
+	}
+	out.Data = results
+
+	return out, nil
+}
+
 func Register(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&Result{},
