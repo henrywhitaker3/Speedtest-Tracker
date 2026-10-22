@@ -26,5 +26,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/speedtest-tracker:${{ github.ref_name }}
-            ghcr.io/${{ github.repository }}/speedtest-tracker:v2
+            ghcr.io/${{ github.owner }}/speedtest-tracker:${{ github.ref_name }}
+            ghcr.io/${{ github.owner }}/speedtest-tracker:v2
