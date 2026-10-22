@@ -4,11 +4,13 @@ package api
 import (
 	"log/slog"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/internal/api/speedtest"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	"github.com/italypaleale/francis/actor"
+	"gorm.io/gorm"
 )
 
-func New(url, version string, service *actor.Service) *http.HTTP {
+func New(url, version string, db *gorm.DB, service *actor.Service) *http.HTTP {
 	h := http.New(http.HTTPOpts{
 		Port: 8080,
 		Openapi: http.OpenapiOpts{
@@ -20,11 +22,11 @@ func New(url, version string, service *actor.Service) *http.HTTP {
 		Logger: slog.With("component", "api"),
 	})
 
-	registerRoutes(h, service)
+	registerRoutes(h, db, service)
 
 	return h
 }
 
-func registerRoutes(h *http.HTTP, service *actor.Service) {
-	h.Register(&runHandler{service: service})
+func registerRoutes(h *http.HTTP, db *gorm.DB, service *actor.Service) {
+	speedtest.Register(h, db, service)
 }

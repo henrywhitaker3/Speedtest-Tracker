@@ -28,13 +28,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	host, err := bootstrap.Bootstrap(ctx, conf, version, ooklaVersion)
+	db, host, err := bootstrap.Bootstrap(ctx, conf, version, ooklaVersion)
 	if err != nil {
 		slog.Error("bootstrap app", "error", err)
 		os.Exit(1)
 	}
 
-	api := api.New(conf.App.URL, version, host.Service())
+	api := api.New(conf.App.URL, version, db, host.Service())
 	go func() {
 		if err := api.Start(ctx); err != nil {
 			slog.Error("run api", "error", err)

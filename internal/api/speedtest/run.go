@@ -1,4 +1,4 @@
-package api
+package speedtest
 
 import (
 	"net/http"
