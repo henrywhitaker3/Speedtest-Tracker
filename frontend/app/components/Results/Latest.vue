@@ -27,9 +27,12 @@
         :result="latest"
       />
     </div>
-    <div class="flex justify-center">
+    <div
+      v-if="latest.created_at"
+      class="flex justify-center"
+    >
       <p class="text-muted">
-        Last run {{ relativeDate(latest.created_at) }}
+        Last run {{ relativeDate(new Date(latest.created_at)) }}
       </p>
     </div>
   </div>
@@ -38,11 +41,23 @@
 <script setup lang="ts">
 import type { ResultsResult } from '~/client'
 import { getV1SpeedtestLatest } from '~/client/sdk.gen'
+import { useRefreshData } from '~/events/speedtest'
 
 const latest = ref<ResultsResult>()
-onMounted(async () => {
+
+const refresh = async () => {
   const result = await getV1SpeedtestLatest()
   latest.value = result.data
+  return result
+}
+
+onMounted(() => {
+  void refresh()
+})
+
+const { on } = useRefreshData()
+on(() => {
+  void refresh()
 })
 
 const { relativeDate } = useDate()

@@ -37,6 +37,8 @@
         Speedtest Tracker {{ version }} • © {{ year }}
       </p>
     </UFooter>
+
+    <DataLoader />
   </UApp>
 </template>
 

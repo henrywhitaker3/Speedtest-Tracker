@@ -20,6 +20,11 @@
         />
         <span class="min-w-0 flex-1 truncate">Something went wrong</span>
       </div>
+      <PulseLoader
+        v-else-if="!props.result.complete"
+        size="0.7rem"
+        color="#E6ECF4"
+      />
       <div
         v-else
         class="flex items-baseline gap-1"
@@ -37,6 +42,8 @@
 
 <script setup lang="ts">
 import type { ResultsResult } from '~/client'
+import { PulseLoader } from 'vue-spinner'
+import 'vue-spinner/style.css'
 
 const props = defineProps<{
   variant: 'ping' | 'download' | 'upload'
@@ -63,7 +70,7 @@ const icon = computed(() => {
 const value = computed(() => {
   switch (props.variant) {
     case 'ping':
-      return useSpeedFormat(props.result.ping as number).value
+      return props.result.ping?.toFixed(2)
     case 'download':
       return useSpeedFormat(props.result.download as number).value
     case 'upload':

@@ -18,7 +18,8 @@
     "@vueuse/core": "^15.0.0",
     "filesize": "^11.0.27",
     "nuxt": "^4.6.2",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "vue-spinner": "^3.0.2"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",

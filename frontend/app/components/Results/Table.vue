@@ -17,16 +17,28 @@
 import type { TableColumn } from '@nuxt/ui'
 import { getV1Speedtest, type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerInternalResultsResult as Paginated, type ResultsResult } from '~/client'
 import TableLink from '../TableLink.vue'
+import { PulseLoader } from 'vue-spinner'
+import { useRefreshData } from '~/events/speedtest'
 
 const data = ref<Paginated>()
 const page = ref(1)
-onMounted(async () => {
+
+const refresh = async () => {
   const results = await getV1Speedtest({
     query: {
       page: page.value
     }
   })
   data.value = results.data
+}
+
+onMounted(async () => {
+  await refresh()
+})
+
+const { on } = useRefreshData()
+on(() => {
+  void refresh()
 })
 
 const { formatDatetime } = useDate()
@@ -37,6 +49,12 @@ const columns: TableColumn<ResultsResult>[] = [
     accessorKey: 'ping',
     header: 'Ping',
     cell: ({ row }) => {
+      if (!row.original.complete) {
+        return h(PulseLoader, {
+          color: '#E6ECF4',
+          size: '0.4rem'
+        })
+      }
       return row.getValue('ping') + ' ms'
     }
   },
@@ -44,6 +62,12 @@ const columns: TableColumn<ResultsResult>[] = [
     accessorKey: 'download',
     header: 'Download',
     cell: ({ row }) => {
+      if (!row.original.complete) {
+        return h(PulseLoader, {
+          color: '#E6ECF4',
+          size: '0.4rem'
+        })
+      }
       const fmt = useSpeedFormat(row.getValue('download'))
       return `${fmt.value} ${fmt.unit}`
     }
@@ -52,6 +76,12 @@ const columns: TableColumn<ResultsResult>[] = [
     accessorKey: 'upload',
     header: 'Upload',
     cell: ({ row }) => {
+      if (!row.original.complete) {
+        return h(PulseLoader, {
+          color: '#E6ECF4',
+          size: '0.4rem'
+        })
+      }
       const fmt = useSpeedFormat(row.getValue('upload'))
       return `${fmt.value} ${fmt.unit}`
     }

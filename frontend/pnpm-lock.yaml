@@ -187,6 +187,9 @@ importers:
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
+      vue-spinner:
+        specifier: ^3.0.2
+        version: 3.0.2(vue@3.5.44(typescript@6.0.3))
     devDependencies:
       '@hey-api/openapi-ts':
         specifier: 0.99.0
@@ -5315,6 +5318,11 @@ packages:
         optional: true
       vite:
         optional: true
+
+  vue-spinner@3.0.2:
+    resolution: {integrity: sha512-q6QUCcB+UU16YIwFQUG68Dh/9qRrHddc10ULnDpuyx/PFB8jBObtkWs498o8MkMDaudIfM+wBg7ndnvTycacYA==}
+    peerDependencies:
+      vue: ^3.5.0
 
   vue-tsc@3.3.13:
     resolution: {integrity: sha512-jE4/bXdOMSHVxEGgQCqNllJy+9N3Gx6tfSAsg0yhFK/MAN6eXqISihupnDEKSCt12VVnjN2gI3AqLYcqoh5x/A==}
@@ -11026,6 +11034,10 @@ snapshots:
       - rollup
       - unloader
       - webpack
+
+  vue-spinner@3.0.2(vue@3.5.44(typescript@6.0.3)):
+    dependencies:
+      vue: 3.5.44(typescript@6.0.3)
 
   vue-tsc@3.3.13(typescript@6.0.3):
     dependencies:
