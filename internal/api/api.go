@@ -4,8 +4,12 @@ package api
 import (
 	"log/slog"
 	stdhttp "net/http"
+	"slices"
+	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/api/speedtest"
+	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	mw "github.com/henrywhitaker3/windowframe/v2/http/middleware"
 	"github.com/italypaleale/francis/actor"
@@ -33,12 +37,26 @@ func New(url, version string, db *gorm.DB, service *actor.Service) *http.HTTP {
 	h.Use(corsMiddleware())
 
 	registerRoutes(h, db, service)
+	registerValidators(h)
 
 	return h
 }
 
 func registerRoutes(h *http.HTTP, db *gorm.DB, service *actor.Service) {
 	speedtest.Register(h, db, service)
+}
+
+func registerValidators(h *http.HTTP) {
+	validTimeseriesPeriods := []time.Duration{
+		0, // Allows for empty default
+		time.Hour * 24,
+		time.Hour * 24 * 7,
+		time.Hour * 24 * 30,
+	}
+	h.Validator.RegisterValidation("timeseries_period", func(fl validator.FieldLevel) bool {
+		dur := fl.Field().Interface().(duration.StringDuration)
+		return slices.Contains(validTimeseriesPeriods, dur.Duration())
+	})
 }
 
 func corsMiddleware() echo.MiddlewareFunc {

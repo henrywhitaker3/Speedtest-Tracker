@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
+import type { GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -45,3 +45,10 @@ export const getV1SpeedtestLatest = <ThrowOnError extends boolean = false>(optio
  * Run a new speedtest
  */
 export const postV1SpeedtestRun = <ThrowOnError extends boolean = false>(options?: Options<PostV1SpeedtestRunData, ThrowOnError>): RequestResult<PostV1SpeedtestRunResponses, PostV1SpeedtestRunErrors, ThrowOnError> => (options?.client ?? client).post<PostV1SpeedtestRunResponses, PostV1SpeedtestRunErrors, ThrowOnError>({ url: '/v1/speedtest/run', ...options });
+
+/**
+ * Timeseries
+ *
+ * Get timeseries data for speedtest results
+ */
+export const getV1SpeedtestTimeseries = <ThrowOnError extends boolean = false>(options?: Options<GetV1SpeedtestTimeseriesData, ThrowOnError>): RequestResult<GetV1SpeedtestTimeseriesResponses, GetV1SpeedtestTimeseriesErrors, ThrowOnError> => (options?.client ?? client).get<GetV1SpeedtestTimeseriesResponses, GetV1SpeedtestTimeseriesErrors, ThrowOnError>({ url: '/v1/speedtest/timeseries', ...options });

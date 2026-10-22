@@ -14,4 +14,5 @@ func Register(h *http.HTTP, db *gorm.DB, service *actor.Service) {
 	h.Register(&getHandler{repo: repo})
 	h.Register(&listHandler{repo: repo})
 	h.Register(&latestHandler{repo: repo})
+	h.Register(&timeseriesHandler{repo: repo})
 }

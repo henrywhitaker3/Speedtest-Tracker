@@ -44,28 +44,29 @@ import { defineChart, lineY } from '@tanstack/charts'
 import { crosshair } from '@tanstack/charts/crosshair'
 import { d3Curve } from '@tanstack/charts/d3/shape'
 import { scaleLinear } from '@tanstack/charts/scales/linear'
+import type { ResultsStat } from '~/client'
 import { scaleTime } from 'd3-scale'
 import { curveMonotoneX } from 'd3-shape'
 
-type PingSample = {
-  created_at: string
-  ping: number
-}
+const props = defineProps<{
+  data: ResultsStat[]
+}>()
 
-const samples: PingSample[] = [
-  { created_at: '2026-10-20T08:00:00Z', ping: 21 },
-  { created_at: '2026-10-20T14:00:00Z', ping: 18 },
-  { created_at: '2026-10-20T20:00:00Z', ping: 24 },
-  { created_at: '2026-10-21T08:00:00Z', ping: 20 },
-  { created_at: '2026-10-21T16:00:00Z', ping: 28 },
-  { created_at: '2026-10-22T09:00:00Z', ping: 22 },
-  { created_at: '2026-10-22T18:00:00Z', ping: 19 }
-]
+const chartData = computed(() => {
+  return props.data.flatMap((sample) => {
+    if (!sample.created_at) {
+      return []
+    }
 
-const chartData = samples.map(sample => ({
-  ...sample,
-  created_at: new Date(sample.created_at)
-}))
+    const createdAt = new Date(sample.created_at)
+
+    if (Number.isNaN(createdAt.getTime())) {
+      return []
+    }
+
+    return [{ created_at: createdAt, ping: sample.ping ?? 0 }]
+  })
+})
 
 const formatPing = (value: number) => `${value} ms`
 
@@ -80,38 +81,40 @@ const formatTimestamp = (value: Date | number | string) => {
   }).format(date)
 }
 
-const definition = defineChart({
-  marks: [
-    lineY(chartData, {
-      x: 'created_at',
-      y: 'ping',
-      points: true,
-      curve: d3Curve(curveMonotoneX),
-      stroke: 'var(--ui-primary)',
-      strokeWidth: 2
-    }),
-    crosshair({ x: true, y: false })
-  ],
-  scales: {
-    x: {
-      scale: scaleTime,
-      nice: true,
-      axis: {
-        label: 'Time',
-        ticks: { format: formatTimestamp }
+const definition = computed(() => {
+  return defineChart({
+    marks: [
+      lineY(chartData.value, {
+        x: 'created_at',
+        y: 'ping',
+        points: true,
+        curve: d3Curve(curveMonotoneX),
+        stroke: 'var(--ui-primary)',
+        strokeWidth: 2
+      }),
+      crosshair({ x: true, y: false })
+    ],
+    scales: {
+      x: {
+        scale: scaleTime,
+        nice: true,
+        axis: {
+          label: 'Time',
+          ticks: { format: formatTimestamp }
+        }
+      },
+      y: {
+        scale: scaleLinear,
+        nice: true,
+        grid: true,
+        axis: {
+          label: 'Ping',
+          ticks: { format: formatPing }
+        }
       }
     },
-    y: {
-      scale: scaleLinear,
-      nice: true,
-      grid: true,
-      axis: {
-        label: 'Ping',
-        ticks: { format: formatPing }
-      }
-    }
-  },
-  focus: 'group-x',
-  maxFocusDistance: Number.POSITIVE_INFINITY
+    focus: 'group-x',
+    maxFocusDistance: Number.POSITIVE_INFINITY
+  })
 })
 </script>

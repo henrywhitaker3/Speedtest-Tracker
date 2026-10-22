@@ -4,6 +4,7 @@ package results
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/database"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
@@ -100,6 +101,39 @@ func (r *Repository) List(
 		return nil, fmt.Errorf("list results paginated: %w", err)
 	}
 	out.Data = results
+
+	return out, nil
+}
+
+type Stat struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	Ping      *float64  `json:"ping"`
+	Download  *int64    `json:"download"`
+	Upload    *int64    `json:"upload"`
+}
+
+func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]Stat, error) {
+	stats, err := gorm.G[Result](r.db).
+		Select("id, ping, download, upload, created_at").
+		Where("created_at >= ?", time.Now().Add(-period)).
+		Where("created_at <= ?", time.Now()).
+		Where("complete = true").
+		Find(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get result timeseries: %w", err)
+	}
+
+	out := []Stat{}
+	for _, s := range stats {
+		out = append(out, Stat{
+			ID:        s.ID,
+			CreatedAt: s.CreatedAt,
+			Ping:      s.Ping,
+			Download:  s.Download,
+			Upload:    s.Upload,
+		})
+	}
 
 	return out, nil
 }

@@ -36,6 +36,14 @@ export type ResultsResult = {
     url?: string | null;
 };
 
+export type ResultsStat = {
+    created_at?: string;
+    download?: number | null;
+    id?: UuidUuid;
+    ping?: number | null;
+    upload?: number | null;
+};
+
 export type SpeedtestRunResponse = {
     id?: UuidUuid;
 };
@@ -214,3 +222,49 @@ export type PostV1SpeedtestRunResponses = {
 };
 
 export type PostV1SpeedtestRunResponse = PostV1SpeedtestRunResponses[keyof PostV1SpeedtestRunResponses];
+
+export type GetV1SpeedtestTimeseriesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * String duration
+         *
+         * The time range to pick from
+         */
+        period?: string;
+    };
+    url: '/v1/speedtest/timeseries';
+};
+
+export type GetV1SpeedtestTimeseriesErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetV1SpeedtestTimeseriesError = GetV1SpeedtestTimeseriesErrors[keyof GetV1SpeedtestTimeseriesErrors];
+
+export type GetV1SpeedtestTimeseriesResponses = {
+    /**
+     * OK
+     */
+    200: Array<ResultsStat>;
+};
+
+export type GetV1SpeedtestTimeseriesResponse = GetV1SpeedtestTimeseriesResponses[keyof GetV1SpeedtestTimeseriesResponses];
