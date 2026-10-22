@@ -6,7 +6,9 @@ import (
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/api/speedtest"
 	"github.com/henrywhitaker3/windowframe/v2/http"
+	mw "github.com/henrywhitaker3/windowframe/v2/http/middleware"
 	"github.com/italypaleale/francis/actor"
+	"github.com/prometheus/client_golang/prometheus"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +23,10 @@ func New(url, version string, db *gorm.DB, service *actor.Service) *http.HTTP {
 		},
 		Logger: slog.With("component", "api"),
 	})
+
+	h.Use(mw.Tracing("Speedtest-Tracker"))
+	h.Use(mw.Metrics("Speedtest-Tracker", prometheus.DefaultRegisterer))
+	h.Use(mw.Logger())
 
 	registerRoutes(h, db, service)
 

@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: speedtest-tracker
+      POSTGRES_USER: speedtest-tracker
+      POSTGRES_PASSWORD: speedtest-tracker
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U speedtest-tracker -d speedtest-tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: speedtest-tracker:latest
+    hostname: speedtest-tracker
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 8080:8080
+      - 8081:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      RUNTIME_PSK: ${RUNTIME_PSK}
+      DB_DRIVER: postgres
+      DB_URL: postgres://speedtest-tracker:speedtest-tracker@postgres:5432/speedtest-tracker?sslmode=disable
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.76.0
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4317:4317" # OTLP/gRPC
+      - "4318:4318" # OTLP/HTTP
+
+volumes:
+  postgres:

@@ -17,9 +17,13 @@ import (
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
+	"github.com/henrywhitaker3/windowframe/v2/tracing"
 )
 
 func Run(ctx context.Context, server int, result *results.Result) error {
+	ctx, span := tracing.NewSpan(ctx, "Run speedtest")
+	defer span.End()
+
 	execArgs := append([]string{}, agrs...)
 	if server != 0 {
 		execArgs = append(execArgs, fmt.Sprintf("--server-id=%d", server))
@@ -52,11 +56,6 @@ func Run(ctx context.Context, server int, result *results.Result) error {
 
 func convertResult(raw int) float64 {
 	return (float64(raw) * 8) / 1000000
-}
-
-func errorString(err error) *string {
-	str := fmt.Sprintf("%v", err.Error())
-	return &str
 }
 
 const (

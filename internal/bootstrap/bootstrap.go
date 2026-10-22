@@ -26,6 +26,7 @@ func Bootstrap(
 ) (*gorm.DB, *local.Host, error) {
 	_, err := tracing.InitTracer(tracing.TracingOpts{
 		ServiceName: "Speedtest-Tracker",
+		SampleRate:  1,
 	}, version)
 	if err != nil {
 		return nil, nil, fmt.Errorf("init tracer: %w", err)

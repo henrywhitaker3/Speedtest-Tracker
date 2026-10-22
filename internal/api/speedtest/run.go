@@ -1,6 +1,7 @@
 package speedtest
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/ookla"
@@ -13,8 +14,12 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
+type actorInvoker interface {
+	Invoke(context.Context, string, string, string, any, ...actor.InvokeOption) (actor.Envelope, error)
+}
+
 type runHandler struct {
-	service *actor.Service
+	service actorInvoker
 }
 
 type RunResponse struct {

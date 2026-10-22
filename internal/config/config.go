@@ -37,7 +37,7 @@ type Config struct {
 }
 
 func Load() (*Config, error) {
-	godotenv.Load()
+	_ = godotenv.Load()
 	conf, err := config.NewParser[Config]().WithExtractors(
 		config.NewEnvExtractor[Config](),
 	).Parse()
