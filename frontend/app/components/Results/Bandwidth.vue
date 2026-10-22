@@ -114,7 +114,6 @@ const definition = computed(() => {
     scales: {
       x: {
         scale: scaleTime,
-        nice: true,
         axis: {
           label: 'Time',
           ticks: { format: formatTimestamp }

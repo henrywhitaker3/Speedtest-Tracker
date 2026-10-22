@@ -4,12 +4,35 @@
       v-if="!data"
       :count="5"
     />
-    <UTable
+    <div
       v-else
-      ref="table"
-      :columns="columns"
-      :data="data.data ?? []"
-    />
+      class="flex flex-col gap-2"
+    >
+      <UTable
+        ref="table"
+        v-model:pagination="pagination"
+        :columns="columns"
+        :data="data.data ?? []"
+      />
+      <div
+        v-if="(data?.total_pages ?? 0) > 1"
+        class="border-default flex justify-center border-t pt-4"
+      >
+        <UPagination
+          variant="outline"
+          active-variant="outline"
+          class="[&_button]:cursor-pointer"
+          :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
+          :items-per-page="table?.tableApi?.getState().pagination.pageSize || 15"
+          :total="data.total_rows"
+          @update:page="(p: number) => {
+            table?.tableApi?.setPageIndex(p)
+            page = p
+            void refresh()
+          }"
+        />
+      </div>
+    </div>
   </UCard>
 </template>
 
@@ -23,13 +46,24 @@ import { useRefreshData } from '~/events/speedtest'
 const data = ref<Paginated>()
 const page = ref(1)
 
+const pagination = ref({
+  pageIndex: data.value?.page ?? 1,
+  pageSize: data.value?.limit ?? 15
+})
+
 const refresh = async () => {
   const results = await getV1Speedtest({
     query: {
-      page: page.value
+      page: page.value,
+      limit: pagination.value.pageSize
     }
   })
   data.value = results.data
+  if (results.data?.page) {
+    page.value = results.data.page
+  }
+  pagination.value.pageIndex = page.value
+  pagination.value.pageSize = data.value?.limit || 15
 }
 
 onMounted(async () => {

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { ResultsResult } from '~/client'
 import { getV1SpeedtestLatest } from '~/client/sdk.gen'
-import { useRefreshData, useSpeedtestStarted } from '~/events/speedtest'
+import { useRefreshData, useSpeedtestCompleted, useSpeedtestStarted } from '~/events/speedtest'
 
 const { on: onStarted } = useSpeedtestStarted()
 const { emit: refreshData } = useRefreshData()
+const { emit: onCompleted } = useSpeedtestCompleted()
 
 const latest = ref<ResultsResult>()
 let isPolling = true
@@ -31,6 +32,7 @@ const pollLatest = async () => {
     if (!result.data?.complete) {
       refreshData()
     } else {
+      onCompleted()
       refreshData()
     }
 
