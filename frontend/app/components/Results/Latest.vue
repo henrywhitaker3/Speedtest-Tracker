@@ -14,15 +14,15 @@
     <div
       class="flex items-center justify-center gap-6"
     >
-      <ResultCard
+      <ResultsCard
         variant="ping"
         :result="latest"
       />
-      <ResultCard
+      <ResultsCard
         variant="download"
         :result="latest"
       />
-      <ResultCard
+      <ResultsCard
         variant="upload"
         :result="latest"
       />
