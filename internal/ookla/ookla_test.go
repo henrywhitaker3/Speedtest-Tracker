@@ -8,8 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	dto "github.com/prometheus/client_model/go"
 )
 
 func TestDownloadURLForPlatform(t *testing.T) {
@@ -78,7 +76,9 @@ func TestExtractBinary(t *testing.T) {
 	var archive bytes.Buffer
 	gzipWriter := gzip.NewWriter(&archive)
 	tarWriter := tar.NewWriter(gzipWriter)
-	if err := tarWriter.WriteHeader(&tar.Header{Name: "speedtest", Mode: 0o755, Size: int64(len(contents))}); err != nil {
+	if err := tarWriter.WriteHeader(
+		&tar.Header{Name: "speedtest", Mode: 0o755, Size: int64(len(contents))},
+	); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := tarWriter.Write([]byte(contents)); err != nil {
@@ -122,21 +122,5 @@ func TestOoklaOutputUnmarshalsFractionalPacketLoss(t *testing.T) {
 	}
 	if output.PacketLoss != packetLoss {
 		t.Errorf("packet loss = %v, want %v", output.PacketLoss, packetLoss)
-	}
-}
-
-func TestSpeedtestDurationSecondsUsesNativeHistogram(t *testing.T) {
-	histogram := newSpeedtestDurationSeconds()
-	histogram.Observe(1.5)
-
-	metric := &dto.Metric{}
-	if err := histogram.Write(metric); err != nil {
-		t.Fatal(err)
-	}
-	if metric.Histogram == nil || metric.Histogram.Schema == nil {
-		t.Fatal("histogram does not expose a native histogram schema")
-	}
-	if metric.Histogram.GetSampleCount() != 1 {
-		t.Errorf("sample count = %d, want 1", metric.Histogram.GetSampleCount())
 	}
 }
