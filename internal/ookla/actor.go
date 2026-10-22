@@ -21,9 +21,16 @@ type ResultRepo interface {
 	Update(context.Context, *results.Result) error
 }
 
-func RegisterActor(host *local.Host, db ResultRepo) error {
+func RegisterActor(host *local.Host, db ResultRepo, schedule string) error {
 	if err := host.RegisterActor(Actor, newActor(db)); err != nil {
 		return fmt.Errorf("register speedtest actor: %w", err)
+	}
+	job, err := newTestCronjob(host.Service(), schedule)
+	if err != nil {
+		return err
+	}
+	if err := host.RegisterBuiltInActor(job); err != nil {
+		return fmt.Errorf("register speedtest cronjob: %w", err)
 	}
 	return nil
 }
@@ -72,6 +79,9 @@ func (s *Speedtest) invokeOnboard(ctx context.Context) (any, error) {
 	}
 
 	result, err := s.db.Create(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("init result record: %w", err)
+	}
 
 	state.Onboarded = true
 	state.Result = result

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/adhocore/gronx"
 	"github.com/henrywhitaker3/windowframe/v2/config"
 	"github.com/henrywhitaker3/windowframe/v2/log"
 	"github.com/joho/godotenv"
@@ -31,6 +32,8 @@ type Config struct {
 
 	Database Database `env:",prefix=DB_"`
 	Runtime  Runtime  `env:",prefix=RUNTIME_"`
+
+	Schedule string `env:"TEST_SCHEDULE, default=5 */2 * * *"`
 }
 
 func Load() (*Config, error) {
@@ -49,6 +52,9 @@ func Load() (*Config, error) {
 	}
 	if !slices.Contains([]string{"sqlite", "postgres"}, conf.Database.Driver) {
 		return nil, fmt.Errorf("unknown db driver %s", conf.Database.Driver)
+	}
+	if !gronx.IsValid(conf.Schedule) {
+		return nil, fmt.Errorf("invalid cron schedule %s", conf.Schedule)
 	}
 
 	return &conf, nil

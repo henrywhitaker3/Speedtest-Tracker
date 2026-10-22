@@ -3,9 +3,11 @@ module github.com/henrywhitaker3/Speedtest-Tracker
 go 1.27.3
 
 require (
+	github.com/adhocore/gronx v1.20.5
 	github.com/henrywhitaker3/windowframe/v2 v2.6.4
 	github.com/italypaleale/francis v0.1.2
 	github.com/joho/godotenv v1.5.1
+	github.com/labstack/echo/v5 v5.4.0
 	github.com/orandin/slog-gorm v1.4.0
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.2
@@ -59,7 +61,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.20.1 // indirect
-	github.com/labstack/echo/v5 v5.4.0 // indirect
 	github.com/leodido/go-urn v1.5.0 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
