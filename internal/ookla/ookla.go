@@ -16,25 +16,10 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/database"
-	"gorm.io/gorm"
+	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
 )
 
-type Result struct {
-	database.BaseModel
-
-	Ping       *float64 `json:"ping"`
-	Download   *float64 `json:"download"`
-	Upload     *float64 `json:"upload"`
-	ServerID   *int     `json:"server_id"`
-	ServerHost *string  `json:"server_host"`
-	ServerName *string  `json:"server_name"`
-	URL        *string  `json:"url"`
-	Error      *string  `json:"error,omitempty"`
-	Complete   bool     `json:"complete"`
-}
-
-func Run(ctx context.Context, server int, result *Result) error {
+func Run(ctx context.Context, server int, result *results.Result) error {
 	execArgs := append([]string{}, agrs...)
 	if server != 0 {
 		execArgs = append(execArgs, fmt.Sprintf("--server-id=%d", server))
@@ -257,10 +242,4 @@ type ooklaOutput struct {
 		URL       string `json:"url"`
 		Persisted bool   `json:"persisted"`
 	} `json:"result"`
-}
-
-func Register(db *gorm.DB) error {
-	return db.AutoMigrate(
-		&Result{},
-	)
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/ookla"
+	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/italypaleale/francis/components/postgres"
 	"github.com/italypaleale/francis/components/sqlite"
@@ -39,8 +40,8 @@ func Bootstrap(
 	if err != nil {
 		return nil, fmt.Errorf("connect to db: %w", err)
 	}
-	if err := ookla.Register(db); err != nil {
-		return nil, fmt.Errorf("register ookla model: %w", err)
+	if err := results.Register(db); err != nil {
+		return nil, fmt.Errorf("register results model: %w", err)
 	}
 
 	host, err := runtime(conf.Database, conf.Runtime)
@@ -48,7 +49,7 @@ func Bootstrap(
 		return nil, fmt.Errorf("init runtime: %w", err)
 	}
 
-	if err := ookla.RegisterActor(host, db); err != nil {
+	if err := ookla.RegisterActor(host, results.NewRepo(db)); err != nil {
 		return nil, fmt.Errorf("register ookla actors: %w", err)
 	}
 

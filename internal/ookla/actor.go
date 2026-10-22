@@ -5,25 +5,30 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/log"
-	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
 	"github.com/italypaleale/francis/host/local"
-	"gorm.io/gorm"
 )
 
 const (
 	Actor = "speedtest"
 )
 
-func RegisterActor(host *local.Host, db *gorm.DB) error {
+type ResultRepo interface {
+	Create(context.Context) (*results.Result, error)
+	Fresh(context.Context, *results.Result) error
+	Update(context.Context, *results.Result) error
+}
+
+func RegisterActor(host *local.Host, db ResultRepo) error {
 	if err := host.RegisterActor(Actor, newActor(db)); err != nil {
 		return fmt.Errorf("register speedtest actor: %w", err)
 	}
 	return nil
 }
 
-func newActor(db *gorm.DB) actor.Factory {
+func newActor(db ResultRepo) actor.Factory {
 	return func(actorID string, service *actor.Service) actor.Actor {
 		return &Speedtest{
 			client: actor.NewActorClient[speedtestState](Actor, actorID, service),
@@ -34,12 +39,12 @@ func newActor(db *gorm.DB) actor.Factory {
 
 type Speedtest struct {
 	client actor.Client[speedtestState]
-	db     *gorm.DB
+	db     ResultRepo
 }
 
 type speedtestState struct {
 	Onboarded bool
-	Result    *Result
+	Result    *results.Result
 }
 
 const (
@@ -66,12 +71,7 @@ func (s *Speedtest) invokeOnboard(ctx context.Context) (any, error) {
 		return nil, fmt.Errorf("speedtest already onboarded")
 	}
 
-	result := &Result{
-		ID: uuid.MustOrdered(),
-	}
-	if err := gorm.G[Result](s.db).Create(ctx, result); err != nil {
-		return nil, fmt.Errorf("store initial result: %w", err)
-	}
+	result, err := s.db.Create(ctx)
 
 	state.Onboarded = true
 	state.Result = result
@@ -102,28 +102,25 @@ func (s *Speedtest) runTest(ctx context.Context) error {
 		return fmt.Errorf("get speedtest state: %w", err)
 	}
 
-	result, err := gorm.G[Result](s.db).Where("id = ?", state.Result.ID).First(ctx)
-	if err != nil {
+	if err := s.db.Fresh(ctx, state.Result); err != nil {
 		return fmt.Errorf("get refreshed result: %w", err)
 	}
-	state.Result = &result
+	ctx = log.WithLogAttr(ctx, "result", state.Result)
 
-	ctx = log.WithLogAttr(ctx, "result", result)
-
-	if result.Complete {
-		slog.WarnContext(ctx, "result already completed", "result", result)
+	if state.Result.Complete {
+		slog.WarnContext(ctx, "result already completed")
 		return nil
 	}
 
 	slog.InfoContext(ctx, "running speedtest")
-	if err := Run(ctx, 0, &result); err != nil {
+	if err := Run(ctx, 0, state.Result); err != nil {
 		slog.WarnContext(ctx, "speedtest failed", "error", err)
-		return s.testFailed(ctx, &result, err)
+		return s.testFailed(ctx, state.Result, err)
 	}
-	ctx = log.WithLogAttr(ctx, "result", result)
+	ctx = log.WithLogAttr(ctx, "result", state.Result)
 	slog.InfoContext(ctx, "speedtest finished running")
 
-	if err := s.saveResult(ctx, &result); err != nil {
+	if err := s.db.Update(ctx, state.Result); err != nil {
 		return fmt.Errorf("store updated test result: %w", err)
 	}
 
@@ -131,19 +128,9 @@ func (s *Speedtest) runTest(ctx context.Context) error {
 	return s.client.DeleteState(ctx)
 }
 
-func (s *Speedtest) testFailed(ctx context.Context, result *Result, err error) error {
+func (s *Speedtest) testFailed(ctx context.Context, result *results.Result, err error) error {
 	result.Complete = true
 	result.Error = new(fmt.Sprintf("%v", err.Error()))
 
-	return s.saveResult(ctx, result)
-}
-
-func (s *Speedtest) saveResult(ctx context.Context, result *Result) error {
-	if _, err := gorm.G[Result](s.db).
-		Where("id = ?", result.ID).
-		Select("*").
-		Updates(ctx, *result); err != nil {
-		return fmt.Errorf("store updated result: %w", err)
-	}
-	return nil
+	return s.db.Update(ctx, result)
 }

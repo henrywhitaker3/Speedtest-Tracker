@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/internal/ookla"
+	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
@@ -31,7 +32,7 @@ func (r *runHandler) Handler() handlers.Handler[any, RunResponse] {
 		if err != nil {
 			return nil, httperrors.Stack(err)
 		}
-		var result ookla.Result
+		var result results.Result
 		if err := raw.Decode(&result); err != nil {
 			return nil, httperrors.Stack(err)
 		}
