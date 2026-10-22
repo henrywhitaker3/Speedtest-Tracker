@@ -1,6 +1,8 @@
 FROM --platform=$BUILDPLATFORM ghcr.io/henrywhitaker3/containers/mise:v1.4.1 AS uib
 
+ARG VERSION="unknown"
 ENV NUXT_PUBLIC_API_URL=""
+ENV NUXT_PUBLIC_VERSION="${VERSION}"
 
 WORKDIR /build/ui
 
