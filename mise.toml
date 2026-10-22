@@ -15,4 +15,4 @@ run = "openssl rand -hex 32"
 
 [tasks.queue]
 description = "Queue a speedtest"
-run = "curl -X POST http://localhost:8080/speedtest/run"
+run = "curl -X POST http://localhost:8080/v1/speedtest/run"
