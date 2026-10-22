@@ -44,8 +44,8 @@ func Run(ctx context.Context, server int, result *results.Result) error {
 	slog.DebugContext(ctx, "got parsed speedtest output", "output", output)
 
 	result.Ping = new(output.Ping.Latency)
-	result.Download = new(convertResult(output.Download.Bandwidth))
-	result.Upload = new(convertResult(output.Upload.Bandwidth))
+	result.Download = new(int64(output.Download.Bandwidth))
+	result.Upload = new(int64(output.Upload.Bandwidth))
 	result.ServerID = new(output.Server.ID)
 	result.ServerName = new(output.Server.Name)
 	result.ServerHost = new(fmt.Sprintf("%s:%d", output.Server.Host, output.Server.Port))
@@ -53,10 +53,6 @@ func Run(ctx context.Context, server int, result *results.Result) error {
 	result.Complete = true
 
 	return nil
-}
-
-func convertResult(raw int) float64 {
-	return (float64(raw) * 8) / 1000000
 }
 
 const (

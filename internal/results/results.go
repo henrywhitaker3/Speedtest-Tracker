@@ -14,8 +14,8 @@ type Result struct {
 	database.BaseModel
 
 	Ping       *float64 `json:"ping"`
-	Download   *float64 `json:"download"`
-	Upload     *float64 `json:"upload"`
+	Download   *int64   `json:"download"`
+	Upload     *int64   `json:"upload"`
 	ServerID   *int     `json:"server_id"`
 	ServerHost *string  `json:"server_host"`
 	ServerName *string  `json:"server_name"`

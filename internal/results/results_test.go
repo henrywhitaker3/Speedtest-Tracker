@@ -48,8 +48,8 @@ func TestRepositoryUpdateAndFresh(t *testing.T) {
 	}
 
 	result.Ping = new(12.5)
-	result.Download = new(123_456.7)
-	result.Upload = new(98_765.4)
+	result.Download = new(int64(123_456))
+	result.Upload = new(int64(98_765))
 	result.ServerID = new(42)
 	result.ServerHost = new("speedtest.example.com")
 	result.ServerName = new("Example Server")
@@ -66,7 +66,7 @@ func TestRepositoryUpdateAndFresh(t *testing.T) {
 	if stored.Ping == nil || *stored.Ping != 12.5 {
 		t.Errorf("stored ping = %v, want 12.5", stored.Ping)
 	}
-	if stored.Download == nil || *stored.Download != 123_456.7 {
+	if stored.Download == nil || *stored.Download != 123_456 {
 		t.Errorf("stored download = %v, want 123456.7", stored.Download)
 	}
 	if stored.ServerName == nil || *stored.ServerName != "Example Server" {
@@ -116,16 +116,30 @@ func TestRepositoryListPaginatesNewestFirst(t *testing.T) {
 		t.Fatal(err)
 	}
 	if firstPage.Page != 1 || firstPage.Limit != 2 {
-		t.Errorf("first page metadata = page %d, limit %d; want page 1, limit 2", firstPage.Page, firstPage.Limit)
+		t.Errorf(
+			"first page metadata = page %d, limit %d; want page 1, limit 2",
+			firstPage.Page,
+			firstPage.Limit,
+		)
 	}
 	if firstPage.Total != 3 || firstPage.TotalPages != 2 {
-		t.Errorf("first page totals = %d rows, %d pages; want 3 rows, 2 pages", firstPage.Total, firstPage.TotalPages)
+		t.Errorf(
+			"first page totals = %d rows, %d pages; want 3 rows, 2 pages",
+			firstPage.Total,
+			firstPage.TotalPages,
+		)
 	}
 	if len(firstPage.Data) != 2 {
 		t.Fatalf("first page has %d results, want 2", len(firstPage.Data))
 	}
 	if firstPage.Data[0].ID != created[2].ID || firstPage.Data[1].ID != created[1].ID {
-		t.Errorf("first page IDs = [%q %q], want [%q %q]", firstPage.Data[0].ID, firstPage.Data[1].ID, created[2].ID, created[1].ID)
+		t.Errorf(
+			"first page IDs = [%q %q], want [%q %q]",
+			firstPage.Data[0].ID,
+			firstPage.Data[1].ID,
+			created[2].ID,
+			created[1].ID,
+		)
 	}
 
 	secondPage, err := repo.List(ctx, ListOpts{Page: 2, Limit: 2})
@@ -148,10 +162,18 @@ func TestRepositoryListUsesDefaultPaginationForEmptyResults(t *testing.T) {
 		t.Fatal(err)
 	}
 	if page.Page != 1 || page.Limit != 25 {
-		t.Errorf("default metadata = page %d, limit %d; want page 1, limit 25", page.Page, page.Limit)
+		t.Errorf(
+			"default metadata = page %d, limit %d; want page 1, limit 25",
+			page.Page,
+			page.Limit,
+		)
 	}
 	if page.Total != 0 || page.TotalPages != 0 {
-		t.Errorf("empty page totals = %d rows, %d pages; want 0 rows, 0 pages", page.Total, page.TotalPages)
+		t.Errorf(
+			"empty page totals = %d rows, %d pages; want 0 rows, 0 pages",
+			page.Total,
+			page.TotalPages,
+		)
 	}
 	if len(page.Data) != 0 {
 		t.Errorf("empty page has %d results, want 0", len(page.Data))
