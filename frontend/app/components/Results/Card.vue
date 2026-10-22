@@ -63,11 +63,11 @@ const icon = computed(() => {
 const value = computed(() => {
   switch (props.variant) {
     case 'ping':
-      return props.result.ping
+      return useSpeedFormat(props.result.ping as number).value
     case 'download':
-      return props.result.download
+      return useSpeedFormat(props.result.download as number).value
     case 'upload':
-      return props.result.upload
+      return useSpeedFormat(props.result.upload as number).value
     default:
       return ''
   }
@@ -78,8 +78,9 @@ const units = computed(() => {
     case 'ping':
       return 'ms'
     case 'download':
+      return useSpeedFormat(props.result.download as number).unit
     case 'upload':
-      return 'Mbps'
+      return useSpeedFormat(props.result.upload as number).unit
     default:
       return ''
   }

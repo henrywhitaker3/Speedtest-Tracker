@@ -44,14 +44,16 @@ const columns: TableColumn<ResultsResult>[] = [
     accessorKey: 'download',
     header: 'Download',
     cell: ({ row }) => {
-      return row.getValue('download') + ' Mbps'
+      const fmt = useSpeedFormat(row.getValue('download'))
+      return `${fmt.value} ${fmt.unit}`
     }
   },
   {
     accessorKey: 'upload',
     header: 'Upload',
     cell: ({ row }) => {
-      return row.getValue('upload') + ' Mbps'
+      const fmt = useSpeedFormat(row.getValue('upload'))
+      return `${fmt.value} ${fmt.unit}`
     }
   },
   {

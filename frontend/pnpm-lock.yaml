@@ -178,6 +178,9 @@ importers:
       '@vueuse/core':
         specifier: ^15.0.0
         version: 15.0.0(vue@3.5.44(typescript@6.0.3))
+      filesize:
+        specifier: ^11.0.27
+        version: 11.0.27
       nuxt:
         specifier: ^4.6.2
         version: 4.6.2(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0(supports-color@10.2.2)))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.0(supports-color@10.2.2)))(@oxc-project/types@0.152.0)(@parcel/watcher@2.5.6)(@vue/compiler-sfc@3.5.44)(acorn@8.18.0)(confbox@0.3.1)(db0@0.3.4)(dotenv@17.4.2)(esbuild@0.28.0)(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(giget@3.3.1)(ioredis@5.10.1(supports-color@10.2.2))(lightningcss@1.33.0)(mlly@1.8.2)(optionator@0.9.4)(oxc-parser@0.140.0)(rolldown@1.2.12)(rollup-plugin-visualizer@7.0.1(rolldown@1.2.12)(rollup@4.60.4))(rollup@4.60.4)(supports-color@10.2.2)(terser@5.47.1)(typescript@6.0.3)(vite@8.3.4(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))(vue-tsc@3.3.13(typescript@6.0.3))(yaml@2.9.0)
@@ -3361,6 +3364,10 @@ packages:
   file-uri-to-path@1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
 
+  filesize@11.0.27:
+    resolution: {integrity: sha512-0HrkZi5qztwbmjGQYsAVJn0NJ/GqkPA4+F9tx6KeHSXqIYnJ61MZRLeJK8x0RlJb8DHKIPBrONxOa5J+J9GJzQ==}
+    engines: {node: '>= 10.8.0'}
+
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
@@ -4369,8 +4376,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  pretty-bytes@7.1.0:
-    resolution: {integrity: sha512-nODzvTiYVRGRqAOvE84Vk5JDPyyxsVk0/fbA/bq7RqlnhksGpset09XTxbpvLTIjoaF7K8Z8DG8yHtKGTPSYRw==}
+  pretty-bytes@7.2.0:
+    resolution: {integrity: sha512-T2kroepGB5DRVbkN/nOpW03+VRWqdtJhZNuCW3wYk3chdPjgi4GcTBOaxWfHq1MIM0ypidxsSWbQaAiRpxnXmg==}
     engines: {node: '>=20'}
 
   process-nextick-args@2.0.1:
@@ -8844,6 +8851,8 @@ snapshots:
 
   file-uri-to-path@1.0.0: {}
 
+  filesize@11.0.27: {}
+
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
@@ -9593,7 +9602,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       pkg-types: 2.3.3
-      pretty-bytes: 7.1.0
+      pretty-bytes: 7.2.0
       radix3: 1.1.2
       rollup: 4.60.4
       rollup-plugin-visualizer: 7.0.1(rolldown@1.2.12)(rollup@4.60.4)
@@ -10023,7 +10032,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  pretty-bytes@7.1.0: {}
+  pretty-bytes@7.2.0: {}
 
   process-nextick-args@2.0.1: {}
 

@@ -16,6 +16,7 @@
     "@iconify-json/simple-icons": "^1.2.100",
     "@nuxt/ui": "^4.12.0",
     "@vueuse/core": "^15.0.0",
+    "filesize": "^11.0.27",
     "nuxt": "^4.6.2",
     "tailwindcss": "^4.3.3"
   },

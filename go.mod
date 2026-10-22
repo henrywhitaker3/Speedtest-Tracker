@@ -4,12 +4,13 @@ go 1.27.3
 
 require (
 	github.com/adhocore/gronx v1.20.5
-	github.com/henrywhitaker3/windowframe/v2 v2.6.4
+	github.com/henrywhitaker3/windowframe/v2 v2.6.5
 	github.com/italypaleale/francis v0.1.2
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.0
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
+	gorm.io/driver/postgres v1.5.11
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.2
 	gorm.io/plugin/opentelemetry v0.1.16
@@ -122,7 +123,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/clickhouse v0.7.0 // indirect
 	gorm.io/driver/mysql v1.5.7 // indirect
-	gorm.io/driver/postgres v1.5.11 // indirect
 	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3 // indirect
 	modernc.org/libc v1.78.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
