@@ -1,5 +1,7 @@
 FROM --platform=$BUILDPLATFORM ghcr.io/henrywhitaker3/containers/mise:v1.4.1 AS uib
 
+ENV NUXT_PUBLIC_API_URL=""
+
 WORKDIR /build/ui
 
 COPY frontend/mise.toml frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
