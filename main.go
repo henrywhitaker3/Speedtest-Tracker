@@ -42,7 +42,7 @@ func main() {
 		}
 	}()
 
-	api := api.New(conf.App.URL, version, db, host.Service())
+	api := api.New(conf.App.URL, version, conf.App.UIDir, db, host.Service())
 	go func() {
 		if err := api.Start(ctx); err != nil {
 			slog.Error("run api", "error", err)

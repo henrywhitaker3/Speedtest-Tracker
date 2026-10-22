@@ -53,7 +53,9 @@ const props = defineProps<{
   data: ResultsStat[]
 }>()
 
-const bitsPerSecondToMbps = (bitsPerSecond: number) => bitsPerSecond / 1_000_000
+const bytesPerSecondToMbitPerSecond = (bytesPerSecond: number) => {
+  return (bytesPerSecond * 8) / 1_000_000
+}
 
 const chartData = computed(() => {
   return props.data.flatMap((sample) => {
@@ -71,12 +73,12 @@ const chartData = computed(() => {
       {
         created_at: createdAt,
         direction: 'Download' as const,
-        megabitsPerSecond: bitsPerSecondToMbps(sample.download ?? 0)
+        megabitsPerSecond: bytesPerSecondToMbitPerSecond(sample.download ?? 0)
       },
       {
         created_at: createdAt,
         direction: 'Upload' as const,
-        megabitsPerSecond: bitsPerSecondToMbps(sample.upload ?? 0)
+        megabitsPerSecond: bytesPerSecondToMbitPerSecond(sample.upload ?? 0)
       }
     ]
   })

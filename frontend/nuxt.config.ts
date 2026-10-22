@@ -11,6 +11,12 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  ssr: false,
+
+  nitro: {
+    preset: 'static'
+  },
+
   colorMode: {
     preference: 'dark'
   },

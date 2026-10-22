@@ -19,7 +19,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func New(url, version string, db *gorm.DB, service *actor.Service) *http.HTTP {
+func New(url, version, static string, db *gorm.DB, service *actor.Service) *http.HTTP {
 	h := http.New(http.HTTPOpts{
 		Port: 8080,
 		Openapi: http.OpenapiOpts{
@@ -35,6 +35,7 @@ func New(url, version string, db *gorm.DB, service *actor.Service) *http.HTTP {
 	h.Use(mw.Metrics("Speedtest-Tracker", prometheus.DefaultRegisterer))
 	h.Use(mw.Logger())
 	h.Use(corsMiddleware())
+	h.Use(middleware.Static(static))
 
 	registerRoutes(h, db, service)
 	registerValidators(h)

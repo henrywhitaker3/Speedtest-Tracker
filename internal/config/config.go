@@ -12,7 +12,8 @@ import (
 )
 
 type App struct {
-	URL string `env:"URL,default=http://localhost:8080"`
+	URL   string `env:"URL,default=http://localhost:8080"`
+	UIDir string `env:"UI_DIR,default=ui"`
 }
 
 type Database struct {

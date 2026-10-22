@@ -9,10 +9,29 @@ jq = "1.8.2"
 description = "Bring up dev things"
 run = "docker compose up -d jaeger"
 
+[tasks.build-ui]
+description = "Build the static UI served by the API"
+dir = "frontend"
+run = "mise exec -- pnpm build"
+sources = [
+    "app/**",
+    "assets/**",
+    "components/**",
+    "layouts/**",
+    "pages/**",
+    "plugins/**",
+    "public/**",
+    "mise.toml",
+    "nuxt.config.ts",
+    "package.json",
+    "pnpm-lock.yaml",
+]
+outputs = [".output/public/_nuxt/**"]
+
 [tasks.serve]
 description = "Run the app"
-depends = "dev"
-run = "go run main.go | jq"
+depends = ["dev"]
+run = "APP_UI_DIR=frontend/.output/public go run main.go | jq"
 
 [tasks.psk]
 description = "Generate a runtime PSK"
