@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	slogGorm "github.com/orandin/slog-gorm"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/plugin/opentelemetry/tracing"
@@ -17,6 +18,8 @@ func Open(driver string, url string) (*gorm.DB, error) {
 	switch driver {
 	case "sqlite":
 		db, err = Sqlite(url)
+	case "postgres":
+		db, err = Postgres(url)
 	default:
 		return nil, fmt.Errorf("unsupported db driver: %s", driver)
 	}
@@ -35,6 +38,14 @@ func Sqlite(path string) (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(path), config())
 	if err != nil {
 		return nil, fmt.Errorf("open sqlite db: %w", err)
+	}
+	return db, nil
+}
+
+func Postgres(url string) (*gorm.DB, error) {
+	db, err := gorm.Open(postgres.Open(url))
+	if err != nil {
+		return nil, fmt.Errorf("open postgres db: %w", err)
 	}
 	return db, nil
 }

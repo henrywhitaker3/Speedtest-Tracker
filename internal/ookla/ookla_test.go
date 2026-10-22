@@ -88,7 +88,7 @@ func TestExtractBinary(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	destination := filepath.Join(t.TempDir(), "speedtest")
+	destination := filepath.Join(t.TempDir(), "missing", "speedtest")
 	if err := extractBinary(&archive, destination); err != nil {
 		t.Fatal(err)
 	}

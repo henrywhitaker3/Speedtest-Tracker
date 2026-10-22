@@ -1,17 +1,23 @@
-FROM golang:1.27.3 AS gob
+FROM --platform=$BUILDPLATFORM golang:1.27.3 AS gob
 
 ARG VERSION="unknown"
 
 WORKDIR /build
 
-COPY . /build/
+COPY go.mod go.mod
+COPY go.sum go.sum
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
-RUN go mod download
-RUN CGO_ENABLED=0 go build -ldflags="-X main.version=${VERSION}" -a -o speedtest-tracker .
+COPY internal/ internal/
+COPY main.go main.go
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go build -ldflags="-X main.version=${VERSION}" -o speedtest-tracker .
 
-FROM scratch
+FROM gcr.io/distroless/static:nonroot
 
-COPY --from=gob /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=gob /build/speedtest-tracker /prog
+WORKDIR /
+COPY --from=gob /build/speedtest-tracker /speedtest-tracker
+USER 65532:65532
 
 ENTRYPOINT [ "/speedtest-tracker" ]

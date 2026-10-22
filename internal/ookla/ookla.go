@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"runtime"
 	"time"
 
@@ -124,23 +125,7 @@ func EnsureBinary(ctx context.Context, version string) error {
 		return fmt.Errorf("got status code %d", resp.StatusCode)
 	}
 
-	archive, err := os.CreateTemp("", "speedtest-cli-*.tgz")
-	if err != nil {
-		return fmt.Errorf("create archive file: %w", err)
-	}
-	defer func() {
-		archive.Close()
-		os.Remove(archive.Name())
-	}()
-
-	if _, err := io.Copy(archive, resp.Body); err != nil {
-		return fmt.Errorf("store archive: %w", err)
-	}
-
-	if _, err := archive.Seek(0, io.SeekStart); err != nil {
-		return fmt.Errorf("rewind archive: %w", err)
-	}
-	if err := extractBinary(archive, binaryFile); err != nil {
+	if err := extractBinary(resp.Body, binaryFile); err != nil {
 		return fmt.Errorf("extract binary: %w", err)
 	}
 
@@ -167,6 +152,9 @@ func extractBinary(archive io.Reader, destination string) error {
 			continue
 		}
 
+		if err := os.MkdirAll(filepath.Dir(destination), 0o755); err != nil {
+			return fmt.Errorf("create binary directory: %w", err)
+		}
 		binary, err := os.OpenFile(destination, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o755)
 		if err != nil {
 			return fmt.Errorf("open binary file: %w", err)
