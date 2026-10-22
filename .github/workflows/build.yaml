@@ -28,3 +28,5 @@ jobs:
           tags: |
             ghcr.io/henrywhitaker3/speedtest-tracker:${{ github.ref_name }}
             ghcr.io/henrywhitaker3/speedtest-tracker:v2
+          build-args: |
+            VERSION=${{ github.ref_name }}
