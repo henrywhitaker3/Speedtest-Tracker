@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -107,5 +108,17 @@ func TestExtractBinary(t *testing.T) {
 	}
 	if permissions := info.Mode().Perm(); permissions != 0o755 {
 		t.Errorf("permissions = %o, want 755", permissions)
+	}
+}
+
+func TestOoklaOutputUnmarshalsFractionalPacketLoss(t *testing.T) {
+	const packetLoss = 0.43859649122807015
+
+	var output ooklaOutput
+	if err := json.Unmarshal([]byte(`{"packetLoss":0.43859649122807015}`), &output); err != nil {
+		t.Fatal(err)
+	}
+	if output.PacketLoss != packetLoss {
+		t.Errorf("packet loss = %v, want %v", output.PacketLoss, packetLoss)
 	}
 }

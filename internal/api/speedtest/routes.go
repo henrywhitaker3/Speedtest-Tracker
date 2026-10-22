@@ -13,4 +13,5 @@ func Register(h *http.HTTP, db *gorm.DB, service *actor.Service) {
 	h.Register(&runHandler{service: service})
 	h.Register(&getHandler{repo: repo})
 	h.Register(&listHandler{repo: repo})
+	h.Register(&latestHandler{repo: repo})
 }

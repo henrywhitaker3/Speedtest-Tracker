@@ -137,6 +137,45 @@ export type GetV1SpeedtestByIdResponses = {
 
 export type GetV1SpeedtestByIdResponse = GetV1SpeedtestByIdResponses[keyof GetV1SpeedtestByIdResponses];
 
+export type GetV1SpeedtestLatestData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/speedtest/latest';
+};
+
+export type GetV1SpeedtestLatestErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetV1SpeedtestLatestError = GetV1SpeedtestLatestErrors[keyof GetV1SpeedtestLatestErrors];
+
+export type GetV1SpeedtestLatestResponses = {
+    /**
+     * OK
+     */
+    200: ResultsResult;
+};
+
+export type GetV1SpeedtestLatestResponse = GetV1SpeedtestLatestResponses[keyof GetV1SpeedtestLatestResponses];
+
 export type PostV1SpeedtestRunData = {
     body?: never;
     path?: never;

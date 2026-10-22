@@ -14,11 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { postV1SpeedtestRun } from '~/client'
+import { postV1SpeedtestRun } from '~/client/sdk.gen'
 
-const client = useApi()
 const run = async () => {
-  const resp = await postV1SpeedtestRun({ client: client })
+  const resp = await postV1SpeedtestRun()
   console.log(resp.data?.id)
 }
 </script>

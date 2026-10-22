@@ -34,6 +34,11 @@ func NewRepo(db *gorm.DB) *Repository {
 	}
 }
 
+func (r *Repository) Latest(ctx context.Context) (*Result, error) {
+	result, err := gorm.G[Result](r.db).Order("id DESC").First(ctx)
+	return &result, err
+}
+
 func (r *Repository) Create(ctx context.Context) (*Result, error) {
 	result := &Result{
 		ID: uuid.MustOrdered(),

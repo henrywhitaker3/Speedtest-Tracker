@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
+import type { GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -31,6 +31,13 @@ export const getV1Speedtest = <ThrowOnError extends boolean = false>(options?: O
  * Get a speedtest result
  */
 export const getV1SpeedtestById = <ThrowOnError extends boolean = false>(options: Options<GetV1SpeedtestByIdData, ThrowOnError>): RequestResult<GetV1SpeedtestByIdResponses, GetV1SpeedtestByIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1SpeedtestByIdResponses, GetV1SpeedtestByIdErrors, ThrowOnError>({ url: '/v1/speedtest/{id}', ...options });
+
+/**
+ * Latest
+ *
+ * Get the latest speedtest result
+ */
+export const getV1SpeedtestLatest = <ThrowOnError extends boolean = false>(options?: Options<GetV1SpeedtestLatestData, ThrowOnError>): RequestResult<GetV1SpeedtestLatestResponses, GetV1SpeedtestLatestErrors, ThrowOnError> => (options?.client ?? client).get<GetV1SpeedtestLatestResponses, GetV1SpeedtestLatestErrors, ThrowOnError>({ url: '/v1/speedtest/latest', ...options });
 
 /**
  * Run speedtest

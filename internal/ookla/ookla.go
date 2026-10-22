@@ -206,8 +206,8 @@ type ooklaOutput struct {
 			Jitter float64 `json:"jitter"`
 		} `json:"latency"`
 	} `json:"upload"`
-	PacketLoss int    `json:"packetLoss"`
-	Isp        string `json:"isp"`
+	PacketLoss float64 `json:"packetLoss"`
+	Isp        string  `json:"isp"`
 	Interface  struct {
 		InternalIP string `json:"internalIp"`
 		Name       string `json:"name"`
