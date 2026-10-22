@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/api/speedtest"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/speedtest"
 	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	mw "github.com/henrywhitaker3/windowframe/v2/http/middleware"

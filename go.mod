@@ -1,4 +1,4 @@
-module github.com/henrywhitaker3/Speedtest-Tracker
+module github.com/henrywhitaker3/Speedtest-Tracker/v2
 
 go 1.27.3
 

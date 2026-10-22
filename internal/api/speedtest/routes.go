@@ -2,7 +2,7 @@
 package speedtest
 
 import (
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	"github.com/italypaleale/francis/actor"
 	"gorm.io/gorm"

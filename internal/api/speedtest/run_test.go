@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/database"
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/ookla"
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
 )

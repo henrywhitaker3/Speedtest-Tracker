@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/database"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"gorm.io/gorm"
 )

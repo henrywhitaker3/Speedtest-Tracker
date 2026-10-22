@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/ookla"
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"

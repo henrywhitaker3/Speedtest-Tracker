@@ -8,10 +8,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/api"
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/bootstrap"
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/config"
-	"github.com/henrywhitaker3/Speedtest-Tracker/internal/meta"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/bootstrap"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/meta"
 )
 
 const (
