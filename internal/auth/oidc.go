@@ -191,8 +191,13 @@ func (r oidcTokenRefresher) Refresh(
 		if idToken.Subject != current.Subject {
 			return OIDCResponse{}, errors.New("refreshed ID token subject does not match session")
 		}
+		claims, err := extractClaims(idToken, r.config.GroupsClaim)
+		if err != nil {
+			return OIDCResponse{}, fmt.Errorf("decode refreshed ID token claims: %w", err)
+		}
 		refreshed.IDToken = rawIDToken
 		refreshed.ExpiresAt = idToken.Expiry
+		applyIdentityClaims(&refreshed, claims)
 	} else {
 		refreshed.ExpiresAt = token.Expiry
 	}
@@ -201,4 +206,10 @@ func (r oidcTokenRefresher) Refresh(
 	}
 
 	return refreshed, nil
+}
+
+func applyIdentityClaims(response *OIDCResponse, claims oidcClaims) {
+	response.Email = claims.Email
+	response.Name = claims.Name
+	response.Groups = claims.Groups
 }
