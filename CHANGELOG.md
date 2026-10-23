@@ -1,8 +1,40 @@
+## [2.2.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.4..v2.2.0) - 2026-10-23
+
+### 🚀 Features
+
+- *(auth)* Add http handlers for oidc auth - ([6406773](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6406773198cf332028aaad372efbbc22309f7c3f))
+- *(auth)* Added oidc auth session actor - ([4e82768](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4e827689578716062f18d5d22423bbba39552008))
+- *(auth)* Add backend handling for api tokens - ([cde17a4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/cde17a47514b76757f497af6ffe69a004e3803fa))
+- *(auth)* Added auth token middleware support - ([92a3ab4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/92a3ab49e6388c2c8a54e91d55330d4daa3613e6))
+- *(ui)* Gate speedtest run behind auth - ([29637fd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/29637fd4bacec95439adc8b8a9e11a4fa4e689d4))
+- *(ui)* Add crud for api tokens - ([e52c023](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e52c0238f377605f41a33959ab44c31e4bf9724d))
+- Add login handler - ([b1737c2](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b1737c290536f16b3c1c75b7722fdd6f4c204385))
+
+### 🐛 Bug Fixes
+
+- *(auth)* Add dependencies for oidc - ([68eff68](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/68eff687e79228546d180e53368bca5ebfd70fa7))
+- *(auth)* Add authz for admin-only endpoints - ([4f8b56d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4f8b56d98643bcc36ccf5423e087675fd3458bae))
+- *(auth)* Update group data when a token is refreshed - ([7bb9823](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7bb9823fc51164531fad5ba4a8325212f84758dd))
+- Add metrics for ping/up/down - ([5ebd92b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5ebd92bb0be53f4c704320b6fe380f1e2c2e13dd))
+- Add config endpoint - ([0a7da2d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0a7da2d46faeb07c9364e9634794d73018eaeee9))
+- Add token/:id paths to auth - ([71e1c8f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/71e1c8f4eb02009b5cb38ca9373e5454aab1e6e4))
+
+### 🧪 Testing
+
+- Add checks for auth in run endpoint - ([d492846](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d4928462f174b1ccb22da7a2838edac2ac1a80b0))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update readme with auth info - ([b2e0b82](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b2e0b828ede8964c52a7100bd280b7ccabb83c3e))
 ## [2.1.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.3..v2.1.4) - 2026-10-23
 
 ### 🐛 Bug Fixes
 
 - Pass server id through to actor - ([be80943](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/be809439639fd2b79b681de9a1d530bddf76a496))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog - ([522fe46](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/522fe461d3db49620e114214cc5dc598c3927f43))
 ## [2.1.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.2..v2.1.3) - 2026-10-23
 
 ### 🐛 Bug Fixes
