@@ -12,6 +12,8 @@ Speedtest Tracker runs scheduled [Ookla Speedtest CLI](https://www.speedtest.net
 
 > Ookla's EULA and privacy agreement must be accepted before the application will start.
 
+<img width="2730" height="1974" alt="image" src="https://github.com/user-attachments/assets/fa39015d-f3b2-47e6-bdfd-34e54ce2d728" />
+
 ## Features
 
 - Scheduled speed tests using a cron expression, plus on-demand runs from the UI or API.
