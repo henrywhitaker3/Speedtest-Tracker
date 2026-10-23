@@ -46,6 +46,9 @@ func Bootstrap(
 	if err := results.Register(db); err != nil {
 		return nil, nil, fmt.Errorf("register results model: %w", err)
 	}
+	if err := auth.Register(db); err != nil {
+		return nil, nil, fmt.Errorf("register auth models: %w", err)
+	}
 
 	host, err := runtime(conf.Database, conf.Runtime)
 	if err != nil {

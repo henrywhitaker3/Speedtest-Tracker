@@ -41,6 +41,7 @@ func New(
 		Logger: slog.With("component", "api"),
 	})
 
+	h.Use(middleware.Recover())
 	h.Use(mw.Tracing("Speedtest-Tracker"))
 	h.Use(mw.Metrics("Speedtest-Tracker", prometheus.DefaultRegisterer))
 	h.Use(mw.Logger())
@@ -115,6 +116,7 @@ func corsMiddleware(uiURL string) echo.MiddlewareFunc {
 			stdhttp.MethodGet,
 			stdhttp.MethodPost,
 			stdhttp.MethodOptions,
+			stdhttp.MethodDelete,
 		},
 		AllowHeaders: []string{echo.HeaderContentType},
 		MaxAge:       86_400,
