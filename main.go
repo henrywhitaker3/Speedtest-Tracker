@@ -42,22 +42,24 @@ func main() {
 		}
 	}()
 
-	api := api.New(conf.App.URL, version, conf.App.UIDir, db, host.Service())
+	http, err := api.New(conf.App.URL, version, conf.App.UIDir, db, host)
+	if err != nil {
+		slog.Error("init api", "error", err)
+		os.Exit(1)
+	}
+
 	go func() {
-		if err := api.Start(ctx); err != nil {
+		<-host.Ready()
+		if err := http.Start(ctx); err != nil {
 			slog.Error("run api", "error", err)
 			os.Exit(1)
 		}
+		meta.Ready = true
 	}()
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 		defer cancel()
-		_ = api.Stop(ctx)
-	}()
-
-	go func() {
-		<-host.Ready()
-		meta.Ready = true
+		_ = http.Stop(ctx)
 	}()
 
 	if err := host.Run(ctx); err != nil {

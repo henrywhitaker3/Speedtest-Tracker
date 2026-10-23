@@ -3,6 +3,7 @@ package speedtest
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
@@ -15,11 +16,23 @@ import (
 )
 
 type actorInvoker interface {
-	Invoke(context.Context, string, string, string, any, ...actor.InvokeOption) (actor.Envelope, error)
+	Invoke(
+		context.Context,
+		string,
+		string,
+		string,
+		any,
+		...actor.InvokeOption,
+	) (actor.Envelope, error)
+}
+
+type rateLimiter interface {
+	Allow(context.Context, string) (bool, time.Duration, error)
 }
 
 type runHandler struct {
 	service actorInvoker
+	limiter rateLimiter
 }
 
 type RunResponse struct {
@@ -30,6 +43,10 @@ func (r *runHandler) Handler() handlers.Handler[any, RunResponse] {
 	return func(c *echo.Context, req any) (*RunResponse, error) {
 		ctx, span := tracing.NewSpan(c.Request().Context(), "Run speedtest")
 		defer span.End()
+
+		if allowed, _, err := r.limiter.Allow(ctx, "test"); err != nil || !allowed {
+			return nil, echo.ErrTooManyRequests
+		}
 
 		id, _ := uuid.New()
 
