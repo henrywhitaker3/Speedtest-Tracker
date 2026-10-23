@@ -16,7 +16,7 @@ type Token struct {
 	database.BaseModel
 
 	Name string `json:"name"`
-	Hash string `json:"-"`
+	Hash string `json:"-" gorm:"uniqueIndex:idx_tokens_hash"`
 }
 
 type TokenRepository struct {
@@ -65,6 +65,17 @@ func (r *TokenRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	if err != nil {
 		return fmt.Errorf("delete token: %w", err)
 	}
+	return nil
+}
+
+func (r *TokenRepository) Validate(ctx context.Context, token string) error {
+	hash := crypto.Sum(token)
+
+	_, err := gorm.G[Token](r.db).Where("hash = ?", hash).First(ctx)
+	if err != nil {
+		return fmt.Errorf("validate token: %w", err)
+	}
+
 	return nil
 }
 

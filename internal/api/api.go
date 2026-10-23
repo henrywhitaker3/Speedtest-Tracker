@@ -13,6 +13,7 @@ import (
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	configapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/speedtest"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/http"
@@ -51,7 +52,8 @@ func New(
 	if conf.Auth.Enabled {
 		h.Use(authapi.SessionMiddleware())
 		h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
-			Service: host.Service(),
+			Service:   host.Service(),
+			TokenRepo: auth.NewRepo(db),
 			Routes: []string{
 				"/v1/speedtest/run",
 				"/v1/auth/tokens",
