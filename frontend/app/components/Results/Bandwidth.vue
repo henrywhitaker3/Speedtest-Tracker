@@ -107,7 +107,7 @@ const definition = computed(() => {
         y: 'megabitsPerSecond',
         z: 'direction',
         color: 'direction',
-        points: true,
+        points: false,
         curve: d3Curve(curveMonotoneX),
         strokeWidth: 2
       }),

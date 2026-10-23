@@ -87,7 +87,7 @@ const definition = computed(() => {
       lineY(chartData.value, {
         x: 'created_at',
         y: 'ping',
-        points: true,
+        points: false,
         curve: d3Curve(curveMonotoneX),
         stroke: 'var(--ui-primary)',
         strokeWidth: 2
