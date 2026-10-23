@@ -11,7 +11,7 @@ require (
 	github.com/labstack/echo/v5 v5.4.0
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
-	gorm.io/driver/postgres v1.5.11
+	gorm.io/driver/postgres v1.6.3
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.2
 	gorm.io/plugin/opentelemetry v0.1.16
