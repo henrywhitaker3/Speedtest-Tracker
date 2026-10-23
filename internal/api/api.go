@@ -25,6 +25,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const serviceName = "Speedtest-Tracker"
+
 func New(
 	version string,
 	conf *config.Config,
@@ -35,7 +37,7 @@ func New(
 		Port: 8080,
 		Openapi: http.OpenapiOpts{
 			Enabled:        true,
-			ServiceName:    "Speedtest-Tracker",
+			ServiceName:    serviceName,
 			ServiceVersion: version,
 			PublicURL:      conf.App.URL,
 		},
@@ -43,8 +45,8 @@ func New(
 	})
 
 	h.Use(middleware.Recover())
-	h.Use(mw.Tracing("Speedtest-Tracker"))
-	h.Use(mw.Metrics("Speedtest-Tracker", prometheus.DefaultRegisterer))
+	h.Use(mw.Tracing(serviceName))
+	h.Use(mw.Metrics(serviceName, prometheus.DefaultRegisterer))
 	h.Use(mw.Logger())
 	h.Use(corsMiddleware(conf.App.UIURL))
 	h.Use(staticMiddleware(conf.App.UIDir))
