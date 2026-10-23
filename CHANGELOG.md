@@ -1,3 +1,14 @@
+## [2.1.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.2..v2.1.3) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- Disable navbar overflow - ([3a125fb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3a125fbe7482a0071942478781d79b9f3f65412c))
+- Make latest cards responsive - ([0a51d51](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0a51d518511b475506fed16613f6fd8c6120d741))
+
+### ⚙️ Miscellaneous Tasks
+
+- Update README.md - ([e14f975](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e14f975f0b1efbdaeede13edb9013fa2e915a644))
+- Update readme.md - ([8ba21a1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8ba21a10237f7bccc47c8c405973f122f7ae047c))
 ## [2.1.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.1..v2.1.2) - 2026-10-23
 
 ### 🐛 Bug Fixes
@@ -6,6 +17,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- *(docs)* Update changelog - ([f0f0bc0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f0f0bc0605e764253caace5f77710d63c2b7d0e3))
 - Remove dangling package-lock.json - ([8e99fbc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8e99fbc4ca99870a79a8db6c5e186035debe5315))
 ## [2.1.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.0..v2.1.1) - 2026-10-23
 
