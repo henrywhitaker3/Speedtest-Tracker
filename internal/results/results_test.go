@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
@@ -177,6 +178,31 @@ func TestRepositoryListUsesDefaultPaginationForEmptyResults(t *testing.T) {
 	}
 	if len(page.Data) != 0 {
 		t.Errorf("empty page has %d results, want 0", len(page.Data))
+	}
+}
+
+func TestRegisterCreatesTimeseriesIndex(t *testing.T) {
+	db, err := database.Sqlite(filepath.Join(t.TempDir(), "results.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := Register(db); err != nil {
+		t.Fatal(err)
+	}
+	if !db.Migrator().HasIndex(&Result{}, "idx_results_timeseries") {
+		t.Fatal("timeseries index was not created")
+	}
+
+	var definition string
+	if err := db.Raw(
+		"SELECT sql FROM sqlite_master WHERE type = 'index' AND name = ?",
+		"idx_results_timeseries",
+	).Scan(&definition).Error; err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(definition, "created_at") ||
+		!strings.Contains(definition, "complete = true AND deleted_at IS NULL") {
+		t.Fatalf("timeseries index definition = %q", definition)
 	}
 }
 
