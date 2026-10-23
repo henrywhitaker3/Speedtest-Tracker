@@ -8,7 +8,7 @@ require (
 	github.com/henrywhitaker3/windowframe/v2 v2.6.5
 	github.com/italypaleale/francis v0.1.2
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo/v5 v5.4.0
+	github.com/labstack/echo/v5 v5.4.2
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
 	gorm.io/driver/postgres v1.5.11
