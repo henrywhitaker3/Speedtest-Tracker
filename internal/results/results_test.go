@@ -221,6 +221,74 @@ func TestRepositoryTimeseriesQueriesResults(t *testing.T) {
 	}
 }
 
+func TestRepositoryForgetDeletesExpiredResults(t *testing.T) {
+	repo := testRepository(t)
+	ctx := context.Background()
+
+	expired, err := repo.Create(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	current, err := repo.Create(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := repo.db.Model(&Result{}).
+		Where("id = ?", expired.ID).
+		Update("created_at", time.Now().Add(-2*time.Hour)).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.db.Model(&Result{}).
+		Where("id = ?", current.ID).
+		Update("created_at", time.Now().Add(-30*time.Minute)).Error; err != nil {
+		t.Fatal(err)
+	}
+
+	deleted, err := repo.Forget(ctx, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if deleted != 1 {
+		t.Errorf("Forget() deleted %d results, want 1", deleted)
+	}
+
+	var deletedResult Result
+	if err := repo.db.Unscoped().Where("id = ?", expired.ID).First(&deletedResult).Error; !errors.Is(err, gorm.ErrRecordNotFound) {
+		t.Errorf("expired result unscoped lookup error = %v, want record-not-found error", err)
+	}
+	if _, err := repo.Get(ctx, current.ID); err != nil {
+		t.Errorf("current result Get() error = %v, want nil", err)
+	}
+}
+
+func TestRepositoryForgetWithZeroPeriodDeletesAllResults(t *testing.T) {
+	repo := testRepository(t)
+	ctx := context.Background()
+
+	for range 2 {
+		if _, err := repo.Create(ctx); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	deleted, err := repo.Forget(ctx, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if deleted != 2 {
+		t.Errorf("Forget() with zero period deleted %d results, want 2", deleted)
+	}
+
+	var remaining int64
+	if err := repo.db.Unscoped().Model(&Result{}).Count(&remaining).Error; err != nil {
+		t.Fatal(err)
+	}
+	if remaining != 0 {
+		t.Errorf("remaining results after Forget() with zero period = %d, want 0", remaining)
+	}
+}
+
 func TestRegisterCreatesTimeseriesIndex(t *testing.T) {
 	db, err := database.Sqlite(filepath.Join(t.TempDir(), "results.db"))
 	if err != nil {

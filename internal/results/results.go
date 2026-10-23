@@ -139,6 +139,14 @@ func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]St
 	return out, nil
 }
 
+// Forget permanently deletes results older than the given period
+func (r *Repository) Forget(ctx context.Context, period time.Duration) (int, error) {
+	result := r.db.WithContext(ctx).Unscoped().
+		Where("created_at < ?", time.Now().Add(-period)).
+		Delete(&Result{})
+	return int(result.RowsAffected), result.Error
+}
+
 func Register(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&Result{},
