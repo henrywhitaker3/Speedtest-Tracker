@@ -50,11 +50,11 @@ func main() {
 
 	go func() {
 		<-host.Ready()
+		meta.Ready = true
 		if err := http.Start(ctx); err != nil {
 			slog.Error("run api", "error", err)
 			os.Exit(1)
 		}
-		meta.Ready = true
 	}()
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
