@@ -22,6 +22,7 @@ import { useSpeedtestCompleted, useSpeedtestStarted } from '~/events/speedtest'
 
 const { emit } = useSpeedtestStarted()
 const { on: onCompleted } = useSpeedtestCompleted()
+const toast = useToast()
 const isRunning = ref(false)
 
 const run = async () => {
@@ -35,7 +36,18 @@ const run = async () => {
       emit({
         id: resp.data.id ?? ''
       })
+      return
     }
+
+    if (resp.response?.status === 429) {
+      toast.add({
+        title: 'Too many speedtests',
+        description: 'You can run up to three speedtests per minute. Please try again shortly.',
+        color: 'warning'
+      })
+    }
+
+    isRunning.value = false
   } catch {
     isRunning.value = false
   }
