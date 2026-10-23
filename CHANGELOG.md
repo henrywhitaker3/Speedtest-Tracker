@@ -1,3 +1,19 @@
+## [2.2.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.3..v2.2.4) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- *(api)* Log requests at debug level - ([8d31fe9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8d31fe9ea6c7914a0b10a885d50259e2fb9f9613))
+- *(api)* Add handler to delete individual test results - ([5fc7a0e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5fc7a0e9e45d19b61eef5d4730aa13ef16c7a1f1))
+- *(auth)* Admin settings broken when auth disabled - ([cc6fdaa](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/cc6fdaa2b1b0384ba9a793a31c1f345d66d45d5c))
+- *(ui)* Add link to changelog - ([5dd0be4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5dd0be44dfc664c9bfc180bfde07b0305b77eaa8))
+
+### 🚜 Refactor
+
+- Move repeated service name to constant - ([3b11de3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3b11de39aac0dfa0a2cf5d3e8a1a40bc9c37b821))
+
+### ⚡ Performance
+
+- *(auth)* Cache oidc config and sigining keys - ([7e658c5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7e658c52a8b990c00aa4091c7ee9bc40c6b2ab81))
 ## [2.2.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.2..v2.2.3) - 2026-10-23
 
 ### 🐛 Bug Fixes
@@ -7,6 +23,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- *(docs)* Update changelog - ([689b22c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/689b22cdd68db5a53e290392223cfd79509659da))
 - Update git cliff version - ([f57d129](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f57d129e6e43c655153f8145252e1812c37934af))
 ## [2.2.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.1..v2.2.2) - 2026-10-23
 
