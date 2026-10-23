@@ -27,6 +27,7 @@
 import { deleteV1AuthTokensById, getV1AuthTokens, type AuthToken, type ResultsResult } from '~/client'
 import type { TableColumn } from '@nuxt/ui'
 import TableDelete from '../TableDelete.vue'
+import RelativeDate from '../RelativeDate.vue'
 
 const data = ref<AuthToken[]>()
 
@@ -38,8 +39,6 @@ const refresh = async () => {
 onMounted(async () => {
   await refresh()
 })
-
-const { relativeDate } = useDate()
 
 const table = ref()
 const columns: TableColumn<ResultsResult>[] = [
@@ -54,7 +53,10 @@ const columns: TableColumn<ResultsResult>[] = [
     accessorKey: 'created_at',
     header: 'Created At',
     cell: ({ row }) => {
-      return relativeDate(new Date(row.getValue('created_at')))
+      return h(RelativeDate, {
+        date: new Date(row.getValue('created_at'))
+      }
+      )
     }
   },
   {

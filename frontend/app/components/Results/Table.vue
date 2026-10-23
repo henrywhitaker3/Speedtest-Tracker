@@ -42,6 +42,7 @@ import TableLink from '../TableLink.vue'
 import { PulseLoader } from 'vue-spinner'
 import { useRefreshData } from '~/events/speedtest'
 import type { TableColumn } from '@nuxt/ui'
+import RelativeDate from '../RelativeDate.vue'
 
 const data = ref<Paginated>()
 const page = ref(1)
@@ -74,8 +75,6 @@ const { on } = useRefreshData()
 on(() => {
   void refresh()
 })
-
-const { formatDatetime } = useDate()
 
 const table = ref()
 const columns: TableColumn<ResultsResult>[] = [
@@ -139,7 +138,9 @@ const columns: TableColumn<ResultsResult>[] = [
     accessorKey: 'created_at',
     header: 'Date',
     cell: ({ row }) => {
-      return formatDatetime(row.getValue('created_at'))
+      return h(RelativeDate, {
+        date: new Date(row.getValue('created_at'))
+      })
     }
   },
   {

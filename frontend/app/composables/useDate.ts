@@ -34,7 +34,7 @@ export default function useDate() {
   }
 
   const relativeDate = (d: Date): string => {
-    return useTimeAgo(d).value
+    return useTimeAgo(d, { rounding: 'floor' }).value
   }
 
   return {
