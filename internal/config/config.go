@@ -7,6 +7,7 @@ import (
 
 	"github.com/adhocore/gronx"
 	"github.com/henrywhitaker3/windowframe/v2/config"
+	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/log"
 	"github.com/joho/godotenv"
 )
@@ -66,6 +67,8 @@ type Config struct {
 
 	Schedule string `env:"TEST_SCHEDULE, default=5 */2 * * *"`
 	Server   int    `env:"TEST_SERVER"`
+	// If 0, then retention is turned off
+	RetentionDays duration.StringDuration `env:"RETENTION_DAYS"`
 }
 
 func Load() (*Config, error) {

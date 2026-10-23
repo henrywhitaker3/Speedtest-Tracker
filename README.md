@@ -75,6 +75,7 @@ Configuration is read from environment variables (and a local `.env` file when r
 | `DB_URL` | `db.sqlite` | SQLite filename or PostgreSQL connection string. |
 | `RUNTIME_PSK` | empty | Private key used by the local runtime. Set a strong, stable value for deployments. |
 | `TEST_SCHEDULE` | `5 */2 * * *` | Cron expression controlling scheduled tests (by default, five minutes past every second hour). |
+| `RETENTION_DAYS` | `0` (disabled) | Number of days to retain results. Older results are permanently deleted hourly. E.g. `90d` |
 | `LOG_LEVEL` | application default | Logging verbosity. |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset | Optional OTLP endpoint for traces. |
 
