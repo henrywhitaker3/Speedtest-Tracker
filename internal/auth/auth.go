@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/italypaleale/francis/actor"
 	"github.com/italypaleale/francis/host/local"
@@ -71,8 +72,13 @@ type CompleteLoginRequest struct {
 	State string
 }
 
-func RegisterActor(conf config.Auth, callbackURL string, host *local.Host) error {
-	if err := host.RegisterActor(Actor, newAuthActor(conf, callbackURL)); err != nil {
+func RegisterActor(
+	conf config.Auth,
+	callbackURL string,
+	host *local.Host,
+	provider *oidc.Provider,
+) error {
+	if err := host.RegisterActor(Actor, newAuthActor(conf, callbackURL, provider)); err != nil {
 		return fmt.Errorf("register auth actor: %w", err)
 	}
 	return nil
@@ -321,7 +327,7 @@ func (a *Auth) invokeAuthenticate(
 	}, nil
 }
 
-func newAuthActor(conf config.Auth, callbackURL string) actor.Factory {
+func newAuthActor(conf config.Auth, callbackURL string, provider *oidc.Provider) actor.Factory {
 	return func(actorID string, service *actor.Service) actor.Actor {
 		return &Auth{
 			client:      actor.NewActorClient[authState](Actor, actorID, service),
@@ -330,12 +336,17 @@ func newAuthActor(conf config.Auth, callbackURL string) actor.Factory {
 			authorizer: oidcAuthorizationURLBuilder{
 				config:      conf,
 				callbackURL: callbackURL,
+				provider:    provider,
 			},
 			exchanger: oidcTokenExchanger{
 				config:      conf,
 				callbackURL: callbackURL,
+				provider:    provider,
 			},
-			refresher: oidcTokenRefresher{config: conf},
+			refresher: oidcTokenRefresher{
+				config:   conf,
+				provider: provider,
+			},
 		}
 	}
 }

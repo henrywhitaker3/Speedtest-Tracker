@@ -27,6 +27,7 @@ type authorizationURLBuilder interface {
 
 type oidcAuthorizationURLBuilder struct {
 	config      config.Auth
+	provider    *oidc.Provider
 	callbackURL string
 }
 
@@ -34,16 +35,11 @@ func (a oidcAuthorizationURLBuilder) AuthorizationURL(
 	ctx context.Context,
 	transaction LoginTransaction,
 ) (string, error) {
-	provider, err := oidc.NewProvider(ctx, a.config.IssuerURL)
-	if err != nil {
-		return "", fmt.Errorf("discover OIDC provider: %w", err)
-	}
-
 	oauthConfig := oauth2.Config{
 		ClientID:     a.config.ClientID,
 		ClientSecret: string(a.config.ClientSecret),
 		RedirectURL:  a.callbackURL,
-		Endpoint:     provider.Endpoint(),
+		Endpoint:     a.provider.Endpoint(),
 		Scopes:       strings.Fields(a.config.Scopes),
 	}
 	return oauthConfig.AuthCodeURL(
@@ -55,6 +51,7 @@ func (a oidcAuthorizationURLBuilder) AuthorizationURL(
 
 type oidcTokenExchanger struct {
 	config      config.Auth
+	provider    *oidc.Provider
 	callbackURL string
 }
 
@@ -62,16 +59,11 @@ func (e oidcTokenExchanger) Exchange(
 	ctx context.Context,
 	code, verifier, nonce string,
 ) (OIDCResponse, error) {
-	provider, err := oidc.NewProvider(ctx, e.config.IssuerURL)
-	if err != nil {
-		return OIDCResponse{}, fmt.Errorf("discover OIDC provider: %w", err)
-	}
-
 	oauthConfig := oauth2.Config{
 		ClientID:     e.config.ClientID,
 		ClientSecret: string(e.config.ClientSecret),
 		RedirectURL:  e.callbackURL,
-		Endpoint:     provider.Endpoint(),
+		Endpoint:     e.provider.Endpoint(),
 		Scopes:       strings.Fields(e.config.Scopes),
 	}
 	token, err := oauthConfig.Exchange(ctx, code, oauth2.VerifierOption(verifier))
@@ -83,7 +75,7 @@ func (e oidcTokenExchanger) Exchange(
 	if !ok || rawIDToken == "" {
 		return OIDCResponse{}, errors.New("OIDC token response has no ID token")
 	}
-	idToken, err := provider.VerifierContext(ctx, &oidc.Config{ClientID: e.config.ClientID}).
+	idToken, err := e.provider.Verifier(&oidc.Config{ClientID: e.config.ClientID}).
 		Verify(ctx, rawIDToken)
 	if err != nil {
 		return OIDCResponse{}, fmt.Errorf("verify ID token: %w", err)
@@ -145,7 +137,8 @@ func extractClaims(idToken *oidc.IDToken, groupsClaim string) (oidcClaims, error
 }
 
 type oidcTokenRefresher struct {
-	config config.Auth
+	config   config.Auth
+	provider *oidc.Provider
 }
 
 func (r oidcTokenRefresher) Refresh(
@@ -156,14 +149,10 @@ func (r oidcTokenRefresher) Refresh(
 		return OIDCResponse{}, errors.New("no refresh token")
 	}
 
-	provider, err := oidc.NewProvider(ctx, r.config.IssuerURL)
-	if err != nil {
-		return OIDCResponse{}, fmt.Errorf("discover OIDC provider: %w", err)
-	}
 	oauthConfig := oauth2.Config{
 		ClientID:     r.config.ClientID,
 		ClientSecret: string(r.config.ClientSecret),
-		Endpoint:     provider.Endpoint(),
+		Endpoint:     r.provider.Endpoint(),
 	}
 	token, err := oauthConfig.TokenSource(ctx, &oauth2.Token{
 		RefreshToken: current.RefreshToken,
@@ -183,7 +172,7 @@ func (r oidcTokenRefresher) Refresh(
 	}
 
 	if rawIDToken, ok := token.Extra("id_token").(string); ok && rawIDToken != "" {
-		idToken, err := provider.VerifierContext(ctx, &oidc.Config{ClientID: r.config.ClientID}).
+		idToken, err := r.provider.Verifier(&oidc.Config{ClientID: r.config.ClientID}).
 			Verify(ctx, rawIDToken)
 		if err != nil {
 			return OIDCResponse{}, fmt.Errorf("verify refreshed ID token: %w", err)

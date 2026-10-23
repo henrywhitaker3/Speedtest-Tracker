@@ -7,7 +7,9 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"time"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
@@ -69,10 +71,17 @@ func Bootstrap(
 		return nil, nil, fmt.Errorf("register results actors: %w", err)
 	}
 	if conf.Auth.Enabled {
+		pctx, cancel := context.WithTimeout(ctx, time.Second*30)
+		defer cancel()
+		provider, err := oidc.NewProvider(pctx, conf.Auth.IssuerURL)
+		if err != nil {
+			return nil, nil, fmt.Errorf("build oidc provider: %w", err)
+		}
 		if err := auth.RegisterActor(
 			conf.Auth,
 			auth.CallbackURL(conf.App.URL),
 			host,
+			provider,
 		); err != nil {
 			return nil, nil, fmt.Errorf("register auth actor: %w", err)
 		}

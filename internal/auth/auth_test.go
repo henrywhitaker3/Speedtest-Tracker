@@ -69,7 +69,7 @@ func TestNewAuthActorConfiguresOIDCDependencies(t *testing.T) {
 	conf := config.Auth{IssuerURL: "https://issuer.example", ClientID: "client-id"}
 	callbackURL := "https://speedtest.example/v1/auth/callback"
 
-	auth, ok := newAuthActor(conf, callbackURL)("session-id", nil).(*Auth)
+	auth, ok := newAuthActor(conf, callbackURL, nil)("session-id", nil).(*Auth)
 	if !ok {
 		t.Fatal("newAuthActor() did not create an Auth actor")
 	}
