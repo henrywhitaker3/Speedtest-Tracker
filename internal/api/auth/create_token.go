@@ -53,8 +53,9 @@ func (h *createHandler) Handler() handlers.Handler[CreateTokenRequest, CreateTok
 }
 
 func (h *createHandler) Middleware() []echo.MiddlewareFunc {
-	// TODO: use admin mw
-	return nil
+	return []echo.MiddlewareFunc{
+		Admin(),
+	}
 }
 
 func (g *createHandler) Metadata() handlers.Metadata {

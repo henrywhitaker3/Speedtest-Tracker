@@ -55,8 +55,9 @@ type AuthMiddlewareOpts struct {
 	// Routes are a slice of routes that should be protected behind auth
 	Routes []string
 
-	Service   actorInvoker
-	TokenRepo tokenRepo
+	Service    actorInvoker
+	TokenRepo  tokenRepo
+	AdminGroup string
 }
 
 func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
@@ -77,13 +78,24 @@ func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 				}
 			} else {
 				span.SetAttributes(attribute.String("auth.method", "session"))
-				if err := handleSessionAuth(ctx, c, opts.Service); err != nil {
+				if err := handleSessionAuth(ctx, c, opts.Service, opts.AdminGroup); err != nil {
 					return err
 				}
 			}
 			span.End()
 
 			return next(c)
+		}
+	}
+}
+
+func Admin() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			if admin, ok := c.Get("admin").(bool); ok && admin {
+				return next(c)
+			}
+			return echo.NewHTTPError(http.StatusForbidden, "forbidden")
 		}
 	}
 }
@@ -95,20 +107,35 @@ func handleTokenAuth(ctx context.Context, token string, repo tokenRepo) error {
 	return nil
 }
 
-func handleSessionAuth(ctx context.Context, c *echo.Context, service actorInvoker) error {
+func handleSessionAuth(
+	ctx context.Context,
+	c *echo.Context,
+	service actorInvoker,
+	adminGroup string,
+) error {
 	sessionID, err := cookieValue(c, sessionCookieName)
 	if err != nil {
 		return err
 	}
 
-	if _, err := service.Invoke(
+	sessionRaw, err := service.Invoke(
 		ctx,
 		authactor.Actor,
 		sessionID,
 		authactor.Session,
 		nil,
-	); err != nil {
+	)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "invalid or expired session")
+	}
+
+	if sessionRaw != nil {
+		var session authactor.AuthenticateResult
+		if err := sessionRaw.Decode(&session); err == nil {
+			if slices.Contains(session.Groups, adminGroup) {
+				c.Set("admin", true)
+			}
+		}
 	}
 
 	return nil

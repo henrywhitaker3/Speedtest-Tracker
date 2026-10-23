@@ -52,8 +52,9 @@ func New(
 	if conf.Auth.Enabled {
 		h.Use(authapi.SessionMiddleware())
 		h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
-			Service:   host.Service(),
-			TokenRepo: auth.NewRepo(db),
+			Service:    host.Service(),
+			TokenRepo:  auth.NewRepo(db),
+			AdminGroup: conf.Auth.AdminGroup,
 			Routes: []string{
 				"/v1/speedtest/run",
 				"/v1/auth/tokens",
