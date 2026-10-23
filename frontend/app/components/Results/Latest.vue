@@ -59,6 +59,4 @@ const { on } = useRefreshData()
 on(() => {
   void refresh()
 })
-
-const { relativeDate } = useDate()
 </script>

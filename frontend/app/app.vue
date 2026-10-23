@@ -14,7 +14,17 @@
       </template>
 
       <template #right>
-        <RunSpeedtest />
+        <UButton
+          v-if="config.authEnabled() && !auth.authenticated"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-log-in"
+          class="cursor-pointer"
+          @click="auth.login"
+        >
+          Sign in
+        </UButton>
+        <RunSpeedtest v-else />
         <UColorModeButton />
 
         <UButton
@@ -75,5 +85,17 @@ useSeoMeta({
 
 const year = new Date().getFullYear()
 
-const version = useRuntimeConfig().public.version
+const runtimeConfig = useRuntimeConfig()
+const version = runtimeConfig.public.version
+
+const config = useConfigStore()
+const auth = useAuthStore()
+
+onMounted(async () => {
+  await config.load()
+
+  if (config.authEnabled()) {
+    await auth.session()
+  }
+})
 </script>

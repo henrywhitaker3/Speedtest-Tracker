@@ -4,7 +4,18 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
-export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerInternalResultsResult = {
+export type ConfigAuthResponse = {
+    admin_group?: string;
+    enabled?: boolean;
+};
+
+export type ConfigConfigResponse = {
+    auth?: ConfigAuthResponse;
+    schedule?: string;
+    server_id?: number;
+};
+
+export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult = {
     data?: Array<ResultsResult> | null;
     limit?: number;
     page?: number;
@@ -53,6 +64,45 @@ export type SpeedtestRunResponse = {
  */
 export type UuidUuid = string;
 
+export type GetV1ConfigData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/config';
+};
+
+export type GetV1ConfigErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetV1ConfigError = GetV1ConfigErrors[keyof GetV1ConfigErrors];
+
+export type GetV1ConfigResponses = {
+    /**
+     * OK
+     */
+    200: ConfigConfigResponse;
+};
+
+export type GetV1ConfigResponse = GetV1ConfigResponses[keyof GetV1ConfigResponses];
+
 export type GetV1SpeedtestData = {
     body?: never;
     path?: never;
@@ -96,7 +146,7 @@ export type GetV1SpeedtestResponses = {
     /**
      * OK
      */
-    200: DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerInternalResultsResult;
+    200: DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult;
 };
 
 export type GetV1SpeedtestResponse = GetV1SpeedtestResponses[keyof GetV1SpeedtestResponses];

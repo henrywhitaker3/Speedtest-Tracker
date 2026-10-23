@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
+import type { GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -17,6 +17,13 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
+
+/**
+ * Config
+ *
+ * Get the app config
+ */
+export const getV1Config = <ThrowOnError extends boolean = false>(options?: Options<GetV1ConfigData, ThrowOnError>): RequestResult<GetV1ConfigResponses, GetV1ConfigErrors, ThrowOnError> => (options?.client ?? client).get<GetV1ConfigResponses, GetV1ConfigErrors, ThrowOnError>({ url: '/v1/config', ...options });
 
 /**
  * List results

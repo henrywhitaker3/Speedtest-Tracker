@@ -3,7 +3,7 @@
     color="primary"
     variant="outline"
     class="cursor-pointer"
-    :disabled="isRunning"
+    :disabled="disabled"
     :loading="isRunning"
     @click="run"
   >
@@ -24,6 +24,19 @@ const { emit } = useSpeedtestStarted()
 const { on: onCompleted } = useSpeedtestCompleted()
 const toast = useToast()
 const isRunning = ref(false)
+
+const config = useConfigStore()
+const auth = useAuthStore()
+
+const disabled = computed(() => {
+  if (isRunning.value) {
+    return true
+  }
+  if (config.authEnabled()) {
+    return !auth.authenticated
+  }
+  return false
+})
 
 const run = async () => {
   if (isRunning.value) return
