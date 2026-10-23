@@ -57,6 +57,7 @@ func New(
 			Routes: []string{
 				"/v1/speedtest/run",
 				"/v1/auth/tokens",
+				"/v1/auth/tokens/:id",
 			},
 		}))
 	}
