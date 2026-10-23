@@ -14,7 +14,18 @@
       </template>
 
       <template #right>
-        <RunSpeedtest />
+        <UButton
+          v-if="config.authEnabled() && !auth.authenticated"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-log-in"
+          class="cursor-pointer"
+          @click="auth.login"
+        >
+          Sign in
+        </UButton>
+        <RunSpeedtest v-else />
+
         <UColorModeButton />
 
         <UButton
@@ -25,6 +36,17 @@
           color="neutral"
           variant="ghost"
         />
+
+        <NuxtLink>
+          <UButton
+            v-if="config.authEnabled() && auth.isAdmin()"
+            to="/settings"
+            icon="i-lucide-settings"
+            aria-label="Settings"
+            color="neutral"
+            variant="ghost"
+          />
+        </NuxtLink>
       </template>
     </UHeader>
 
@@ -75,5 +97,9 @@ useSeoMeta({
 
 const year = new Date().getFullYear()
 
-const version = useRuntimeConfig().public.version
+const runtimeConfig = useRuntimeConfig()
+const version = runtimeConfig.public.version
+
+const config = useConfigStore()
+const auth = useAuthStore()
 </script>

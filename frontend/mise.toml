@@ -14,3 +14,6 @@ run = "pnpm run client"
 [tasks.build]
 description = "Build the frontend"
 run = "pnpm run build"
+
+[tasks.lint]
+run = "pnpm run lint"

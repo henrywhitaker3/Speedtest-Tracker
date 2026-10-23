@@ -4,6 +4,7 @@ go 1.27.3
 
 require (
 	github.com/adhocore/gronx v1.20.5
+	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-playground/validator/v10 v10.30.5
 	github.com/henrywhitaker3/windowframe/v2 v2.6.5
 	github.com/italypaleale/francis v0.1.2
@@ -11,6 +12,7 @@ require (
 	github.com/labstack/echo/v5 v5.4.2
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
+	golang.org/x/oauth2 v0.37.0
 	gorm.io/driver/postgres v1.6.3
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.2
@@ -34,6 +36,7 @@ require (
 	github.com/getsentry/sentry-go/echo v0.50.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v1.0.1 // indirect

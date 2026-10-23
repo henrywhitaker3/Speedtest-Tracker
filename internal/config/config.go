@@ -12,7 +12,9 @@ import (
 )
 
 type App struct {
-	URL   string `env:"URL,default=http://localhost:8080"`
+	URL string `env:"URL,default=http://localhost:8080"`
+	// Only used for local dev where the ui and api are on different ports
+	UIURL string `env:"UI_URL"`
 	UIDir string `env:"UI_DIR,default=ui"`
 }
 
@@ -26,8 +28,35 @@ type Runtime struct {
 	PSK      config.RedactedString `env:"PSK"`
 }
 
+type Auth struct {
+	Enabled bool `env:"ENABLED"`
+
+	IssuerURL    string                `env:"ISSUER_URL"`
+	ClientID     string                `env:"CLIENT_ID"`
+	ClientSecret config.RedactedString `env:"CLIENT_SECRET"`
+	Scopes       string                `env:"SCOPES, default=openid profile email groups offline_access"`
+	GroupsClaim  string                `env:"GROUPS_CLAIM, default=groups"`
+	AdminGroup   string                `env:"ADMIN_GROUP, default=admin"`
+}
+
+func (a Auth) vaildate() error {
+	if !a.Enabled {
+		return nil
+	}
+
+	if a.IssuerURL != "" && a.ClientID != "" && a.ClientSecret != "" && a.Scopes != "" &&
+		a.GroupsClaim != "" &&
+		a.AdminGroup != "" {
+		return nil
+	}
+
+	return fmt.Errorf("incomplete auth config")
+}
+
 type Config struct {
 	App App `env:",prefix=APP_"`
+
+	Auth Auth `env:",prefix=AUTH_"`
 
 	LogLevel   string `env:"LOG_LEVEL"`
 	AcceptUELA bool   `env:"ACCEPT_EULA"`
@@ -48,6 +77,10 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("parse env: %w", err)
 	}
 
+	if conf.App.UIURL == "" {
+		conf.App.UIURL = conf.App.URL
+	}
+
 	log.Setup(log.SlogLevel(conf.LogLevel))
 
 	if !conf.AcceptUELA {
@@ -58,6 +91,9 @@ func Load() (*Config, error) {
 	}
 	if !gronx.IsValid(conf.Schedule) {
 		return nil, fmt.Errorf("invalid cron schedule %s", conf.Schedule)
+	}
+	if err := conf.Auth.vaildate(); err != nil {
+		return nil, err
 	}
 
 	return &conf, nil

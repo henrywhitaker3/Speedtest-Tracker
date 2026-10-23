@@ -27,17 +27,15 @@ const pollLatest = async () => {
       continue
     }
 
-    if (!latest.value || latest.value.id !== result.data?.id) {
-      latest.value = result.data
-      refreshData()
-      continue
-    }
-
+    const isNewResult = latest.value?.id !== result.data?.id
+    const hasJustCompleted = result.data?.complete
+      && (isNewResult || !latest.value?.complete)
     latest.value = result.data
-    if (!result.data?.complete) {
-      refreshData()
-    } else {
+
+    if (hasJustCompleted) {
       onCompleted()
+      refreshData()
+    } else if (isNewResult || !result.data?.complete) {
       refreshData()
     }
 
@@ -53,3 +51,7 @@ onBeforeUnmount(() => {
   isPolling = false
 })
 </script>
+
+<template>
+  <div />
+</template>

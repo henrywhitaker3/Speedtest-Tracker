@@ -22,6 +22,7 @@ Speedtest Tracker runs scheduled [Ookla Speedtest CLI](https://www.speedtest.net
 - Generated OpenAPI schema and Swagger UI.
 - Prometheus metrics, including a native histogram of Speedtest duration.
 - OpenTelemetry tracing support.
+- Optional OpenID Connect (OIDC) authentication.
 
 ## Quick start with Docker Compose
 
@@ -61,7 +62,15 @@ Configuration is read from environment variables (and a local `.env` file when r
 | --- | --- | --- |
 | `ACCEPT_EULA` | _required_ | Set to `true` to confirm acceptance of Ookla's EULA and privacy agreement. |
 | `APP_URL` | `http://localhost:8080` | Public application URL; used when generating OpenAPI documentation. |
+| `APP_UI_URL` | `APP_URL` | Browser URL for the UI; used as the post-login redirect destination when the frontend runs on a different port or origin. |
 | `APP_UI_DIR` | `ui` | Directory containing the built frontend. The container image provides it at `/ui`. |
+| `AUTH_ENABLED` | `false` | Set to `true` to enable OIDC authentication. |
+| `AUTH_ISSUER_URL` | _required when auth is enabled_ | OIDC issuer URL. Its discovery document is used to find the authorization and token endpoints. |
+| `AUTH_CLIENT_ID` | _required when auth is enabled_ | OIDC client ID. |
+| `AUTH_CLIENT_SECRET` | _required when auth is enabled_ | OIDC client secret. Keep this private. |
+| `AUTH_SCOPES` | `openid profile email groups offline_access` | Space-separated scopes requested from the issuer. `offline_access` permits session refresh when the issuer supports refresh tokens. |
+| `AUTH_GROUPS_CLAIM` | `groups` | ID-token claim containing the user's groups. |
+| `AUTH_ADMIN_GROUP` | `admin` | Group treated as administrators by the UI. |
 | `DB_DRIVER` | `sqlite` | Database driver: `sqlite` or `postgres`. |
 | `DB_URL` | `db.sqlite` | SQLite filename or PostgreSQL connection string. |
 | `RUNTIME_PSK` | empty | Private key used by the local runtime. Set a strong, stable value for deployments. |
@@ -70,6 +79,30 @@ Configuration is read from environment variables (and a local `.env` file when r
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset | Optional OTLP endpoint for traces. |
 
 The Speedtest binary accepts Ookla's EULA and GDPR flags when it runs. `ACCEPT_EULA=true` is still required as the application's explicit startup acknowledgement.
+
+### Optional OIDC authentication
+
+Authentication is disabled by default. When enabled, the UI shows a **Sign in** button and `POST /v1/speedtest/run` requires a valid OIDC session; scheduled tests and read-only result endpoints remain available. The application uses the authorization-code flow with PKCE.
+
+Register this redirect URI with the OIDC provider exactly:
+
+```text
+${APP_URL}/v1/auth/callback
+```
+
+For example, a deployment whose API and UI share `https://speedtest.example.com` can use:
+
+```dotenv
+APP_URL=https://speedtest.example.com
+AUTH_ENABLED=true
+AUTH_ISSUER_URL=https://issuer.example.com
+AUTH_CLIENT_ID=speedtest-tracker
+AUTH_CLIENT_SECRET=replace-with-the-client-secret
+```
+
+If the Nuxt UI is served separately during development, set `APP_UI_URL` to its browser origin (for example, `http://localhost:3000`) and leave `APP_URL` pointing to the API (`http://localhost:8080`). The callback returns the browser to `APP_UI_URL` after a successful login.
+
+The browser receives only an opaque, HTTP-only session cookie. OIDC tokens, PKCE verifier, nonce, and authorization state are kept in server-side actor state. The cookie is marked `Secure`, so production deployments must use HTTPS. Cross-origin UI/API requests must include credentials; the bundled UI is configured to do so.
 
 ## Local development
 

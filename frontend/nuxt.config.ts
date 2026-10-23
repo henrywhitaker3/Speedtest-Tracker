@@ -2,20 +2,17 @@
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
-    '@nuxt/ui'
+    '@nuxt/ui',
+    '@pinia/nuxt'
   ],
+
+  ssr: false,
 
   devtools: {
     enabled: true
   },
 
   css: ['~/assets/css/main.css'],
-
-  ssr: false,
-
-  nitro: {
-    preset: 'static'
-  },
 
   colorMode: {
     preference: 'dark'
@@ -34,9 +31,15 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2026-06-30',
 
+  nitro: {
+    preset: 'static'
+  },
+
   eslint: {
     config: {
       stylistic: {
+        indent: 2,
+        semi: false,
         commaDangle: 'never',
         braceStyle: '1tbs'
       }

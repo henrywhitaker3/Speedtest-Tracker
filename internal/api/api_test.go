@@ -18,10 +18,10 @@ func TestCORSMiddleware(t *testing.T) {
 		status  int
 	}{
 		{
-			name:   "cross-origin request",
+			name:   "configured UI origin",
 			method: http.MethodGet,
 			headers: map[string]string{
-				echo.HeaderOrigin: "https://any-deployment.example",
+				echo.HeaderOrigin: "https://ui.example",
 			},
 			status: http.StatusOK,
 		},
@@ -29,7 +29,7 @@ func TestCORSMiddleware(t *testing.T) {
 			name:   "post preflight",
 			method: http.MethodOptions,
 			headers: map[string]string{
-				echo.HeaderOrigin:                      "https://any-deployment.example",
+				echo.HeaderOrigin:                      "https://ui.example",
 				echo.HeaderAccessControlRequestMethod:  http.MethodPost,
 				echo.HeaderAccessControlRequestHeaders: echo.HeaderContentType,
 			},
@@ -40,7 +40,7 @@ func TestCORSMiddleware(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := echo.New()
-			e.Use(corsMiddleware())
+			e.Use(corsMiddleware("https://ui.example"))
 			e.GET("/v1/speedtest", func(c *echo.Context) error {
 				return c.NoContent(http.StatusOK)
 			})
@@ -55,8 +55,11 @@ func TestCORSMiddleware(t *testing.T) {
 			if rec.Code != tt.status {
 				t.Errorf("status = %d, want %d", rec.Code, tt.status)
 			}
-			if origin := rec.Header().Get(echo.HeaderAccessControlAllowOrigin); origin != "*" {
-				t.Errorf("Access-Control-Allow-Origin = %q, want *", origin)
+			if origin := rec.Header().Get(echo.HeaderAccessControlAllowOrigin); origin != "https://ui.example" {
+				t.Errorf("Access-Control-Allow-Origin = %q, want configured UI origin", origin)
+			}
+			if credentials := rec.Header().Get(echo.HeaderAccessControlAllowCredentials); credentials != "true" {
+				t.Errorf("Access-Control-Allow-Credentials = %q, want true", credentials)
 			}
 		})
 	}

@@ -37,11 +37,11 @@
 </template>
 
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
-import { getV1Speedtest, type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerInternalResultsResult as Paginated, type ResultsResult } from '~/client'
+import { getV1Speedtest, type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult as Paginated, type ResultsResult } from '~/client'
 import TableLink from '../TableLink.vue'
 import { PulseLoader } from 'vue-spinner'
 import { useRefreshData } from '~/events/speedtest'
+import type { TableColumn } from '@nuxt/ui'
 
 const data = ref<Paginated>()
 const page = ref(1)

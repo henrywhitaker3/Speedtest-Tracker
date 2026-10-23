@@ -4,7 +4,38 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
-export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerInternalResultsResult = {
+export type AuthCreateTokenRequest = {
+    /**
+     * The name to identify the token by
+     */
+    name?: string;
+};
+
+export type AuthCreateTokenResponse = {
+    secret?: string;
+    token?: AuthToken;
+};
+
+export type AuthToken = {
+    created_at?: string;
+    deleted_at?: GormDeletedAt;
+    id?: UuidUuid;
+    name?: string;
+    updated_at?: string;
+};
+
+export type ConfigAuthResponse = {
+    admin_group?: string;
+    enabled?: boolean;
+};
+
+export type ConfigConfigResponse = {
+    auth?: ConfigAuthResponse;
+    schedule?: string;
+    server_id?: number;
+};
+
+export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult = {
     data?: Array<ResultsResult> | null;
     limit?: number;
     page?: number;
@@ -53,6 +84,162 @@ export type SpeedtestRunResponse = {
  */
 export type UuidUuid = string;
 
+export type GetV1AuthTokensData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/tokens';
+};
+
+export type GetV1AuthTokensErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetV1AuthTokensError = GetV1AuthTokensErrors[keyof GetV1AuthTokensErrors];
+
+export type GetV1AuthTokensResponses = {
+    /**
+     * OK
+     */
+    200: Array<AuthToken>;
+};
+
+export type GetV1AuthTokensResponse = GetV1AuthTokensResponses[keyof GetV1AuthTokensResponses];
+
+export type PostV1AuthTokensData = {
+    body?: AuthCreateTokenRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/tokens';
+};
+
+export type PostV1AuthTokensErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type PostV1AuthTokensError = PostV1AuthTokensErrors[keyof PostV1AuthTokensErrors];
+
+export type PostV1AuthTokensResponses = {
+    /**
+     * OK
+     */
+    200: AuthCreateTokenResponse;
+};
+
+export type PostV1AuthTokensResponse = PostV1AuthTokensResponses[keyof PostV1AuthTokensResponses];
+
+export type DeleteV1AuthTokensByIdData = {
+    body?: never;
+    path: {
+        id: UuidUuid;
+    };
+    query?: never;
+    url: '/v1/auth/tokens/{id}';
+};
+
+export type DeleteV1AuthTokensByIdErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type DeleteV1AuthTokensByIdError = DeleteV1AuthTokensByIdErrors[keyof DeleteV1AuthTokensByIdErrors];
+
+export type DeleteV1AuthTokensByIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetV1ConfigData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/config';
+};
+
+export type GetV1ConfigErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetV1ConfigError = GetV1ConfigErrors[keyof GetV1ConfigErrors];
+
+export type GetV1ConfigResponses = {
+    /**
+     * OK
+     */
+    200: ConfigConfigResponse;
+};
+
+export type GetV1ConfigResponse = GetV1ConfigResponses[keyof GetV1ConfigResponses];
+
 export type GetV1SpeedtestData = {
     body?: never;
     path?: never;
@@ -96,7 +283,7 @@ export type GetV1SpeedtestResponses = {
     /**
      * OK
      */
-    200: DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerInternalResultsResult;
+    200: DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult;
 };
 
 export type GetV1SpeedtestResponse = GetV1SpeedtestResponses[keyof GetV1SpeedtestResponses];
