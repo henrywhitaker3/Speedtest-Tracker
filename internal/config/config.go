@@ -12,7 +12,9 @@ import (
 )
 
 type App struct {
-	URL   string `env:"URL,default=http://localhost:8080"`
+	URL string `env:"URL,default=http://localhost:8080"`
+	// Only used for local dev where the ui and api are on different ports
+	UIURL string `env:"UI_URL"`
 	UIDir string `env:"UI_DIR,default=ui"`
 }
 
@@ -32,7 +34,7 @@ type Auth struct {
 	IssuerURL    string                `env:"ISSUER_URL"`
 	ClientID     string                `env:"CLIENT_ID"`
 	ClientSecret config.RedactedString `env:"CLIENT_SECRET"`
-	Claims       string                `env:"SCOPES, default=openid profile email groups"`
+	Claims       string                `env:"SCOPES, default=openid profile email groups offline_access"`
 	GroupsClaim  string                `env:"GROUPS_CLAIM, default=groups"`
 	AdminGroup   string                `env:"ADMIN_GROUP, default=admin"`
 }
@@ -73,6 +75,10 @@ func Load() (*Config, error) {
 	).Parse()
 	if err != nil {
 		return nil, fmt.Errorf("parse env: %w", err)
+	}
+
+	if conf.App.UIURL == "" {
+		conf.App.UIURL = conf.App.URL
 	}
 
 	log.Setup(log.SlogLevel(conf.LogLevel))
