@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!latest"
-    class="flex items-center justify-center gap-6"
+    class="flex flex-col items-center justify-center gap-6 sm:flex-row"
   >
     <LoadingCard />
     <LoadingCard />
@@ -12,7 +12,7 @@
     class="flex flex-col gap-2"
   >
     <div
-      class="flex items-center justify-center gap-6"
+      class="flex flex-col items-center justify-center gap-6 sm:flex-row"
     >
       <ResultsCard
         variant="ping"
