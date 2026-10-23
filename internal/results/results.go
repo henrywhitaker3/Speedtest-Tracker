@@ -119,6 +119,7 @@ func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]St
 		Where("created_at >= ?", time.Now().Add(-period)).
 		Where("created_at <= ?", time.Now()).
 		Where("complete = true").
+		Order("created_at ASC").
 		Find(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get result timeseries: %w", err)
