@@ -4,7 +4,7 @@
 go = "1.27.3"
 gotestsum = "1.13.0"
 jq = "1.8.2"
-git-cliff = "v2.13.1"
+git-cliff = "v2.14.2"
 
 [tasks.dev]
 description = "Bring up dev things"
