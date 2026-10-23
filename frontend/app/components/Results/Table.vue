@@ -41,6 +41,7 @@ import { getV1Speedtest, type DatabasePaginationGithubComHenrywhitaker3Speedtest
 import TableLink from '../TableLink.vue'
 import { PulseLoader } from 'vue-spinner'
 import { useRefreshData } from '~/events/speedtest'
+import type { TableColumn } from '@nuxt/ui'
 
 const data = ref<Paginated>()
 const page = ref(1)

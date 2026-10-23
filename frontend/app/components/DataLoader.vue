@@ -51,3 +51,7 @@ onBeforeUnmount(() => {
   isPolling = false
 })
 </script>
+
+<template>
+  <div />
+</template>

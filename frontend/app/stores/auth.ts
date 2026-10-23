@@ -1,6 +1,7 @@
 interface AuthState {
   authenticated: boolean
   groups: string[]
+  initialized: boolean
 }
 
 interface SessionResponse {
@@ -11,10 +12,27 @@ export const useAuthStore = defineStore('auth', {
   state: (): AuthState => {
     return {
       authenticated: false,
-      groups: []
+      groups: [],
+      initialized: false
     }
   },
   actions: {
+    async initialize() {
+      if (this.initialized) {
+        return
+      }
+
+      const config = useConfigStore()
+      if (!config.config) {
+        await config.load()
+      }
+
+      if (config.authEnabled()) {
+        await this.session()
+      }
+
+      this.initialized = true
+    },
     async session() {
       const runtimeConfig = useRuntimeConfig()
       const apiBaseURL = runtimeConfig.public.apiUrl || window.location.origin
@@ -36,9 +54,10 @@ export const useAuthStore = defineStore('auth', {
       const apiBaseURL = runtimeConfig.public.apiUrl || window.location.origin
       window.location.assign(new URL('/v1/auth/login', apiBaseURL).toString())
     },
-    isAdmin() {
+    isAdmin(): boolean {
       const config = useConfigStore()
-      return this.groups.includes(config.config.auth.admin_group)
+      const adminGroup = config.config?.auth?.admin_group
+      return adminGroup !== undefined && this.groups.includes(adminGroup)
     }
   }
 })

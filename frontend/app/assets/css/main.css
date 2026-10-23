@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+@layer base {
+  button {
+    cursor: pointer;
+  }
+}
+
 @theme static {
   --font-sans: 'Public Sans', sans-serif;
 

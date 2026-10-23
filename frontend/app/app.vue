@@ -25,6 +25,7 @@
           Sign in
         </UButton>
         <RunSpeedtest v-else />
+
         <UColorModeButton />
 
         <UButton
@@ -35,6 +36,17 @@
           color="neutral"
           variant="ghost"
         />
+
+        <NuxtLink>
+          <UButton
+            v-if="config.authEnabled() && auth.isAdmin()"
+            to="/settings"
+            icon="i-lucide-settings"
+            aria-label="Settings"
+            color="neutral"
+            variant="ghost"
+          />
+        </NuxtLink>
       </template>
     </UHeader>
 
@@ -90,12 +102,4 @@ const version = runtimeConfig.public.version
 
 const config = useConfigStore()
 const auth = useAuthStore()
-
-onMounted(async () => {
-  await config.load()
-
-  if (config.authEnabled()) {
-    await auth.session()
-  }
-})
 </script>

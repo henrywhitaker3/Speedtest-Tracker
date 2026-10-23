@@ -4,6 +4,26 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type AuthCreateTokenRequest = {
+    /**
+     * The name to identify the token by
+     */
+    name?: string;
+};
+
+export type AuthCreateTokenResponse = {
+    secret?: string;
+    token?: AuthToken;
+};
+
+export type AuthToken = {
+    created_at?: string;
+    deleted_at?: GormDeletedAt;
+    id?: UuidUuid;
+    name?: string;
+    updated_at?: string;
+};
+
 export type ConfigAuthResponse = {
     admin_group?: string;
     enabled?: boolean;
@@ -63,6 +83,123 @@ export type SpeedtestRunResponse = {
  * UUID
  */
 export type UuidUuid = string;
+
+export type GetV1AuthTokensData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/tokens';
+};
+
+export type GetV1AuthTokensErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetV1AuthTokensError = GetV1AuthTokensErrors[keyof GetV1AuthTokensErrors];
+
+export type GetV1AuthTokensResponses = {
+    /**
+     * OK
+     */
+    200: Array<AuthToken>;
+};
+
+export type GetV1AuthTokensResponse = GetV1AuthTokensResponses[keyof GetV1AuthTokensResponses];
+
+export type PostV1AuthTokensData = {
+    body?: AuthCreateTokenRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/tokens';
+};
+
+export type PostV1AuthTokensErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type PostV1AuthTokensError = PostV1AuthTokensErrors[keyof PostV1AuthTokensErrors];
+
+export type PostV1AuthTokensResponses = {
+    /**
+     * OK
+     */
+    200: AuthCreateTokenResponse;
+};
+
+export type PostV1AuthTokensResponse = PostV1AuthTokensResponses[keyof PostV1AuthTokensResponses];
+
+export type DeleteV1AuthTokensByIdData = {
+    body?: never;
+    path: {
+        id: UuidUuid;
+    };
+    query?: never;
+    url: '/v1/auth/tokens/{id}';
+};
+
+export type DeleteV1AuthTokensByIdErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type DeleteV1AuthTokensByIdError = DeleteV1AuthTokensByIdErrors[keyof DeleteV1AuthTokensByIdErrors];
+
+export type DeleteV1AuthTokensByIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type GetV1ConfigData = {
     body?: never;
