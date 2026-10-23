@@ -20,7 +20,7 @@
           </p>
         </div>
         <div
-          class="focus-visible:outline-primary cursor-pointer overflow-auto rounded-md bg-zinc-800 p-4 transition-colors hover:bg-zinc-700 focus-visible:outline-2 focus-visible:outline-offset-2"
+          class="focus-visible:outline-primary cursor-pointer overflow-auto rounded-md bg-zinc-300 p-4 transition-colors hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-800 dark:hover:bg-zinc-700"
           role="button"
           tabindex="0"
           @click="copySecret"
