@@ -1,8 +1,7 @@
 # Speedtest Tracker v2
 
 [![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker?style=flat-square)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/henrywhitaker3/Speedtest-Tracker/.github%2Fworkflows%2Fbuild.yaml?branch=v2&style=flat-square&label=Build
-)](https://github.com/henrywhitaker3/Speedtest-Tracker/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/henrywhitaker3/Speedtest-Tracker/build.yaml?style=flat-square&label=Build)](https://github.com/henrywhitaker3/Speedtest-Tracker/actions/workflows/build.yaml)
 [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker?style=flat-square?branch=v2)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits)
 [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues)
 [![commit_freq](https://img.shields.io/github/commit-activity/m/henrywhitaker3/Speedtest-Tracker?style=flat-square?branch=v2)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits)
