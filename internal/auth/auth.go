@@ -34,6 +34,7 @@ type Auth struct {
 const (
 	refreshAhead        = time.Minute
 	loginTransactionTTL = 10 * time.Minute
+	sessionTTL          = time.Hour * 24 * 7
 )
 
 type authStateClient interface {
@@ -201,7 +202,7 @@ func (a *Auth) invokeCompleteLogin(
 	state.AuthenticatedAt = time.Now().UTC()
 	state.LoginTransaction = nil
 	if err := a.client.SetState(ctx, state, &actor.SetStateOpts{
-		TTL: time.Until(response.ExpiresAt),
+		TTL: sessionTTL,
 	}); err != nil {
 		return nil, fmt.Errorf("store authenticated session: %w", err)
 	}
@@ -225,7 +226,7 @@ func (a *Auth) invokeSession(ctx context.Context) (any, error) {
 		if err == nil {
 			state.OIDCResponse = refreshed
 			if err := a.client.SetState(ctx, state, &actor.SetStateOpts{
-				TTL: time.Until(refreshed.ExpiresAt),
+				TTL: sessionTTL,
 			}); err != nil {
 				return nil, fmt.Errorf("store refreshed auth state: %w", err)
 			}
@@ -306,7 +307,7 @@ func (a *Auth) invokeAuthenticate(
 	state.OIDCResponse = response
 	state.AuthenticatedAt = time.Now().UTC()
 	if err := a.client.SetState(ctx, state, &actor.SetStateOpts{
-		TTL: time.Until(response.ExpiresAt),
+		TTL: sessionTTL,
 	}); err != nil {
 		return nil, fmt.Errorf("store auth state: %w", err)
 	}

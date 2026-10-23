@@ -49,6 +49,9 @@ func TestInvokeAuthenticateStoresOIDCResponse(t *testing.T) {
 	if client.state.AuthenticatedAt.IsZero() {
 		t.Error("AuthenticatedAt was not set")
 	}
+	if client.setOpts == nil || client.setOpts.TTL != sessionTTL {
+		t.Errorf("authenticated session TTL = %#v, want %v", client.setOpts, sessionTTL)
+	}
 
 	want := &AuthenticateResult{
 		Subject:   "issuer-user-id",
@@ -167,6 +170,9 @@ func TestInvokeCompleteLoginExchangesAndStoresSession(t *testing.T) {
 	if !reflect.DeepEqual(client.state.OIDCResponse, response) {
 		t.Errorf("stored response = %#v, want %#v", client.state.OIDCResponse, response)
 	}
+	if client.setOpts == nil || client.setOpts.TTL != sessionTTL {
+		t.Errorf("authenticated session TTL = %#v, want %v", client.setOpts, sessionTTL)
+	}
 	if result.Subject != response.Subject || result.ExpiresAt != response.ExpiresAt {
 		t.Errorf("result = %#v, want response summary", result)
 	}
@@ -266,8 +272,8 @@ func TestInvokeSessionRefreshesExpiringSession(t *testing.T) {
 	if client.state.OIDCResponse.AccessToken != "new-access-token" {
 		t.Errorf("stored access token = %q, want refreshed token", client.state.OIDCResponse.AccessToken)
 	}
-	if !client.setCalled || client.setOpts == nil || client.setOpts.TTL <= 0 {
-		t.Errorf("refreshed session was not persisted with a positive TTL: %#v", client.setOpts)
+	if !client.setCalled || client.setOpts == nil || client.setOpts.TTL != sessionTTL {
+		t.Errorf("refreshed session TTL = %#v, want %v", client.setOpts, sessionTTL)
 	}
 	if got := result.(AuthenticateResult); got.ExpiresAt != newExpiry {
 		t.Errorf("session expiry = %v, want %v", got.ExpiresAt, newExpiry)
