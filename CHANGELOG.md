@@ -1,9 +1,20 @@
+## [2.2.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.1..v2.2.2) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- *(auth)* Keep sessions for 7 days - ([fa0e6c6](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fa0e6c688986b29146b72a1b4ff161f8190bae1e))
+- *(retention)* Optionally remove results older than x duration - ([b753a0f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b753a0f3bffcc5f191740ef45d3f84f10b7e68ab))
+- *(ui)* Add dropdown for stats time range - ([796c641](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/796c641be1f37721f7146659546e58f6c7758758))
 ## [2.2.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.0..v2.2.1) - 2026-10-23
 
 ### 🐛 Bug Fixes
 
 - *(ui)* Text box showing created token light mode - ([4575f45](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4575f453ef958067a27ac381c016fe4b57107c5f))
 - *(ui)* Hide points from the graph - ([1ea6b57](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1ea6b57d68f18f5724e64f2afcf195251c242543))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog - ([d31fada](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d31fadacbf5aff4fe8e100ec3b415f485adf1ca6))
 ## [2.2.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.4..v2.2.0) - 2026-10-23
 
 ### 🚀 Features
