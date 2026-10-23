@@ -12,14 +12,14 @@ import (
 	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	mw "github.com/henrywhitaker3/windowframe/v2/http/middleware"
-	"github.com/italypaleale/francis/actor"
+	"github.com/italypaleale/francis/host/local"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 	"gorm.io/gorm"
 )
 
-func New(url, version, static string, db *gorm.DB, service *actor.Service) *http.HTTP {
+func New(url, version, static string, db *gorm.DB, host *local.Host) (*http.HTTP, error) {
 	h := http.New(http.HTTPOpts{
 		Port: 8080,
 		Openapi: http.OpenapiOpts{
@@ -37,14 +37,19 @@ func New(url, version, static string, db *gorm.DB, service *actor.Service) *http
 	h.Use(corsMiddleware())
 	h.Use(middleware.Static(static))
 
-	registerRoutes(h, db, service)
+	if err := registerRoutes(h, db, host); err != nil {
+		return nil, err
+	}
 	registerValidators(h)
 
-	return h
+	return h, nil
 }
 
-func registerRoutes(h *http.HTTP, db *gorm.DB, service *actor.Service) {
-	speedtest.Register(h, db, service)
+func registerRoutes(h *http.HTTP, db *gorm.DB, host *local.Host) error {
+	if err := speedtest.Register(h, db, host); err != nil {
+		return err
+	}
+	return nil
 }
 
 func registerValidators(h *http.HTTP) {

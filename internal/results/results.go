@@ -22,7 +22,7 @@ type Result struct {
 	ServerName *string  `json:"server_name"`
 	URL        *string  `json:"url"`
 	Error      *string  `json:"error,omitempty"`
-	Complete   bool     `json:"complete"`
+	Complete   bool     `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
 }
 
 type Repository struct {
