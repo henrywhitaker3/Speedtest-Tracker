@@ -1,3 +1,9 @@
+## [2.2.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.0..v2.2.1) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- *(ui)* Text box showing created token light mode - ([4575f45](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4575f453ef958067a27ac381c016fe4b57107c5f))
+- *(ui)* Hide points from the graph - ([1ea6b57](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1ea6b57d68f18f5724e64f2afcf195251c242543))
 ## [2.2.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.4..v2.2.0) - 2026-10-23
 
 ### 🚀 Features
@@ -26,6 +32,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - *(docs)* Update readme with auth info - ([b2e0b82](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b2e0b828ede8964c52a7100bd280b7ccabb83c3e))
+- *(docs)* Update changelog - ([6fba9d0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6fba9d0eb71734cacca44f59fbc4b8623aba245c))
 ## [2.1.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.3..v2.1.4) - 2026-10-23
 
 ### 🐛 Bug Fixes
