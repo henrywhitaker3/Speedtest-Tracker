@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.0..v2.1.1) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- Issue with fallback 404s for direct to spa routes - ([176cc07](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/176cc07f40aa1b227bd882c6dd129866e9f91044))
+- Order timeseries results - ([b6b0ff2](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b6b0ff216ae3d31a49ec457aa8eea8490e71484d))
 ## [2.1.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.0.3..v2.1.0) - 2026-10-23
 
 ### 🚀 Features
@@ -24,6 +30,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- *(docs)* Update changelog - ([2c6b3d5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2c6b3d5c8497040a28ef45fef70cc6a460ff3e6e))
 - Add release scripts - ([270f8bc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/270f8bc4fc99a12a12f6c26d1fd64863452cbaab))
 
 ## ❤️ New Contributors
