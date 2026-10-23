@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
@@ -178,6 +179,45 @@ func TestRepositoryListUsesDefaultPaginationForEmptyResults(t *testing.T) {
 	}
 	if len(page.Data) != 0 {
 		t.Errorf("empty page has %d results, want 0", len(page.Data))
+	}
+}
+
+func TestRepositoryTimeseriesQueriesResults(t *testing.T) {
+	repo := testRepository(t)
+	ctx := context.Background()
+
+	complete, err := repo.Create(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	complete.Ping = new(12.5)
+	complete.Download = new(int64(123_456))
+	complete.Upload = new(int64(98_765))
+	complete.Complete = true
+	if err := repo.Update(ctx, complete); err != nil {
+		t.Fatal(err)
+	}
+
+	incomplete, err := repo.Create(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stats, err := repo.Timeseries(ctx, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(stats) != 1 {
+		t.Fatalf("timeseries returned %d stats, want 1", len(stats))
+	}
+	if stats[0].ID != complete.ID {
+		t.Errorf("timeseries result ID = %q, want %q", stats[0].ID, complete.ID)
+	}
+	if stats[0].Ping == nil || *stats[0].Ping != *complete.Ping {
+		t.Errorf("timeseries ping = %v, want %v", stats[0].Ping, complete.Ping)
+	}
+	if incomplete.Complete {
+		t.Fatal("test fixture should remain incomplete")
 	}
 }
 

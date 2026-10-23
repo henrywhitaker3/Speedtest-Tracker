@@ -22,7 +22,7 @@ type Result struct {
 	ServerName *string  `json:"server_name"`
 	URL        *string  `json:"url"`
 	Error      *string  `json:"error,omitempty"`
-	Complete   bool     `gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL" json:"complete"`
+	Complete   bool     `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
 }
 
 type Repository struct {
@@ -114,17 +114,28 @@ type Stat struct {
 }
 
 func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]Stat, error) {
-	stats, err := gorm.G[Stat](r.db.Model(&Result{})).
+	stats, err := gorm.G[Result](r.db).
 		Select("id, ping, download, upload, created_at").
 		Where("created_at >= ?", time.Now().Add(-period)).
+		Where("created_at <= ?", time.Now()).
 		Where("complete = true").
-		Order("created_at ASC").
 		Find(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get result timeseries: %w", err)
 	}
 
-	return stats, nil
+	out := []Stat{}
+	for _, s := range stats {
+		out = append(out, Stat{
+			ID:        s.ID,
+			CreatedAt: s.CreatedAt,
+			Ping:      s.Ping,
+			Download:  s.Download,
+			Upload:    s.Upload,
+		})
+	}
+
+	return out, nil
 }
 
 func Register(db *gorm.DB) error {
