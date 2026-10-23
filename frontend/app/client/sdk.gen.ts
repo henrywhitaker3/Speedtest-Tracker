@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteV1AuthTokensByIdData, DeleteV1AuthTokensByIdErrors, DeleteV1AuthTokensByIdResponses, GetV1AuthTokensData, GetV1AuthTokensErrors, GetV1AuthTokensResponses, GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1AuthTokensData, PostV1AuthTokensErrors, PostV1AuthTokensResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
+import type { DeleteV1AuthTokensByIdData, DeleteV1AuthTokensByIdErrors, DeleteV1AuthTokensByIdResponses, DeleteV1SpeedtestPurgeData, DeleteV1SpeedtestPurgeErrors, DeleteV1SpeedtestPurgeResponses, GetV1AuthTokensData, GetV1AuthTokensErrors, GetV1AuthTokensResponses, GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1AuthTokensData, PostV1AuthTokensErrors, PostV1AuthTokensResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -67,6 +67,13 @@ export const getV1SpeedtestById = <ThrowOnError extends boolean = false>(options
  * Get the latest speedtest result
  */
 export const getV1SpeedtestLatest = <ThrowOnError extends boolean = false>(options?: Options<GetV1SpeedtestLatestData, ThrowOnError>): RequestResult<GetV1SpeedtestLatestResponses, GetV1SpeedtestLatestErrors, ThrowOnError> => (options?.client ?? client).get<GetV1SpeedtestLatestResponses, GetV1SpeedtestLatestErrors, ThrowOnError>({ url: '/v1/speedtest/latest', ...options });
+
+/**
+ * Purge errors
+ *
+ * Delete test results that have an error
+ */
+export const deleteV1SpeedtestPurge = <ThrowOnError extends boolean = false>(options?: Options<DeleteV1SpeedtestPurgeData, ThrowOnError>): RequestResult<DeleteV1SpeedtestPurgeResponses, DeleteV1SpeedtestPurgeErrors, ThrowOnError> => (options?.client ?? client).delete<DeleteV1SpeedtestPurgeResponses, DeleteV1SpeedtestPurgeErrors, ThrowOnError>({ url: '/v1/speedtest/purge', ...options });
 
 /**
  * Run speedtest

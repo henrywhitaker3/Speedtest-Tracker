@@ -57,6 +57,7 @@ func New(
 			AdminGroup: conf.Auth.AdminGroup,
 			Routes: []string{
 				"/v1/speedtest/run",
+				"/v1/speedtest/purge",
 				"/v1/auth/tokens",
 				"/v1/auth/tokens/:id",
 			},

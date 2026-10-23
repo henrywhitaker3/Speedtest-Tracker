@@ -147,6 +147,14 @@ func (r *Repository) Forget(ctx context.Context, period time.Duration) (int, err
 	return int(result.RowsAffected), result.Error
 }
 
+// PurgeErrors soft-deletes all results that have an error
+func (r *Repository) PurgeErrors(ctx context.Context) error {
+	if _, err := gorm.G[Result](r.db).Where("error IS NOT NULL").Delete(ctx); err != nil {
+		return fmt.Errorf("purge errored results: %w", err)
+	}
+	return nil
+}
+
 func Register(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&Result{},

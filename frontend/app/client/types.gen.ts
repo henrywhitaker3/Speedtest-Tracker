@@ -371,6 +371,43 @@ export type GetV1SpeedtestLatestResponses = {
 
 export type GetV1SpeedtestLatestResponse = GetV1SpeedtestLatestResponses[keyof GetV1SpeedtestLatestResponses];
 
+export type DeleteV1SpeedtestPurgeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/speedtest/purge';
+};
+
+export type DeleteV1SpeedtestPurgeErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type DeleteV1SpeedtestPurgeError = DeleteV1SpeedtestPurgeErrors[keyof DeleteV1SpeedtestPurgeErrors];
+
+export type DeleteV1SpeedtestPurgeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type PostV1SpeedtestRunData = {
     body?: never;
     path?: never;
