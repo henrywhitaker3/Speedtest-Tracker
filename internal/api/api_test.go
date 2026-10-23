@@ -5,10 +5,46 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
+	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/labstack/echo/v5"
 )
+
+func TestAuthMiddlewareRouteConfiguration(t *testing.T) {
+	tests := []struct {
+		method    string
+		path      string
+		auth      bool
+		adminOnly bool
+	}{
+		{method: http.MethodPost, path: "/v1/speedtest/run", auth: true},
+		{method: http.MethodDelete, path: "/v1/speedtest/purge", auth: true, adminOnly: true},
+		{method: http.MethodDelete, path: "/v1/speedtest/:id", auth: true, adminOnly: true},
+		{method: http.MethodGet, path: "/v1/auth/tokens", auth: true, adminOnly: true},
+		{method: http.MethodPost, path: "/v1/auth/tokens", auth: true, adminOnly: true},
+		{method: http.MethodDelete, path: "/v1/auth/tokens/:id", auth: true, adminOnly: true},
+		{method: http.MethodGet, path: "/v1/speedtest/latest"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.method+" "+tt.path, func(t *testing.T) {
+			if got := hasProtectedRoute(authRoutes(), tt.method, tt.path); got != tt.auth {
+				t.Errorf("authenticated = %t, want %t", got, tt.auth)
+			}
+			if got := hasProtectedRoute(adminRoutes(), tt.method, tt.path); got != tt.adminOnly {
+				t.Errorf("admin-only = %t, want %t", got, tt.adminOnly)
+			}
+		})
+	}
+}
+
+func hasProtectedRoute(routes authapi.ProtectedRoutes, method, path string) bool {
+	return slices.ContainsFunc(routes, func(route authapi.ProtectedRoute) bool {
+		return route.Method == method && route.Path == path
+	})
+}
 
 func TestCORSMiddleware(t *testing.T) {
 	tests := []struct {

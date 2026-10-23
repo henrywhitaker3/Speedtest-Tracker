@@ -48,9 +48,15 @@ func TestAdminMiddleware(t *testing.T) {
 			e.Use(AuthMiddleware(AuthMiddlewareOpts{
 				Service:    service,
 				AdminGroup: "speedtest-admins",
-				Routes:     []string{"/admin-only"},
+				Routes: ProtectedRoutes{{
+					Method: http.MethodGet,
+					Path:   "/admin-only",
+				}},
 			}))
-			e.Use(Admin(AdminOpts{Routes: []string{"/admin-only"}}))
+			e.Use(Admin(AdminOpts{Routes: ProtectedRoutes{{
+				Method: http.MethodGet,
+				Path:   "/admin-only",
+			}}}))
 			e.GET("/admin-only", func(c *echo.Context) error {
 				called = true
 				return c.NoContent(http.StatusNoContent)
@@ -79,9 +85,15 @@ func TestAdminMiddlewareRejectsAPIToken(t *testing.T) {
 	e := echo.New()
 	e.Use(AuthMiddleware(AuthMiddlewareOpts{
 		TokenRepo: tokenRepo,
-		Routes:    []string{"/admin-only"},
+		Routes: ProtectedRoutes{{
+			Method: http.MethodGet,
+			Path:   "/admin-only",
+		}},
 	}))
-	e.Use(Admin(AdminOpts{Routes: []string{"/admin-only"}}))
+	e.Use(Admin(AdminOpts{Routes: ProtectedRoutes{{
+		Method: http.MethodGet,
+		Path:   "/admin-only",
+	}}}))
 	e.GET("/admin-only", func(c *echo.Context) error {
 		called = true
 		return c.NoContent(http.StatusNoContent)

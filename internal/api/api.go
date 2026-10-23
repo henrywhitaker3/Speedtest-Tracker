@@ -57,19 +57,10 @@ func New(
 			Service:    host.Service(),
 			TokenRepo:  auth.NewRepo(db),
 			AdminGroup: conf.Auth.AdminGroup,
-			Routes: []string{
-				"/v1/speedtest/run",
-				"/v1/speedtest/purge",
-				"/v1/auth/tokens",
-				"/v1/auth/tokens/:id",
-			},
+			Routes:     authRoutes(),
 		}))
 		h.Use(authapi.Admin(authapi.AdminOpts{
-			Routes: []string{
-				"/v1/speedtest/purge",
-				"/v1/auth/tokens",
-				"/v1/auth/tokens/:id",
-			},
+			Routes: adminRoutes(),
 		}))
 	}
 
@@ -79,6 +70,27 @@ func New(
 	registerValidators(h)
 
 	return h, nil
+}
+
+func authRoutes() authapi.ProtectedRoutes {
+	return authapi.ProtectedRoutes{
+		{Method: stdhttp.MethodPost, Path: "/v1/speedtest/run"},
+		{Method: stdhttp.MethodDelete, Path: "/v1/speedtest/purge"},
+		{Method: stdhttp.MethodDelete, Path: "/v1/speedtest/:id"},
+		{Method: stdhttp.MethodGet, Path: "/v1/auth/tokens"},
+		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
+		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
+	}
+}
+
+func adminRoutes() authapi.ProtectedRoutes {
+	return authapi.ProtectedRoutes{
+		{Method: stdhttp.MethodDelete, Path: "/v1/speedtest/purge"},
+		{Method: stdhttp.MethodDelete, Path: "/v1/speedtest/:id"},
+		{Method: stdhttp.MethodGet, Path: "/v1/auth/tokens"},
+		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
+		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
+	}
 }
 
 func staticMiddleware(root string) echo.MiddlewareFunc {

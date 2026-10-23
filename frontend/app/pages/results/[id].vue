@@ -12,14 +12,21 @@
           {{ formatDatetime(new Date(result.created_at)) }}
         </p>
       </div>
-      <UButton
-        to="/"
-        color="neutral"
-        variant="outline"
-        icon="i-lucide-arrow-left"
-      >
-        All results
-      </UButton>
+
+      <div class="flex gap-2">
+        <UButton
+          to="/"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-arrow-left"
+        >
+          All results
+        </UButton>
+        <ResultsDeleteResult
+          :id="route.params.id"
+          variant="page"
+        />
+      </div>
     </div>
 
     <template v-if="isLoading">

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteV1AuthTokensByIdData, DeleteV1AuthTokensByIdErrors, DeleteV1AuthTokensByIdResponses, DeleteV1SpeedtestPurgeData, DeleteV1SpeedtestPurgeErrors, DeleteV1SpeedtestPurgeResponses, GetV1AuthTokensData, GetV1AuthTokensErrors, GetV1AuthTokensResponses, GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1AuthTokensData, PostV1AuthTokensErrors, PostV1AuthTokensResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
+import type { DeleteV1AuthTokensByIdData, DeleteV1AuthTokensByIdErrors, DeleteV1AuthTokensByIdResponses, DeleteV1SpeedtestByIdData, DeleteV1SpeedtestByIdErrors, DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestPurgeData, DeleteV1SpeedtestPurgeErrors, DeleteV1SpeedtestPurgeResponses, GetV1AuthTokensData, GetV1AuthTokensErrors, GetV1AuthTokensResponses, GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1AuthTokensData, PostV1AuthTokensErrors, PostV1AuthTokensResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -53,6 +53,11 @@ export const getV1Config = <ThrowOnError extends boolean = false>(options?: Opti
  * List speedtest results
  */
 export const getV1Speedtest = <ThrowOnError extends boolean = false>(options?: Options<GetV1SpeedtestData, ThrowOnError>): RequestResult<GetV1SpeedtestResponses, GetV1SpeedtestErrors, ThrowOnError> => (options?.client ?? client).get<GetV1SpeedtestResponses, GetV1SpeedtestErrors, ThrowOnError>({ url: '/v1/speedtest', ...options });
+
+/**
+ * Delete result
+ */
+export const deleteV1SpeedtestById = <ThrowOnError extends boolean = false>(options: Options<DeleteV1SpeedtestByIdData, ThrowOnError>): RequestResult<DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestByIdErrors, ThrowOnError>({ url: '/v1/speedtest/{id}', ...options });
 
 /**
  * Get result

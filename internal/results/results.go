@@ -155,6 +155,13 @@ func (r *Repository) PurgeErrors(ctx context.Context) error {
 	return nil
 }
 
+func (r *Repository) Delete(ctx context.Context, id uuid.UUID) error {
+	if _, err := gorm.G[Result](r.db).Where("id = ?", id).Delete(ctx); err != nil {
+		return fmt.Errorf("delete result: %w", err)
+	}
+	return nil
+}
+
 func Register(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&Result{},

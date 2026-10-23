@@ -51,9 +51,25 @@ type tokenRepo interface {
 	Validate(context.Context, string) error
 }
 
+type ProtectedRoute struct {
+	Method string
+	Path   string
+}
+
+type ProtectedRoutes []ProtectedRoute
+
+func (p ProtectedRoutes) Contains(c *echo.Context) bool {
+	for _, r := range p {
+		if c.Request().Method == r.Method && c.Path() == r.Path {
+			return true
+		}
+	}
+	return false
+}
+
 type AuthMiddlewareOpts struct {
 	// Routes are a slice of routes that should be protected behind auth
-	Routes []string
+	Routes ProtectedRoutes
 
 	Service    actorInvoker
 	TokenRepo  tokenRepo
@@ -66,7 +82,7 @@ func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 			ctx, span := tracing.NewSpan(c.Request().Context(), "Authenticate")
 			defer span.End()
 
-			if !slices.Contains(opts.Routes, c.Path()) {
+			if !opts.Routes.Contains(c) {
 				span.End()
 				return next(c)
 			}
@@ -91,7 +107,7 @@ func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 }
 
 type AdminOpts struct {
-	Routes []string
+	Routes ProtectedRoutes
 }
 
 func Admin(opts AdminOpts) echo.MiddlewareFunc {
@@ -100,7 +116,7 @@ func Admin(opts AdminOpts) echo.MiddlewareFunc {
 			_, span := tracing.NewSpan(c.Request().Context(), "Authorise")
 			defer span.End()
 
-			if !slices.Contains(opts.Routes, c.Path()) {
+			if !opts.Routes.Contains(c) {
 				span.End()
 				return next(c)
 			}

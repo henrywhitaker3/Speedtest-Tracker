@@ -16,7 +16,10 @@ func TestDeleteTokenHandlerRequiresAuthentication(t *testing.T) {
 	h.Use(SessionMiddleware())
 	h.Use(AuthMiddleware(AuthMiddlewareOpts{
 		TokenRepo: repo,
-		Routes:    []string{"/v1/auth/tokens/:id"},
+		Routes: ProtectedRoutes{{
+			Method: http.MethodDelete,
+			Path:   "/v1/auth/tokens/:id",
+		}},
 	}))
 	h.Register(&deleteHandler{repo: repo})
 

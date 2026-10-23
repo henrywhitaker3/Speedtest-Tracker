@@ -43,6 +43,7 @@ import { PulseLoader } from 'vue-spinner'
 import { useRefreshData } from '~/events/speedtest'
 import type { TableColumn } from '@nuxt/ui'
 import RelativeDate from '../RelativeDate.vue'
+import RowActions from './RowActions.vue'
 
 const data = ref<Paginated>()
 const page = ref(1)
@@ -148,8 +149,8 @@ const columns: TableColumn<ResultsResult>[] = [
     header: '',
     cell: ({ row }) => {
       return h(
-        TableLink,
-        { to: `/results/${row.getValue('id')}` }
+        RowActions,
+        { id: row.getValue('id') }
       )
     }
   }

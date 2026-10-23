@@ -16,7 +16,10 @@ func TestListTokensHandlerRequiresAuthentication(t *testing.T) {
 	h.Use(SessionMiddleware())
 	h.Use(AuthMiddleware(AuthMiddlewareOpts{
 		TokenRepo: repo,
-		Routes:    []string{"/v1/auth/tokens"},
+		Routes: ProtectedRoutes{{
+			Method: http.MethodGet,
+			Path:   "/v1/auth/tokens",
+		}},
 	}))
 	h.Register(&listTokensHandler{repo: repo})
 

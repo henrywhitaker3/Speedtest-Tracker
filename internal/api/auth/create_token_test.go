@@ -37,7 +37,10 @@ func TestCreateTokenHandlerRequiresAuthentication(t *testing.T) {
 	h.Use(SessionMiddleware())
 	h.Use(AuthMiddleware(AuthMiddlewareOpts{
 		TokenRepo: repo,
-		Routes:    []string{"/v1/auth/tokens"},
+		Routes: ProtectedRoutes{{
+			Method: http.MethodPost,
+			Path:   "/v1/auth/tokens",
+		}},
 	}))
 	h.Register(&createHandler{repo: repo})
 

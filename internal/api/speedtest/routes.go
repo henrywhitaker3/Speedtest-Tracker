@@ -35,6 +35,7 @@ func Register(h *http.HTTP, db *gorm.DB, host *local.Host) error {
 	h.Register(&latestHandler{repo: repo})
 	h.Register(&timeseriesHandler{repo: repo})
 	h.Register(&purgeHandler{repo: repo})
+	h.Register(&deleteHandler{repo: repo})
 
 	return nil
 }

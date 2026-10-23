@@ -288,6 +288,45 @@ export type GetV1SpeedtestResponses = {
 
 export type GetV1SpeedtestResponse = GetV1SpeedtestResponses[keyof GetV1SpeedtestResponses];
 
+export type DeleteV1SpeedtestByIdData = {
+    body?: never;
+    path: {
+        id: UuidUuid;
+    };
+    query?: never;
+    url: '/v1/speedtest/{id}';
+};
+
+export type DeleteV1SpeedtestByIdErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type DeleteV1SpeedtestByIdError = DeleteV1SpeedtestByIdErrors[keyof DeleteV1SpeedtestByIdErrors];
+
+export type DeleteV1SpeedtestByIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type GetV1SpeedtestByIdData = {
     body?: never;
     path: {

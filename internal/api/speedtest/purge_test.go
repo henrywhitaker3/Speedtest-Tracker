@@ -55,17 +55,21 @@ func TestPurgeEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &purgeRepoStub{}
-			service := &purgeSessionInvokerStub{groups: tt.groups}
+			service := &authenticatedSessionInvokerStub{groups: tt.groups}
 			h := windowhttp.New(windowhttp.HTTPOpts{})
 			h.Use(authapi.SessionMiddleware())
 			h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
 				Service:    service,
 				AdminGroup: "administrators",
-				Routes:     []string{"/v1/speedtest/purge"},
+				Routes: authapi.ProtectedRoutes{{
+					Method: http.MethodDelete,
+					Path:   "/v1/speedtest/purge",
+				}},
 			}))
-			h.Use(authapi.Admin(authapi.AdminOpts{
-				Routes: []string{"/v1/speedtest/purge"},
-			}))
+			h.Use(authapi.Admin(authapi.AdminOpts{Routes: authapi.ProtectedRoutes{{
+				Method: http.MethodDelete,
+				Path:   "/v1/speedtest/purge",
+			}}}))
 			h.Register(&purgeHandler{repo: repo})
 
 			req := httptest.NewRequest(http.MethodDelete, "/v1/speedtest/purge", nil)
@@ -105,11 +109,11 @@ func (r *purgeRepoStub) PurgeErrors(context.Context) error {
 	return r.err
 }
 
-type purgeSessionInvokerStub struct {
+type authenticatedSessionInvokerStub struct {
 	groups []string
 }
 
-func (s *purgeSessionInvokerStub) Invoke(
+func (s *authenticatedSessionInvokerStub) Invoke(
 	_ context.Context,
 	actorType, _ string,
 	method string,
@@ -119,14 +123,14 @@ func (s *purgeSessionInvokerStub) Invoke(
 	if actorType != authactor.Actor || method != authactor.Session {
 		return nil, errors.New("unexpected actor invocation")
 	}
-	return purgeSessionEnvelope{groups: s.groups}, nil
+	return authenticatedSessionEnvelope{groups: s.groups}, nil
 }
 
-type purgeSessionEnvelope struct {
+type authenticatedSessionEnvelope struct {
 	groups []string
 }
 
-func (e purgeSessionEnvelope) Decode(into any) error {
+func (e authenticatedSessionEnvelope) Decode(into any) error {
 	*into.(*authactor.AuthenticateResult) = authactor.AuthenticateResult{Groups: e.groups}
 	return nil
 }
