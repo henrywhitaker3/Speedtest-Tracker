@@ -9,7 +9,6 @@ import (
 
 	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
-	"github.com/italypaleale/francis/actor"
 	"github.com/labstack/echo/v5"
 )
 
@@ -46,7 +45,7 @@ type AuthMiddlewareOpts struct {
 	// Routes are a slice of routes that should be protected behind auth
 	Routes []string
 
-	Service *actor.Service
+	Service actorInvoker
 }
 
 func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
