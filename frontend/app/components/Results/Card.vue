@@ -18,7 +18,7 @@
           name="i-lucide-circle-alert"
           class="size-8 shrink-0"
         />
-        <span class="min-w-0 flex-1 truncate">Something went wrong</span>
+        <span class="min-w-0 flex-1 truncate">Test didn't run successfully</span>
       </div>
       <PulseLoader
         v-else-if="!props.result.complete"

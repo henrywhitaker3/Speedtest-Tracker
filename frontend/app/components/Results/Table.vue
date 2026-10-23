@@ -89,6 +89,11 @@ const columns: TableColumn<ResultsResult>[] = [
           size: '0.4rem'
         })
       }
+
+      if (row.original.error) {
+        return '-'
+      }
+
       return row.getValue('ping') + ' ms'
     }
   },
@@ -102,6 +107,11 @@ const columns: TableColumn<ResultsResult>[] = [
           size: '0.4rem'
         })
       }
+
+      if (row.original.error) {
+        return '-'
+      }
+
       const fmt = useSpeedFormat(row.getValue('download'))
       return `${fmt.value} ${fmt.unit}`
     }
@@ -116,6 +126,11 @@ const columns: TableColumn<ResultsResult>[] = [
           size: '0.4rem'
         })
       }
+
+      if (row.original.error) {
+        return '-'
+      }
+
       const fmt = useSpeedFormat(row.getValue('upload'))
       return `${fmt.value} ${fmt.unit}`
     }
