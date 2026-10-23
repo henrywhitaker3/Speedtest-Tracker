@@ -36,6 +36,7 @@ type Config struct {
 	Runtime  Runtime  `env:",prefix=RUNTIME_"`
 
 	Schedule string `env:"TEST_SCHEDULE, default=5 */2 * * *"`
+	Server   int    `env:"TEST_SERVER"`
 }
 
 func Load() (*Config, error) {

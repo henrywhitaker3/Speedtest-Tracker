@@ -51,7 +51,12 @@ func Bootstrap(
 		return nil, nil, fmt.Errorf("init runtime: %w", err)
 	}
 
-	if err := ookla.RegisterActor(host, results.NewRepo(db), conf.Schedule); err != nil {
+	if err := ookla.RegisterActor(
+		host,
+		results.NewRepo(db),
+		conf.Schedule,
+		conf.Server,
+	); err != nil {
 		return nil, nil, fmt.Errorf("register ookla actors: %w", err)
 	}
 

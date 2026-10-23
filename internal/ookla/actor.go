@@ -21,8 +21,8 @@ type ResultRepo interface {
 	Update(context.Context, *results.Result) error
 }
 
-func RegisterActor(host *local.Host, db ResultRepo, schedule string) error {
-	if err := host.RegisterActor(Actor, newActor(db)); err != nil {
+func RegisterActor(host *local.Host, db ResultRepo, schedule string, server int) error {
+	if err := host.RegisterActor(Actor, newActor(db, server)); err != nil {
 		return fmt.Errorf("register speedtest actor: %w", err)
 	}
 	job, err := newTestCronjob(host.Service(), schedule)
@@ -35,11 +35,12 @@ func RegisterActor(host *local.Host, db ResultRepo, schedule string) error {
 	return nil
 }
 
-func newActor(db ResultRepo) actor.Factory {
+func newActor(db ResultRepo, server int) actor.Factory {
 	return func(actorID string, service *actor.Service) actor.Actor {
 		return &Speedtest{
 			client: actor.NewActorClient[speedtestState](Actor, actorID, service),
 			db:     db,
+			server: server,
 		}
 	}
 }
@@ -47,6 +48,7 @@ func newActor(db ResultRepo) actor.Factory {
 type Speedtest struct {
 	client actor.Client[speedtestState]
 	db     ResultRepo
+	server int
 }
 
 type speedtestState struct {
@@ -123,7 +125,7 @@ func (s *Speedtest) runTest(ctx context.Context) error {
 	}
 
 	slog.InfoContext(ctx, "running speedtest")
-	if err := Run(ctx, 0, state.Result); err != nil {
+	if err := Run(ctx, s.server, state.Result); err != nil {
 		slog.WarnContext(ctx, "speedtest failed", "error", err)
 		return s.testFailed(ctx, state.Result, err)
 	}
