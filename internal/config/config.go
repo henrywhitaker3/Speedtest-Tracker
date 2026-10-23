@@ -34,7 +34,7 @@ type Auth struct {
 	IssuerURL    string                `env:"ISSUER_URL"`
 	ClientID     string                `env:"CLIENT_ID"`
 	ClientSecret config.RedactedString `env:"CLIENT_SECRET"`
-	Claims       string                `env:"SCOPES, default=openid profile email groups offline_access"`
+	Scopes       string                `env:"SCOPES, default=openid profile email groups offline_access"`
 	GroupsClaim  string                `env:"GROUPS_CLAIM, default=groups"`
 	AdminGroup   string                `env:"ADMIN_GROUP, default=admin"`
 }
@@ -44,7 +44,7 @@ func (a Auth) vaildate() error {
 		return nil
 	}
 
-	if a.IssuerURL != "" && a.ClientID != "" && a.ClientSecret != "" && a.Claims != "" &&
+	if a.IssuerURL != "" && a.ClientID != "" && a.ClientSecret != "" && a.Scopes != "" &&
 		a.GroupsClaim != "" &&
 		a.AdminGroup != "" {
 		return nil
