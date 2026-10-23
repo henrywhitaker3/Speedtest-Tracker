@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	stdhttp "net/http"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -35,7 +36,7 @@ func New(url, version, static string, db *gorm.DB, host *local.Host) (*http.HTTP
 	h.Use(mw.Metrics("Speedtest-Tracker", prometheus.DefaultRegisterer))
 	h.Use(mw.Logger())
 	h.Use(corsMiddleware())
-	h.Use(middleware.Static(static))
+	h.Use(staticMiddleware(static))
 
 	if err := registerRoutes(h, db, host); err != nil {
 		return nil, err
@@ -43,6 +44,17 @@ func New(url, version, static string, db *gorm.DB, host *local.Host) (*http.HTTP
 	registerValidators(h)
 
 	return h, nil
+}
+
+func staticMiddleware(root string) echo.MiddlewareFunc {
+	return middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:  root,
+		HTML5: true,
+		Skipper: func(c *echo.Context) bool {
+			path := c.Request().URL.Path
+			return path == "/v1" || strings.HasPrefix(path, "/v1/")
+		},
+	})
 }
 
 func registerRoutes(h *http.HTTP, db *gorm.DB, host *local.Host) error {
