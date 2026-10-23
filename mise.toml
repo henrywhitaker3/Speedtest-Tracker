@@ -4,6 +4,7 @@
 go = "1.27.3"
 gotestsum = "1.13.0"
 jq = "1.8.2"
+git-cliff = "v2.13.1"
 
 [tasks.dev]
 description = "Bring up dev things"
@@ -14,17 +15,17 @@ description = "Build the static UI served by the API"
 dir = "frontend"
 run = "mise exec -- pnpm build"
 sources = [
-    "app/**",
-    "assets/**",
-    "components/**",
-    "layouts/**",
-    "pages/**",
-    "plugins/**",
-    "public/**",
-    "mise.toml",
-    "nuxt.config.ts",
-    "package.json",
-    "pnpm-lock.yaml",
+  "app/**",
+  "assets/**",
+  "components/**",
+  "layouts/**",
+  "pages/**",
+  "plugins/**",
+  "public/**",
+  "mise.toml",
+  "nuxt.config.ts",
+  "package.json",
+  "pnpm-lock.yaml",
 ]
 outputs = [".output/public/_nuxt/**"]
 
@@ -44,3 +45,8 @@ run = "curl -X POST -s http://localhost:8080/v1/speedtest/run | jq"
 [tasks.test]
 description = "Run the unit tests"
 run = "gotestsum --format testname --packages ./..."
+
+[tasks.release]
+description = "Release a new version of the app"
+shell = "/bin/bash"
+run = "./hack/release.sh"
