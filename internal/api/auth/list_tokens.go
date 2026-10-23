@@ -34,9 +34,7 @@ func (l *listTokensHandler) Handler() handlers.Handler[any, []auth.Token] {
 }
 
 func (l *listTokensHandler) Middleware() []echo.MiddlewareFunc {
-	return []echo.MiddlewareFunc{
-		Admin(),
-	}
+	return nil
 }
 
 func (l *listTokensHandler) Metadata() handlers.Metadata {

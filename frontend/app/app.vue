@@ -39,7 +39,7 @@
 
         <NuxtLink>
           <UButton
-            v-if="config.authEnabled() && auth.isAdmin()"
+            v-if="!config.authEnabled() || auth.isAdmin()"
             to="/settings"
             icon="i-lucide-settings"
             aria-label="Settings"

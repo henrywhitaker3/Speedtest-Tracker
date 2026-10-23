@@ -63,6 +63,9 @@ func TestPurgeEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 				AdminGroup: "administrators",
 				Routes:     []string{"/v1/speedtest/purge"},
 			}))
+			h.Use(authapi.Admin(authapi.AdminOpts{
+				Routes: []string{"/v1/speedtest/purge"},
+			}))
 			h.Register(&purgeHandler{repo: repo})
 
 			req := httptest.NewRequest(http.MethodDelete, "/v1/speedtest/purge", nil)

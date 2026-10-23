@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
@@ -33,9 +32,7 @@ func (p *purgeHandler) Handler() handlers.Handler[any, any] {
 }
 
 func (p *purgeHandler) Middleware() []echo.MiddlewareFunc {
-	return []echo.MiddlewareFunc{
-		auth.Admin(),
-	}
+	return nil
 }
 
 func (p *purgeHandler) Metadata() handlers.Metadata {

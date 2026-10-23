@@ -37,9 +37,7 @@ func (d *deleteHandler) Handler() handlers.Handler[DeleteRequest, any] {
 }
 
 func (d *deleteHandler) Middleware() []echo.MiddlewareFunc {
-	return []echo.MiddlewareFunc{
-		Admin(),
-	}
+	return nil
 }
 
 func (d *deleteHandler) Metadata() handlers.Metadata {

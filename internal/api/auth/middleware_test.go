@@ -50,10 +50,11 @@ func TestAdminMiddleware(t *testing.T) {
 				AdminGroup: "speedtest-admins",
 				Routes:     []string{"/admin-only"},
 			}))
+			e.Use(Admin(AdminOpts{Routes: []string{"/admin-only"}}))
 			e.GET("/admin-only", func(c *echo.Context) error {
 				called = true
 				return c.NoContent(http.StatusNoContent)
-			}, Admin())
+			})
 
 			req := httptest.NewRequest(http.MethodGet, "/admin-only", nil)
 			if tt.withCookie {
@@ -80,10 +81,11 @@ func TestAdminMiddlewareRejectsAPIToken(t *testing.T) {
 		TokenRepo: tokenRepo,
 		Routes:    []string{"/admin-only"},
 	}))
+	e.Use(Admin(AdminOpts{Routes: []string{"/admin-only"}}))
 	e.GET("/admin-only", func(c *echo.Context) error {
 		called = true
 		return c.NoContent(http.StatusNoContent)
-	}, Admin())
+	})
 
 	req := httptest.NewRequest(http.MethodGet, "/admin-only", nil)
 	req.Header.Set(echo.HeaderAuthorization, "Bearer valid-api-token")

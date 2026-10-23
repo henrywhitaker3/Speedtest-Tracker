@@ -63,10 +63,11 @@ type AuthMiddlewareOpts struct {
 func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
-			ctx, span := tracing.NewSpan(c.Request().Context(), "Authentication")
+			ctx, span := tracing.NewSpan(c.Request().Context(), "Authenticate")
 			defer span.End()
 
 			if !slices.Contains(opts.Routes, c.Path()) {
+				span.End()
 				return next(c)
 			}
 
@@ -89,12 +90,26 @@ func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 	}
 }
 
-func Admin() echo.MiddlewareFunc {
+type AdminOpts struct {
+	Routes []string
+}
+
+func Admin(opts AdminOpts) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
-			if admin, ok := c.Get("admin").(bool); ok && admin {
+			_, span := tracing.NewSpan(c.Request().Context(), "Authorise")
+			defer span.End()
+
+			if !slices.Contains(opts.Routes, c.Path()) {
+				span.End()
 				return next(c)
 			}
+
+			if admin, ok := c.Get("admin").(bool); ok && admin {
+				span.End()
+				return next(c)
+			}
+
 			return echo.NewHTTPError(http.StatusForbidden, "forbidden")
 		}
 	}

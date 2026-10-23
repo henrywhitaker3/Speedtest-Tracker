@@ -26,7 +26,7 @@
     </dl>
   </UCard>
 
-  <UCard>
+  <UCard v-if="configStore.authEnabled()">
     <template #header>
       <h2 class="text-lg font-semibold">
         Authentication

@@ -62,6 +62,13 @@ func New(
 				"/v1/auth/tokens/:id",
 			},
 		}))
+		h.Use(authapi.Admin(authapi.AdminOpts{
+			Routes: []string{
+				"/v1/speedtest/purge",
+				"/v1/auth/tokens",
+				"/v1/auth/tokens/:id",
+			},
+		}))
 	}
 
 	if err := registerRoutes(h, db, host, conf); err != nil {
