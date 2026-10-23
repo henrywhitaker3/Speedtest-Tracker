@@ -8,10 +8,9 @@ require (
 	github.com/henrywhitaker3/windowframe/v2 v2.6.5
 	github.com/italypaleale/francis v0.1.2
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo/v5 v5.4.0
+	github.com/labstack/echo/v5 v5.4.2
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
-	github.com/prometheus/client_model v0.6.3
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.2
@@ -75,6 +74,7 @@ require (
 	github.com/paulmach/orb v0.11.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/prometheus/client_model v0.6.3 // indirect
 	github.com/prometheus/common v0.72.1 // indirect
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
