@@ -47,6 +47,16 @@ func New(
 	h.Use(corsMiddleware(conf.App.UIURL))
 	h.Use(staticMiddleware(conf.App.UIDir))
 
+	if conf.Auth.Enabled {
+		h.Use(authapi.SessionMiddleware())
+		h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
+			Service: host.Service(),
+			Routes: []string{
+				"/v1/speedtest/run",
+			},
+		}))
+	}
+
 	if err := registerRoutes(h, db, host, conf); err != nil {
 		return nil, err
 	}

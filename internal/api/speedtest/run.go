@@ -44,16 +44,23 @@ func (r *runHandler) Handler() handlers.Handler[any, RunResponse] {
 		ctx, span := tracing.NewSpan(c.Request().Context(), "Run speedtest")
 		defer span.End()
 
-		if allowed, _, err := r.limiter.Allow(ctx, "test"); err != nil || !allowed {
+		limitCtx, span := tracing.NewSpan(ctx, "Check rate limiter")
+		defer span.End()
+		if allowed, _, err := r.limiter.Allow(limitCtx, "test"); err != nil || !allowed {
 			return nil, echo.ErrTooManyRequests
 		}
+		span.End()
 
 		id, _ := uuid.New()
 
-		raw, err := r.service.Invoke(ctx, ookla.Actor, id.String(), ookla.Onboard, nil)
+		runCtx, span := tracing.NewSpan(ctx, "Invoke actor run")
+		defer span.End()
+		raw, err := r.service.Invoke(runCtx, ookla.Actor, id.String(), ookla.Onboard, nil)
 		if err != nil {
 			return nil, httperrors.Stack(err)
 		}
+		span.End()
+
 		var result results.Result
 		if err := raw.Decode(&result); err != nil {
 			return nil, httperrors.Stack(err)

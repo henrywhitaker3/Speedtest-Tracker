@@ -61,7 +61,11 @@ func Bootstrap(
 		return nil, nil, fmt.Errorf("register ookla actors: %w", err)
 	}
 	if conf.Auth.Enabled {
-		if err := auth.RegisterActor(conf.Auth, host); err != nil {
+		if err := auth.RegisterActor(
+			conf.Auth,
+			auth.CallbackURL(conf.App.URL),
+			host,
+		); err != nil {
 			return nil, nil, fmt.Errorf("register auth actor: %w", err)
 		}
 	}
