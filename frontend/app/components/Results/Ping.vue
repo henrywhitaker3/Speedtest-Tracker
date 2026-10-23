@@ -50,6 +50,7 @@ import { curveMonotoneX } from 'd3-shape'
 
 const props = defineProps<{
   data: ResultsStat[]
+  timeDomain?: readonly [Date, Date]
 }>()
 
 const chartData = computed(() => {
@@ -70,16 +71,7 @@ const chartData = computed(() => {
 
 const formatPing = (value: number) => `${value} ms`
 
-const formatTimestamp = (value: Date | number | string) => {
-  const date = value instanceof Date ? value : new Date(value)
-
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date)
-}
+const { formatTimestamp } = useDate()
 
 const definition = computed(() => {
   return defineChart({
@@ -96,7 +88,7 @@ const definition = computed(() => {
     ],
     scales: {
       x: {
-        scale: scaleTime,
+        scale: props.timeDomain ? scaleTime().domain(props.timeDomain) : scaleTime,
         axis: {
           label: 'Time',
           ticks: { format: formatTimestamp }

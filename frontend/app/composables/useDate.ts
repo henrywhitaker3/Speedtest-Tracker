@@ -18,6 +18,17 @@ export default function useDate() {
     )
   }
 
+  const formatTimestamp = (value: Date | number | string) => {
+    const date = value instanceof Date ? value : new Date(value)
+
+    return new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date)
+  }
+
   const zeroPad = (input: string | number) => {
     return ('0' + input).slice(-2)
   }
@@ -28,6 +39,7 @@ export default function useDate() {
 
   return {
     relativeDate,
-    formatDatetime
+    formatDatetime,
+    formatTimestamp
   }
 }

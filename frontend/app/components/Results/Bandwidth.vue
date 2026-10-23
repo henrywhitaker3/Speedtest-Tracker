@@ -51,6 +51,7 @@ import { curveMonotoneX } from 'd3-shape'
 
 const props = defineProps<{
   data: ResultsStat[]
+  timeDomain?: readonly [Date, Date]
 }>()
 
 const bytesPerSecondToMbitPerSecond = (bytesPerSecond: number) => {
@@ -88,16 +89,7 @@ const formatMbitPerSecond = (value: number) => {
   return `${new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1 }).format(value)} Mbit/s`
 }
 
-const formatTimestamp = (value: Date | number | string) => {
-  const date = value instanceof Date ? value : new Date(value)
-
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date)
-}
+const { formatTimestamp } = useDate()
 
 const definition = computed(() => {
   return defineChart({
@@ -115,7 +107,7 @@ const definition = computed(() => {
     ],
     scales: {
       x: {
-        scale: scaleTime,
+        scale: props.timeDomain ? scaleTime().domain(props.timeDomain) : scaleTime,
         axis: {
           label: 'Time',
           ticks: { format: formatTimestamp }
