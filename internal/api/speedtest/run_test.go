@@ -4,39 +4,59 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
+	"github.com/labstack/echo/v5"
 )
 
 func TestRunHandler(t *testing.T) {
-	result := results.Result{BaseModel: database.BaseModel{ID: uuid.MustOrdered()}}
+	result := results.Result{ID: uuid.MustOrdered()}
 	invokeErr := errors.New("invoke failed")
 	decodeErr := errors.New("decode failed")
+	limiterErr := errors.New("limiter failed")
 
 	tests := []struct {
-		name      string
-		invokeErr error
-		decodeErr error
-		wantID    uuid.UUID
-		wantErr   error
+		name           string
+		limiterAllowed bool
+		limiterErr     error
+		invokeErr      error
+		decodeErr      error
+		wantID         uuid.UUID
+		wantErr        error
+		wantInvoked    bool
 	}{
 		{
-			name:   "returns actor result ID",
-			wantID: result.ID,
+			name:           "returns actor result ID",
+			limiterAllowed: true,
+			wantID:         result.ID,
+			wantInvoked:    true,
 		},
 		{
-			name:      "wraps actor error",
-			invokeErr: invokeErr,
-			wantErr:   invokeErr,
+			name:           "wraps actor error",
+			limiterAllowed: true,
+			invokeErr:      invokeErr,
+			wantErr:        invokeErr,
+			wantInvoked:    true,
 		},
 		{
-			name:      "wraps decode error",
-			decodeErr: decodeErr,
-			wantErr:   decodeErr,
+			name:           "wraps decode error",
+			limiterAllowed: true,
+			decodeErr:      decodeErr,
+			wantErr:        decodeErr,
+			wantInvoked:    true,
+		},
+		{
+			name:    "rejects rate limited request",
+			wantErr: echo.ErrTooManyRequests,
+		},
+		{
+			name:       "rejects limiter error",
+			limiterErr: limiterErr,
+			wantErr:    echo.ErrTooManyRequests,
 		},
 	}
 
@@ -46,7 +66,8 @@ func TestRunHandler(t *testing.T) {
 				envelope: envelopeStub{result: result, err: tt.decodeErr},
 				err:      tt.invokeErr,
 			}
-			handler := (&runHandler{service: service}).Handler()
+			limiter := &rateLimiterStub{allowed: tt.limiterAllowed, err: tt.limiterErr}
+			handler := (&runHandler{service: service, limiter: limiter}).Handler()
 
 			got, err := handler(testContext(t), nil)
 			if !errors.Is(err, tt.wantErr) {
@@ -55,14 +76,22 @@ func TestRunHandler(t *testing.T) {
 			if tt.wantErr == nil && (got == nil || got.ID != tt.wantID) {
 				t.Errorf("Handler() result = %v, want ID %q", got, tt.wantID)
 			}
-			if service.actorType != ookla.Actor {
+			if tt.wantInvoked && service.actorType != ookla.Actor {
 				t.Errorf("actor type = %q, want %q", service.actorType, ookla.Actor)
 			}
-			if service.method != ookla.Onboard {
+			if tt.wantInvoked && service.method != ookla.Onboard {
 				t.Errorf("actor method = %q, want %q", service.method, ookla.Onboard)
 			}
 			if service.actorID == "" {
-				t.Error("actor ID is empty")
+				if tt.wantInvoked {
+					t.Error("actor ID is empty")
+				}
+			}
+			if service.invoked != tt.wantInvoked {
+				t.Errorf("actor invoked = %t, want %t", service.invoked, tt.wantInvoked)
+			}
+			if limiter.key != "test" {
+				t.Errorf("limiter key = %q, want %q", limiter.key, "test")
 			}
 		})
 	}
@@ -74,6 +103,7 @@ type actorInvokerStub struct {
 	actorType string
 	actorID   string
 	method    string
+	invoked   bool
 }
 
 func (s *actorInvokerStub) Invoke(
@@ -82,10 +112,22 @@ func (s *actorInvokerStub) Invoke(
 	_ any,
 	_ ...actor.InvokeOption,
 ) (actor.Envelope, error) {
+	s.invoked = true
 	s.actorType = actorType
 	s.actorID = actorID
 	s.method = method
 	return s.envelope, s.err
+}
+
+type rateLimiterStub struct {
+	allowed bool
+	err     error
+	key     string
+}
+
+func (s *rateLimiterStub) Allow(_ context.Context, key string) (bool, time.Duration, error) {
+	s.key = key
+	return s.allowed, 0, s.err
 }
 
 type envelopeStub struct {
