@@ -22,6 +22,11 @@ const pollLatest = async () => {
       return
     }
 
+    if (result.error) {
+      await new Promise(resolve => setTimeout(resolve, 10_000))
+      continue
+    }
+
     if (!latest.value || latest.value.id !== result.data?.id) {
       latest.value = result.data
       refreshData()
