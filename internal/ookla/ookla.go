@@ -42,12 +42,33 @@ var (
 		},
 		[]string{"server_id"},
 	)
+	speedtestDownloadBytesPerSecond = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "speedtest_download_bytes_per_second",
+		},
+		[]string{"server_id"},
+	)
+	speedtestUploadBytesPerSecond = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "speedtest_upload_bytes_per_second",
+		},
+		[]string{"server_id"},
+	)
+	speedtestPingMilliseconds = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "speedtest_ping_milliseconds",
+		},
+		[]string{"server_id"},
+	)
 )
 
 func init() {
 	prometheus.MustRegister(speedtestsRun)
 	prometheus.MustRegister(speedtestErrors)
 	prometheus.MustRegister(speedtestDurationSeconds)
+	prometheus.MustRegister(speedtestDownloadBytesPerSecond)
+	prometheus.MustRegister(speedtestUploadBytesPerSecond)
+	prometheus.MustRegister(speedtestPingMilliseconds)
 }
 
 func Run(ctx context.Context, server int, result *results.Result) error {
@@ -76,9 +97,15 @@ func Run(ctx context.Context, server int, result *results.Result) error {
 	}
 	slog.DebugContext(ctx, "got parsed speedtest output", "output", output)
 
-	speedtestsRun.WithLabelValues(fmt.Sprint(output.Server.ID)).Inc()
-	speedtestDurationSeconds.WithLabelValues(fmt.Sprint(output.Server.ID)).
+	labels := []string{fmt.Sprint(output.Server.ID)}
+	speedtestsRun.WithLabelValues(labels...).Inc()
+	speedtestDurationSeconds.WithLabelValues(labels...).
 		Observe(time.Since(start).Seconds())
+	speedtestPingMilliseconds.WithLabelValues(labels...).Set(output.Ping.Latency)
+	speedtestDownloadBytesPerSecond.WithLabelValues(labels...).
+		Set(float64(output.Download.Bandwidth))
+	speedtestUploadBytesPerSecond.WithLabelValues(labels...).
+		Set(float64(output.Upload.Bandwidth))
 
 	result.Ping = new(output.Ping.Latency)
 	result.Download = new(int64(output.Download.Bandwidth))
