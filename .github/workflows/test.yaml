@@ -53,4 +53,4 @@ jobs:
         run: |
           cd frontend
           mise exec -- pnpm i
-          mise buil
+          mise build
