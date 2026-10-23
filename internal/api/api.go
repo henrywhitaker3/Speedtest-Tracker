@@ -47,7 +47,7 @@ func New(
 	h.Use(middleware.Recover())
 	h.Use(mw.Tracing(serviceName))
 	h.Use(mw.Metrics(serviceName, prometheus.DefaultRegisterer))
-	h.Use(mw.Logger())
+	h.Use(mw.LoggerAt(slog.LevelDebug))
 	h.Use(corsMiddleware(conf.App.UIURL))
 	h.Use(staticMiddleware(conf.App.UIDir))
 
