@@ -326,6 +326,15 @@ func newAuthActor(conf config.Auth, callbackURL string) actor.Factory {
 			client:      actor.NewActorClient[authState](Actor, actorID, service),
 			config:      conf,
 			callbackURL: callbackURL,
+			authorizer: oidcAuthorizationURLBuilder{
+				config:      conf,
+				callbackURL: callbackURL,
+			},
+			exchanger: oidcTokenExchanger{
+				config:      conf,
+				callbackURL: callbackURL,
+			},
+			refresher: oidcTokenRefresher{config: conf},
 		}
 	}
 }

@@ -53,6 +53,7 @@ func New(
 			Service: host.Service(),
 			Routes: []string{
 				"/v1/speedtest/run",
+				"/v1/auth/tokens",
 			},
 		}))
 	}
@@ -83,7 +84,7 @@ func registerRoutes(
 	host *local.Host,
 	conf *config.Config,
 ) error {
-	if err := authapi.RegisterRoutes(h, host, conf); err != nil {
+	if err := authapi.RegisterRoutes(h, host, db, conf); err != nil {
 		return fmt.Errorf("register auth routes: %w", err)
 	}
 	if err := speedtest.Register(h, db, host); err != nil {

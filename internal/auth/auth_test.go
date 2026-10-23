@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/italypaleale/francis/actor"
 )
 
@@ -58,6 +59,26 @@ func TestInvokeAuthenticateStoresOIDCResponse(t *testing.T) {
 	}
 	if !reflect.DeepEqual(result, want) {
 		t.Errorf("result = %#v, want %#v", result, want)
+	}
+}
+
+func TestNewAuthActorConfiguresOIDCDependencies(t *testing.T) {
+	conf := config.Auth{IssuerURL: "https://issuer.example", ClientID: "client-id"}
+	callbackURL := "https://speedtest.example/v1/auth/callback"
+
+	auth, ok := newAuthActor(conf, callbackURL)("session-id", nil).(*Auth)
+	if !ok {
+		t.Fatal("newAuthActor() did not create an Auth actor")
+	}
+
+	if _, ok := auth.authorizer.(oidcAuthorizationURLBuilder); !ok {
+		t.Errorf("authorizer = %T, want oidcAuthorizationURLBuilder", auth.authorizer)
+	}
+	if _, ok := auth.exchanger.(oidcTokenExchanger); !ok {
+		t.Errorf("exchanger = %T, want oidcTokenExchanger", auth.exchanger)
+	}
+	if _, ok := auth.refresher.(oidcTokenRefresher); !ok {
+		t.Errorf("refresher = %T, want oidcTokenRefresher", auth.refresher)
 	}
 }
 
