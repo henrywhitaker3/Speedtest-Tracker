@@ -42,7 +42,7 @@ func main() {
 		}
 	}()
 
-	http, err := api.New(conf.App.URL, version, conf.App.UIDir, db, host)
+	http, err := api.New(conf.App.URL, version, conf.App.UIDir, conf.Auth, db, host)
 	if err != nil {
 		slog.Error("init api", "error", err)
 		os.Exit(1)

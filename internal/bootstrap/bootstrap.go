@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
@@ -58,6 +59,11 @@ func Bootstrap(
 		conf.Server,
 	); err != nil {
 		return nil, nil, fmt.Errorf("register ookla actors: %w", err)
+	}
+	if conf.Auth.Enabled {
+		if err := auth.RegisterActor(conf.Auth, host); err != nil {
+			return nil, nil, fmt.Errorf("register auth actor: %w", err)
+		}
 	}
 
 	return db, host, nil
