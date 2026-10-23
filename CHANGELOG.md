@@ -1,3 +1,8 @@
+## [2.1.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.3..v2.1.4) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- Pass server id through to actor - ([be80943](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/be809439639fd2b79b681de9a1d530bddf76a496))
 ## [2.1.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.2..v2.1.3) - 2026-10-23
 
 ### 🐛 Bug Fixes
@@ -7,6 +12,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- *(docs)* Update changelog - ([c2e15bf](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c2e15bf92ade10b1d68872da1ba149922f9dada6))
 - Update README.md - ([e14f975](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e14f975f0b1efbdaeede13edb9013fa2e915a644))
 - Update readme.md - ([8ba21a1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8ba21a10237f7bccc47c8c405973f122f7ae047c))
 ## [2.1.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.1..v2.1.2) - 2026-10-23
