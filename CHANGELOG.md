@@ -1,3 +1,13 @@
+## [2.2.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.2..v2.2.3) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- *(ui)* Nicer date formatting - ([9c2ec5f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/9c2ec5f7625fcd3fd7810f4db7f9d1d7befa58cf))
+- Add endpoint to purge results with errors - ([9830262](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/983026284f386dfd545016c882218ddf99b034a8))
+
+### ⚙️ Miscellaneous Tasks
+
+- Update git cliff version - ([f57d129](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f57d129e6e43c655153f8145252e1812c37934af))
 ## [2.2.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.1..v2.2.2) - 2026-10-23
 
 ### 🐛 Bug Fixes
@@ -5,6 +15,10 @@
 - *(auth)* Keep sessions for 7 days - ([fa0e6c6](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fa0e6c688986b29146b72a1b4ff161f8190bae1e))
 - *(retention)* Optionally remove results older than x duration - ([b753a0f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b753a0f3bffcc5f191740ef45d3f84f10b7e68ab))
 - *(ui)* Add dropdown for stats time range - ([796c641](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/796c641be1f37721f7146659546e58f6c7758758))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog - ([ebd846d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ebd846d2103a0ea2d4006efd027bdf9386b2cde0))
 ## [2.2.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.0..v2.2.1) - 2026-10-23
 
 ### 🐛 Bug Fixes
