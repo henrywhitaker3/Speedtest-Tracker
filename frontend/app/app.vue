@@ -56,7 +56,7 @@
 
     <UFooter>
       <p class="text-muted text-sm">
-        Speedtest Tracker {{ version }} • © {{ year }}
+        Speedtest Tracker <AppChangelog /> • © {{ year }}
       </p>
     </UFooter>
 
@@ -96,9 +96,6 @@ useSeoMeta({
 })
 
 const year = new Date().getFullYear()
-
-const runtimeConfig = useRuntimeConfig()
-const version = runtimeConfig.public.version
 
 const config = useConfigStore()
 const auth = useAuthStore()
