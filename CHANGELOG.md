@@ -1,9 +1,22 @@
+## [2.1.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.1..v2.1.2) - 2026-10-23
+
+### 🐛 Bug Fixes
+
+- Ready probes never firing - ([60faafc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/60faafce8630d768a0b1084a9b58254c0cc656d3))
+
+### ⚙️ Miscellaneous Tasks
+
+- Remove dangling package-lock.json - ([8e99fbc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8e99fbc4ca99870a79a8db6c5e186035debe5315))
 ## [2.1.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.0..v2.1.1) - 2026-10-23
 
 ### 🐛 Bug Fixes
 
 - Issue with fallback 404s for direct to spa routes - ([176cc07](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/176cc07f40aa1b227bd882c6dd129866e9f91044))
 - Order timeseries results - ([b6b0ff2](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b6b0ff216ae3d31a49ec457aa8eea8490e71484d))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog - ([5dedd95](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5dedd9590757aad247eb6a5d919e68f0ff3bb26f))
 ## [2.1.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.0.3..v2.1.0) - 2026-10-23
 
 ### 🚀 Features
