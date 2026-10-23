@@ -1,13 +1,13 @@
 <template>
   <UApp>
-    <UHeader>
+    <UHeader :toggle="false">
       <template #left>
         <NuxtLink
           to="/"
           class="outline-primary/25 -ms-1 flex items-center gap-2 rounded-md p-1 focus-visible:outline-3"
         >
           <AppLogo class="h-10 w-auto shrink-0" />
-          <span class="text-xl">
+          <span class="hidden text-xl sm:block">
             Speedtest Tracker
           </span>
         </NuxtLink>
