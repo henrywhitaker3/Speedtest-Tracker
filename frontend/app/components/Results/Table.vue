@@ -22,13 +22,12 @@
           variant="outline"
           active-variant="outline"
           class="[&_button]:cursor-pointer"
-          :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
+          :page="page"
           :items-per-page="table?.tableApi?.getState().pagination.pageSize || 15"
           :total="data.total_rows"
           @update:page="(p: number) => {
             table?.tableApi?.setPageIndex(p)
             page = p
-            void refresh()
           }"
         />
       </div>
@@ -38,7 +37,6 @@
 
 <script setup lang="ts">
 import { getV1Speedtest, type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult as Paginated, type ResultsResult } from '~/client'
-import TableLink from '../TableLink.vue'
 import { PulseLoader } from 'vue-spinner'
 import { useRefreshData } from '~/events/speedtest'
 import type { TableColumn } from '@nuxt/ui'
@@ -46,7 +44,29 @@ import RelativeDate from '../RelativeDate.vue'
 import RowActions from './RowActions.vue'
 
 const data = ref<Paginated>()
-const page = ref(1)
+const route = useRoute()
+const router = useRouter()
+
+const page = computed({
+  get: () => {
+    const queryPage = Array.isArray(route.query.page) ? route.query.page[0] : route.query.page
+    const parsedPage = Number(queryPage)
+
+    return Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1
+  },
+  set: (value: number) => {
+    if (value === page.value) {
+      return
+    }
+
+    void router.replace({
+      query: {
+        ...route.query,
+        page: value === 1 ? undefined : String(value)
+      }
+    })
+  }
+})
 
 const pagination = ref({
   pageIndex: data.value?.page ?? 1,
@@ -70,6 +90,10 @@ const refresh = async () => {
 
 onMounted(async () => {
   await refresh()
+})
+
+watch(page, () => {
+  void refresh()
 })
 
 const { on } = useRefreshData()
