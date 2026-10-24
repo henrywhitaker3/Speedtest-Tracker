@@ -11,7 +11,10 @@ Speedtest Tracker runs scheduled [Ookla Speedtest CLI](https://www.speedtest.net
 
 > Ookla's EULA and privacy agreement must be accepted before the application will start.
 
-<img width="2730" height="1974" alt="image" src="https://github.com/user-attachments/assets/fa39015d-f3b2-47e6-bdfd-34e54ce2d728" />
+<img width="45.5%" alt="homepage screenshot" src="https://github.com/user-attachments/assets/9d50880b-152e-4317-9cb4-c9adf4b78e9d" />
+<img width="48%" alt="test result screenshot" src="https://github.com/user-attachments/assets/f66391eb-4fd6-4ea2-af08-b701f4a575b2" />
+
+
 
 ## Features
 
