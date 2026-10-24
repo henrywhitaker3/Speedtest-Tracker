@@ -15,64 +15,40 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
+	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/labstack/echo/v5"
 )
 
 func TestRunHandler(t *testing.T) {
-	result := results.Result{ID: uuid.MustOrdered()}
-	invokeErr := errors.New("invoke failed")
-	decodeErr := errors.New("decode failed")
+	result := &results.Result{ID: uuid.MustOrdered()}
+	createErr := errors.New("create result")
+	startErr := errors.New("start workflow")
 	limiterErr := errors.New("limiter failed")
 
 	tests := []struct {
 		name           string
 		limiterAllowed bool
 		limiterErr     error
-		invokeErr      error
-		decodeErr      error
+		createErr      error
+		startErr       error
 		wantID         uuid.UUID
 		wantErr        error
-		wantInvoked    bool
+		wantCreate     bool
+		wantStart      bool
 	}{
-		{
-			name:           "returns actor result ID",
-			limiterAllowed: true,
-			wantID:         result.ID,
-			wantInvoked:    true,
-		},
-		{
-			name:           "wraps actor error",
-			limiterAllowed: true,
-			invokeErr:      invokeErr,
-			wantErr:        invokeErr,
-			wantInvoked:    true,
-		},
-		{
-			name:           "wraps decode error",
-			limiterAllowed: true,
-			decodeErr:      decodeErr,
-			wantErr:        decodeErr,
-			wantInvoked:    true,
-		},
-		{
-			name:    "rejects rate limited request",
-			wantErr: echo.ErrTooManyRequests,
-		},
-		{
-			name:       "rejects limiter error",
-			limiterErr: limiterErr,
-			wantErr:    echo.ErrTooManyRequests,
-		},
+		{name: "creates a result and starts its workflow", limiterAllowed: true, wantID: result.ID, wantCreate: true, wantStart: true},
+		{name: "wraps result creation errors", limiterAllowed: true, createErr: createErr, wantErr: createErr, wantCreate: true},
+		{name: "wraps workflow start errors", limiterAllowed: true, startErr: startErr, wantErr: startErr, wantCreate: true, wantStart: true},
+		{name: "rejects rate limited request", wantErr: echo.ErrTooManyRequests},
+		{name: "rejects limiter error", limiterErr: limiterErr, wantErr: echo.ErrTooManyRequests},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := &actorInvokerStub{
-				envelope: envelopeStub{result: result, err: tt.decodeErr},
-				err:      tt.invokeErr,
-			}
+			repo := &resultCreatorStub{result: result, err: tt.createErr}
+			workflow := &workflowRunnerStub{err: tt.startErr}
 			limiter := &rateLimiterStub{allowed: tt.limiterAllowed, err: tt.limiterErr}
-			handler := (&runHandler{service: service, limiter: limiter}).Handler()
+			handler := (&runHandler{repo: repo, workflow: workflow, limiter: limiter, serverID: 42}).Handler()
 
 			got, err := handler(testContext(t), nil)
 			if !errors.Is(err, tt.wantErr) {
@@ -81,19 +57,17 @@ func TestRunHandler(t *testing.T) {
 			if tt.wantErr == nil && (got == nil || got.ID != tt.wantID) {
 				t.Errorf("Handler() result = %v, want ID %q", got, tt.wantID)
 			}
-			if tt.wantInvoked && service.actorType != ookla.Actor {
-				t.Errorf("actor type = %q, want %q", service.actorType, ookla.Actor)
+			if repo.called != tt.wantCreate {
+				t.Errorf("Create called = %t, want %t", repo.called, tt.wantCreate)
 			}
-			if tt.wantInvoked && service.method != ookla.Onboard {
-				t.Errorf("actor method = %q, want %q", service.method, ookla.Onboard)
+			if workflow.called != tt.wantStart {
+				t.Errorf("workflow Start called = %t, want %t", workflow.called, tt.wantStart)
 			}
-			if service.actorID == "" {
-				if tt.wantInvoked {
-					t.Error("actor ID is empty")
+			if tt.wantStart {
+				input, ok := workflow.input.(ookla.RunWorkflow)
+				if !ok || input.Result.ID != result.ID || input.ServerID != 42 {
+					t.Errorf("workflow input = %#v, want result %q and server 42", workflow.input, result.ID)
 				}
-			}
-			if service.invoked != tt.wantInvoked {
-				t.Errorf("actor invoked = %t, want %t", service.invoked, tt.wantInvoked)
 			}
 			if limiter.key != "test" {
 				t.Errorf("limiter key = %q, want %q", limiter.key, "test")
@@ -103,8 +77,7 @@ func TestRunHandler(t *testing.T) {
 }
 
 func TestRunEndpointAuthentication(t *testing.T) {
-	result := results.Result{ID: uuid.MustOrdered()}
-
+	result := &results.Result{ID: uuid.MustOrdered()}
 	tests := []struct {
 		name            string
 		withCookie      bool
@@ -116,50 +89,22 @@ func TestRunEndpointAuthentication(t *testing.T) {
 		wantSessionCall bool
 		wantTokenCall   bool
 	}{
-		{
-			name:       "rejects a request without a browser session cookie",
-			wantStatus: http.StatusUnauthorized,
-		},
-		{
-			name:            "rejects a browser session without authenticated state",
-			withCookie:      true,
-			sessionErr:      errors.New("no authenticated session"),
-			wantStatus:      http.StatusUnauthorized,
-			wantSessionCall: true,
-		},
-		{
-			name:            "allows an authenticated session",
-			withCookie:      true,
-			wantStatus:      http.StatusOK,
-			wantRunCall:     true,
-			wantSessionCall: true,
-		},
-		{
-			name:          "rejects an invalid API token",
-			authorization: "Bearer invalid-token",
-			tokenErr:      errors.New("token not found"),
-			wantStatus:    http.StatusUnauthorized,
-			wantTokenCall: true,
-		},
-		{
-			name:          "allows a valid API token without a browser session",
-			authorization: "Bearer valid-token",
-			wantStatus:    http.StatusOK,
-			wantRunCall:   true,
-			wantTokenCall: true,
-		},
+		{name: "rejects a request without a browser session cookie", wantStatus: http.StatusUnauthorized},
+		{name: "rejects a browser session without authenticated state", withCookie: true, sessionErr: errors.New("no authenticated session"), wantStatus: http.StatusUnauthorized, wantSessionCall: true},
+		{name: "allows an authenticated session", withCookie: true, wantStatus: http.StatusOK, wantRunCall: true, wantSessionCall: true},
+		{name: "rejects an invalid API token", authorization: "Bearer invalid-token", tokenErr: errors.New("token not found"), wantStatus: http.StatusUnauthorized, wantTokenCall: true},
+		{name: "allows a valid API token without a browser session", authorization: "Bearer valid-token", wantStatus: http.StatusOK, wantRunCall: true, wantTokenCall: true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := &runEndpointInvokerStub{
-				sessionErr: tt.sessionErr,
-				envelope:   envelopeStub{result: result},
-			}
+			service := &runEndpointInvokerStub{sessionErr: tt.sessionErr}
 			tokenRepo := &tokenRepoStub{err: tt.tokenErr}
+			runner := &workflowRunnerStub{}
 			run := (&runHandler{
-				service: service,
-				limiter: &rateLimiterStub{allowed: true},
+				repo:     &resultCreatorStub{result: result},
+				workflow: runner,
+				limiter:  &rateLimiterStub{allowed: true},
 			}).Handler()
 
 			e := echo.New()
@@ -193,8 +138,8 @@ func TestRunEndpointAuthentication(t *testing.T) {
 			if rec.Code != tt.wantStatus {
 				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
 			}
-			if service.runCalled != tt.wantRunCall {
-				t.Errorf("run actor called = %t, want %t", service.runCalled, tt.wantRunCall)
+			if runner.called != tt.wantRunCall {
+				t.Errorf("workflow Start called = %t, want %t", runner.called, tt.wantRunCall)
 			}
 			if service.sessionCalled != tt.wantSessionCall {
 				t.Errorf("session actor called = %t, want %t", service.sessionCalled, tt.wantSessionCall)
@@ -209,37 +154,53 @@ func TestRunEndpointAuthentication(t *testing.T) {
 	}
 }
 
-type actorInvokerStub struct {
-	envelope  actor.Envelope
-	err       error
-	actorType string
-	actorID   string
-	method    string
-	invoked   bool
+type resultCreatorStub struct {
+	result *results.Result
+	err    error
+	called bool
+}
+
+func (r *resultCreatorStub) Create(context.Context) (*results.Result, error) {
+	r.called = true
+	return r.result, r.err
+}
+
+type workflowRunnerStub struct {
+	err    error
+	input  any
+	called bool
+}
+
+func (r *workflowRunnerStub) Start(_ context.Context, input any, _ ...workflow.StartOption) (string, bool, error) {
+	r.called = true
+	r.input = input
+	return "workflow-id", true, r.err
 }
 
 type runEndpointInvokerStub struct {
 	sessionErr    error
-	envelope      actor.Envelope
-	runCalled     bool
 	sessionCalled bool
 }
 
 func (s *runEndpointInvokerStub) Invoke(
 	_ context.Context,
-	actorType, _ string, method string,
+	actorType, _ string,
+	method string,
 	_ any,
 	_ ...actor.InvokeOption,
 ) (actor.Envelope, error) {
-	if actorType == authactor.Actor && method == authactor.Session {
-		s.sessionCalled = true
-		return nil, s.sessionErr
+	if actorType != authactor.Actor || method != authactor.Session {
+		return nil, errors.New("unexpected actor invocation")
 	}
-	if actorType == ookla.Actor && method == ookla.Onboard {
-		s.runCalled = true
-		return s.envelope, nil
-	}
-	return nil, errors.New("unexpected actor invocation")
+	s.sessionCalled = true
+	return runSessionEnvelope{}, s.sessionErr
+}
+
+type runSessionEnvelope struct{}
+
+func (runSessionEnvelope) Decode(into any) error {
+	*into.(*authactor.AuthenticateResult) = authactor.AuthenticateResult{}
+	return nil
 }
 
 type tokenRepoStub struct {
@@ -254,19 +215,6 @@ func (s *tokenRepoStub) Validate(_ context.Context, token string) error {
 	return s.err
 }
 
-func (s *actorInvokerStub) Invoke(
-	_ context.Context,
-	actorType, actorID, method string,
-	_ any,
-	_ ...actor.InvokeOption,
-) (actor.Envelope, error) {
-	s.invoked = true
-	s.actorType = actorType
-	s.actorID = actorID
-	s.method = method
-	return s.envelope, s.err
-}
-
 type rateLimiterStub struct {
 	allowed bool
 	err     error
@@ -276,17 +224,4 @@ type rateLimiterStub struct {
 func (s *rateLimiterStub) Allow(_ context.Context, key string) (bool, time.Duration, error) {
 	s.key = key
 	return s.allowed, 0, s.err
-}
-
-type envelopeStub struct {
-	result results.Result
-	err    error
-}
-
-func (e envelopeStub) Decode(into any) error {
-	if e.err != nil {
-		return e.err
-	}
-	*into.(*results.Result) = e.result
-	return nil
 }

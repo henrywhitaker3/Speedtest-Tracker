@@ -101,7 +101,7 @@ func Bootstrap(
 		workflow,
 	)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("create api handler", err)
+		return nil, nil, nil, fmt.Errorf("create api handler: %w", err)
 	}
 
 	return http, db, host, nil
