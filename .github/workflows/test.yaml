@@ -49,7 +49,7 @@ jobs:
           install: true
           cache: true
           working_directory: frontend
-      - name: Run lint
+      - name: Run build
         run: |
           cd frontend
           mise exec -- pnpm i
