@@ -24,7 +24,7 @@ type Result struct {
 	URL        *string                              `json:"url"`
 	Error      *string                              `json:"error,omitempty"`
 	Complete   bool                                 `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
-	Raw        *datatypes.JSONType[SpeedtestOutput] `json:"-"`
+	Raw        *datatypes.JSONType[SpeedtestOutput] `json:"raw"`
 }
 
 type Repository struct {
