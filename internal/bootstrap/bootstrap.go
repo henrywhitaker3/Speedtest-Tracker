@@ -10,11 +10,13 @@ import (
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/windowframe/v2/http"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/italypaleale/francis/components/postgres"
 	"github.com/italypaleale/francis/components/sqlite"
@@ -26,56 +28,60 @@ func Bootstrap(
 	ctx context.Context,
 	conf *config.Config,
 	version, ooklaVersion string,
-) (*gorm.DB, *local.Host, error) {
+) (*http.HTTP, *gorm.DB, *local.Host, error) {
 	_, err := tracing.InitTracer(tracing.TracingOpts{
 		ServiceName: "Speedtest-Tracker",
 		SampleRate:  1,
 	}, version)
 	if err != nil {
-		return nil, nil, fmt.Errorf("init tracer: %w", err)
+		return nil, nil, nil, fmt.Errorf("init tracer: %w", err)
 	}
 
 	slog.Debug("loaded config", "config", conf)
 
 	if err := ookla.EnsureBinary(ctx, ooklaVersion); err != nil {
-		return nil, nil, fmt.Errorf("download speedtest-cli: %w", err)
+		return nil, nil, nil, fmt.Errorf("download speedtest-cli: %w", err)
 	}
 
 	db, err := database.Open(conf.Database.Driver, string(conf.Database.URL))
 	if err != nil {
-		return nil, nil, fmt.Errorf("connect to db: %w", err)
+		return nil, nil, nil, fmt.Errorf("connect to db: %w", err)
 	}
 	if err := results.Register(db); err != nil {
-		return nil, nil, fmt.Errorf("register results model: %w", err)
+		return nil, nil, nil, fmt.Errorf("register results model: %w", err)
 	}
 	if err := auth.Register(db); err != nil {
-		return nil, nil, fmt.Errorf("register auth models: %w", err)
+		return nil, nil, nil, fmt.Errorf("register auth models: %w", err)
 	}
 
 	host, err := runtime(conf.Database, conf.Runtime)
 	if err != nil {
-		return nil, nil, fmt.Errorf("init runtime: %w", err)
+		return nil, nil, nil, fmt.Errorf("init runtime: %w", err)
 	}
 
 	resultsRepo := results.NewRepo(db)
 
-	if err := ookla.RegisterActor(
-		host,
-		resultsRepo,
-		conf.Schedule,
-		conf.Server,
-	); err != nil {
-		return nil, nil, fmt.Errorf("register ookla actors: %w", err)
+	workflow, err := ookla.RegisterActor(ookla.RegisterActorOpts{
+		Host:         host,
+		ServerID:     conf.Server,
+		Runner:       ookla.Run,
+		WorkflowRepo: resultsRepo,
+		CronjobRepo:  resultsRepo,
+		Schedule:     conf.Schedule,
+		Healthcheck:  conf.Notifications.Healthcheck,
+	})
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("register ookla actors: %w", err)
 	}
 	if err := results.RegisterActors(host, resultsRepo, conf.RetentionDays.Duration()); err != nil {
-		return nil, nil, fmt.Errorf("register results actors: %w", err)
+		return nil, nil, nil, fmt.Errorf("register results actors: %w", err)
 	}
 	if conf.Auth.Enabled {
 		pctx, cancel := context.WithTimeout(ctx, time.Second*30)
 		defer cancel()
 		provider, err := oidc.NewProvider(pctx, conf.Auth.IssuerURL)
 		if err != nil {
-			return nil, nil, fmt.Errorf("build oidc provider: %w", err)
+			return nil, nil, nil, fmt.Errorf("build oidc provider: %w", err)
 		}
 		if err := auth.RegisterActor(
 			conf.Auth,
@@ -83,11 +89,22 @@ func Bootstrap(
 			host,
 			provider,
 		); err != nil {
-			return nil, nil, fmt.Errorf("register auth actor: %w", err)
+			return nil, nil, nil, fmt.Errorf("register auth actor: %w", err)
 		}
 	}
 
-	return db, host, nil
+	http, err := api.New(
+		version,
+		conf,
+		db,
+		host,
+		workflow,
+	)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("create api handler", err)
+	}
+
+	return http, db, host, nil
 }
 
 func runtime(db config.Database, conf config.Runtime) (*local.Host, error) {
