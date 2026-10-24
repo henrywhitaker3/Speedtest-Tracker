@@ -1,3 +1,8 @@
+## [2.4.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.1..v2.4.2) - 2026-10-24
+
+### 🐛 Bug Fixes
+
+- *(results)* Json - struct tag stopping raw output being shared in workflow outputs - ([fdb0962](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fdb09625aabe7b1faeadf38cc0586d50fcfa96a9))
 ## [2.4.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.0..v2.4.1) - 2026-10-24
 
 ### 🐛 Bug Fixes
@@ -8,6 +13,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- *(docs)* Update changelog - ([63ded00](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/63ded006c757bd04cbb854fa19c08ba2c6bb3820))
 - Run tests on pushes to v2 to cache go mod and builds - ([c8f937a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c8f937ac61629198e8ba0c11a81aa2d1c53c90ca))
 - Upload test coverage reports - ([972cc84](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/972cc8471b9b67d28a229b631ea522b348b8331b))
 ## [2.4.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.3.0..v2.4.0) - 2026-10-24
