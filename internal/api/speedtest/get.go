@@ -46,7 +46,7 @@ type WorkflowStatus struct {
 
 type GetResponse struct {
 	results.Result
-	Status WorkflowStatus `json:"status,omitempty"`
+	Status *WorkflowStatus `json:"status,omitempty"`
 }
 
 func (g *getHandler) Handler() handlers.Handler[GetRequest, GetResponse] {
@@ -64,7 +64,7 @@ func (g *getHandler) Handler() handlers.Handler[GetRequest, GetResponse] {
 		}
 
 		status, err := g.status.GetStatus(ctx, result.ID.String())
-		if err == nil {
+		if err == nil && len(status.Steps) > 0 {
 			steps := []WorkflowStep{}
 			for _, s := range status.Steps {
 				steps = append(steps, WorkflowStep{
@@ -75,7 +75,7 @@ func (g *getHandler) Handler() handlers.Handler[GetRequest, GetResponse] {
 					CompletedAt: s.CompletedAt,
 				})
 			}
-			response.Status = WorkflowStatus{
+			response.Status = &WorkflowStatus{
 				Version: status.Version,
 				Steps:   steps,
 			}

@@ -6,7 +6,10 @@
       </h2>
     </template>
 
-    <UTimeline :items="timeline" />
+    <UTimeline
+      :model-value="currentStep"
+      :items="timeline"
+    />
   </UCard>
 </template>
 
@@ -35,7 +38,10 @@ const buildTimelineItem = (step: SpeedtestWorkflowStep): TimelineItem => {
     title: prettyName(step.name),
     date: formatDatetime(new Date(step.started_at as string)),
     icon: stepIcon(step.status),
-    description: description(step.name)
+    description: description(step.name),
+    ui: {
+      indicator: stepIndicatorClass(step.status)
+    }
   }
 }
 
@@ -94,6 +100,34 @@ const stepIcon = (status?: string): string | undefined => {
       return undefined
   }
 }
+
+const stepIndicatorClass = (status?: string): string => {
+  switch (status) {
+    case 'completed':
+      return 'bg-success text-inverted group-data-[state=active]:bg-success group-data-[state=completed]:bg-success'
+    case 'running':
+      return 'bg-primary text-inverted group-data-[state=active]:bg-primary group-data-[state=completed]:bg-primary'
+    case 'failed':
+      return 'bg-error text-inverted group-data-[state=active]:bg-error group-data-[state=completed]:bg-error'
+    case 'skipped':
+      return 'bg-muted group-data-[state=active]:bg-muted group-data-[state=completed]:bg-muted group-data-[state=completed]:text-muted'
+    default:
+      return 'bg-elevated text-muted'
+  }
+}
+
+const currentStep = computed(() => {
+  const steps = (props.status.steps ?? [])
+    .filter(step => step.name && showStep(step.name))
+
+  if (steps.length && steps.every(step => step.status === 'completed' || step.status === 'skipped')) {
+    return steps.length
+  }
+
+  return steps.reduce((currentStep, step, index) => {
+    return step.status === 'running' || step.status === 'completed' ? index : currentStep
+  }, -1)
+})
 
 const timeline = computed(buildTimeline)
 </script>
