@@ -3,11 +3,13 @@ package speedtest
 import (
 	"context"
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
+	"github.com/italypaleale/francis/builtin/workflow"
 )
 
 func TestGetHandler(t *testing.T) {
@@ -18,13 +20,15 @@ func TestGetHandler(t *testing.T) {
 		name       string
 		result     *results.Result
 		repoErr    error
-		wantResult *results.Result
+		status     workflow.InstanceStatus
+		statusErr  error
+		wantResult *GetResponse
 		wantErr    error
 	}{
 		{
 			name:       "returns result",
 			result:     result,
-			wantResult: result,
+			wantResult: &GetResponse{Result: *result},
 		},
 		{
 			name:    "wraps repository error",
@@ -36,14 +40,15 @@ func TestGetHandler(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &getRepoStub{result: tt.result, err: tt.repoErr}
-			handler := (&getHandler{repo: repo}).Handler()
+			status := &workflowCheckerStub{status: tt.status, err: tt.statusErr}
+			handler := (&getHandler{repo: repo, status: status}).Handler()
 			request := GetRequest{ID: uuid.MustOrdered()}
 
 			got, err := handler(testContext(t), request)
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("Handler() error = %v, want %v", err, tt.wantErr)
 			}
-			if got != tt.wantResult {
+			if !reflect.DeepEqual(got, tt.wantResult) {
 				t.Errorf("Handler() result = %v, want %v", got, tt.wantResult)
 			}
 			if repo.id != request.ID {
@@ -51,6 +56,17 @@ func TestGetHandler(t *testing.T) {
 			}
 		})
 	}
+}
+
+type workflowCheckerStub struct {
+	status workflow.InstanceStatus
+	err    error
+	id     string
+}
+
+func (w *workflowCheckerStub) GetStatus(_ context.Context, id string) (workflow.InstanceStatus, error) {
+	w.id = id
+	return w.status, w.err
 }
 
 type getRepoStub struct {

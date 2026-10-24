@@ -8,11 +8,18 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	"github.com/italypaleale/francis/builtin/ratelimit"
+	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/italypaleale/francis/host/local"
 	"gorm.io/gorm"
 )
 
-func Register(h *http.HTTP, db *gorm.DB, host *local.Host) error {
+func Register(
+	h *http.HTTP,
+	db *gorm.DB,
+	host *local.Host,
+	runner *workflow.WorkflowService,
+	serverID int,
+) error {
 	runLimiter, err := ratelimit.New(
 		"run",
 		ratelimit.WithPer(time.Minute),
@@ -27,10 +34,15 @@ func Register(h *http.HTTP, db *gorm.DB, host *local.Host) error {
 
 	repo := results.NewRepo(db)
 	h.Register(&runHandler{
-		service: host.Service(),
-		limiter: runLimiter.Service(host.Service()),
+		repo:     repo,
+		workflow: runner,
+		serverID: serverID,
+		limiter:  runLimiter.Service(host.Service()),
 	})
-	h.Register(&getHandler{repo: repo})
+	h.Register(&getHandler{
+		repo:   repo,
+		status: runner,
+	})
 	h.Register(&listHandler{repo: repo})
 	h.Register(&latestHandler{repo: repo})
 	h.Register(&timeseriesHandler{repo: repo})

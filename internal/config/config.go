@@ -54,6 +54,11 @@ func (a Auth) vaildate() error {
 	return fmt.Errorf("incomplete auth config")
 }
 
+type Notifications struct {
+	// The healthchecks.io url (includes domain and the uuid)
+	Healthcheck string `env:"HEALTHCHECKS"`
+}
+
 type Config struct {
 	App App `env:",prefix=APP_"`
 
@@ -69,6 +74,8 @@ type Config struct {
 	Server   int    `env:"TEST_SERVER"`
 	// If 0, then retention is turned off
 	RetentionDays duration.StringDuration `env:"RETENTION_DAYS"`
+
+	Notifications Notifications `env:",prefix=NOTIFICATIONS_"`
 }
 
 func Load() (*Config, error) {

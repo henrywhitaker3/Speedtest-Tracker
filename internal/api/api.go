@@ -18,6 +18,7 @@ import (
 	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	mw "github.com/henrywhitaker3/windowframe/v2/http/middleware"
+	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/italypaleale/francis/host/local"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
@@ -32,6 +33,7 @@ func New(
 	conf *config.Config,
 	db *gorm.DB,
 	host *local.Host,
+	runner *workflow.WorkflowService,
 ) (*http.HTTP, error) {
 	h := http.New(http.HTTPOpts{
 		Port: 8080,
@@ -64,7 +66,7 @@ func New(
 		}))
 	}
 
-	if err := registerRoutes(h, db, host, conf); err != nil {
+	if err := registerRoutes(h, db, host, runner, conf); err != nil {
 		return nil, err
 	}
 	registerValidators(h)
@@ -109,12 +111,13 @@ func registerRoutes(
 	h *http.HTTP,
 	db *gorm.DB,
 	host *local.Host,
+	runner *workflow.WorkflowService,
 	conf *config.Config,
 ) error {
 	if err := authapi.RegisterRoutes(h, host, db, conf); err != nil {
 		return fmt.Errorf("register auth routes: %w", err)
 	}
-	if err := speedtest.Register(h, db, host); err != nil {
+	if err := speedtest.Register(h, db, host, runner, conf.Server); err != nil {
 		return err
 	}
 	configapi.RegisterRoutes(h, conf)

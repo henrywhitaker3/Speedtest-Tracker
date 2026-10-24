@@ -11,19 +11,17 @@ import (
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
-	"github.com/italypaleale/francis/actor"
+	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/labstack/echo/v5"
 )
 
-type actorInvoker interface {
-	Invoke(
-		context.Context,
-		string,
-		string,
-		string,
-		any,
-		...actor.InvokeOption,
-	) (actor.Envelope, error)
+type resultCreator interface {
+	Create(context.Context) (*results.Result, error)
+	Delete(context.Context, uuid.UUID) error
+}
+
+type worflowRunner interface {
+	Start(context.Context, any, ...workflow.StartOption) (string, bool, error)
 }
 
 type rateLimiter interface {
@@ -31,8 +29,10 @@ type rateLimiter interface {
 }
 
 type runHandler struct {
-	service actorInvoker
-	limiter rateLimiter
+	repo     resultCreator
+	workflow worflowRunner
+	limiter  rateLimiter
+	serverID int
 }
 
 type RunResponse struct {
@@ -51,20 +51,25 @@ func (r *runHandler) Handler() handlers.Handler[any, RunResponse] {
 		}
 		span.End()
 
-		id, _ := uuid.New()
-
-		runCtx, span := tracing.NewSpan(ctx, "Invoke actor run")
+		runCtx, span := tracing.NewSpan(ctx, "Start speedtest workflow")
 		defer span.End()
-		raw, err := r.service.Invoke(runCtx, ookla.Actor, id.String(), ookla.Onboard, nil)
+
+		result, err := r.repo.Create(runCtx)
 		if err != nil {
 			return nil, httperrors.Stack(err)
 		}
-		span.End()
-
-		var result results.Result
-		if err := raw.Decode(&result); err != nil {
+		if _, _, err := r.workflow.Start(
+			runCtx,
+			ookla.RunWorkflow{
+				Result:   *result,
+				ServerID: r.serverID,
+			},
+			workflow.WithInstanceID(result.ID.String()),
+		); err != nil {
+			_ = r.repo.Delete(ctx, result.ID)
 			return nil, httperrors.Stack(err)
 		}
+		span.End()
 
 		return &RunResponse{
 			ID: result.ID,

@@ -8,7 +8,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/bootstrap"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/meta"
@@ -29,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, host, err := bootstrap.Bootstrap(ctx, conf, version, ooklaVersion)
+	http, _, host, err := bootstrap.Bootstrap(ctx, conf, version, ooklaVersion)
 	if err != nil {
 		slog.Error("bootstrap app", "error", err)
 		os.Exit(1)
@@ -41,17 +40,6 @@ func main() {
 			os.Exit(1)
 		}
 	}()
-
-	http, err := api.New(
-		version,
-		conf,
-		db,
-		host,
-	)
-	if err != nil {
-		slog.Error("init api", "error", err)
-		os.Exit(1)
-	}
 
 	go func() {
 		<-host.Ready()
