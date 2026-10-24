@@ -37,6 +37,7 @@ type WorkflowStep struct {
 	StartedAt   time.Time           `json:"started_at"`
 	CompletedAt time.Time           `json:"completed_at"`
 	Status      workflow.StepStatus `json:"status"`
+	Error       *string             `json:"error,omitempty"`
 }
 
 type WorkflowStatus struct {
@@ -73,6 +74,7 @@ func (g *getHandler) Handler() handlers.Handler[GetRequest, GetResponse] {
 					Status:      s.Status,
 					StartedAt:   s.StartedAt,
 					CompletedAt: s.CompletedAt,
+					Error:       new(s.Error),
 				})
 			}
 			response.Status = &WorkflowStatus{

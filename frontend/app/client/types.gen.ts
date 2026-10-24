@@ -104,6 +104,7 @@ export type SpeedtestWorkflowStatus = {
 export type SpeedtestWorkflowStep = {
     attempts?: number;
     completed_at?: string;
+    error?: string | null;
     name?: string;
     started_at?: string;
     status?: string;

@@ -34,11 +34,15 @@ const buildTimeline = (): TimelineItem[] => {
 const { formatDatetime } = useDate()
 
 const buildTimelineItem = (step: SpeedtestWorkflowStep): TimelineItem => {
+  let desc = description(step.name)
+  if (step.error) {
+    desc += `: ${step.error}`
+  }
   return {
     title: prettyName(step.name),
     date: formatDatetime(new Date(step.started_at as string)),
     icon: stepIcon(step.status),
-    description: description(step.name),
+    description: desc,
     ui: {
       indicator: stepIndicatorClass(step.status)
     }
@@ -104,11 +108,11 @@ const stepIcon = (status?: string): string | undefined => {
 const stepIndicatorClass = (status?: string): string => {
   switch (status) {
     case 'completed':
-      return 'bg-success text-inverted group-data-[state=active]:bg-success group-data-[state=completed]:bg-success'
+      return 'bg-success text-inverted group-data-[state=active]:bg-success/80 group-data-[state=completed]:bg-success/80'
     case 'running':
       return 'bg-primary text-inverted group-data-[state=active]:bg-primary group-data-[state=completed]:bg-primary'
     case 'failed':
-      return 'bg-error text-inverted group-data-[state=active]:bg-error group-data-[state=completed]:bg-error'
+      return 'bg-error text-inverted group-data-[state=active]:bg-error/90 group-data-[state=completed]:bg-error/90'
     case 'skipped':
       return 'bg-muted group-data-[state=active]:bg-muted group-data-[state=completed]:bg-muted group-data-[state=completed]:text-muted'
     default:
@@ -120,7 +124,7 @@ const currentStep = computed(() => {
   const steps = (props.status.steps ?? [])
     .filter(step => step.name && showStep(step.name))
 
-  if (steps.length && steps.every(step => step.status === 'completed' || step.status === 'skipped')) {
+  if (steps.length && steps.every(step => step.status === 'completed' || step.status === 'skipped' || step.status == 'failed')) {
     return steps.length
   }
 

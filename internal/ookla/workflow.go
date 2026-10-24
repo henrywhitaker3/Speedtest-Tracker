@@ -30,7 +30,7 @@ type WorkflowOpts struct {
 func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 	return workflow.New(
 		"speedtest",
-		workflow.WithVersion(1),
+		workflow.WithVersion(2),
 		workflow.WithSteps(
 			workflow.Step(
 				"healthcheck",
@@ -40,6 +40,7 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 				"start healthcheck",
 				workflow.WithRun(startHealthcheck(opts.Healthcheck)),
 				workflow.WithSkipIf("healthcheck", false),
+				workflow.WithOptional(),
 			),
 			workflow.Step(
 				"run test",
@@ -52,6 +53,7 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 			workflow.Step(
 				"finish healthcheck",
 				workflow.WithRun(finishHealthcheck(opts.Healthcheck)),
+				workflow.WithOptional(),
 				workflow.WithSkipIf("healthcheck", false),
 			),
 		),
@@ -115,10 +117,7 @@ func shouldRunHealthcheck(url string) workflow.RunFunc {
 
 func startHealthcheck(url string) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (any, error) {
-		if err := sendHealthcheck(ctx, url, healthcheckStart); err != nil {
-			slog.ErrorContext(ctx, "send start healthcheck", "error", err)
-		}
-		return nil, nil
+		return nil, sendHealthcheck(ctx, url, healthcheckStart)
 	}
 }
 
@@ -134,10 +133,7 @@ func finishHealthcheck(url string) workflow.RunFunc {
 			action = healthcheckSuccess
 		}
 
-		if err := sendHealthcheck(ctx, url, action); err != nil {
-			slog.ErrorContext(ctx, "send finish healthcheck", "action", action, "error", err)
-		}
-		return nil, nil
+		return nil, sendHealthcheck(ctx, url, action)
 	}
 }
 

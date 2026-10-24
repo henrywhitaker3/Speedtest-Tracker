@@ -37,6 +37,7 @@ func TestSpeedtestWorkflow(t *testing.T) {
 		wantHealthPaths   []string
 		wantResultError   string
 		wantAttempts      map[string]int
+		wantStepStatus    map[string]workflow.StepStatus
 	}{
 		{
 			name:            "stores a successful result and completes the healthcheck",
@@ -114,13 +115,16 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			wantFreshCalls:    1,
 			wantRunnerCalls:   1,
 			wantUpdateCalls:   1,
-			wantHealthPaths:   []string{"/start", "/"},
+			wantHealthPaths:   []string{"/start", "/start", "/start", "/"},
 			wantAttempts: map[string]int{
 				"healthcheck":        1,
-				"start healthcheck":  1,
+				"start healthcheck":  3,
 				"run test":           1,
 				"store result":       1,
 				"finish healthcheck": 1,
+			},
+			wantStepStatus: map[string]workflow.StepStatus{
+				"start healthcheck": workflow.StepFailed,
 			},
 		},
 		{
@@ -131,13 +135,16 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			wantFreshCalls:    1,
 			wantRunnerCalls:   1,
 			wantUpdateCalls:   1,
-			wantHealthPaths:   []string{"/start", "/"},
+			wantHealthPaths:   []string{"/start", "/", "/", "/"},
 			wantAttempts: map[string]int{
 				"healthcheck":        1,
 				"start healthcheck":  1,
 				"run test":           1,
 				"store result":       1,
-				"finish healthcheck": 1,
+				"finish healthcheck": 3,
+			},
+			wantStepStatus: map[string]workflow.StepStatus{
+				"finish healthcheck": workflow.StepFailed,
 			},
 		},
 		{
@@ -226,6 +233,11 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			for step, want := range tt.wantAttempts {
 				if got := workflowStepAttempts(t, status, step); got != want {
 					t.Errorf("%s attempts = %d, want %d", step, got, want)
+				}
+			}
+			for step, want := range tt.wantStepStatus {
+				if got := workflowStepStatus(t, status, step); got != want {
+					t.Errorf("%s status = %q, want %q", step, got, want)
 				}
 			}
 
@@ -432,6 +444,17 @@ func workflowStepAttempts(t *testing.T, status workflow.InstanceStatus, name str
 	}
 	t.Fatalf("workflow status has no %q step", name)
 	return 0
+}
+
+func workflowStepStatus(t *testing.T, status workflow.InstanceStatus, name string) workflow.StepStatus {
+	t.Helper()
+	for _, step := range status.Steps {
+		if step.Name == name {
+			return step.Status
+		}
+	}
+	t.Fatalf("workflow status has no %q step", name)
+	return ""
 }
 
 func errorString(err *string) string {
