@@ -85,6 +85,7 @@ func TestNotificationsEndpointAccess(t *testing.T) {
 			called := false
 			e := echo.New()
 			if tt.authEnabled {
+				e.Use(authapi.AddContext(true))
 				e.Use(authapi.SessionMiddleware())
 				e.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
 					Service:    &notificationsSessionServiceStub{groups: tt.groups},

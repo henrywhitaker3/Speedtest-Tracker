@@ -47,6 +47,7 @@ func TestAdminMiddleware(t *testing.T) {
 			}
 			called := false
 			e := echo.New()
+			e.Use(AddContext(true))
 			e.Use(AuthMiddleware(AuthMiddlewareOpts{
 				Service:    service,
 				AdminGroup: "speedtest-admins",
@@ -85,6 +86,7 @@ func TestAdminMiddlewareRejectsAPIToken(t *testing.T) {
 	tokenRepo := &adminTokenRepoStub{}
 	called := false
 	e := echo.New()
+	e.Use(AddContext(true))
 	e.Use(AuthMiddleware(AuthMiddlewareOpts{
 		TokenRepo: tokenRepo,
 		Routes: ProtectedRoutes{{

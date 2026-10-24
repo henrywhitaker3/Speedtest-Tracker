@@ -73,16 +73,6 @@ func New(
 	return h, nil
 }
 
-// resultRoutes remain public, but authenticate a supplied session so
-// administrators can receive the raw speedtest output.
-func resultRoutes() authapi.ProtectedRoutes {
-	return authapi.ProtectedRoutes{
-		{Method: stdhttp.MethodGet, Path: "/v1/speedtest"},
-		{Method: stdhttp.MethodGet, Path: "/v1/speedtest/latest"},
-		{Method: stdhttp.MethodGet, Path: "/v1/speedtest/:id"},
-	}
-}
-
 func authRoutes() authapi.ProtectedRoutes {
 	return authapi.ProtectedRoutes{
 		{Method: stdhttp.MethodPost, Path: "/v1/speedtest/run"},

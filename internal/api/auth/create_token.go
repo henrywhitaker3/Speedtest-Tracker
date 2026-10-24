@@ -56,7 +56,7 @@ func (h *createHandler) Middleware() []echo.MiddlewareFunc {
 	return nil
 }
 
-func (g *createHandler) Metadata() handlers.Metadata {
+func (h *createHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Create token",
 		Tag:          "Auth",

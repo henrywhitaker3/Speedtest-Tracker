@@ -36,8 +36,13 @@ func AddContext(authEnabled bool) echo.MiddlewareFunc {
 }
 
 func IsAdmin(c *echo.Context) bool {
+	authEnabled, configured := c.Get(authContextKey).(bool)
+	if !configured {
+		return false
+	}
+
 	// If auth is disabled, allow anyone to do admin things
-	if authEnabled, configured := c.Get(authContextKey).(bool); configured && !authEnabled {
+	if !authEnabled {
 		return true
 	}
 
@@ -194,10 +199,11 @@ func handleSessionAuth(
 
 	if sessionRaw != nil {
 		var session authactor.AuthenticateResult
-		if err := sessionRaw.Decode(&session); err == nil {
-			if slices.Contains(session.Groups, adminGroup) {
-				c.Set(adminContextKey, true)
-			}
+		if err := sessionRaw.Decode(&session); err != nil {
+			return fmt.Errorf("decode auth session: %w", err)
+		}
+		if slices.Contains(session.Groups, adminGroup) {
+			c.Set(adminContextKey, true)
 		}
 	}
 

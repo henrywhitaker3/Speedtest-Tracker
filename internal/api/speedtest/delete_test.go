@@ -66,6 +66,7 @@ func TestDeleteEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &resultDeleteRepoStub{}
 			h := windowhttp.New(windowhttp.HTTPOpts{})
+			h.Use(authapi.AddContext(true))
 			h.Use(authapi.SessionMiddleware())
 			h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
 				Service:    &authenticatedSessionInvokerStub{groups: tt.groups},

@@ -57,6 +57,7 @@ func TestPurgeEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 			repo := &purgeRepoStub{}
 			service := &authenticatedSessionInvokerStub{groups: tt.groups}
 			h := windowhttp.New(windowhttp.HTTPOpts{})
+			h.Use(authapi.AddContext(true))
 			h.Use(authapi.SessionMiddleware())
 			h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
 				Service:    service,
