@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteV1AuthTokensByIdData, DeleteV1AuthTokensByIdErrors, DeleteV1AuthTokensByIdResponses, DeleteV1SpeedtestByIdData, DeleteV1SpeedtestByIdErrors, DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestPurgeData, DeleteV1SpeedtestPurgeErrors, DeleteV1SpeedtestPurgeResponses, GetV1AuthTokensData, GetV1AuthTokensErrors, GetV1AuthTokensResponses, GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1AuthTokensData, PostV1AuthTokensErrors, PostV1AuthTokensResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
+import type { DeleteV1AuthTokensByIdData, DeleteV1AuthTokensByIdErrors, DeleteV1AuthTokensByIdResponses, DeleteV1SpeedtestByIdData, DeleteV1SpeedtestByIdErrors, DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestPurgeData, DeleteV1SpeedtestPurgeErrors, DeleteV1SpeedtestPurgeResponses, GetV1AuthTokensData, GetV1AuthTokensErrors, GetV1AuthTokensResponses, GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigNotificationsData, GetV1ConfigNotificationsErrors, GetV1ConfigNotificationsResponses, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1AuthTokensData, PostV1AuthTokensErrors, PostV1AuthTokensResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -46,6 +46,13 @@ export const deleteV1AuthTokensById = <ThrowOnError extends boolean = false>(opt
  * Get the app config
  */
 export const getV1Config = <ThrowOnError extends boolean = false>(options?: Options<GetV1ConfigData, ThrowOnError>): RequestResult<GetV1ConfigResponses, GetV1ConfigErrors, ThrowOnError> => (options?.client ?? client).get<GetV1ConfigResponses, GetV1ConfigErrors, ThrowOnError>({ url: '/v1/config', ...options });
+
+/**
+ * Notifications
+ *
+ * Show configured notification channels
+ */
+export const getV1ConfigNotifications = <ThrowOnError extends boolean = false>(options?: Options<GetV1ConfigNotificationsData, ThrowOnError>): RequestResult<GetV1ConfigNotificationsResponses, GetV1ConfigNotificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetV1ConfigNotificationsResponses, GetV1ConfigNotificationsErrors, ThrowOnError>({ url: '/v1/config/notifications', ...options });
 
 /**
  * List results

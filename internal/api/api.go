@@ -82,6 +82,7 @@ func authRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodGet, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
 	}
 }
 
@@ -92,6 +93,7 @@ func adminRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodGet, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
 	}
 }
 

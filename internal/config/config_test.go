@@ -1,0 +1,159 @@
+package config
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestItParsesNotifications(t *testing.T) {
+	tcs := []struct {
+		name  string
+		env   map[string]string
+		want  Notifications
+		error bool
+	}{
+		{
+			name: "empty slice with no env vars set",
+		},
+		{
+			name: "errors with kind not set",
+			env: map[string]string{
+				"NOTIFICATIONS_0_PHASES": "pre-run",
+				"NOTIFICATIONS_0_URL":    "https://example.com/healthcheck",
+			},
+			error: true,
+		},
+		{
+			name: "errors with url not set",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "healthcheck",
+				"NOTIFICATIONS_0_PHASES": "pre-run",
+			},
+			error: true,
+		},
+		{
+			name: "errors with phases not set",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND": "healthcheck",
+				"NOTIFICATIONS_0_URL":  "https://example.com/healthcheck",
+			},
+			error: true,
+		},
+		{
+			name: "single slice when one is set",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "healthcheck",
+				"NOTIFICATIONS_0_PHASES": "pre-run,post-run",
+				"NOTIFICATIONS_0_URL":    "https://example.com/healthcheck",
+			},
+			want: Notifications{{
+				Kind:   Healthcheck,
+				Phases: []NotificationPhase{PreRun, PostRun},
+				URL:    "https://example.com/healthcheck",
+			}},
+		},
+		{
+			name: "multiple notifications parsed",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "webhook",
+				"NOTIFICATIONS_0_PHASES": "post-run",
+				"NOTIFICATIONS_0_URL":    "https://example.com/webhook",
+				"NOTIFICATIONS_1_KIND":   "healthcheck",
+				"NOTIFICATIONS_1_PHASES": "pre-run,post-run",
+				"NOTIFICATIONS_1_URL":    "https://example.com/healthcheck",
+			},
+			want: Notifications{
+				{
+					Kind:   Webhook,
+					Phases: []NotificationPhase{PostRun},
+					URL:    "https://example.com/webhook",
+				},
+				{
+					Kind:   Healthcheck,
+					Phases: []NotificationPhase{PreRun, PostRun},
+					URL:    "https://example.com/healthcheck",
+				},
+			},
+		},
+		{
+			name: "healthcheck env var produces a notification item",
+			env: map[string]string{
+				"NOTIFICATIONS_HEALTHCHECKS": "https://example.com/healthcheck",
+			},
+			want: Notifications{{
+				Kind:   Healthcheck,
+				Phases: []NotificationPhase{PreRun, PostRun},
+				URL:    "https://example.com/healthcheck",
+			}},
+		},
+		{
+			name: "errors with invalid kind",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "email",
+				"NOTIFICATIONS_0_PHASES": "pre-run",
+				"NOTIFICATIONS_0_URL":    "https://example.com/notification",
+			},
+			error: true,
+		},
+		{
+			name: "errors with invalid phase",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "webhook",
+				"NOTIFICATIONS_0_PHASES": "pre-flight",
+				"NOTIFICATIONS_0_URL":    "https://example.com/notification",
+			},
+			error: true,
+		},
+		{
+			name: "errors with invalid url",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "healthcheck",
+				"NOTIFICATIONS_0_PHASES": "post-run",
+				"NOTIFICATIONS_0_URL":    "https://example.com/%zz",
+			},
+			error: true,
+		},
+		{
+			name: "allows http urls",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "healthcheck",
+				"NOTIFICATIONS_0_PHASES": "post-run",
+				"NOTIFICATIONS_0_URL":    "http://example.com/",
+			},
+			want: Notifications{
+				{
+					Kind:   Healthcheck,
+					Phases: []NotificationPhase{PostRun},
+					URL:    "http://example.com/",
+				},
+			},
+		},
+		{
+			name: "errors with non http(s) url",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "healthcheck",
+				"NOTIFICATIONS_0_PHASES": "post-run",
+				"NOTIFICATIONS_0_URL":    "ftp://example.com/",
+			},
+			error: true,
+		},
+	}
+
+	for _, c := range tcs {
+		t.Run(c.name, func(t *testing.T) {
+			t.Setenv("ACCEPT_EULA", "true")
+			for key, value := range c.env {
+				t.Setenv(key, value)
+			}
+
+			conf, err := Load()
+			if c.error {
+				require.NotNil(t, err)
+				return
+			}
+			require.Nil(t, err)
+			require.Equal(t, c.want, conf.Notifications)
+		})
+	}
+}

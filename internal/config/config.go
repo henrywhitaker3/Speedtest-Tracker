@@ -3,6 +3,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"slices"
 
 	"github.com/adhocore/gronx"
@@ -54,11 +55,6 @@ func (a Auth) vaildate() error {
 	return fmt.Errorf("incomplete auth config")
 }
 
-type Notifications struct {
-	// The healthchecks.io url (includes domain and the uuid)
-	Healthcheck string `env:"HEALTHCHECKS"`
-}
-
 type Config struct {
 	App App `env:",prefix=APP_"`
 
@@ -75,13 +71,14 @@ type Config struct {
 	// If 0, then retention is turned off
 	RetentionDays duration.StringDuration `env:"RETENTION_DAYS"`
 
-	Notifications Notifications `env:",prefix=NOTIFICATIONS_"`
+	Notifications Notifications
 }
 
 func Load() (*Config, error) {
 	_ = godotenv.Load()
 	conf, err := config.NewParser[Config]().WithExtractors(
 		config.NewEnvExtractor[Config](),
+		notificationExtractor{},
 	).Parse()
 	if err != nil {
 		return nil, fmt.Errorf("parse env: %w", err)
@@ -104,6 +101,13 @@ func Load() (*Config, error) {
 	}
 	if err := conf.Auth.vaildate(); err != nil {
 		return nil, err
+	}
+	if healthcheck := os.Getenv("NOTIFICATIONS_HEALTHCHECKS"); healthcheck != "" {
+		conf.Notifications = append(conf.Notifications, Notification{
+			Kind:   Healthcheck,
+			Phases: []NotificationPhase{PreRun, PostRun},
+			URL:    healthcheck,
+		})
 	}
 
 	return &conf, nil

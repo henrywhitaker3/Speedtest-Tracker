@@ -7,4 +7,5 @@ import (
 
 func RegisterRoutes(h *http.HTTP, conf *config.Config) {
 	h.Register(&configHandler{conf: *conf})
+	h.Register(&notificationsHandler{conf: conf.Notifications})
 }

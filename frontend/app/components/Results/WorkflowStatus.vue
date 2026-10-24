@@ -51,7 +51,7 @@ const buildTimelineItem = (step: SpeedtestWorkflowStep): TimelineItem => {
 
 const showStep = (name: string): boolean => {
   switch (name) {
-    case 'healthcheck':
+    case 'notify':
       return false
     default:
       return true
@@ -60,14 +60,14 @@ const showStep = (name: string): boolean => {
 
 const prettyName = (name?: string) => {
   switch (name) {
-    case 'start healthcheck':
-      return 'Start Healthcheck'
+    case 'pre-run notifications':
+      return 'Send Pre-run Notifications'
     case 'run test':
       return 'Run Test'
     case 'store result':
       return 'Store Result'
-    case 'finish healthcheck':
-      return 'Finish Healthcheck'
+    case 'post-run notifications':
+      return 'Send Post-run Notifications'
     default:
       return name
   }
@@ -75,14 +75,14 @@ const prettyName = (name?: string) => {
 
 const description = (name?: string) => {
   switch (name) {
-    case 'start healthcheck':
-      return 'Sending the start signal to healthchecks.io'
+    case 'pre-run notifications':
+      return 'Send configured pre-run notifications'
     case 'run test':
       return 'Run the speedtest'
     case 'store result':
       return 'Store the speedtest results'
-    case 'finish healthcheck':
-      return 'Sending the finish signal the healthchecks.io'
+    case 'post-run notifications':
+      return 'Send configured post-run notifications'
     default:
       return undefined
   }
@@ -110,7 +110,7 @@ const stepIndicatorClass = (status?: string): string => {
     case 'completed':
       return 'bg-success text-inverted group-data-[state=active]:bg-success/80 group-data-[state=completed]:bg-success/80'
     case 'running':
-      return 'bg-primary text-inverted group-data-[state=active]:bg-primary group-data-[state=completed]:bg-primary'
+      return 'bg-primary text-inverted group-data-[state=active]:bg-info group-data-[state=completed]:bg-info'
     case 'failed':
       return 'bg-error text-inverted group-data-[state=active]:bg-error/90 group-data-[state=completed]:bg-error/90'
     case 'skipped':

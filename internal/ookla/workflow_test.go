@@ -5,14 +5,13 @@ import (
 	"errors"
 	"log/slog"
 	"net"
-	"net/http"
-	"net/http/httptest"
 	"path/filepath"
 	"slices"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
@@ -23,54 +22,55 @@ import (
 
 func TestSpeedtestWorkflow(t *testing.T) {
 	tests := []struct {
-		name              string
-		healthcheck       bool
-		healthcheckStatus map[string]int
-		freshErr          error
-		runnerErr         error
-		updateErr         error
-		complete          bool
-		wantStatus        workflow.Status
-		wantFreshCalls    int
-		wantRunnerCalls   int
-		wantUpdateCalls   int
-		wantHealthPaths   []string
-		wantResultError   string
-		wantAttempts      map[string]int
-		wantStepStatus    map[string]workflow.StepStatus
+		name                   string
+		notifications          bool
+		preNotificationErr     error
+		postNotificationErr    error
+		freshErr               error
+		runnerErr              error
+		updateErr              error
+		complete               bool
+		wantStatus             workflow.Status
+		wantFreshCalls         int
+		wantRunnerCalls        int
+		wantUpdateCalls        int
+		wantNotificationPhases []notifications.Phase
+		wantResultError        string
+		wantAttempts           map[string]int
+		wantStepStatus         map[string]workflow.StepStatus
 	}{
 		{
-			name:            "stores a successful result and completes the healthcheck",
-			healthcheck:     true,
-			wantStatus:      workflow.StatusCompleted,
-			wantFreshCalls:  1,
-			wantRunnerCalls: 1,
-			wantUpdateCalls: 1,
-			wantHealthPaths: []string{"/start", "/"},
+			name:                   "stores a successful result and sends notifications",
+			notifications:          true,
+			wantStatus:             workflow.StatusCompleted,
+			wantFreshCalls:         1,
+			wantRunnerCalls:        1,
+			wantUpdateCalls:        1,
+			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  1,
-				"run test":           1,
-				"store result":       1,
-				"finish healthcheck": 1,
+				"notify":                 1,
+				"pre-run notifications":  1,
+				"run test":               1,
+				"store result":           1,
+				"post-run notifications": 1,
 			},
 		},
 		{
-			name:            "stores runner failures and marks the healthcheck failed",
-			healthcheck:     true,
-			runnerErr:       errors.New("speedtest failed"),
-			wantStatus:      workflow.StatusCompleted,
-			wantFreshCalls:  1,
-			wantRunnerCalls: 1,
-			wantUpdateCalls: 1,
-			wantHealthPaths: []string{"/start", "/fail"},
-			wantResultError: "speedtest failed",
+			name:                   "stores runner failures and sends post-run notifications",
+			notifications:          true,
+			runnerErr:              errors.New("speedtest failed"),
+			wantStatus:             workflow.StatusCompleted,
+			wantFreshCalls:         1,
+			wantRunnerCalls:        1,
+			wantUpdateCalls:        1,
+			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
+			wantResultError:        "speedtest failed",
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  1,
-				"run test":           1,
-				"store result":       1,
-				"finish healthcheck": 1,
+				"notify":                 1,
+				"pre-run notifications":  1,
+				"run test":               1,
+				"store result":           1,
+				"post-run notifications": 1,
 			},
 		},
 		{
@@ -82,11 +82,11 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			wantStatus:     workflow.StatusFailed,
 			wantFreshCalls: 1,
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  0,
-				"run test":           1,
-				"store result":       0,
-				"finish healthcheck": 0,
+				"notify":                 1,
+				"pre-run notifications":  0,
+				"run test":               1,
+				"store result":           0,
+				"post-run notifications": 0,
 			},
 		},
 		{
@@ -100,81 +100,91 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			wantRunnerCalls: 1,
 			wantUpdateCalls: 1,
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  0,
-				"run test":           1,
-				"store result":       1,
-				"finish healthcheck": 0,
+				"notify":                 1,
+				"pre-run notifications":  0,
+				"run test":               1,
+				"store result":           1,
+				"post-run notifications": 0,
 			},
 		},
 		{
-			name:              "continues when starting the healthcheck fails",
-			healthcheck:       true,
-			healthcheckStatus: map[string]int{"/start": http.StatusInternalServerError},
-			wantStatus:        workflow.StatusCompleted,
-			wantFreshCalls:    1,
-			wantRunnerCalls:   1,
-			wantUpdateCalls:   1,
-			wantHealthPaths:   []string{"/start", "/start", "/start", "/"},
+			name:               "continues when pre-run notifications fail",
+			notifications:      true,
+			preNotificationErr: errors.New("notification failed"),
+			wantStatus:         workflow.StatusCompleted,
+			wantFreshCalls:     1,
+			wantRunnerCalls:    1,
+			wantUpdateCalls:    1,
+			wantNotificationPhases: []notifications.Phase{
+				notifications.PreRun,
+				notifications.PreRun,
+				notifications.PreRun,
+				notifications.PostRun,
+			},
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  3,
-				"run test":           1,
-				"store result":       1,
-				"finish healthcheck": 1,
+				"notify":                 1,
+				"pre-run notifications":  3,
+				"run test":               1,
+				"store result":           1,
+				"post-run notifications": 1,
 			},
 			wantStepStatus: map[string]workflow.StepStatus{
-				"start healthcheck": workflow.StepFailed,
+				"pre-run notifications": workflow.StepFailed,
 			},
 		},
 		{
-			name:              "continues when finishing the healthcheck fails",
-			healthcheck:       true,
-			healthcheckStatus: map[string]int{"/": http.StatusInternalServerError},
-			wantStatus:        workflow.StatusCompleted,
-			wantFreshCalls:    1,
-			wantRunnerCalls:   1,
-			wantUpdateCalls:   1,
-			wantHealthPaths:   []string{"/start", "/", "/", "/"},
+			name:                "continues when post-run notifications fail",
+			notifications:       true,
+			postNotificationErr: errors.New("notification failed"),
+			wantStatus:          workflow.StatusCompleted,
+			wantFreshCalls:      1,
+			wantRunnerCalls:     1,
+			wantUpdateCalls:     1,
+			wantNotificationPhases: []notifications.Phase{
+				notifications.PreRun,
+				notifications.PostRun,
+				notifications.PostRun,
+				notifications.PostRun,
+			},
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  1,
-				"run test":           1,
-				"store result":       1,
-				"finish healthcheck": 3,
+				"notify":                 1,
+				"pre-run notifications":  1,
+				"run test":               1,
+				"store result":           1,
+				"post-run notifications": 3,
 			},
 			wantStepStatus: map[string]workflow.StepStatus{
-				"finish healthcheck": workflow.StepFailed,
+				"post-run notifications": workflow.StepFailed,
 			},
 		},
 		{
-			name:            "skips healthchecks when none is configured",
+			name:            "skips notifications when none are configured",
 			wantStatus:      workflow.StatusCompleted,
 			wantFreshCalls:  1,
 			wantRunnerCalls: 1,
 			wantUpdateCalls: 1,
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  0,
-				"run test":           1,
-				"store result":       1,
-				"finish healthcheck": 0,
+				"notify":                 1,
+				"pre-run notifications":  0,
+				"run test":               1,
+				"store result":           1,
+				"post-run notifications": 0,
 			},
 		},
 		{
-			name:            "does not rerun an already complete result",
-			healthcheck:     true,
-			complete:        true,
-			wantStatus:      workflow.StatusCompleted,
-			wantFreshCalls:  1,
-			wantUpdateCalls: 1,
-			wantHealthPaths: []string{"/start", "/"},
+			name:                   "does not rerun an already complete result",
+			notifications:          true,
+			complete:               true,
+			wantStatus:             workflow.StatusCompleted,
+			wantFreshCalls:         1,
+			wantUpdateCalls:        1,
+			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
 			wantAttempts: map[string]int{
-				"healthcheck":        1,
-				"start healthcheck":  1,
-				"run test":           1,
-				"store result":       1,
-				"finish healthcheck": 1,
+				"notify":                 1,
+				"pre-run notifications":  1,
+				"run test":               1,
+				"store result":           1,
+				"post-run notifications": 1,
 			},
 		},
 	}
@@ -183,16 +193,18 @@ func TestSpeedtestWorkflow(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &workflowRepoStub{freshErr: tt.freshErr, updateErr: tt.updateErr}
 			runner := &workflowRunnerStub{err: tt.runnerErr}
-			healthcheck := newHealthcheckServer(t, tt.healthcheckStatus)
-			healthcheckURL := ""
-			if tt.healthcheck {
-				healthcheckURL = healthcheck.server.URL
+			notifier := &workflowNotifierStub{
+				shouldNotify: tt.notifications,
+				errs: map[notifications.Phase]error{
+					notifications.PreRun:  tt.preNotificationErr,
+					notifications.PostRun: tt.postNotificationErr,
+				},
 			}
 
 			wf, err := buildWorkflow(WorkflowOpts{
-				Repo:        repo,
-				Runner:      runner.run,
-				Healthcheck: healthcheckURL,
+				Repo:     repo,
+				Runner:   runner.run,
+				Notifier: notifier,
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -227,8 +239,8 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			if got := repo.updateCallCount(); got != tt.wantUpdateCalls {
 				t.Errorf("Update calls = %d, want %d", got, tt.wantUpdateCalls)
 			}
-			if got := healthcheck.paths(); !slices.Equal(got, tt.wantHealthPaths) {
-				t.Errorf("healthcheck paths = %q, want %q", got, tt.wantHealthPaths)
+			if got := notifier.phases(); !slices.Equal(got, tt.wantNotificationPhases) {
+				t.Errorf("notification phases = %v, want %v", got, tt.wantNotificationPhases)
 			}
 			for step, want := range tt.wantAttempts {
 				if got := workflowStepAttempts(t, status, step); got != want {
@@ -318,35 +330,32 @@ func (r *workflowRunnerStub) callCount() int {
 	return r.calls
 }
 
-type healthcheckServer struct {
-	mu       sync.Mutex
-	server   *httptest.Server
-	statuses map[string]int
-	requests []string
+type workflowNotifierStub struct {
+	mu           sync.Mutex
+	shouldNotify bool
+	errs         map[notifications.Phase]error
+	calls        []notifications.Phase
 }
 
-func newHealthcheckServer(t *testing.T, statuses map[string]int) *healthcheckServer {
-	t.Helper()
-
-	h := &healthcheckServer{statuses: statuses}
-	h.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h.mu.Lock()
-		h.requests = append(h.requests, r.URL.Path)
-		status := h.statuses[r.URL.Path]
-		h.mu.Unlock()
-		if status == 0 {
-			status = http.StatusOK
-		}
-		w.WriteHeader(status)
-	}))
-	t.Cleanup(h.server.Close)
-	return h
+func (n *workflowNotifierStub) ShouldNotify() bool {
+	return n.shouldNotify
 }
 
-func (h *healthcheckServer) paths() []string {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-	return slices.Clone(h.requests)
+func (n *workflowNotifierStub) Notify(
+	_ context.Context,
+	phase notifications.Phase,
+	_ results.Result,
+) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	n.calls = append(n.calls, phase)
+	return n.errs[phase]
+}
+
+func (n *workflowNotifierStub) phases() []notifications.Phase {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	return slices.Clone(n.calls)
 }
 
 func startWorkflowHost(t *testing.T, wf *workflow.Workflow) *local.Host {

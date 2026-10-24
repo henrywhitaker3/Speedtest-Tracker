@@ -48,6 +48,8 @@
 
     <SettingsActions />
 
+    <SettingsNotifications />
+
     <TokensTable v-if="configStore.authEnabled()" />
   </div>
 </template>

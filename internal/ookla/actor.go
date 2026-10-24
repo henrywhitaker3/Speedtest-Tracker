@@ -14,15 +14,15 @@ type RegisterActorOpts struct {
 	Schedule     string
 	ServerID     int
 	Runner       runFunc
-	Healthcheck  string
+	Notifier     notifier
 }
 
 func RegisterActor(opts RegisterActorOpts) (*workflow.WorkflowService, error) {
 	workflow, err := buildWorkflow(WorkflowOpts{
-		Host:        opts.Host,
-		Runner:      opts.Runner,
-		Repo:        opts.WorkflowRepo,
-		Healthcheck: opts.Healthcheck,
+		Host:     opts.Host,
+		Runner:   opts.Runner,
+		Repo:     opts.WorkflowRepo,
+		Notifier: opts.Notifier,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("build workflow: %w", err)

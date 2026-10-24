@@ -14,6 +14,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http"
@@ -60,6 +61,7 @@ func Bootstrap(
 	}
 
 	resultsRepo := results.NewRepo(db)
+	notifier := notifications.New(conf.Notifications)
 
 	workflow, err := ookla.RegisterActor(ookla.RegisterActorOpts{
 		Host:         host,
@@ -68,7 +70,7 @@ func Bootstrap(
 		WorkflowRepo: resultsRepo,
 		CronjobRepo:  resultsRepo,
 		Schedule:     conf.Schedule,
-		Healthcheck:  conf.Notifications.Healthcheck,
+		Notifier:     notifier,
 	})
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("register ookla actors: %w", err)

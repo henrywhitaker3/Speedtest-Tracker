@@ -12,6 +12,7 @@ require (
 	github.com/labstack/echo/v5 v5.4.2
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
+	github.com/stretchr/testify v1.12.1
 	go.opentelemetry.io/otel v1.47.0
 	golang.org/x/oauth2 v0.37.0
 	gorm.io/driver/postgres v1.6.3
