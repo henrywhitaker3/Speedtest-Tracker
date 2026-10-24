@@ -1,3 +1,22 @@
+## [2.4.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.3.0..v2.4.0) - 2026-10-24
+
+### 🚀 Features
+
+- *(config)* Added config for webhook notifications - ([ac4f4bd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ac4f4bdfdfcfc361686c9606a08820d0cf2b6a84))
+- *(notifications)* Add workflow support for multiple notifications and phases - ([0f85cad](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0f85cadd0a6c1f7ea33e98f770d33aaa491c90fa))
+
+### 🐛 Bug Fixes
+
+- *(config)* Notification url parsing - ([65a6285](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/65a6285fd48cc6329c2ce4d0a7a13f9f8509d093))
+- *(notifications)* Assert http(s) scheme to the configured url - ([4d4c35e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4d4c35e4d6b656317bf9b8293a401f477cc9f4b0))
+- *(ui)* Update timeline for new speedtest workflow - ([fd2affa](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fd2affad597700b9f58c13fbcb583d29d4a598ea))
+- *(ui)* Add card to settings page to display configured notification channels - ([d4313ed](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d4313ed6f20ae1657c2ca387034a61e103e5e742))
+- *(ui)* Add handling for null response from notifications endpoint - ([b3cc0a9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b3cc0a9f2241cb986f11e626d004ce129620985e))
+- *(workflow)* Mark failed healthchecks as optional - ([3f31388](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3f31388d44f8e957f136e08e5f537d19462bc01f))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update readme and add some docs - ([fa13268](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fa13268dc2cb6d2637a61551f2d7f38f4f2c1391))
 ## [2.3.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.4..v2.3.0) - 2026-10-24
 
 ### 🚀 Features
@@ -22,6 +41,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- *(docs)* Update changelog - ([a127a44](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a127a44c4492b0c54fe84cc93f2d28f8989e7398))
 - *(test)* Update step name - ([2f9190f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2f9190f68f344a167a581a8b98cd4cbc5d18dde6))
 - *(test)* Don't persists git creds - ([47e1e1e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/47e1e1ef8b5e10d6aab6cb679fdd7d9e9b44c4e7))
 - Add lint job - ([fefe7f1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fefe7f11ed162ebd615710ef11585233d241c361))
