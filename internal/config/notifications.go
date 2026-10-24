@@ -26,9 +26,9 @@ var (
 )
 
 type Notification struct {
-	Kind   NotificationKind
-	Phases []NotificationPhase
-	URL    string
+	Kind   NotificationKind    `json:"kind"`
+	Phases []NotificationPhase `json:"phases"`
+	URL    string              `json:"url"`
 }
 
 func (n Notification) validate() error {
@@ -40,7 +40,7 @@ func (n Notification) validate() error {
 			return fmt.Errorf("invalid phase %s", p)
 		}
 	}
-	if !strings.HasPrefix(n.URL, "https://") && !strings.HasPrefix("http://", n.URL) {
+	if !strings.HasPrefix(n.URL, "https://") && !strings.HasPrefix(n.URL, "http://") {
 		return fmt.Errorf("url does not start with http(s):// scheme")
 	}
 	if _, err := url.Parse(n.URL); err != nil {

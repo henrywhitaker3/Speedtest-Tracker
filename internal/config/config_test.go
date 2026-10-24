@@ -114,6 +114,30 @@ func TestItParsesNotifications(t *testing.T) {
 			},
 			error: true,
 		},
+		{
+			name: "allows http urls",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "healthcheck",
+				"NOTIFICATIONS_0_PHASES": "post-run",
+				"NOTIFICATIONS_0_URL":    "http://example.com/",
+			},
+			want: Notifications{
+				{
+					Kind:   Healthcheck,
+					Phases: []NotificationPhase{PostRun},
+					URL:    "http://example.com/",
+				},
+			},
+		},
+		{
+			name: "errors with non http(s) url",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "healthcheck",
+				"NOTIFICATIONS_0_PHASES": "post-run",
+				"NOTIFICATIONS_0_URL":    "ftp://example.com/",
+			},
+			error: true,
+		},
 	}
 
 	for _, c := range tcs {
