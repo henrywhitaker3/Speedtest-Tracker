@@ -53,7 +53,7 @@
           <p class="font-medium capitalize">
             {{ notification.kind ?? 'Unknown' }}
           </p>
-          <p class="text-muted break-all font-mono text-sm">
+          <p class="text-muted font-mono text-sm break-all">
             {{ notification.url }}
           </p>
         </div>
@@ -88,7 +88,7 @@ const loadNotifications = async () => {
     if (response.data) {
       notifications.value = response.data
     } else {
-      error.value = 'Unable to load notification configuration.'
+      notifications.value = []
     }
   } catch {
     error.value = 'Unable to load notification configuration.'
