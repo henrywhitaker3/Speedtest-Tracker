@@ -43,7 +43,7 @@ func Sqlite(path string) (*gorm.DB, error) {
 }
 
 func Postgres(url string) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(url))
+	db, err := gorm.Open(postgres.Open(url), config())
 	if err != nil {
 		return nil, fmt.Errorf("open postgres db: %w", err)
 	}
