@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -9,6 +10,8 @@ import (
 	"testing"
 
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
+	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
+	"github.com/italypaleale/francis/actor"
 	"github.com/labstack/echo/v5"
 )
 
@@ -25,6 +28,7 @@ func TestAuthMiddlewareRouteConfiguration(t *testing.T) {
 		{method: http.MethodGet, path: "/v1/auth/tokens", auth: true, adminOnly: true},
 		{method: http.MethodPost, path: "/v1/auth/tokens", auth: true, adminOnly: true},
 		{method: http.MethodDelete, path: "/v1/auth/tokens/:id", auth: true, adminOnly: true},
+		{method: http.MethodGet, path: "/v1/config/notifications", auth: true, adminOnly: true},
 		{method: http.MethodGet, path: "/v1/speedtest/latest"},
 	}
 
@@ -38,6 +42,101 @@ func TestAuthMiddlewareRouteConfiguration(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNotificationsEndpointAccess(t *testing.T) {
+	tests := []struct {
+		name        string
+		authEnabled bool
+		withCookie  bool
+		groups      []string
+		wantStatus  int
+		wantCalled  bool
+	}{
+		{
+			name:        "rejects an unauthenticated request when auth is enabled",
+			authEnabled: true,
+			wantStatus:  http.StatusUnauthorized,
+		},
+		{
+			name:        "rejects an authenticated non-admin when auth is enabled",
+			authEnabled: true,
+			withCookie:  true,
+			groups:      []string{"users"},
+			wantStatus:  http.StatusForbidden,
+		},
+		{
+			name:        "allows an authenticated admin when auth is enabled",
+			authEnabled: true,
+			withCookie:  true,
+			groups:      []string{"speedtest-admins"},
+			wantStatus:  http.StatusNoContent,
+			wantCalled:  true,
+		},
+		{
+			name:       "allows requests when auth is disabled",
+			wantStatus: http.StatusNoContent,
+			wantCalled: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			called := false
+			e := echo.New()
+			if tt.authEnabled {
+				e.Use(authapi.SessionMiddleware())
+				e.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
+					Service:    &notificationsSessionServiceStub{groups: tt.groups},
+					AdminGroup: "speedtest-admins",
+					Routes:     authRoutes(),
+				}))
+				e.Use(authapi.Admin(authapi.AdminOpts{Routes: adminRoutes()}))
+			}
+			e.GET("/v1/config/notifications", func(c *echo.Context) error {
+				called = true
+				return c.NoContent(http.StatusNoContent)
+			})
+
+			req := httptest.NewRequest(http.MethodGet, "/v1/config/notifications", nil)
+			if tt.withCookie {
+				req.AddCookie(&http.Cookie{Name: "__Host-speedtest-session", Value: "session-id"})
+			}
+			rec := httptest.NewRecorder()
+			e.ServeHTTP(rec, req)
+
+			if rec.Code != tt.wantStatus {
+				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
+			}
+			if called != tt.wantCalled {
+				t.Errorf("handler called = %t, want %t", called, tt.wantCalled)
+			}
+		})
+	}
+}
+
+type notificationsSessionServiceStub struct {
+	groups []string
+}
+
+func (s *notificationsSessionServiceStub) Invoke(
+	_ context.Context,
+	_ string,
+	_ string,
+	_ string,
+	_ any,
+	_ ...actor.InvokeOption,
+) (actor.Envelope, error) {
+	return notificationsSessionEnvelope{groups: s.groups}, nil
+}
+
+type notificationsSessionEnvelope struct {
+	groups []string
+}
+
+func (e notificationsSessionEnvelope) Decode(into any) error {
+	*into.(*authactor.AuthenticateResult) = authactor.AuthenticateResult{Groups: e.groups}
+	return nil
 }
 
 func hasProtectedRoute(routes authapi.ProtectedRoutes, method, path string) bool {

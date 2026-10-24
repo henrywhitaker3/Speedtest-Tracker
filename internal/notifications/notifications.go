@@ -130,7 +130,7 @@ func sendWebhook(ctx context.Context, url string, result results.Result) error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("do healthcheck request: %w", err)
+		return fmt.Errorf("do http request: %w", err)
 	}
 	defer func() {
 		_ = resp.Body.Close()

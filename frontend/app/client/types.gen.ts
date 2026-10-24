@@ -35,6 +35,14 @@ export type ConfigConfigResponse = {
     server_id?: number;
 };
 
+export type ConfigNotification = {
+    kind?: string;
+    phases?: Array<string> | null;
+    url?: string;
+};
+
+export type ConfigNotifications = Array<ConfigNotification>;
+
 export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult = {
     data?: Array<ResultsResult> | null;
     limit?: number;
@@ -270,6 +278,45 @@ export type GetV1ConfigResponses = {
 };
 
 export type GetV1ConfigResponse = GetV1ConfigResponses[keyof GetV1ConfigResponses];
+
+export type GetV1ConfigNotificationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/config/notifications';
+};
+
+export type GetV1ConfigNotificationsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetV1ConfigNotificationsError = GetV1ConfigNotificationsErrors[keyof GetV1ConfigNotificationsErrors];
+
+export type GetV1ConfigNotificationsResponses = {
+    /**
+     * OK
+     */
+    200: ConfigNotifications;
+};
+
+export type GetV1ConfigNotificationsResponse = GetV1ConfigNotificationsResponses[keyof GetV1ConfigNotificationsResponses];
 
 export type GetV1SpeedtestData = {
     body?: never;
