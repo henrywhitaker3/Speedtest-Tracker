@@ -95,5 +95,5 @@ const stepIcon = (status?: string): string | undefined => {
   }
 }
 
-const timeline: TimelineItem[] = buildTimeline()
+const timeline = computed(buildTimeline)
 </script>

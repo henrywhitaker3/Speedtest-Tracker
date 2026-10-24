@@ -23,13 +23,13 @@
           All results
         </UButton>
         <ResultsDeleteResult
-          :id="route.params.id"
+          :id="String(route.params.id)"
           variant="page"
         />
       </div>
     </div>
 
-    <template v-if="isLoading">
+    <template v-if="isLoading && !result">
       <div class="flex justify-center gap-6">
         <LoadingCard />
         <LoadingCard />
@@ -87,6 +87,7 @@
 import type { SpeedtestGetResponse } from '~/client'
 import { getV1SpeedtestById } from '~/client/sdk.gen'
 import { useSpeedtestCompleted } from '~/events/speedtest'
+import { useIntervalFn } from '@vueuse/core'
 
 const route = useRoute()
 const { formatDatetime } = useDate()
@@ -119,6 +120,20 @@ const loadResult = async () => {
 const { on: onCompleted } = useSpeedtestCompleted()
 onCompleted(() => {
   void loadResult()
+})
+
+const { pause: pausePolling, resume: resumePolling } = useIntervalFn(() => {
+  if (!isLoading.value) {
+    void loadResult()
+  }
+}, 3_000, { immediate: false })
+
+watch(() => result.value?.complete, (complete) => {
+  if (complete === true) {
+    pausePolling()
+  } else {
+    resumePolling()
+  }
 })
 
 watch(() => route.params.id, () => {
