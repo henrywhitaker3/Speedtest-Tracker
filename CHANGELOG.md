@@ -1,3 +1,33 @@
+## [2.3.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.4..v2.3.0) - 2026-10-24
+
+### 🚀 Features
+
+- Move to workflow based speedtest runner - ([dbdc013](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/dbdc013d790ef8fcb2b50c2eb1105ddb73023f92))
+- Display timeline of the run workflow in the results details page - ([38f7ed8](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/38f7ed8940a320ee613fc96fb0eb57ac7f50182b))
+
+### 🐛 Bug Fixes
+
+- *(ui)* Remember results table page - ([59bd3f8](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/59bd3f8bd7e4c20f84c39351166b13ab81f5ac02))
+- *(ui)* Poll for fresh result data when it is not complete yet - ([1f4e231](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1f4e231b6f976ebaae9e0f457ec6e3d5cc79b0bf))
+- *(ui)* Nicer view of steps in the timeline - ([4e7d156](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4e7d15644e262ea70fcee441b7d9cc95f1cbb266))
+- *(workflow)* Don't block running when healthchecks fail - ([7ec9ec6](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7ec9ec68805e7fb6bff245d7ab1e39a77483f556))
+- *(workflow)* Error logging in failed run - ([bc898c4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/bc898c422a341be763dc7db04750531e863e3760))
+- Close healthchecks response bodies - ([e74bbfe](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e74bbfee39eeac1e45da36bf43f2cf0665e86edf))
+- Cleanup dangling result when workflow fails to start - ([82a7b1b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/82a7b1bf2db20b402759b9263f4540939452dcee))
+
+### 🧪 Testing
+
+- Add workflow testing - ([772176f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/772176fd8c1a34ec1aef5f6e2810aa244437ed2a))
+- Update tests to ensure workflow continues on healthcheck failure - ([c29d7e9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c29d7e9e07c93610ae1eaf0b2105643cee4c27eb))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(test)* Update step name - ([2f9190f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2f9190f68f344a167a581a8b98cd4cbc5d18dde6))
+- *(test)* Don't persists git creds - ([47e1e1e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/47e1e1ef8b5e10d6aab6cb679fdd7d9e9b44c4e7))
+- Add lint job - ([fefe7f1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fefe7f11ed162ebd615710ef11585233d241c361))
+- Add ui build job too - ([a300ba8](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a300ba8d9012faf252a465c917e627d5aae96705))
+- Add ui build job too - ([d9c796b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9c796b1e1d30164a024cca0bfe1742ef58d67bc))
+- Add lint job - ([dc07830](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/dc0783042ce408c47a8864680a96fbed74d870a1))
 ## [2.2.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.3..v2.2.4) - 2026-10-23
 
 ### 🐛 Bug Fixes
@@ -14,6 +44,10 @@
 ### ⚡ Performance
 
 - *(auth)* Cache oidc config and sigining keys - ([7e658c5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7e658c52a8b990c00aa4091c7ee9bc40c6b2ab81))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog - ([d688d64](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d688d6447443359acbcd8ff754b52d42ab0e7309))
 ## [2.2.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.2..v2.2.3) - 2026-10-23
 
 ### 🐛 Bug Fixes
