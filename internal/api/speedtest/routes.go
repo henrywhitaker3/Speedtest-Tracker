@@ -39,7 +39,10 @@ func Register(
 		serverID: serverID,
 		limiter:  runLimiter.Service(host.Service()),
 	})
-	h.Register(&getHandler{repo: repo})
+	h.Register(&getHandler{
+		repo:   repo,
+		status: runner,
+	})
 	h.Register(&listHandler{repo: repo})
 	h.Register(&latestHandler{repo: repo})
 	h.Register(&timeseriesHandler{repo: repo})

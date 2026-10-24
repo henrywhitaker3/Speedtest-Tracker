@@ -18,13 +18,13 @@ func TestGetHandler(t *testing.T) {
 		name       string
 		result     *results.Result
 		repoErr    error
-		wantResult *results.Result
+		wantResult *GetResponse
 		wantErr    error
 	}{
 		{
 			name:       "returns result",
 			result:     result,
-			wantResult: result,
+			wantResult: &GetResponse{Result: *result},
 		},
 		{
 			name:    "wraps repository error",

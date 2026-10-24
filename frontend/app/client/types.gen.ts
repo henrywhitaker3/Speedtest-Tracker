@@ -75,8 +75,38 @@ export type ResultsStat = {
     upload?: number | null;
 };
 
+export type SpeedtestGetResponse = {
+    complete?: boolean;
+    created_at?: string;
+    deleted_at?: GormDeletedAt;
+    download?: number | null;
+    error?: string | null;
+    id?: UuidUuid;
+    ping?: number | null;
+    server_host?: string | null;
+    server_id?: number | null;
+    server_name?: string | null;
+    status?: SpeedtestWorkflowStatus;
+    updated_at?: string;
+    upload?: number | null;
+    url?: string | null;
+};
+
 export type SpeedtestRunResponse = {
     id?: UuidUuid;
+};
+
+export type SpeedtestWorkflowStatus = {
+    steps?: Array<SpeedtestWorkflowStep> | null;
+    version?: number;
+};
+
+export type SpeedtestWorkflowStep = {
+    attempts?: number;
+    completed_at?: string;
+    name?: string;
+    started_at?: string;
+    status?: string;
 };
 
 /**
@@ -366,7 +396,7 @@ export type GetV1SpeedtestByIdResponses = {
     /**
      * OK
      */
-    200: ResultsResult;
+    200: SpeedtestGetResponse;
 };
 
 export type GetV1SpeedtestByIdResponse = GetV1SpeedtestByIdResponses[keyof GetV1SpeedtestByIdResponses];

@@ -48,10 +48,14 @@ func runScheduleTest(
 			return fmt.Errorf("create initial result record: %w", err)
 		}
 
-		if _, _, err := runner.Start(ctx, RunWorkflow{
-			ServerID: serverID,
-			Result:   *result,
-		}); err != nil {
+		if _, _, err := runner.Start(
+			ctx,
+			RunWorkflow{
+				ServerID: serverID,
+				Result:   *result,
+			},
+			workflow.WithInstanceID(result.ID.String()),
+		); err != nil {
 			return fmt.Errorf("start workflow: %w", err)
 		}
 
