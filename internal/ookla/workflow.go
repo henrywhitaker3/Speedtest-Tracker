@@ -161,6 +161,10 @@ func sendHealthcheck(ctx context.Context, url string, action healthcheckAction) 
 	if err != nil {
 		return fmt.Errorf("do healthcheck request: %w", err)
 	}
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("got status code %d", resp.StatusCode)
 	}
