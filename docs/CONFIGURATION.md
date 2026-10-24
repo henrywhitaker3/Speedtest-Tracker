@@ -33,9 +33,27 @@ The Speedtest binary receives Ookla's EULA and GDPR flags when it runs. `ACCEPT_
 
 ## Notifications
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `NOTIFICATIONS_HEALTHCHECKS` | unset | Healthchecks.io check URL. The workflow sends a start ping and a success or failure ping; a failed ping does not stop a speedtest. |
+Configure each notification with a zero-based, contiguous index. Every notification requires all three variables:
+
+| Variable | Description |
+| --- | --- |
+| `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck` or `webhook`. |
+| `NOTIFICATIONS_<index>_PHASES` | Comma-separated phases: `pre-run`, `post-run`, or both. |
+| `NOTIFICATIONS_<index>_URL` | Destination URL. |
+
+For example, this configures a Healthchecks.io notification before and after the speedtest, plus a webhook after it finishes:
+
+```dotenv
+NOTIFICATIONS_0_KIND=healthcheck
+NOTIFICATIONS_0_PHASES=pre-run,post-run
+NOTIFICATIONS_0_URL=https://hc-ping.com/your-check-id
+
+NOTIFICATIONS_1_KIND=webhook
+NOTIFICATIONS_1_PHASES=post-run
+NOTIFICATIONS_1_URL=https://example.com/speedtest-complete
+```
+
+`NOTIFICATIONS_HEALTHCHECKS` remains supported for compatibility. It creates one `healthcheck` notification for both `pre-run` and `post-run` phases.
 
 ## Authentication
 
