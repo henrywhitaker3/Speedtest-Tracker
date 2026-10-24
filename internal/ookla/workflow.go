@@ -115,7 +115,10 @@ func shouldRunHealthcheck(url string) workflow.RunFunc {
 
 func startHealthcheck(url string) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (any, error) {
-		return nil, sendHealthcheck(ctx, url, healthcheckStart)
+		if err := sendHealthcheck(ctx, url, healthcheckStart); err != nil {
+			slog.ErrorContext(ctx, "send start healthcheck", "error", err)
+		}
+		return nil, nil
 	}
 }
 
@@ -131,7 +134,10 @@ func finishHealthcheck(url string) workflow.RunFunc {
 			action = healthcheckSuccess
 		}
 
-		return nil, sendHealthcheck(ctx, url, action)
+		if err := sendHealthcheck(ctx, url, action); err != nil {
+			slog.ErrorContext(ctx, "send finish healthcheck", "action", action, "error", err)
+		}
+		return nil, nil
 	}
 }
 
