@@ -19,8 +19,8 @@ type latestHandler struct {
 	repo latestRepo
 }
 
-func (l *latestHandler) Handler() handlers.Handler[any, results.Result] {
-	return func(c *echo.Context, req any) (*results.Result, error) {
+func (l *latestHandler) Handler() handlers.Handler[any, Result] {
+	return func(c *echo.Context, req any) (*Result, error) {
 		ctx, span := tracing.NewSpan(c.Request().Context(), "Get latest result")
 		defer span.End()
 
@@ -29,7 +29,7 @@ func (l *latestHandler) Handler() handlers.Handler[any, results.Result] {
 			return nil, httperrors.Stack(err)
 		}
 
-		return latest, nil
+		return new(convert(c, *latest)), nil
 	}
 }
 

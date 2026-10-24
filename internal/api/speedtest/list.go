@@ -25,8 +25,8 @@ type ListRequest struct {
 	Limit int `query:"limit" default:"25" description:"The number of rows per page"`
 }
 
-func (l *listHandler) Handler() handlers.Handler[ListRequest, database.Pagination[results.Result]] {
-	return func(c *echo.Context, req ListRequest) (*database.Pagination[results.Result], error) {
+func (l *listHandler) Handler() handlers.Handler[ListRequest, database.Pagination[Result]] {
+	return func(c *echo.Context, req ListRequest) (*database.Pagination[Result], error) {
 		ctx, span := tracing.NewSpan(c.Request().Context(), "List results")
 		defer span.End()
 
@@ -38,7 +38,19 @@ func (l *listHandler) Handler() handlers.Handler[ListRequest, database.Paginatio
 			return nil, httperrors.Stack(err)
 		}
 
-		return results, nil
+		out := &database.Pagination[Result]{
+			Limit:      results.Limit,
+			Page:       results.Page,
+			Total:      results.Total,
+			TotalPages: results.TotalPages,
+		}
+		data := []Result{}
+		for _, d := range results.Data {
+			data = append(data, convert(c, d))
+		}
+		out.Data = data
+
+		return out, nil
 	}
 }
 

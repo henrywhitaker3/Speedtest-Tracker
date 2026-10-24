@@ -51,6 +51,10 @@ export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalR
     total_rows?: number;
 };
 
+export type DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput = {
+    [key: string]: unknown;
+};
+
 export type GormDeletedAt = {
     [key: string]: unknown;
 };
@@ -67,6 +71,7 @@ export type ResultsResult = {
     error?: string | null;
     id?: UuidUuid;
     ping?: number | null;
+    raw?: DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput;
     server_host?: string | null;
     server_id?: number | null;
     server_name?: string | null;
@@ -91,6 +96,7 @@ export type SpeedtestGetResponse = {
     error?: string | null;
     id?: UuidUuid;
     ping?: number | null;
+    raw?: DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput;
     server_host?: string | null;
     server_id?: number | null;
     server_name?: string | null;

@@ -17,7 +17,38 @@ import (
 
 const (
 	sessionCookieName = "__Host-speedtest-session"
+
+	authContextKey  = "auth"
+	adminContextKey = "admin"
 )
+
+func AddContext(authEnabled bool) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			if authEnabled {
+				c.Set(authContextKey, true)
+			} else {
+				c.Set(authContextKey, false)
+			}
+			return next(c)
+		}
+	}
+}
+
+func IsAdmin(c *echo.Context) bool {
+	// If auth is disabled, allow anyone to do admin things
+	if authEnabled, configured := c.Get(authContextKey).(bool); configured && !authEnabled {
+		return true
+	}
+
+	// If auth is enabled (or this is a context assembled by a focused handler
+	// test), check whether authentication established administrator access.
+	if admin, ok := c.Get(adminContextKey).(bool); admin && ok {
+		return true
+	}
+
+	return false
+}
 
 func SessionMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -68,7 +99,7 @@ func (p ProtectedRoutes) Contains(c *echo.Context) bool {
 }
 
 type AuthMiddlewareOpts struct {
-	// Routes are a slice of routes that should be protected behind auth
+	// Routes are a slice of routes that MUST be authenticated
 	Routes ProtectedRoutes
 
 	Service    actorInvoker
@@ -82,25 +113,26 @@ func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 			ctx, span := tracing.NewSpan(c.Request().Context(), "Authenticate")
 			defer span.End()
 
+			var err error
+			authHeader := strings.TrimPrefix(c.Request().Header.Get("Authorization"), "Bearer ")
+			if authHeader != "" {
+				span.SetAttributes(attribute.String("auth.method", "api"))
+				err = handleTokenAuth(ctx, authHeader, opts.TokenRepo)
+			} else {
+				span.SetAttributes(attribute.String("auth.method", "session"))
+				err = handleSessionAuth(ctx, c, opts.Service, opts.AdminGroup)
+			}
+
 			if !opts.Routes.Contains(c) {
 				span.End()
 				return next(c)
 			}
 
-			authHeader := strings.TrimPrefix(c.Request().Header.Get("Authorization"), "Bearer ")
-			if authHeader != "" {
-				span.SetAttributes(attribute.String("auth.method", "api"))
-				if err := handleTokenAuth(ctx, authHeader, opts.TokenRepo); err != nil {
-					return err
-				}
-			} else {
-				span.SetAttributes(attribute.String("auth.method", "session"))
-				if err := handleSessionAuth(ctx, c, opts.Service, opts.AdminGroup); err != nil {
-					return err
-				}
+			if err != nil {
+				return err
 			}
-			span.End()
 
+			span.End()
 			return next(c)
 		}
 	}
@@ -121,7 +153,7 @@ func Admin(opts AdminOpts) echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			if admin, ok := c.Get("admin").(bool); ok && admin {
+			if IsAdmin(c) {
 				span.End()
 				return next(c)
 			}
@@ -164,7 +196,7 @@ func handleSessionAuth(
 		var session authactor.AuthenticateResult
 		if err := sessionRaw.Decode(&session); err == nil {
 			if slices.Contains(session.Groups, adminGroup) {
-				c.Set("admin", true)
+				c.Set(adminContextKey, true)
 			}
 		}
 	}

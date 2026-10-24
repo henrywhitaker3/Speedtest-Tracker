@@ -174,7 +174,7 @@ const columns: TableColumn<ResultsResult>[] = [
     cell: ({ row }) => {
       return h(
         RowActions,
-        { id: row.getValue('id') }
+        { id: row.getValue<string>('id') }
       )
     }
   }

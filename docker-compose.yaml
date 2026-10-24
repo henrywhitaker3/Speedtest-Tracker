@@ -29,12 +29,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    env_file: [.env]
     environment:
-      ACCEPT_EULA: "true"
-      RUNTIME_PSK: ${RUNTIME_PSK}
-      DB_DRIVER: postgres
-      DB_URL: postgres://speedtest-tracker:speedtest-tracker@postgres:5432/speedtest-tracker?sslmode=disable
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      DB_URL: postgres://speedtest-tracker:speedtest-tracker@postgres:5432/speedtest-tracker?sslmode=disable
 
   jaeger:
     image: jaegertracing/all-in-one:1.76.0

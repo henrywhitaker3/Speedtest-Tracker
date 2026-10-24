@@ -81,6 +81,31 @@
         </dd>
       </div>
     </dl>
+
+    <UCollapsible
+      v-if="props.result.raw != null"
+      class="mt-6 border-t border-default pt-4"
+    >
+      <template #default="{ open }">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          class="-ml-2"
+        >
+          Raw result
+          <UIcon
+            name="i-lucide-chevron-down"
+            class="size-4 transition-transform"
+            :class="{ 'rotate-180': open }"
+          />
+        </UButton>
+      </template>
+
+      <template #content>
+        <pre class="bg-muted mt-3 max-h-96 overflow-auto rounded-md p-4 text-xs break-words whitespace-pre-wrap">{{ JSON.stringify(props.result.raw, null, 2) }}</pre>
+      </template>
+    </UCollapsible>
   </UCard>
 </template>
 

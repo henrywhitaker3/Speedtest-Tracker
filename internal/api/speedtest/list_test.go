@@ -3,6 +3,7 @@ package speedtest
 import (
 	"context"
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
@@ -54,8 +55,23 @@ func TestListHandler(t *testing.T) {
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("Handler() error = %v, want %v", err, tt.wantErr)
 			}
-			if got != tt.page {
-				t.Errorf("Handler() result = %v, want %v", got, tt.page)
+			if tt.page == nil {
+				if got != nil {
+					t.Errorf("Handler() result = %v, want nil", got)
+				}
+			} else {
+				want := &database.Pagination[Result]{
+					Page:       tt.page.Page,
+					Limit:      tt.page.Limit,
+					Total:      tt.page.Total,
+					TotalPages: tt.page.TotalPages,
+				}
+				for _, result := range tt.page.Data {
+					want.Data = append(want.Data, Result{ID: result.ID})
+				}
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("Handler() result = %v, want %v", got, want)
+				}
 			}
 			if repo.opts != tt.wantOpts {
 				t.Errorf("repository options = %+v, want %+v", repo.opts, tt.wantOpts)

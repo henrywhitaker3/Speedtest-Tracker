@@ -52,7 +52,7 @@ func New(
 	h.Use(mw.LoggerAt(slog.LevelDebug))
 	h.Use(corsMiddleware(conf.App.UIURL))
 	h.Use(staticMiddleware(conf.App.UIDir))
-
+	h.Use(authapi.AddContext(conf.Auth.Enabled))
 	if conf.Auth.Enabled {
 		h.Use(authapi.SessionMiddleware())
 		h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
@@ -65,13 +65,22 @@ func New(
 			Routes: adminRoutes(),
 		}))
 	}
-
 	if err := registerRoutes(h, db, host, runner, conf); err != nil {
 		return nil, err
 	}
 	registerValidators(h)
 
 	return h, nil
+}
+
+// resultRoutes remain public, but authenticate a supplied session so
+// administrators can receive the raw speedtest output.
+func resultRoutes() authapi.ProtectedRoutes {
+	return authapi.ProtectedRoutes{
+		{Method: stdhttp.MethodGet, Path: "/v1/speedtest"},
+		{Method: stdhttp.MethodGet, Path: "/v1/speedtest/latest"},
+		{Method: stdhttp.MethodGet, Path: "/v1/speedtest/:id"},
+	}
 }
 
 func authRoutes() authapi.ProtectedRoutes {

@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 )
 
 func TestDownloadURLForPlatform(t *testing.T) {
@@ -116,7 +118,7 @@ func TestExtractBinary(t *testing.T) {
 func TestOoklaOutputUnmarshalsFractionalPacketLoss(t *testing.T) {
 	const packetLoss = 0.43859649122807015
 
-	var output ooklaOutput
+	var output results.SpeedtestOutput
 	if err := json.Unmarshal([]byte(`{"packetLoss":0.43859649122807015}`), &output); err != nil {
 		t.Fatal(err)
 	}

@@ -8,21 +8,23 @@ import (
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 type Result struct {
 	database.BaseModel
 
-	Ping       *float64 `json:"ping"`
-	Download   *int64   `json:"download"`
-	Upload     *int64   `json:"upload"`
-	ServerID   *int     `json:"server_id"`
-	ServerHost *string  `json:"server_host"`
-	ServerName *string  `json:"server_name"`
-	URL        *string  `json:"url"`
-	Error      *string  `json:"error,omitempty"`
-	Complete   bool     `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
+	Ping       *float64                             `json:"ping"`
+	Download   *int64                               `json:"download"`
+	Upload     *int64                               `json:"upload"`
+	ServerID   *int                                 `json:"server_id"`
+	ServerHost *string                              `json:"server_host"`
+	ServerName *string                              `json:"server_name"`
+	URL        *string                              `json:"url"`
+	Error      *string                              `json:"error,omitempty"`
+	Complete   bool                                 `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
+	Raw        *datatypes.JSONType[SpeedtestOutput] `json:"-"`
 }
 
 type Repository struct {

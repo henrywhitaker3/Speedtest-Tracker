@@ -46,7 +46,7 @@ type WorkflowStatus struct {
 }
 
 type GetResponse struct {
-	results.Result
+	Result
 	Status *WorkflowStatus `json:"status,omitempty"`
 }
 
@@ -61,7 +61,7 @@ func (g *getHandler) Handler() handlers.Handler[GetRequest, GetResponse] {
 		}
 
 		response := &GetResponse{
-			Result: *result,
+			Result: convert(c, *result),
 		}
 
 		status, err := g.status.GetStatus(ctx, result.ID.String())

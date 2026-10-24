@@ -39,10 +39,12 @@ func TestAdminMiddleware(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := &actorInvokerStub{envelope: sessionEnvelope{value: authactor.AuthenticateResult{
-				Subject: "issuer-user-id",
-				Groups:  tt.groups,
-			}}}
+			service := &actorInvokerStub{
+				envelope: sessionEnvelope{value: authactor.AuthenticateResult{
+					Subject: "issuer-user-id",
+					Groups:  tt.groups,
+				}},
+			}
 			called := false
 			e := echo.New()
 			e.Use(AuthMiddleware(AuthMiddlewareOpts{
@@ -108,10 +110,65 @@ func TestAdminMiddlewareRejectsAPIToken(t *testing.T) {
 		t.Errorf("status = %d, want %d", rec.Code, http.StatusForbidden)
 	}
 	if !tokenRepo.called || tokenRepo.token != "valid-api-token" {
-		t.Errorf("token validation = called %t with %q, want valid API token", tokenRepo.called, tokenRepo.token)
+		t.Errorf(
+			"token validation = called %t with %q, want valid API token",
+			tokenRepo.called,
+			tokenRepo.token,
+		)
 	}
 	if called {
 		t.Error("admin handler was called for an API token")
+	}
+}
+
+func TestAuthMiddlewareOptionallyAuthenticatesPublicRoute(t *testing.T) {
+	tests := []struct {
+		name       string
+		withCookie bool
+		groups     []string
+		wantAdmin  bool
+	}{
+		{
+			name: "allows an anonymous request",
+		},
+		{
+			name:       "identifies an administrator",
+			withCookie: true,
+			groups:     []string{"speedtest-admins"},
+			wantAdmin:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			e.Use(AddContext(true))
+			e.Use(AuthMiddleware(AuthMiddlewareOpts{
+				Service: &actorInvokerStub{
+					envelope: sessionEnvelope{
+						value: authactor.AuthenticateResult{Groups: tt.groups},
+					},
+				},
+				AdminGroup: "speedtest-admins",
+			}))
+			e.GET("/results", func(c *echo.Context) error {
+				if got := IsAdmin(c); got != tt.wantAdmin {
+					t.Errorf("IsAdmin() = %t, want %t", got, tt.wantAdmin)
+				}
+				return c.NoContent(http.StatusOK)
+			})
+
+			req := httptest.NewRequest(http.MethodGet, "/results", nil)
+			if tt.withCookie {
+				req.AddCookie(&http.Cookie{Name: sessionCookieName, Value: "session-id"})
+			}
+			rec := httptest.NewRecorder()
+			e.ServeHTTP(rec, req)
+
+			if rec.Code != http.StatusOK {
+				t.Errorf("status = %d, want %d", rec.Code, http.StatusOK)
+			}
+		})
 	}
 }
 

@@ -28,7 +28,7 @@ func TestGetHandler(t *testing.T) {
 		{
 			name:       "returns result",
 			result:     result,
-			wantResult: &GetResponse{Result: *result},
+			wantResult: &GetResponse{Result: Result{ID: result.ID, Complete: true}},
 		},
 		{
 			name:    "wraps repository error",
