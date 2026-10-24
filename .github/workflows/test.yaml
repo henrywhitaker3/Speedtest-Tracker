@@ -3,6 +3,8 @@ name: Test
 on:
   pull_request:
     branches: [v2]
+  push:
+    branches: [v2]
 
 jobs:
   backend:
