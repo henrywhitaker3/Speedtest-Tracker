@@ -136,7 +136,7 @@ func sendWebhook(ctx context.Context, url string, result results.Result) error {
 		_ = resp.Body.Close()
 	}()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode < http.StatusOK || resp.StatusCode > 299 {
 		return fmt.Errorf("got status code %d", resp.StatusCode)
 	}
 

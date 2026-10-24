@@ -34,7 +34,8 @@ type WorkflowOpts struct {
 func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 	return workflow.New(
 		"speedtest",
-		workflow.WithVersion(3),
+		workflow.WithVersion(4),
+		workflow.WithUnknownVersionPolicy(workflow.FailUnknownVersion),
 		workflow.WithSteps(
 			workflow.Step(
 				"notify",

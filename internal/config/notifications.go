@@ -40,7 +40,10 @@ func (n Notification) validate() error {
 			return fmt.Errorf("invalid phase %s", p)
 		}
 	}
-	if _, err := url.Parse(string(n.URL)); err != nil {
+	if !strings.HasPrefix(n.URL, "https://") && !strings.HasPrefix("http://", n.URL) {
+		return fmt.Errorf("url does not start with http(s):// scheme")
+	}
+	if _, err := url.Parse(n.URL); err != nil {
 		return fmt.Errorf("invalid url: %w", err)
 	}
 	return nil
