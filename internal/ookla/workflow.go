@@ -83,7 +83,7 @@ func workflowRun(repo workflowRepo, runner runFunc) workflow.RunFunc {
 		err := runner(ctx, opts.ServerID, &result)
 		result.Complete = true
 		if err != nil {
-			slog.WarnContext(ctx, "speedtest failed", "error", result.Error)
+			slog.WarnContext(ctx, "speedtest failed", "error", err)
 			result.Error = new(err.Error())
 		}
 		slog.InfoContext(ctx, "speedtest finished running")
