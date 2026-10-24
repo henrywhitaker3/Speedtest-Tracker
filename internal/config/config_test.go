@@ -3,7 +3,6 @@ package config
 import (
 	"testing"
 
-	windowframeconfig "github.com/henrywhitaker3/windowframe/v2/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -51,7 +50,7 @@ func TestItParsesNotifications(t *testing.T) {
 			want: Notifications{{
 				Kind:   Healthcheck,
 				Phases: []NotificationPhase{PreRun, PostRun},
-				URL:    windowframeconfig.RedactedString("https://example.com/healthcheck"),
+				URL:    "https://example.com/healthcheck",
 			}},
 		},
 		{
@@ -68,12 +67,12 @@ func TestItParsesNotifications(t *testing.T) {
 				{
 					Kind:   Webhook,
 					Phases: []NotificationPhase{PostRun},
-					URL:    windowframeconfig.RedactedString("https://example.com/webhook"),
+					URL:    "https://example.com/webhook",
 				},
 				{
 					Kind:   Healthcheck,
 					Phases: []NotificationPhase{PreRun, PostRun},
-					URL:    windowframeconfig.RedactedString("https://example.com/healthcheck"),
+					URL:    "https://example.com/healthcheck",
 				},
 			},
 		},
@@ -85,7 +84,7 @@ func TestItParsesNotifications(t *testing.T) {
 			want: Notifications{{
 				Kind:   Healthcheck,
 				Phases: []NotificationPhase{PreRun, PostRun},
-				URL:    windowframeconfig.RedactedString("https://example.com/healthcheck"),
+				URL:    "https://example.com/healthcheck",
 			}},
 		},
 		{

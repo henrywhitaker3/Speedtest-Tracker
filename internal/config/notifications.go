@@ -6,8 +6,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-
-	"github.com/henrywhitaker3/windowframe/v2/config"
 )
 
 type NotificationPhase string
@@ -30,7 +28,7 @@ var (
 type Notification struct {
 	Kind   NotificationKind
 	Phases []NotificationPhase
-	URL    config.RedactedString
+	URL    string
 }
 
 func (n Notification) validate() error {
@@ -75,7 +73,7 @@ func (notificationExtractor) Extract(conf *Config) error {
 		notification := Notification{
 			Kind:   NotificationKind(kind),
 			Phases: phases,
-			URL:    config.RedactedString(url),
+			URL:    url,
 		}
 		if err := notification.validate(); err != nil {
 			return fmt.Errorf("notification %d: %w", i, err)

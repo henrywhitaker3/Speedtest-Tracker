@@ -4,9 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"net/http"
-	"time"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/log"
 	"github.com/italypaleale/francis/builtin/workflow"
@@ -20,26 +19,31 @@ type workflowRepo interface {
 
 type runFunc func(context.Context, int, *results.Result) error
 
+type notifier interface {
+	ShouldNotify() bool
+	Notify(context.Context, notifications.Phase, results.Result) error
+}
+
 type WorkflowOpts struct {
-	Host        *local.Host
-	Repo        workflowRepo
-	Runner      runFunc
-	Healthcheck string
+	Host     *local.Host
+	Repo     workflowRepo
+	Runner   runFunc
+	Notifier notifier
 }
 
 func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 	return workflow.New(
 		"speedtest",
-		workflow.WithVersion(2),
+		workflow.WithVersion(3),
 		workflow.WithSteps(
 			workflow.Step(
-				"healthcheck",
-				workflow.WithRun(shouldRunHealthcheck(opts.Healthcheck)),
+				"notify",
+				workflow.WithRun(shouldNotify(opts.Notifier)),
 			),
 			workflow.Step(
-				"start healthcheck",
-				workflow.WithRun(startHealthcheck(opts.Healthcheck)),
-				workflow.WithSkipIf("healthcheck", false),
+				"pre-run notifications",
+				workflow.WithRun(preRunNotify(opts.Notifier)),
+				workflow.WithSkipIf("notify", false),
 				workflow.WithOptional(),
 			),
 			workflow.Step(
@@ -51,10 +55,10 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 				workflow.WithRun(storeResult(opts.Repo)),
 			),
 			workflow.Step(
-				"finish healthcheck",
-				workflow.WithRun(finishHealthcheck(opts.Healthcheck)),
+				"post-run notifications",
+				workflow.WithRun(postRunNotify(opts.Notifier)),
 				workflow.WithOptional(),
-				workflow.WithSkipIf("healthcheck", false),
+				workflow.WithSkipIf("notify", false),
 			),
 		),
 	)
@@ -109,67 +113,28 @@ func storeResult(repo workflowRepo) workflow.RunFunc {
 	}
 }
 
-func shouldRunHealthcheck(url string) workflow.RunFunc {
+func shouldNotify(n notifier) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (any, error) {
-		return url != "", nil
+		return n.ShouldNotify(), nil
 	}
 }
 
-func startHealthcheck(url string) workflow.RunFunc {
+func preRunNotify(n notifier) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (any, error) {
-		return nil, sendHealthcheck(ctx, url, healthcheckStart)
+		var result RunWorkflow
+		if err := t.DecodeInput(&result); err != nil {
+			return nil, fmt.Errorf("decode input: %w", err)
+		}
+		return nil, n.Notify(ctx, notifications.PreRun, result.Result)
 	}
 }
 
-func finishHealthcheck(url string) workflow.RunFunc {
+func postRunNotify(n notifier) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (output any, err error) {
 		var result results.Result
 		if err := t.DecodeOutput("store result", &result); err != nil {
 			return nil, fmt.Errorf("decode store result output: %w", err)
 		}
-
-		action := healthcheckFail
-		if result.Error == nil {
-			action = healthcheckSuccess
-		}
-
-		return nil, sendHealthcheck(ctx, url, action)
+		return nil, n.Notify(ctx, notifications.PostRun, result)
 	}
-}
-
-type healthcheckAction = string
-
-const (
-	healthcheckStart   healthcheckAction = "/start"
-	healthcheckFail    healthcheckAction = "/fail"
-	healthcheckSuccess healthcheckAction = ""
-)
-
-func sendHealthcheck(ctx context.Context, url string, action healthcheckAction) error {
-	ctx, cancel := context.WithTimeout(ctx, time.Second*15)
-	defer cancel()
-
-	req, err := http.NewRequestWithContext(
-		ctx,
-		http.MethodGet,
-		fmt.Sprintf("%s%s", url, action),
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("build http request: %w", err)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("do healthcheck request: %w", err)
-	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("got status code %d", resp.StatusCode)
-	}
-
-	return nil
 }

@@ -106,7 +106,7 @@ func Load() (*Config, error) {
 		conf.Notifications = append(conf.Notifications, Notification{
 			Kind:   Healthcheck,
 			Phases: []NotificationPhase{PreRun, PostRun},
-			URL:    config.RedactedString(healthcheck),
+			URL:    healthcheck,
 		})
 	}
 
