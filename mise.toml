@@ -46,6 +46,14 @@ run = "curl -X POST -s http://localhost:8080/v1/speedtest/run | jq"
 description = "Run the unit tests"
 run = "gotestsum --format testname --packages ./..."
 
+[tasks.coverage]
+description = "Generate an HTML Go coverage report"
+run = [
+  "mkdir -p reports",
+  "go test ./... -coverprofile=reports/coverage.out",
+  "go tool cover -html=reports/coverage.out -o reports/coverage.html",
+]
+
 [tasks.release]
 description = "Release a new version of the app"
 shell = "/bin/bash"
