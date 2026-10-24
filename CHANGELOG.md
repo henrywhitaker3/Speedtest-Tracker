@@ -1,3 +1,15 @@
+## [2.4.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.0..v2.4.1) - 2026-10-24
+
+### 🐛 Bug Fixes
+
+- *(auth)* Tighten middleare failure modes - ([807fc01](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/807fc01238e88b65e46ca5ea1aef1095d76a17d8))
+- *(db)* Open postgres connection with slog logger - ([fc723a9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fc723a93c7e4191017a0707c83291a1b0a05f251))
+- *(results)* Store raw result output and display it - ([b953c4e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b953c4ef433591086318774be3ffbeaa2aeaf1b8))
+
+### ⚙️ Miscellaneous Tasks
+
+- Run tests on pushes to v2 to cache go mod and builds - ([c8f937a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c8f937ac61629198e8ba0c11a81aa2d1c53c90ca))
+- Upload test coverage reports - ([972cc84](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/972cc8471b9b67d28a229b631ea522b348b8331b))
 ## [2.4.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.3.0..v2.4.0) - 2026-10-24
 
 ### 🚀 Features
@@ -17,6 +29,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - *(docs)* Update readme and add some docs - ([fa13268](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fa13268dc2cb6d2637a61551f2d7f38f4f2c1391))
+- *(docs)* Update changelog - ([c294186](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c2941866f1348d981d00a678085455913f3c3ec3))
 ## [2.3.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.4..v2.3.0) - 2026-10-24
 
 ### 🚀 Features
