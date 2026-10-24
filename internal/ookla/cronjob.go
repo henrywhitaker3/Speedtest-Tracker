@@ -6,12 +6,14 @@ import (
 	"log/slog"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/builtin/cronjob"
 	"github.com/italypaleale/francis/builtin/workflow"
 )
 
 type resultCreator interface {
 	Create(context.Context) (*results.Result, error)
+	Delete(context.Context, uuid.UUID) error
 }
 
 type worflowRunner interface {
@@ -56,6 +58,7 @@ func runScheduleTest(
 			},
 			workflow.WithInstanceID(result.ID.String()),
 		); err != nil {
+			_ = repo.Delete(ctx, result.ID)
 			return fmt.Errorf("start workflow: %w", err)
 		}
 

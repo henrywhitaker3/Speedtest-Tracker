@@ -35,10 +35,11 @@ func TestRunHandler(t *testing.T) {
 		wantErr        error
 		wantCreate     bool
 		wantStart      bool
+		wantDelete     bool
 	}{
 		{name: "creates a result and starts its workflow", limiterAllowed: true, wantID: result.ID, wantCreate: true, wantStart: true},
 		{name: "wraps result creation errors", limiterAllowed: true, createErr: createErr, wantErr: createErr, wantCreate: true},
-		{name: "wraps workflow start errors", limiterAllowed: true, startErr: startErr, wantErr: startErr, wantCreate: true, wantStart: true},
+		{name: "wraps workflow start errors and deletes the result", limiterAllowed: true, startErr: startErr, wantErr: startErr, wantCreate: true, wantStart: true, wantDelete: true},
 		{name: "rejects rate limited request", wantErr: echo.ErrTooManyRequests},
 		{name: "rejects limiter error", limiterErr: limiterErr, wantErr: echo.ErrTooManyRequests},
 	}
@@ -62,6 +63,12 @@ func TestRunHandler(t *testing.T) {
 			}
 			if workflow.called != tt.wantStart {
 				t.Errorf("workflow Start called = %t, want %t", workflow.called, tt.wantStart)
+			}
+			if repo.deleteCalled != tt.wantDelete {
+				t.Errorf("Delete called = %t, want %t", repo.deleteCalled, tt.wantDelete)
+			}
+			if tt.wantDelete && repo.deletedID != result.ID {
+				t.Errorf("deleted result ID = %q, want %q", repo.deletedID, result.ID)
 			}
 			if tt.wantStart {
 				input, ok := workflow.input.(ookla.RunWorkflow)
@@ -158,11 +165,20 @@ type resultCreatorStub struct {
 	result *results.Result
 	err    error
 	called bool
+
+	deleteCalled bool
+	deletedID    uuid.UUID
 }
 
 func (r *resultCreatorStub) Create(context.Context) (*results.Result, error) {
 	r.called = true
 	return r.result, r.err
+}
+
+func (r *resultCreatorStub) Delete(_ context.Context, id uuid.UUID) error {
+	r.deleteCalled = true
+	r.deletedID = id
+	return nil
 }
 
 type workflowRunnerStub struct {

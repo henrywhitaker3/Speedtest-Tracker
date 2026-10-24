@@ -17,6 +17,7 @@ import (
 
 type resultCreator interface {
 	Create(context.Context) (*results.Result, error)
+	Delete(context.Context, uuid.UUID) error
 }
 
 type worflowRunner interface {
@@ -65,6 +66,7 @@ func (r *runHandler) Handler() handlers.Handler[any, RunResponse] {
 			},
 			workflow.WithInstanceID(result.ID.String()),
 		); err != nil {
+			_ = r.repo.Delete(ctx, result.ID)
 			return nil, httperrors.Stack(err)
 		}
 		span.End()
