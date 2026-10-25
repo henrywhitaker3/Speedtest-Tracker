@@ -10,6 +10,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/plugin/opentelemetry/tracing"
+	_ "modernc.org/sqlite"
 )
 
 func Open(driver string, url string) (*gorm.DB, error) {
@@ -35,7 +36,10 @@ func Open(driver string, url string) (*gorm.DB, error) {
 }
 
 func Sqlite(path string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(path), config())
+	db, err := gorm.Open(sqlite.New(sqlite.Config{
+		DriverName: "sqlite",
+		DSN:        path,
+	}), config())
 	if err != nil {
 		return nil, fmt.Errorf("open sqlite db: %w", err)
 	}
