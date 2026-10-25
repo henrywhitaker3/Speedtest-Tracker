@@ -4,11 +4,15 @@
     variant="outline"
     class="cursor-pointer"
     :disabled="disabled"
-    :loading="isRunning"
     @click="run"
   >
     <UIcon
-      v-if="!isRunning"
+      v-if="isRunning"
+      class="size-5 animate-spin"
+      name="i-lucide-loader-circle"
+    />
+    <UIcon
+      v-else
       class="size-5"
       name="i-ic-round-speed"
     />
@@ -28,10 +32,13 @@ const isRunning = ref(false)
 const config = useConfigStore()
 const auth = useAuthStore()
 
+const runningID = ref<string>()
+
 const disabled = computed(() => {
   if (isRunning.value) {
-    return true
+    return !runningID.value
   }
+
   if (config.authEnabled()) {
     return !auth.authenticated
   }
@@ -39,7 +46,12 @@ const disabled = computed(() => {
 })
 
 const run = async () => {
-  if (isRunning.value) return
+  if (isRunning.value) {
+    if (runningID.value) {
+      return navigateTo(`/results/${runningID.value}`)
+    }
+    return
+  }
 
   isRunning.value = true
 
@@ -49,6 +61,7 @@ const run = async () => {
       emit({
         id: resp.data.id ?? ''
       })
+      runningID.value = resp.data.id
       return
     }
 
@@ -68,5 +81,6 @@ const run = async () => {
 
 onCompleted(() => {
   isRunning.value = false
+  runningID.value = undefined
 })
 </script>

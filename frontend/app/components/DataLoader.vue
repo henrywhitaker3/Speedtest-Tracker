@@ -8,9 +8,11 @@ const { emit: refreshData } = useRefreshData()
 const { emit: onCompleted } = useSpeedtestCompleted()
 
 const latest = ref<ResultsResult>()
+const activeResultID = ref<string>()
 let isPolling = true
 
-onStarted(async () => {
+onStarted(({ id }) => {
+  activeResultID.value = id
   refreshData()
 })
 
@@ -28,11 +30,12 @@ const pollLatest = async () => {
     }
 
     const isNewResult = latest.value?.id !== result.data?.id
-    const hasJustCompleted = result.data?.complete
-      && (isNewResult || !latest.value?.complete)
+    const hasJustCompleted = result.data?.id === activeResultID.value
+      && result.data.complete
     latest.value = result.data
 
     if (hasJustCompleted) {
+      activeResultID.value = undefined
       onCompleted()
       refreshData()
     } else if (isNewResult || !result.data?.complete) {

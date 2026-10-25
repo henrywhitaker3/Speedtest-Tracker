@@ -38,7 +38,7 @@
           Server
         </dt>
         <dd class="mt-1 font-medium">
-          {{ props.result.server_name || 'Unknown' }}
+          {{ props.result.server_name || '-' }}
         </dd>
       </div>
       <div>
@@ -46,7 +46,7 @@
           Server host
         </dt>
         <dd class="mt-1 font-medium break-all">
-          {{ props.result.server_host || 'Unknown' }}
+          {{ props.result.server_host || '-' }}
         </dd>
       </div>
       <div>
@@ -54,15 +54,16 @@
           Server ID
         </dt>
         <dd class="mt-1 font-medium">
-          {{ props.result.server_id ?? 'Unknown' }}
+          {{ props.result.server_id ?? '-' }}
         </dd>
       </div>
-      <div v-if="props.result.url">
+      <div>
         <dt class="text-muted text-sm">
           Ookla Result URL
         </dt>
         <dd class="mt-1 font-medium break-all">
           <a
+            v-if="props.result.url"
             :href="props.result.url"
             target="_blank"
             rel="noopener noreferrer"
@@ -70,6 +71,9 @@
           >
             {{ props.result.url }}
           </a>
+          <p v-else>
+            -
+          </p>
         </dd>
       </div>
       <div>
