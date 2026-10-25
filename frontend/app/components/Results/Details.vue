@@ -106,7 +106,7 @@
         <HighlightJs
           language="json"
           :code="rawResult"
-          class="mt-3 max-h-96 overflow-auto rounded-md text-xs wrap-break-word [&_code]:whitespace-pre-wrap"
+          class="[&_code]:bg-muted! mt-3 max-h-96 overflow-auto rounded-md text-xs wrap-break-word [&_code]:whitespace-pre-wrap"
         />
       </template>
     </UCollapsible>
@@ -117,7 +117,6 @@
 import hljsVuePlugin from '@highlightjs/vue-plugin'
 import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
-import 'highlight.js/styles/tokyo-night-dark.min.css'
 import type { SpeedtestGetResponse } from '~/client'
 
 hljs.registerLanguage('json', json)

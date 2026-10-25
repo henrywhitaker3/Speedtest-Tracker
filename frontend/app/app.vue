@@ -69,6 +69,8 @@ import appleTouchIcon from '~/assets/icons/apple-icon-180x180.png'
 import favicon from '~/assets/icons/favicon.ico'
 import favicon16 from '~/assets/icons/favicon-16x16.png'
 import favicon32 from '~/assets/icons/favicon-32x32.png'
+import highlightDark from 'highlight.js/styles/tokyo-night-dark.min.css?raw'
+import highlightLight from 'highlight.js/styles/panda-syntax-light.min.css?raw'
 
 useHead({
   meta: [
@@ -84,6 +86,17 @@ useHead({
     lang: 'en'
   }
 })
+
+const colorMode = useColorMode()
+
+useHead(() => ({
+  style: [
+    {
+      key: 'highlightjs-theme',
+      children: colorMode.value === 'dark' ? highlightDark : highlightLight
+    }
+  ]
+}))
 
 const title = 'Speedtest-Tracker'
 const description = 'Continuously track your internet speed'
