@@ -17,3 +17,14 @@ run = "pnpm run build"
 
 [tasks.lint]
 run = "pnpm run lint"
+
+[tasks.test]
+description = "Open the local"
+run = "pnpm test:e2e:ui"
+
+[tasks.test-ci]
+description = "Run the playwright tests in CI"
+run = [
+  "pnpm test:e2e:install",
+  "PLAYWRIGHT_BASE_URL=http://localhost:8080 pnpm test:e2e:docker",
+]

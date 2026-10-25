@@ -9,7 +9,12 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
-    "client": "openapi-ts -i http://localhost:8080/docs/schema.yaml -o app/client"
+    "client": "openapi-ts -i http://localhost:8080/docs/schema.yaml -o app/client",
+    "test": "pnpm test:e2e:docker",
+    "test:e2e": "playwright test",
+    "test:e2e:docker": "docker compose build && docker compose up -d && pnpm test:e2e",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:install": "playwright install chromium"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.145",
@@ -29,6 +34,7 @@
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",
     "@nuxt/eslint": "^1.17.0",
+    "@playwright/test": "^1.64.1",
     "@types/d3-scale": "^4.0.9",
     "@types/d3-shape": "^3.2.0",
     "eslint": "^10.13.0",

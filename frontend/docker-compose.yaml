@@ -1,0 +1,12 @@
+services:
+  app:
+    hostname: app
+    build:
+      context: ../
+    ports:
+      - 8080:8080
+    environment:
+      - ACCEPT_EULA=true
+      - DB_DRIVER=sqlite
+      - DB_URL=/tmp/db.sqlite
+      - RUNTIME_PSK=0b6b129cb69b71f16388f5dee6b5fc873e0f4f83025dff9cf61058e3bfd852fa

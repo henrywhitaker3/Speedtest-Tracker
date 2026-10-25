@@ -52,7 +52,7 @@ jobs:
           mise exec -- pnpm i
           mise lint
 
-  build-ui:
+  test-ui:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -65,8 +65,8 @@ jobs:
           install: true
           cache: true
           working_directory: frontend
-      - name: Run build
+      - name: Run playwright tests
         run: |
           cd frontend
           mise exec -- pnpm i
-          mise build
+          mise test-ci
