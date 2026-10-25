@@ -1,3 +1,17 @@
+## [2.4.5](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.4..v2.4.5) - 2026-10-25
+
+### 🐛 Bug Fixes
+
+- *(api)* Add operation ids to spec handlers - ([7aa4553](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7aa45531bd1973485963f2631b174a7e27d99924))
+- *(api)* Add openapi spec definitions for enums - ([d9d5cdb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9d5cdbfb26d4e8425805c86548d716ce4320b70))
+- *(deps)* Update module modernc.org/sqlite to v1.61.0 - ([0c5bff1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0c5bff16586ee2afcb90eddabb2cb598ee61c184))
+- *(ui)* Light mode raw result syntax highlighting - ([4f0a00c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4f0a00cec8b24c61fe27f9a40292b82592377128))
+- *(ui)* Run button navigates to result when test is in progress - ([12fb4e4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/12fb4e45556a96e257a4d3247029289b93b4003a))
+- *(ui)* Use new generated client types - ([22d8423](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/22d8423fb34d41d04ecee2bea66e39c2b454cfc6))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(ci)* Tag ordering to still trigger - ([0449538](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/04495389ebadc40b7962f7aa45c2339ba8cd9157))
 ## [2.4.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.3..v2.4.4) - 2026-10-25
 
 ### 🐛 Bug Fixes
@@ -15,6 +29,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - *(ci)* Skip ci on changelog push - ([d9a0657](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9a065737279935227eed348453b18ba81b205fa))
+- *(docs)* Update changelog [skip ci] - ([aa99beb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/aa99beb604a1f06c22ed1a18bc851e3bde81ee8a))
 ## [2.4.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.2..v2.4.3) - 2026-10-25
 
 ### 🐛 Bug Fixes
