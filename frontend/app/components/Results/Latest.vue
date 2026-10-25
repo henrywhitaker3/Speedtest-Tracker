@@ -39,14 +39,13 @@
 </template>
 
 <script setup lang="ts">
-import type { ResultsResult } from '~/client'
-import { getV1SpeedtestLatest } from '~/client/sdk.gen'
+import { latestResult, type SpeedtestResult } from '~/client'
 import { useRefreshData } from '~/events/speedtest'
 
-const latest = ref<ResultsResult>()
+const latest = ref<SpeedtestResult>()
 
 const refresh = async () => {
-  const result = await getV1SpeedtestLatest()
+  const result = await latestResult()
   latest.value = result.data
   return result
 }

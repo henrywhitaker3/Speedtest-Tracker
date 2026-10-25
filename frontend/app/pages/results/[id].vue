@@ -84,8 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SpeedtestGetResponse } from '~/client'
-import { getV1SpeedtestById } from '~/client/sdk.gen'
+import { getResult, type SpeedtestGetResponse } from '~/client'
 import { useSpeedtestCompleted } from '~/events/speedtest'
 import { useIntervalFn } from '@vueuse/core'
 
@@ -100,7 +99,7 @@ const loadResult = async () => {
   isLoading.value = true
   error.value = undefined
 
-  const response = await getV1SpeedtestById({
+  const response = await getResult({
     path: {
       id: String(route.params.id)
     }

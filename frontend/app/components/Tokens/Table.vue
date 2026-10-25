@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { deleteV1AuthTokensById, getV1AuthTokens, type AuthToken, type ResultsResult } from '~/client'
+import { deleteToken, listTokens, type AuthToken, type SpeedtestResult } from '~/client'
 import type { TableColumn } from '@nuxt/ui'
 import TableDelete from '../TableDelete.vue'
 import RelativeDate from '../RelativeDate.vue'
@@ -32,7 +32,7 @@ import RelativeDate from '../RelativeDate.vue'
 const data = ref<AuthToken[]>()
 
 const refresh = async () => {
-  const results = await getV1AuthTokens()
+  const results = await listTokens()
   data.value = results.data
 }
 
@@ -41,7 +41,7 @@ onMounted(async () => {
 })
 
 const table = ref()
-const columns: TableColumn<ResultsResult>[] = [
+const columns: TableColumn<SpeedtestResult>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -65,7 +65,7 @@ const columns: TableColumn<ResultsResult>[] = [
     cell: ({ row }) => {
       return h(TableDelete, {
         onClick: async () => {
-          await deleteV1AuthTokensById({ path: {
+          await deleteToken({ path: {
             id: row.getValue('id')
           } })
           void refresh()

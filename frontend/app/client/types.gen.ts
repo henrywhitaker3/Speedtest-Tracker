@@ -36,15 +36,19 @@ export type ConfigConfigResponse = {
 };
 
 export type ConfigNotification = {
-    kind?: string;
-    phases?: Array<string> | null;
+    kind?: ConfigNotificationKind;
+    phases?: Array<ConfigNotificationPhase> | null;
     url?: string;
 };
 
+export type ConfigNotificationKind = 'healthcheck' | 'webhook';
+
+export type ConfigNotificationPhase = 'pre-run' | 'post-run';
+
 export type ConfigNotifications = Array<ConfigNotification>;
 
-export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult = {
-    data?: Array<ResultsResult> | null;
+export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalApiSpeedtestResult = {
+    data?: Array<SpeedtestResult> | null;
     limit?: number;
     page?: number;
     total_pages?: number;
@@ -61,23 +65,6 @@ export type GormDeletedAt = {
 
 export type HttpErrorJson = {
     message?: string;
-};
-
-export type ResultsResult = {
-    complete?: boolean;
-    created_at?: string;
-    deleted_at?: GormDeletedAt;
-    download?: number | null;
-    error?: string | null;
-    id?: UuidUuid;
-    ping?: number | null;
-    raw?: DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput;
-    server_host?: string | null;
-    server_id?: number | null;
-    server_name?: string | null;
-    updated_at?: string;
-    upload?: number | null;
-    url?: string | null;
 };
 
 export type ResultsStat = {
@@ -106,6 +93,23 @@ export type SpeedtestGetResponse = {
     url?: string | null;
 };
 
+export type SpeedtestResult = {
+    complete?: boolean;
+    created_at?: string;
+    deleted_at?: GormDeletedAt;
+    download?: number | null;
+    error?: string | null;
+    id?: UuidUuid;
+    ping?: number | null;
+    raw?: DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput;
+    server_host?: string | null;
+    server_id?: number | null;
+    server_name?: string | null;
+    updated_at?: string;
+    upload?: number | null;
+    url?: string | null;
+};
+
 export type SpeedtestRunResponse = {
     id?: UuidUuid;
 };
@@ -121,7 +125,7 @@ export type SpeedtestWorkflowStep = {
     error?: string | null;
     name?: string;
     started_at?: string;
-    status?: string;
+    status?: WorkflowStepStatus;
 };
 
 /**
@@ -129,14 +133,16 @@ export type SpeedtestWorkflowStep = {
  */
 export type UuidUuid = string;
 
-export type GetV1AuthTokensData = {
+export type WorkflowStepStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped' | 'compensating' | 'compensated' | 'compensation-failed';
+
+export type ListTokensData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/auth/tokens';
 };
 
-export type GetV1AuthTokensErrors = {
+export type ListTokensErrors = {
     /**
      * Unauthorized
      */
@@ -157,25 +163,25 @@ export type GetV1AuthTokensErrors = {
     };
 };
 
-export type GetV1AuthTokensError = GetV1AuthTokensErrors[keyof GetV1AuthTokensErrors];
+export type ListTokensError = ListTokensErrors[keyof ListTokensErrors];
 
-export type GetV1AuthTokensResponses = {
+export type ListTokensResponses = {
     /**
      * OK
      */
     200: Array<AuthToken>;
 };
 
-export type GetV1AuthTokensResponse = GetV1AuthTokensResponses[keyof GetV1AuthTokensResponses];
+export type ListTokensResponse = ListTokensResponses[keyof ListTokensResponses];
 
-export type PostV1AuthTokensData = {
+export type CreateTokenData = {
     body?: AuthCreateTokenRequest;
     path?: never;
     query?: never;
     url: '/v1/auth/tokens';
 };
 
-export type PostV1AuthTokensErrors = {
+export type CreateTokenErrors = {
     /**
      * Unauthorized
      */
@@ -196,18 +202,18 @@ export type PostV1AuthTokensErrors = {
     };
 };
 
-export type PostV1AuthTokensError = PostV1AuthTokensErrors[keyof PostV1AuthTokensErrors];
+export type CreateTokenError = CreateTokenErrors[keyof CreateTokenErrors];
 
-export type PostV1AuthTokensResponses = {
+export type CreateTokenResponses = {
     /**
      * OK
      */
     200: AuthCreateTokenResponse;
 };
 
-export type PostV1AuthTokensResponse = PostV1AuthTokensResponses[keyof PostV1AuthTokensResponses];
+export type CreateTokenResponse = CreateTokenResponses[keyof CreateTokenResponses];
 
-export type DeleteV1AuthTokensByIdData = {
+export type DeleteTokenData = {
     body?: never;
     path: {
         id: UuidUuid;
@@ -216,7 +222,7 @@ export type DeleteV1AuthTokensByIdData = {
     url: '/v1/auth/tokens/{id}';
 };
 
-export type DeleteV1AuthTokensByIdErrors = {
+export type DeleteTokenErrors = {
     /**
      * Unauthorized
      */
@@ -237,23 +243,23 @@ export type DeleteV1AuthTokensByIdErrors = {
     };
 };
 
-export type DeleteV1AuthTokensByIdError = DeleteV1AuthTokensByIdErrors[keyof DeleteV1AuthTokensByIdErrors];
+export type DeleteTokenError = DeleteTokenErrors[keyof DeleteTokenErrors];
 
-export type DeleteV1AuthTokensByIdResponses = {
+export type DeleteTokenResponses = {
     /**
      * OK
      */
     200: unknown;
 };
 
-export type GetV1ConfigData = {
+export type GetConfigData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/config';
 };
 
-export type GetV1ConfigErrors = {
+export type GetConfigErrors = {
     /**
      * Unauthorized
      */
@@ -274,25 +280,25 @@ export type GetV1ConfigErrors = {
     };
 };
 
-export type GetV1ConfigError = GetV1ConfigErrors[keyof GetV1ConfigErrors];
+export type GetConfigError = GetConfigErrors[keyof GetConfigErrors];
 
-export type GetV1ConfigResponses = {
+export type GetConfigResponses = {
     /**
      * OK
      */
     200: ConfigConfigResponse;
 };
 
-export type GetV1ConfigResponse = GetV1ConfigResponses[keyof GetV1ConfigResponses];
+export type GetConfigResponse = GetConfigResponses[keyof GetConfigResponses];
 
-export type GetV1ConfigNotificationsData = {
+export type GetNotificationsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/config/notifications';
 };
 
-export type GetV1ConfigNotificationsErrors = {
+export type GetNotificationsErrors = {
     /**
      * Unauthorized
      */
@@ -313,18 +319,18 @@ export type GetV1ConfigNotificationsErrors = {
     };
 };
 
-export type GetV1ConfigNotificationsError = GetV1ConfigNotificationsErrors[keyof GetV1ConfigNotificationsErrors];
+export type GetNotificationsError = GetNotificationsErrors[keyof GetNotificationsErrors];
 
-export type GetV1ConfigNotificationsResponses = {
+export type GetNotificationsResponses = {
     /**
      * OK
      */
     200: ConfigNotifications;
 };
 
-export type GetV1ConfigNotificationsResponse = GetV1ConfigNotificationsResponses[keyof GetV1ConfigNotificationsResponses];
+export type GetNotificationsResponse = GetNotificationsResponses[keyof GetNotificationsResponses];
 
-export type GetV1SpeedtestData = {
+export type ListResultsData = {
     body?: never;
     path?: never;
     query?: {
@@ -340,7 +346,7 @@ export type GetV1SpeedtestData = {
     url: '/v1/speedtest';
 };
 
-export type GetV1SpeedtestErrors = {
+export type ListResultsErrors = {
     /**
      * Unauthorized
      */
@@ -361,18 +367,18 @@ export type GetV1SpeedtestErrors = {
     };
 };
 
-export type GetV1SpeedtestError = GetV1SpeedtestErrors[keyof GetV1SpeedtestErrors];
+export type ListResultsError = ListResultsErrors[keyof ListResultsErrors];
 
-export type GetV1SpeedtestResponses = {
+export type ListResultsResponses = {
     /**
      * OK
      */
-    200: DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult;
+    200: DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalApiSpeedtestResult;
 };
 
-export type GetV1SpeedtestResponse = GetV1SpeedtestResponses[keyof GetV1SpeedtestResponses];
+export type ListResultsResponse = ListResultsResponses[keyof ListResultsResponses];
 
-export type DeleteV1SpeedtestByIdData = {
+export type DeleteResultData = {
     body?: never;
     path: {
         id: UuidUuid;
@@ -381,7 +387,7 @@ export type DeleteV1SpeedtestByIdData = {
     url: '/v1/speedtest/{id}';
 };
 
-export type DeleteV1SpeedtestByIdErrors = {
+export type DeleteResultErrors = {
     /**
      * Unauthorized
      */
@@ -402,16 +408,16 @@ export type DeleteV1SpeedtestByIdErrors = {
     };
 };
 
-export type DeleteV1SpeedtestByIdError = DeleteV1SpeedtestByIdErrors[keyof DeleteV1SpeedtestByIdErrors];
+export type DeleteResultError = DeleteResultErrors[keyof DeleteResultErrors];
 
-export type DeleteV1SpeedtestByIdResponses = {
+export type DeleteResultResponses = {
     /**
      * OK
      */
     200: unknown;
 };
 
-export type GetV1SpeedtestByIdData = {
+export type GetResultData = {
     body?: never;
     path: {
         /**
@@ -423,7 +429,7 @@ export type GetV1SpeedtestByIdData = {
     url: '/v1/speedtest/{id}';
 };
 
-export type GetV1SpeedtestByIdErrors = {
+export type GetResultErrors = {
     /**
      * Unauthorized
      */
@@ -444,25 +450,25 @@ export type GetV1SpeedtestByIdErrors = {
     };
 };
 
-export type GetV1SpeedtestByIdError = GetV1SpeedtestByIdErrors[keyof GetV1SpeedtestByIdErrors];
+export type GetResultError = GetResultErrors[keyof GetResultErrors];
 
-export type GetV1SpeedtestByIdResponses = {
+export type GetResultResponses = {
     /**
      * OK
      */
     200: SpeedtestGetResponse;
 };
 
-export type GetV1SpeedtestByIdResponse = GetV1SpeedtestByIdResponses[keyof GetV1SpeedtestByIdResponses];
+export type GetResultResponse = GetResultResponses[keyof GetResultResponses];
 
-export type GetV1SpeedtestLatestData = {
+export type LatestResultData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/speedtest/latest';
 };
 
-export type GetV1SpeedtestLatestErrors = {
+export type LatestResultErrors = {
     /**
      * Unauthorized
      */
@@ -483,25 +489,25 @@ export type GetV1SpeedtestLatestErrors = {
     };
 };
 
-export type GetV1SpeedtestLatestError = GetV1SpeedtestLatestErrors[keyof GetV1SpeedtestLatestErrors];
+export type LatestResultError = LatestResultErrors[keyof LatestResultErrors];
 
-export type GetV1SpeedtestLatestResponses = {
+export type LatestResultResponses = {
     /**
      * OK
      */
-    200: ResultsResult;
+    200: SpeedtestResult;
 };
 
-export type GetV1SpeedtestLatestResponse = GetV1SpeedtestLatestResponses[keyof GetV1SpeedtestLatestResponses];
+export type LatestResultResponse = LatestResultResponses[keyof LatestResultResponses];
 
-export type DeleteV1SpeedtestPurgeData = {
+export type PurgeData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/speedtest/purge';
 };
 
-export type DeleteV1SpeedtestPurgeErrors = {
+export type PurgeErrors = {
     /**
      * Unauthorized
      */
@@ -522,23 +528,23 @@ export type DeleteV1SpeedtestPurgeErrors = {
     };
 };
 
-export type DeleteV1SpeedtestPurgeError = DeleteV1SpeedtestPurgeErrors[keyof DeleteV1SpeedtestPurgeErrors];
+export type PurgeError = PurgeErrors[keyof PurgeErrors];
 
-export type DeleteV1SpeedtestPurgeResponses = {
+export type PurgeResponses = {
     /**
      * OK
      */
     200: unknown;
 };
 
-export type PostV1SpeedtestRunData = {
+export type RunData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/speedtest/run';
 };
 
-export type PostV1SpeedtestRunErrors = {
+export type RunErrors = {
     /**
      * Unauthorized
      */
@@ -559,18 +565,18 @@ export type PostV1SpeedtestRunErrors = {
     };
 };
 
-export type PostV1SpeedtestRunError = PostV1SpeedtestRunErrors[keyof PostV1SpeedtestRunErrors];
+export type RunError = RunErrors[keyof RunErrors];
 
-export type PostV1SpeedtestRunResponses = {
+export type RunResponses = {
     /**
      * OK
      */
     200: SpeedtestRunResponse;
 };
 
-export type PostV1SpeedtestRunResponse = PostV1SpeedtestRunResponses[keyof PostV1SpeedtestRunResponses];
+export type RunResponse = RunResponses[keyof RunResponses];
 
-export type GetV1SpeedtestTimeseriesData = {
+export type TimeseriesData = {
     body?: never;
     path?: never;
     query?: {
@@ -584,7 +590,7 @@ export type GetV1SpeedtestTimeseriesData = {
     url: '/v1/speedtest/timeseries';
 };
 
-export type GetV1SpeedtestTimeseriesErrors = {
+export type TimeseriesErrors = {
     /**
      * Unauthorized
      */
@@ -605,13 +611,13 @@ export type GetV1SpeedtestTimeseriesErrors = {
     };
 };
 
-export type GetV1SpeedtestTimeseriesError = GetV1SpeedtestTimeseriesErrors[keyof GetV1SpeedtestTimeseriesErrors];
+export type TimeseriesError = TimeseriesErrors[keyof TimeseriesErrors];
 
-export type GetV1SpeedtestTimeseriesResponses = {
+export type TimeseriesResponses = {
     /**
      * OK
      */
     200: Array<ResultsStat>;
 };
 
-export type GetV1SpeedtestTimeseriesResponse = GetV1SpeedtestTimeseriesResponses[keyof GetV1SpeedtestTimeseriesResponses];
+export type TimeseriesResponse = TimeseriesResponses[keyof TimeseriesResponses];

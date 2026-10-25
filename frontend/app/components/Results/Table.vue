@@ -36,12 +36,12 @@
 </template>
 
 <script setup lang="ts">
-import { getV1Speedtest, type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsResult as Paginated, type ResultsResult } from '~/client'
 import { PulseLoader } from 'vue-spinner'
 import { useRefreshData } from '~/events/speedtest'
 import type { TableColumn } from '@nuxt/ui'
 import RelativeDate from '../RelativeDate.vue'
 import RowActions from './RowActions.vue'
+import { listResults, type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalApiSpeedtestResult as Paginated, type SpeedtestResult } from '~/client'
 
 const data = ref<Paginated>()
 const route = useRoute()
@@ -74,7 +74,7 @@ const pagination = ref({
 })
 
 const refresh = async () => {
-  const results = await getV1Speedtest({
+  const results = await listResults({
     query: {
       page: page.value,
       limit: pagination.value.pageSize
@@ -102,7 +102,7 @@ on(() => {
 })
 
 const table = ref()
-const columns: TableColumn<ResultsResult>[] = [
+const columns: TableColumn<SpeedtestResult>[] = [
   {
     accessorKey: 'ping',
     header: 'Ping',

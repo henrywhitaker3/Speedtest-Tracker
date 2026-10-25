@@ -55,6 +55,7 @@
 
         <UForm
           :state="form"
+          :validate="validate"
           class="flex flex-col gap-6"
           @submit="submit"
         >
@@ -94,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { postV1AuthTokens } from '~/client'
+import { createToken } from '~/client'
 
 const open = ref(false)
 const form = reactive({
@@ -113,9 +114,26 @@ const emit = defineEmits<{
   created: []
 }>()
 
+const validate = () => {
+  const nameLength = [...form.name.trim()].length
+  if (nameLength < 5) {
+    return [{
+      name: 'name',
+      message: 'Token name must be at least 5 characters long.'
+    }]
+  }
+  if (nameLength > 255) {
+    return [{
+      name: 'name',
+      message: 'Token name must be at most 255 characters long.'
+    }]
+  }
+  return []
+}
+
 const submit = async () => {
   try {
-    const resp = await postV1AuthTokens({
+    const resp = await createToken({
       body: {
         name: form.name
       }

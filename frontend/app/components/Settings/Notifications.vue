@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { getV1ConfigNotifications, type ConfigNotification } from '~/client'
+import { getNotifications, type ConfigNotification } from '~/client'
 
 const notifications = ref<ConfigNotification[]>()
 const error = ref<string>()
@@ -84,7 +84,7 @@ const loadNotifications = async () => {
   error.value = undefined
 
   try {
-    const response = await getV1ConfigNotifications()
+    const response = await getNotifications()
     if (response.data) {
       notifications.value = response.data
     } else {

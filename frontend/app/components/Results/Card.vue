@@ -41,13 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import type { ResultsResult } from '~/client'
 import { PulseLoader } from 'vue-spinner'
 import 'vue-spinner/style.css'
+import type { SpeedtestResult } from '~/client'
 
 const props = defineProps<{
   variant: 'ping' | 'download' | 'upload'
-  result: ResultsResult
+  result: SpeedtestResult
 }>()
 
 const title = computed(() => {

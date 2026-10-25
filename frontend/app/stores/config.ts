@@ -1,4 +1,4 @@
-import { getV1Config, type ConfigConfigResponse } from '~/client'
+import { getConfig, type ConfigConfigResponse } from '~/client'
 
 interface ConfigState {
   config?: ConfigConfigResponse
@@ -10,7 +10,7 @@ export const useConfigStore = defineStore('config', {
   },
   actions: {
     async load() {
-      const resp = await getV1Config()
+      const resp = await getConfig()
       if (!resp.data) {
         throw new Error('load config')
       }

@@ -5,7 +5,7 @@
     icon="i-lucide-trash-2"
     color="error"
     variant="outline"
-    @click="deleteResult"
+    @click="deleteTestResult"
   />
   <TableDelete
     v-if="props.variant == 'table' && (!config.authEnabled() || auth.isAdmin())"
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { deleteV1SpeedtestById } from '~/client'
+import { deleteResult } from '~/client'
 import { useRefreshData } from '~/events/speedtest'
 
 const config = useConfigStore()
@@ -26,8 +26,8 @@ const props = defineProps<{
 }>()
 const { emit: refresh } = useRefreshData()
 
-const deleteResult = async () => {
-  await deleteV1SpeedtestById({
+const deleteTestResult = async () => {
+  await deleteResult({
     path: {
       id: props.id
     }

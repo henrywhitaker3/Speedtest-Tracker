@@ -4,7 +4,7 @@
     variant="outline"
     class="cursor-pointer"
     :disabled="disabled"
-    @click="run"
+    @click="runTest"
   >
     <UIcon
       v-if="isRunning"
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { postV1SpeedtestRun } from '~/client/sdk.gen'
+import { run } from '~/client'
 import { useSpeedtestCompleted, useSpeedtestStarted } from '~/events/speedtest'
 
 const { emit } = useSpeedtestStarted()
@@ -45,7 +45,7 @@ const disabled = computed(() => {
   return false
 })
 
-const run = async () => {
+const runTest = async () => {
   if (isRunning.value) {
     if (runningID.value) {
       return navigateTo(`/results/${runningID.value}`)
@@ -56,7 +56,7 @@ const run = async () => {
   isRunning.value = true
 
   try {
-    const resp = await postV1SpeedtestRun()
+    const resp = await run()
     if (resp.data) {
       emit({
         id: resp.data.id ?? ''

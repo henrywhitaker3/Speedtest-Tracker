@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteV1AuthTokensByIdData, DeleteV1AuthTokensByIdErrors, DeleteV1AuthTokensByIdResponses, DeleteV1SpeedtestByIdData, DeleteV1SpeedtestByIdErrors, DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestPurgeData, DeleteV1SpeedtestPurgeErrors, DeleteV1SpeedtestPurgeResponses, GetV1AuthTokensData, GetV1AuthTokensErrors, GetV1AuthTokensResponses, GetV1ConfigData, GetV1ConfigErrors, GetV1ConfigNotificationsData, GetV1ConfigNotificationsErrors, GetV1ConfigNotificationsResponses, GetV1ConfigResponses, GetV1SpeedtestByIdData, GetV1SpeedtestByIdErrors, GetV1SpeedtestByIdResponses, GetV1SpeedtestData, GetV1SpeedtestErrors, GetV1SpeedtestLatestData, GetV1SpeedtestLatestErrors, GetV1SpeedtestLatestResponses, GetV1SpeedtestResponses, GetV1SpeedtestTimeseriesData, GetV1SpeedtestTimeseriesErrors, GetV1SpeedtestTimeseriesResponses, PostV1AuthTokensData, PostV1AuthTokensErrors, PostV1AuthTokensResponses, PostV1SpeedtestRunData, PostV1SpeedtestRunErrors, PostV1SpeedtestRunResponses } from './types.gen';
+import type { CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -21,12 +21,12 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * List tokens
  */
-export const getV1AuthTokens = <ThrowOnError extends boolean = false>(options?: Options<GetV1AuthTokensData, ThrowOnError>): RequestResult<GetV1AuthTokensResponses, GetV1AuthTokensErrors, ThrowOnError> => (options?.client ?? client).get<GetV1AuthTokensResponses, GetV1AuthTokensErrors, ThrowOnError>({ url: '/v1/auth/tokens', ...options });
+export const listTokens = <ThrowOnError extends boolean = false>(options?: Options<ListTokensData, ThrowOnError>): RequestResult<ListTokensResponses, ListTokensErrors, ThrowOnError> => (options?.client ?? client).get<ListTokensResponses, ListTokensErrors, ThrowOnError>({ url: '/v1/auth/tokens', ...options });
 
 /**
  * Create token
  */
-export const postV1AuthTokens = <ThrowOnError extends boolean = false>(options?: Options<PostV1AuthTokensData, ThrowOnError>): RequestResult<PostV1AuthTokensResponses, PostV1AuthTokensErrors, ThrowOnError> => (options?.client ?? client).post<PostV1AuthTokensResponses, PostV1AuthTokensErrors, ThrowOnError>({
+export const createToken = <ThrowOnError extends boolean = false>(options?: Options<CreateTokenData, ThrowOnError>): RequestResult<CreateTokenResponses, CreateTokenErrors, ThrowOnError> => (options?.client ?? client).post<CreateTokenResponses, CreateTokenErrors, ThrowOnError>({
     url: '/v1/auth/tokens',
     ...options,
     headers: {
@@ -38,65 +38,65 @@ export const postV1AuthTokens = <ThrowOnError extends boolean = false>(options?:
 /**
  * Delete token
  */
-export const deleteV1AuthTokensById = <ThrowOnError extends boolean = false>(options: Options<DeleteV1AuthTokensByIdData, ThrowOnError>): RequestResult<DeleteV1AuthTokensByIdResponses, DeleteV1AuthTokensByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteV1AuthTokensByIdResponses, DeleteV1AuthTokensByIdErrors, ThrowOnError>({ url: '/v1/auth/tokens/{id}', ...options });
+export const deleteToken = <ThrowOnError extends boolean = false>(options: Options<DeleteTokenData, ThrowOnError>): RequestResult<DeleteTokenResponses, DeleteTokenErrors, ThrowOnError> => (options.client ?? client).delete<DeleteTokenResponses, DeleteTokenErrors, ThrowOnError>({ url: '/v1/auth/tokens/{id}', ...options });
 
 /**
  * Config
  *
  * Get the app config
  */
-export const getV1Config = <ThrowOnError extends boolean = false>(options?: Options<GetV1ConfigData, ThrowOnError>): RequestResult<GetV1ConfigResponses, GetV1ConfigErrors, ThrowOnError> => (options?.client ?? client).get<GetV1ConfigResponses, GetV1ConfigErrors, ThrowOnError>({ url: '/v1/config', ...options });
+export const getConfig = <ThrowOnError extends boolean = false>(options?: Options<GetConfigData, ThrowOnError>): RequestResult<GetConfigResponses, GetConfigErrors, ThrowOnError> => (options?.client ?? client).get<GetConfigResponses, GetConfigErrors, ThrowOnError>({ url: '/v1/config', ...options });
 
 /**
  * Notifications
  *
  * Show configured notification channels
  */
-export const getV1ConfigNotifications = <ThrowOnError extends boolean = false>(options?: Options<GetV1ConfigNotificationsData, ThrowOnError>): RequestResult<GetV1ConfigNotificationsResponses, GetV1ConfigNotificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetV1ConfigNotificationsResponses, GetV1ConfigNotificationsErrors, ThrowOnError>({ url: '/v1/config/notifications', ...options });
+export const getNotifications = <ThrowOnError extends boolean = false>(options?: Options<GetNotificationsData, ThrowOnError>): RequestResult<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError>({ url: '/v1/config/notifications', ...options });
 
 /**
  * List results
  *
  * List speedtest results
  */
-export const getV1Speedtest = <ThrowOnError extends boolean = false>(options?: Options<GetV1SpeedtestData, ThrowOnError>): RequestResult<GetV1SpeedtestResponses, GetV1SpeedtestErrors, ThrowOnError> => (options?.client ?? client).get<GetV1SpeedtestResponses, GetV1SpeedtestErrors, ThrowOnError>({ url: '/v1/speedtest', ...options });
+export const listResults = <ThrowOnError extends boolean = false>(options?: Options<ListResultsData, ThrowOnError>): RequestResult<ListResultsResponses, ListResultsErrors, ThrowOnError> => (options?.client ?? client).get<ListResultsResponses, ListResultsErrors, ThrowOnError>({ url: '/v1/speedtest', ...options });
 
 /**
  * Delete result
  */
-export const deleteV1SpeedtestById = <ThrowOnError extends boolean = false>(options: Options<DeleteV1SpeedtestByIdData, ThrowOnError>): RequestResult<DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteV1SpeedtestByIdResponses, DeleteV1SpeedtestByIdErrors, ThrowOnError>({ url: '/v1/speedtest/{id}', ...options });
+export const deleteResult = <ThrowOnError extends boolean = false>(options: Options<DeleteResultData, ThrowOnError>): RequestResult<DeleteResultResponses, DeleteResultErrors, ThrowOnError> => (options.client ?? client).delete<DeleteResultResponses, DeleteResultErrors, ThrowOnError>({ url: '/v1/speedtest/{id}', ...options });
 
 /**
  * Get result
  *
  * Get a speedtest result
  */
-export const getV1SpeedtestById = <ThrowOnError extends boolean = false>(options: Options<GetV1SpeedtestByIdData, ThrowOnError>): RequestResult<GetV1SpeedtestByIdResponses, GetV1SpeedtestByIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1SpeedtestByIdResponses, GetV1SpeedtestByIdErrors, ThrowOnError>({ url: '/v1/speedtest/{id}', ...options });
+export const getResult = <ThrowOnError extends boolean = false>(options: Options<GetResultData, ThrowOnError>): RequestResult<GetResultResponses, GetResultErrors, ThrowOnError> => (options.client ?? client).get<GetResultResponses, GetResultErrors, ThrowOnError>({ url: '/v1/speedtest/{id}', ...options });
 
 /**
  * Latest
  *
  * Get the latest speedtest result
  */
-export const getV1SpeedtestLatest = <ThrowOnError extends boolean = false>(options?: Options<GetV1SpeedtestLatestData, ThrowOnError>): RequestResult<GetV1SpeedtestLatestResponses, GetV1SpeedtestLatestErrors, ThrowOnError> => (options?.client ?? client).get<GetV1SpeedtestLatestResponses, GetV1SpeedtestLatestErrors, ThrowOnError>({ url: '/v1/speedtest/latest', ...options });
+export const latestResult = <ThrowOnError extends boolean = false>(options?: Options<LatestResultData, ThrowOnError>): RequestResult<LatestResultResponses, LatestResultErrors, ThrowOnError> => (options?.client ?? client).get<LatestResultResponses, LatestResultErrors, ThrowOnError>({ url: '/v1/speedtest/latest', ...options });
 
 /**
  * Purge errors
  *
  * Delete test results that have an error
  */
-export const deleteV1SpeedtestPurge = <ThrowOnError extends boolean = false>(options?: Options<DeleteV1SpeedtestPurgeData, ThrowOnError>): RequestResult<DeleteV1SpeedtestPurgeResponses, DeleteV1SpeedtestPurgeErrors, ThrowOnError> => (options?.client ?? client).delete<DeleteV1SpeedtestPurgeResponses, DeleteV1SpeedtestPurgeErrors, ThrowOnError>({ url: '/v1/speedtest/purge', ...options });
+export const purge = <ThrowOnError extends boolean = false>(options?: Options<PurgeData, ThrowOnError>): RequestResult<PurgeResponses, PurgeErrors, ThrowOnError> => (options?.client ?? client).delete<PurgeResponses, PurgeErrors, ThrowOnError>({ url: '/v1/speedtest/purge', ...options });
 
 /**
  * Run speedtest
  *
  * Run a new speedtest
  */
-export const postV1SpeedtestRun = <ThrowOnError extends boolean = false>(options?: Options<PostV1SpeedtestRunData, ThrowOnError>): RequestResult<PostV1SpeedtestRunResponses, PostV1SpeedtestRunErrors, ThrowOnError> => (options?.client ?? client).post<PostV1SpeedtestRunResponses, PostV1SpeedtestRunErrors, ThrowOnError>({ url: '/v1/speedtest/run', ...options });
+export const run = <ThrowOnError extends boolean = false>(options?: Options<RunData, ThrowOnError>): RequestResult<RunResponses, RunErrors, ThrowOnError> => (options?.client ?? client).post<RunResponses, RunErrors, ThrowOnError>({ url: '/v1/speedtest/run', ...options });
 
 /**
  * Timeseries
  *
  * Get timeseries data for speedtest results
  */
-export const getV1SpeedtestTimeseries = <ThrowOnError extends boolean = false>(options?: Options<GetV1SpeedtestTimeseriesData, ThrowOnError>): RequestResult<GetV1SpeedtestTimeseriesResponses, GetV1SpeedtestTimeseriesErrors, ThrowOnError> => (options?.client ?? client).get<GetV1SpeedtestTimeseriesResponses, GetV1SpeedtestTimeseriesErrors, ThrowOnError>({ url: '/v1/speedtest/timeseries', ...options });
+export const timeseries = <ThrowOnError extends boolean = false>(options?: Options<TimeseriesData, ThrowOnError>): RequestResult<TimeseriesResponses, TimeseriesErrors, ThrowOnError> => (options?.client ?? client).get<TimeseriesResponses, TimeseriesErrors, ThrowOnError>({ url: '/v1/speedtest/timeseries', ...options });

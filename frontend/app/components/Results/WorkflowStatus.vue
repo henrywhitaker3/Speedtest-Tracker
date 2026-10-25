@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import type { TimelineItem } from '@nuxt/ui'
-import type { SpeedtestWorkflowStatus, SpeedtestWorkflowStep } from '~/client'
+import type { SpeedtestWorkflowStatus, SpeedtestWorkflowStep, WorkflowStepStatus } from '~/client'
 
 const props = defineProps<{
   status: SpeedtestWorkflowStatus
@@ -88,7 +88,7 @@ const description = (name?: string) => {
   }
 }
 
-const stepIcon = (status?: string): string | undefined => {
+const stepIcon = (status?: WorkflowStepStatus): string | undefined => {
   switch (status) {
     case 'pending':
       return 'i-lucide-hourglass'
@@ -105,7 +105,7 @@ const stepIcon = (status?: string): string | undefined => {
   }
 }
 
-const stepIndicatorClass = (status?: string): string => {
+const stepIndicatorClass = (status?: WorkflowStepStatus): string => {
   switch (status) {
     case 'completed':
       return 'bg-success text-inverted group-data-[state=active]:bg-success/80 group-data-[state=completed]:bg-success/80'

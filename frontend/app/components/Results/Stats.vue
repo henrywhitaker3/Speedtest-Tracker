@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { getV1SpeedtestTimeseries, type ResultsStat } from '~/client'
+import { timeseries, type ResultsStat } from '~/client'
 import { useRefreshData } from '~/events/speedtest'
 import { useLocalStorage } from '@vueuse/core'
 
@@ -44,7 +44,7 @@ const timeDomain = computed(() => {
 const refresh = async () => {
   fetchedAt.value = new Date()
 
-  const resp = await getV1SpeedtestTimeseries({
+  const resp = await timeseries({
     query: {
       period: period.value
     }

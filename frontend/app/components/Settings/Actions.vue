@@ -19,7 +19,7 @@
             icon="i-lucide-trash"
             :disabled="purgeInProgress"
             :loading="purgeInProgress"
-            @click="purge"
+            @click="purgeResults"
           />
         </dd>
       </div>
@@ -28,14 +28,15 @@
 </template>
 
 <script setup lang="ts">
-import { deleteV1SpeedtestPurge } from '~/client'
+import { purge } from '~/client'
 
 const toast = useToast()
 
 const purgeInProgress = ref(false)
-const purge = async () => {
+
+const purgeResults = async () => {
   purgeInProgress.value = true
-  const resp = await deleteV1SpeedtestPurge()
+  const resp = await purge()
   purgeInProgress.value = false
 
   if (!resp.data) {

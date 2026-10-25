@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { ResultsResult } from '~/client'
-import { getV1SpeedtestLatest } from '~/client/sdk.gen'
+import { latestResult, type SpeedtestResult } from '~/client'
 import { useRefreshData, useSpeedtestCompleted, useSpeedtestStarted } from '~/events/speedtest'
 
 const { on: onStarted } = useSpeedtestStarted()
 const { emit: refreshData } = useRefreshData()
 const { emit: onCompleted } = useSpeedtestCompleted()
 
-const latest = ref<ResultsResult>()
+const latest = ref<SpeedtestResult>()
 const activeResultID = ref<string>()
 let isPolling = true
 
@@ -18,7 +17,7 @@ onStarted(({ id }) => {
 
 const pollLatest = async () => {
   while (isPolling) {
-    const result = await getV1SpeedtestLatest()
+    const result = await latestResult()
 
     if (!isPolling) {
       return

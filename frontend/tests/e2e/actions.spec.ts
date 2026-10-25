@@ -30,6 +30,12 @@ test('shows a sign in button instead of the speedtest action when auth is enable
 
 test('shows a spinner and opens the running result after starting a speedtest', async ({ page }) => {
   await mockApi(page)
+  await page.route('**/v1/speedtest/latest', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({ ...result, complete: false })
+    })
+  })
 
   await page.goto('/')
   const speedtest = page.getByRole('button', { name: 'Speedtest' })
