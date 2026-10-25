@@ -9,12 +9,12 @@ if [[ $(echo "$output" | jq -r '.skip') != "true" ]]; then
 
     echo "Releasing $version"
 
+    git tag "$tag"
+    git push origin "$tag"
     echo "$changelog" >CHANGELOG.md
     git add CHANGELOG.md
     git commit -m "chore(docs): update changelog [skip ci]"
     git push
-    git tag "$tag"
-    git push origin "$tag"
 
     release_notes=$(awk '
     /^## \[/ {

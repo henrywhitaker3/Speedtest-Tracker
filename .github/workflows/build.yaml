@@ -3,6 +3,10 @@ name: Build
 on:
   push:
     tags: [v2*]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The tag to build and push
 
 jobs:
   build:
@@ -14,6 +18,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          ref: ${{ inputs.tag || github.ref_name }}
       - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4
         with:
           registry: ghcr.io
@@ -28,7 +33,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/henrywhitaker3/speedtest-tracker:${{ github.ref_name }}
+            ghcr.io/henrywhitaker3/speedtest-tracker:${{ inputs.tag || github.ref_name }}
             ghcr.io/henrywhitaker3/speedtest-tracker:v2
           build-args: |
-            VERSION=${{ github.ref_name }}
+            VERSION=${{ inputs.tag || github.ref_name }}
