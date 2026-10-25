@@ -26,6 +26,7 @@ func (n *notificationsHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Notifications",
 		Description:  "Show configured notification channels",
+		ID:           new("getNotifications"),
 		Tag:          "Config",
 		Path:         "/v1/config/notifications",
 		Code:         http.StatusOK,

@@ -1,33 +1,94 @@
 package auth
 
 import (
+	"bytes"
 	"context"
-	"errors"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 
 	internalAuth "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	windowhttp "github.com/henrywhitaker3/windowframe/v2/http"
-	"github.com/henrywhitaker3/windowframe/v2/http/validation"
-	"github.com/labstack/echo/v5"
 )
 
-func TestCreateTokenHandlerRejectsBlankName(t *testing.T) {
+func TestCreateTokenRejectsBlankNameBeforeCreatingToken(t *testing.T) {
 	repo := &createRepoStub{}
-	handler := (&createHandler{repo: repo}).Handler()
-	ctx := echo.NewContext(
-		httptest.NewRequest(http.MethodPost, "/v1/auth/tokens", nil),
-		httptest.NewRecorder(),
-	)
+	h := windowhttp.New(windowhttp.HTTPOpts{})
+	h.Register(&createHandler{repo: repo})
 
-	_, err := handler(ctx, CreateTokenRequest{Name: " \t "})
-	var validationErr *validation.ValidationError
-	if !errors.As(err, &validationErr) {
-		t.Fatalf("Handler() error = %v, want validation error", err)
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/v1/auth/tokens",
+		bytes.NewBufferString(`{"name":""}`),
+	)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusUnprocessableEntity {
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusUnprocessableEntity)
 	}
 	if repo.called {
 		t.Error("repository Create was called for a blank name")
+	}
+}
+
+func TestCreateTokenRejectsShortNameBeforeCreatingToken(t *testing.T) {
+	repo := &createRepoStub{}
+	h := windowhttp.New(windowhttp.HTTPOpts{})
+	h.Register(&createHandler{repo: repo})
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/v1/auth/tokens",
+		bytes.NewBufferString(`{"name":"test"}`),
+	)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusUnprocessableEntity {
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusUnprocessableEntity)
+	}
+	if repo.called {
+		t.Error("repository Create was called for a name shorter than five characters")
+	}
+}
+
+func TestCreateTokenWithShortNameDoesNotPersistToken(t *testing.T) {
+	db, err := database.Sqlite(filepath.Join(t.TempDir(), "auth.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := internalAuth.Register(db); err != nil {
+		t.Fatal(err)
+	}
+
+	repo := internalAuth.NewRepo(db)
+	h := windowhttp.New(windowhttp.HTTPOpts{})
+	h.Register(&createHandler{repo: repo})
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/v1/auth/tokens",
+		bytes.NewBufferString(`{"name":"test"}`),
+	)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusUnprocessableEntity)
+	}
+
+	tokens, err := repo.List(context.Background())
+	if err != nil {
+		t.Fatalf("List() error = %v", err)
+	}
+	if len(tokens) != 0 {
+		t.Errorf("stored tokens = %d, want 0", len(tokens))
 	}
 }
 

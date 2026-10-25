@@ -44,6 +44,7 @@ func (d *deleteHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Delete token",
 		Tag:          "Auth",
+		ID:           new("deleteToken"),
 		Path:         "/v1/auth/tokens/:id",
 		Method:       http.MethodDelete,
 		Code:         http.StatusOK,

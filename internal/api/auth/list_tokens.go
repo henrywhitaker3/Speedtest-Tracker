@@ -41,6 +41,7 @@ func (l *listTokensHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "List tokens",
 		Tag:          "Auth",
+		ID:           new("listTokens"),
 		Path:         "/v1/auth/tokens",
 		Method:       http.MethodGet,
 		Code:         http.StatusOK,

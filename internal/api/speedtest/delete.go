@@ -44,6 +44,7 @@ func (d *deleteHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Delete result",
 		Tag:          "Speedtest",
+		ID:           new("deleteResult"),
 		Path:         "/v1/speedtest/:id",
 		Method:       http.MethodDelete,
 		Code:         http.StatusOK,

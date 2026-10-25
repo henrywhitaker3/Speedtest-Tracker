@@ -62,6 +62,7 @@ func (l *listHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "List results",
 		Tag:          "Speedtest",
+		ID:           new("listResults"),
 		Method:       http.MethodGet,
 		Path:         "/v1/speedtest",
 		Code:         http.StatusOK,

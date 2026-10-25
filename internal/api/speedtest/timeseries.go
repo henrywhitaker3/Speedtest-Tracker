@@ -51,6 +51,7 @@ func (t *timeseriesHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Timeseries",
 		Description:  "Get timeseries data for speedtest results",
+		ID:           new("timeseries"),
 		Tag:          "Speedtest",
 		Method:       http.MethodGet,
 		Code:         http.StatusOK,

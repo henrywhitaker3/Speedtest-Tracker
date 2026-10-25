@@ -95,6 +95,7 @@ func (g *getHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Get result",
 		Tag:          "Speedtest",
+		ID:           new("getResult"),
 		Path:         "/v1/speedtest/:id",
 		Method:       http.MethodGet,
 		Code:         http.StatusOK,

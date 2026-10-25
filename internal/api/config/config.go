@@ -45,6 +45,7 @@ func (h *configHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Config",
 		Tag:          "Config",
+		ID:           new("getConfig"),
 		Path:         "/v1/config",
 		Method:       http.MethodGet,
 		Code:         http.StatusOK,

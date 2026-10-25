@@ -41,6 +41,7 @@ func (l *latestHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Latest",
 		Description:  "Get the latest speedtest result",
+		ID:           new("latestResult"),
 		Path:         "/v1/speedtest/latest",
 		Method:       http.MethodGet,
 		Code:         http.StatusOK,

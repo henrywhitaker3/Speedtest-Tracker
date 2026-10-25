@@ -85,6 +85,7 @@ func (r *runHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Run speedtest",
 		Tag:          "Speedtest",
+		ID:           new("run"),
 		Method:       http.MethodPost,
 		Path:         "/v1/speedtest/run",
 		Code:         http.StatusOK,

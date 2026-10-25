@@ -39,6 +39,7 @@ func (p *purgeHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Purge errors",
 		Description:  "Delete test results that have an error",
+		ID:           new("purge"),
 		Tag:          "Speedtest",
 		Path:         "/v1/speedtest/purge",
 		Method:       http.MethodDelete,

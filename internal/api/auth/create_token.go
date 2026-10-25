@@ -3,12 +3,10 @@ package auth
 import (
 	"context"
 	"net/http"
-	"strings"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
-	"github.com/henrywhitaker3/windowframe/v2/http/validation"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/labstack/echo/v5"
 )
@@ -32,15 +30,10 @@ type CreateTokenResponse struct {
 
 func (h *createHandler) Handler() handlers.Handler[CreateTokenRequest, CreateTokenResponse] {
 	return func(c *echo.Context, req CreateTokenRequest) (*CreateTokenResponse, error) {
-		name := strings.TrimSpace(req.Name)
-		if name == "" {
-			return nil, validation.Build().With("name", "required")
-		}
-
 		ctx, span := tracing.NewSpan(c.Request().Context(), "Create auth token")
 		defer span.End()
 
-		secret, token, err := h.repo.Create(ctx, name)
+		secret, token, err := h.repo.Create(ctx, req.Name)
 		if err != nil {
 			return nil, httperrors.Stack(err)
 		}
@@ -60,6 +53,7 @@ func (h *createHandler) Metadata() handlers.Metadata {
 	return handlers.Metadata{
 		Name:         "Create token",
 		Tag:          "Auth",
+		ID:           new("createToken"),
 		Path:         "/v1/auth/tokens",
 		Method:       http.MethodPost,
 		Code:         http.StatusOK,
