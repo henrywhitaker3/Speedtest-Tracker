@@ -10,6 +10,7 @@ import (
 	"github.com/henrywhitaker3/windowframe/v2/log"
 	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/italypaleale/francis/host/local"
+	"go.opentelemetry.io/otel"
 )
 
 type workflowRepo interface {
@@ -36,6 +37,7 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 		"speedtest",
 		workflow.WithVersion(4),
 		workflow.WithUnknownVersionPolicy(workflow.FailUnknownVersion),
+		workflow.WithMeter(otel.Meter("speedtest")),
 		workflow.WithSteps(
 			workflow.Step(
 				"notify",

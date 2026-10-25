@@ -18,6 +18,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http"
+	"github.com/henrywhitaker3/windowframe/v2/otel"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/italypaleale/francis/components/postgres"
 	"github.com/italypaleale/francis/components/sqlite"
@@ -30,12 +31,14 @@ func Bootstrap(
 	conf *config.Config,
 	version, ooklaVersion string,
 ) (*http.HTTP, *gorm.DB, *local.Host, error) {
-	_, err := tracing.InitTracer(tracing.TracingOpts{
-		ServiceName: "Speedtest-Tracker",
-		SampleRate:  1,
-	}, version)
+	_, err := otel.Init(otel.Opts{
+		Tracing: tracing.TracingOpts{
+			ServiceName: "Speedtest-Tracker",
+		},
+		Version: version,
+	})
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("init tracer: %w", err)
+		return nil, nil, nil, fmt.Errorf("init otel: %w", err)
 	}
 
 	slog.Debug("loaded config", "config", conf)

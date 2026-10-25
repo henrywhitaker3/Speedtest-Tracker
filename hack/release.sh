@@ -15,6 +15,16 @@ if [[ $(echo "$output" | jq -r '.skip') != "true" ]]; then
   git push
   git tag "$tag"
   git push origin "$tag"
+
+  release_notes=$(awk '
+    /^## \[/ {
+      if (in_latest_release++) exit
+      next
+    }
+    in_latest_release { print }
+  ' <<<"$changelog")
+
+  gh release create "$tag" --title "$tag" --notes "$release_notes"
 else
   echo "No new version to release"
 fi
