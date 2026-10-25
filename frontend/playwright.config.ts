@@ -4,7 +4,15 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000'
 
 export default defineConfig({
   testDir: './tests/e2e',
-  globalSetup: './tests/e2e/global-setup.ts',
+  globalSetup: process.env.PLAYWRIGHT_BASE_URL ? './tests/e2e/global-setup.ts' : undefined,
+  webServer: process.env.PLAYWRIGHT_BASE_URL
+    ? undefined
+    : {
+        command: 'NUXT_PUBLIC_API_URL=http://localhost:3000 pnpm exec nuxt dev --port 3000',
+        url: baseURL,
+        timeout: 120_000,
+        reuseExistingServer: !process.env.CI
+      },
   timeout: 30_000,
   expect: {
     timeout: 5_000

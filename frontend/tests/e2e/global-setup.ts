@@ -1,4 +1,4 @@
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:8080'
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000'
 const timeout = 60_000
 const pollInterval = 1_000
 

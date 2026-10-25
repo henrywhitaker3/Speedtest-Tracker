@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test'
+import { mockApi } from './fixtures'
 
 test('loads the dashboard', async ({ page }) => {
+  await mockApi(page)
+
   await page.goto('/')
 
   await expect(page).toHaveTitle('Speedtest-Tracker')
