@@ -1,3 +1,20 @@
+## [2.4.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.3..v2.4.4) - 2026-10-25
+
+### 🐛 Bug Fixes
+
+- *(db)* Use a non-cgo slite driver - ([9a13da2](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/9a13da224ac395621df324f80bd90c28b73673b1))
+- *(ui)* Clean up typecheck errors - ([a78413a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a78413a0eb2ff989a13947276a875713be0360ad))
+- *(ui)* Add syntax highlighting to the raw result - ([2f90cea](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2f90cea6c5010ca017810ccc441515a9629e05cb))
+
+### 🧪 Testing
+
+- *(ui)* Add a bunch of tests against a mock api - ([0cb2b02](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0cb2b02c1a927b76d266158f14a7e01cc68c33ad))
+- *(ui)* Add tests for when auth is enabled - ([0653239](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0653239bb43f1891318820a2cf1fa07e556c6266))
+- Added playwright commands - ([d5f370e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d5f370e8c2bcd069afb4b3a83f41f018f5add04c))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(ci)* Skip ci on changelog push - ([d9a0657](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9a065737279935227eed348453b18ba81b205fa))
 ## [2.4.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.2..v2.4.3) - 2026-10-25
 
 ### 🐛 Bug Fixes
@@ -7,6 +24,10 @@
 ### 📚 Documentation
 
 - Update README.md - ([ea051dc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ea051dc383b13d2b32f59f1ec903e3be4f15f476))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog - ([bf0505c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/bf0505c8eda43f5a50004c0a7be124384b954fe5))
 ## [2.4.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.1..v2.4.2) - 2026-10-24
 
 ### 🐛 Bug Fixes
