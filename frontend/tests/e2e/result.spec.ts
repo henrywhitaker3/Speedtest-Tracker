@@ -35,6 +35,7 @@ test('shows the raw test result in a collapsible section', async ({ page }) => {
   await page.getByRole('button', { name: 'Raw result' }).click()
 
   await expect(page.getByText('"result-1"').last()).toBeVisible()
+  await expect(page.locator('pre code.hljs.json')).toBeVisible()
 })
 
 test('does not show the raw result section when the result has no raw output', async ({ page }) => {

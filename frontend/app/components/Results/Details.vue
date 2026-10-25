@@ -84,7 +84,7 @@
 
     <UCollapsible
       v-if="props.result.raw != null"
-      class="mt-6 border-t border-default pt-4"
+      class="border-default mt-6 border-t pt-4"
     >
       <template #default="{ open }">
         <UButton
@@ -103,16 +103,29 @@
       </template>
 
       <template #content>
-        <pre class="bg-muted mt-3 max-h-96 overflow-auto rounded-md p-4 text-xs break-words whitespace-pre-wrap">{{ JSON.stringify(props.result.raw, null, 2) }}</pre>
+        <HighlightJs
+          language="json"
+          :code="rawResult"
+          class="mt-3 max-h-96 overflow-auto rounded-md text-xs wrap-break-word [&_code]:whitespace-pre-wrap"
+        />
       </template>
     </UCollapsible>
   </UCard>
 </template>
 
 <script setup lang="ts">
+import hljsVuePlugin from '@highlightjs/vue-plugin'
+import hljs from 'highlight.js/lib/core'
+import json from 'highlight.js/lib/languages/json'
+import 'highlight.js/styles/tokyo-night-dark.min.css'
 import type { SpeedtestGetResponse } from '~/client'
+
+hljs.registerLanguage('json', json)
 
 const props = defineProps<{
   result: SpeedtestGetResponse
 }>()
+
+const HighlightJs = hljsVuePlugin.component
+const rawResult = computed(() => JSON.stringify(props.result.raw ?? {}, null, 2))
 </script>
