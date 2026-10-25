@@ -1,8 +1,21 @@
+## [2.4.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.2..v2.4.3) - 2026-10-25
+
+### 🐛 Bug Fixes
+
+- *(o11y)* Add otel metrics to prometheus registry - ([eae95e3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/eae95e3afc1ecf94015a7e32213560acf75f6432))
+
+### 📚 Documentation
+
+- Update README.md - ([ea051dc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ea051dc383b13d2b32f59f1ec903e3be4f15f476))
 ## [2.4.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.1..v2.4.2) - 2026-10-24
 
 ### 🐛 Bug Fixes
 
 - *(results)* Json - struct tag stopping raw output being shared in workflow outputs - ([fdb0962](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fdb09625aabe7b1faeadf38cc0586d50fcfa96a9))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog - ([6ed2e19](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6ed2e1951858246bb4b62b7c10c16237abde0a56))
 ## [2.4.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.0..v2.4.1) - 2026-10-24
 
 ### 🐛 Bug Fixes
@@ -217,10 +230,7 @@
 
 - *(docs)* Update changelog - ([2c6b3d5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2c6b3d5c8497040a28ef45fef70cc6a460ff3e6e))
 - Add release scripts - ([270f8bc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/270f8bc4fc99a12a12f6c26d1fd64863452cbaab))
-
-## ❤️ New Contributors
-
-* @renovate-operator-k3s[bot] made their first contribution## [2.0.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.0.2..v2.0.3) - 2026-10-22
+## [2.0.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.0.2..v2.0.3) - 2026-10-22
 
 ### 🐛 Bug Fixes
 
@@ -286,7 +296,3 @@
 - Add build job - ([05c2c8d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/05c2c8d16ca285fad7e988ca2b8807314474abb2))
 - Add build job - ([1dc634e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1dc634e75e7c642b116bd4a446453666685b961e))
 - Add build job - ([90724db](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/90724dbeb4900c59accc223d464be012dc27fa54))
-
-## ❤️ New Contributors
-
-* @henrywhitaker3 made their first contribution
