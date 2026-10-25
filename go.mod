@@ -2,19 +2,19 @@ module github.com/henrywhitaker3/Speedtest-Tracker/v2
 
 go 1.27.3
 
-replace github.com/henrywhitaker3/windowframe/v2 => /Users/henry/code/windowframe/
-
 require (
 	github.com/adhocore/gronx v1.20.5
 	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-playground/validator/v10 v10.30.5
-	github.com/henrywhitaker3/windowframe/v2 v2.6.7
+	github.com/henrywhitaker3/windowframe/v2 v2.6.8
 	github.com/italypaleale/francis v0.1.2
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.2
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
 	github.com/stretchr/testify v1.12.1
+	github.com/swaggest/jsonschema-go v0.3.79
+	github.com/swaggest/openapi-go v0.2.61
 	go.opentelemetry.io/otel v1.47.0
 	golang.org/x/oauth2 v0.37.0
 	gorm.io/datatypes v1.2.7
@@ -51,7 +51,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grafana/otel-profiling-go v0.7.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.31.0 // indirect
-	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/henrywhitaker3/ctxgen v1.0.1 // indirect
 	github.com/italypaleale/go-kit v1.2.5 // indirect
 	github.com/italypaleale/go-sql-utils v0.3.11 // indirect
@@ -71,7 +71,7 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.1.0 // indirect
 	github.com/paulmach/orb v0.11.1 // indirect
-	github.com/pierrec/lz4/v4 v4.1.21 // indirect
+	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_model v0.6.3 // indirect
 	github.com/prometheus/common v0.72.1 // indirect
@@ -87,8 +87,6 @@ require (
 	github.com/sethvargo/go-envconfig/v2 v2.0.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
-	github.com/swaggest/jsonschema-go v0.3.79 // indirect
-	github.com/swaggest/openapi-go v0.2.61 // indirect
 	github.com/swaggest/refl v1.4.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
