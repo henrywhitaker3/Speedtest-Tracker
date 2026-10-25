@@ -12,6 +12,7 @@ export type ApiMocks = {
   result?: MockResponse
   results?: MockResponse
   run?: MockResponse
+  session?: MockResponse
   stats?: MockResponse
 }
 
@@ -64,6 +65,7 @@ const responses = {
     }
   },
   run: { body: { id: result.id } },
+  session: { status: 401, body: { message: 'unauthenticated' } },
   stats: {
     body: [
       {
@@ -93,6 +95,7 @@ export async function mockApi(page: Page, mocks: ApiMocks = {}) {
 function responseKey(path: string, method: string): keyof ApiMocks | undefined {
   if (path === '/v1/config') return 'config'
   if (path === '/v1/config/notifications') return 'notifications'
+  if (path === '/v1/auth/session') return 'session'
   if (path === '/v1/speedtest/latest') return 'latest'
   if (path === '/v1/speedtest/timeseries') return 'stats'
   if (path === '/v1/speedtest/run') return 'run'

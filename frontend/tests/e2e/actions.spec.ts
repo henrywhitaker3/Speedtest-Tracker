@@ -7,8 +7,23 @@ test('warns when a speedtest request is rate limited', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Speedtest' }).click()
 
-  await expect(page.getByText('Too many speedtests')).toBeVisible()
+  await expect(page.locator('[data-slot="title"]', { hasText: 'Too many speedtests' })).toBeVisible()
   await expect(page.locator('[data-slot="description"]', {
     hasText: 'You can run up to three speedtests per minute. Please try again shortly.'
   })).toBeVisible()
+})
+
+test('shows a sign in button instead of the speedtest action when auth is enabled', async ({ page }) => {
+  await mockApi(page, {
+    config: {
+      body: {
+        auth: { enabled: true, admin_group: 'admins' }
+      }
+    }
+  })
+
+  await page.goto('/')
+
+  await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Speedtest' })).toHaveCount(0)
 })

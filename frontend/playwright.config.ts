@@ -4,6 +4,7 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000'
 
 export default defineConfig({
   testDir: './tests/e2e',
+  workers: 1,
   globalSetup: process.env.PLAYWRIGHT_BASE_URL ? './tests/e2e/global-setup.ts' : undefined,
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined

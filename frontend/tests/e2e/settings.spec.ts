@@ -25,3 +25,33 @@ test('shows configuration, notifications, and the settings actions', async ({ pa
   await page.getByRole('link', { name: 'Dashboard' }).click()
   await expect(page).toHaveURL('/')
 })
+
+test('does not show the settings link when an authenticated user is not an admin', async ({ page }) => {
+  await mockApi(page, {
+    config: {
+      body: {
+        auth: { enabled: true, admin_group: 'admins' }
+      }
+    },
+    session: { body: { groups: ['readers'] } }
+  })
+
+  await page.goto('/')
+
+  await expect(page.getByRole('link', { name: 'Settings' })).toHaveCount(0)
+})
+
+test('shows the settings link when an authenticated user is an admin', async ({ page }) => {
+  await mockApi(page, {
+    config: {
+      body: {
+        auth: { enabled: true, admin_group: 'admins' }
+      }
+    },
+    session: { body: { groups: ['admins'] } }
+  })
+
+  await page.goto('/')
+
+  await expect(page.getByRole('link', { name: 'Settings' })).toBeVisible()
+})
