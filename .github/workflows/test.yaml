@@ -52,6 +52,25 @@ jobs:
           mise exec -- pnpm i
           mise lint
 
+  typecheck-ui:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@82a612c5ab8bcda7cc5db6b7e81a8e7584c3dc6e # v5
+        with:
+          install: true
+          cache: true
+          working_directory: frontend
+      - name: Run lint
+        run: |
+          cd frontend
+          mise exec -- pnpm i
+          mise typecheck
+
   test-ui:
     runs-on: ubuntu-latest
     permissions:

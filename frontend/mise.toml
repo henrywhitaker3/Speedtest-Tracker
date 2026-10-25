@@ -18,6 +18,9 @@ run = "pnpm run build"
 [tasks.lint]
 run = "pnpm run lint"
 
+[tasks.typecheck]
+run = "pnpm run typecheck"
+
 [tasks.test]
 description = "Open the local"
 run = "pnpm test:e2e:ui"
