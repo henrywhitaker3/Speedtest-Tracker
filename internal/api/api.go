@@ -23,6 +23,8 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/swaggest/jsonschema-go"
+	"github.com/swaggest/openapi-go/openapi3"
 	"gorm.io/gorm"
 )
 
@@ -43,7 +45,8 @@ func New(
 			ServiceVersion: version,
 			PublicURL:      conf.App.URL,
 		},
-		Logger: slog.With("component", "api"),
+		Logger:        slog.With("component", "api"),
+		SpecMutations: specMutations(),
 	})
 
 	h.Use(middleware.Recover())
@@ -71,6 +74,47 @@ func New(
 	registerValidators(h)
 
 	return h, nil
+}
+
+func specMutations() []http.SpecMutator {
+	return []http.SpecMutator{
+		func(r *openapi3.Reflector) {
+			msgStatusDef := jsonschema.Schema{}
+			msgStatusDef.AddType(jsonschema.String)
+			statuses := []any{
+				"pending",
+				"running",
+				"completed",
+				"failed",
+				"skipped",
+				"compensating",
+				"compensated",
+				"compensation-failed",
+			}
+			msgStatusDef.WithEnum(statuses...)
+			r.AddTypeMapping(workflow.StepStatus(""), msgStatusDef)
+		},
+		func(r *openapi3.Reflector) {
+			msgStatusDef := jsonschema.Schema{}
+			msgStatusDef.AddType(jsonschema.String)
+			statuses := []any{
+				config.PreRun,
+				config.PostRun,
+			}
+			msgStatusDef.WithEnum(statuses...)
+			r.AddTypeMapping(config.NotificationPhase(""), msgStatusDef)
+		},
+		func(r *openapi3.Reflector) {
+			msgStatusDef := jsonschema.Schema{}
+			msgStatusDef.AddType(jsonschema.String)
+			statuses := []any{
+				config.Healthcheck,
+				config.Webhook,
+			}
+			msgStatusDef.WithEnum(statuses...)
+			r.AddTypeMapping(config.NotificationKind(""), msgStatusDef)
+		},
+	}
 }
 
 func authRoutes() authapi.ProtectedRoutes {
