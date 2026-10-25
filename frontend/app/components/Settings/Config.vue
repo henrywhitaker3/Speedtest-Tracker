@@ -12,7 +12,7 @@
           Schedule
         </dt>
         <dd class="mt-1 font-mono text-sm">
-          {{ configStore.config.schedule ?? 'Not configured' }}
+          {{ configStore.config?.schedule ?? 'Not configured' }}
         </dd>
       </div>
       <div>
@@ -20,7 +20,7 @@
           Server ID
         </dt>
         <dd class="mt-1 font-medium">
-          {{ configStore.config.server_id ?? 'Not configured' }}
+          {{ configStore.config?.server_id ?? 'Not configured' }}
         </dd>
       </div>
     </dl>
@@ -39,7 +39,7 @@
           Status
         </dt>
         <dd class="mt-1 font-medium">
-          {{ configStore.config.auth?.enabled ? 'Enabled' : 'Disabled' }}
+          {{ configStore.config?.auth?.enabled ? 'Enabled' : 'Disabled' }}
         </dd>
       </div>
       <div>
@@ -47,7 +47,7 @@
           Admin group
         </dt>
         <dd class="mt-1 font-medium">
-          {{ configStore.config.auth?.admin_group ?? 'Not configured' }}
+          {{ configStore.config?.auth?.admin_group ?? 'Not configured' }}
         </dd>
       </div>
     </dl>

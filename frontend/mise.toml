@@ -17,3 +17,18 @@ run = "pnpm run build"
 
 [tasks.lint]
 run = "pnpm run lint"
+
+[tasks.typecheck]
+run = "pnpm run typecheck"
+
+[tasks.test-ui]
+description = "Open the local"
+run = "pnpm test:e2e:ui"
+
+[tasks.test]
+description = "Open the local"
+run = "pnpm test:e2e"
+
+[tasks.test-ci]
+description = "Run the playwright tests in CI"
+run = ["pnpm test:e2e:install", "pnpm test:e2e"]
