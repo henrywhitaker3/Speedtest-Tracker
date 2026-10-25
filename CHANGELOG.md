@@ -4,6 +4,7 @@
 
 - *(api)* Add operation ids to spec handlers - ([7aa4553](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7aa45531bd1973485963f2631b174a7e27d99924))
 - *(api)* Add openapi spec definitions for enums - ([d9d5cdb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9d5cdbfb26d4e8425805c86548d716ce4320b70))
+- *(api)* Remove local replaced module - ([e360236](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e36023619ebf855667eeb09f2bc22627cc678f04))
 - *(deps)* Update module modernc.org/sqlite to v1.61.0 - ([0c5bff1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0c5bff16586ee2afcb90eddabb2cb598ee61c184))
 - *(ui)* Light mode raw result syntax highlighting - ([4f0a00c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4f0a00cec8b24c61fe27f9a40292b82592377128))
 - *(ui)* Run button navigates to result when test is in progress - ([12fb4e4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/12fb4e45556a96e257a4d3247029289b93b4003a))
@@ -12,6 +13,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - *(ci)* Tag ordering to still trigger - ([0449538](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/04495389ebadc40b7962f7aa45c2339ba8cd9157))
+- *(docs)* Update changelog [skip ci] - ([e3494a7](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e3494a77db0b35db3881ddbeb1d43a4819e5c5d9))
 ## [2.4.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.3..v2.4.4) - 2026-10-25
 
 ### 🐛 Bug Fixes
