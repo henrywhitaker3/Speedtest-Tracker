@@ -29,9 +29,28 @@ Speedtest Tracker runs scheduled [Ookla Speedtest CLI](https://www.speedtest.net
 
 ## Quick start with Docker Compose
 
-Docker Compose is the recommended way to run v2. It starts the application, PostgreSQL, and Jaeger for local trace inspection.
+For a simple deployment, use SQLite with a persistent Docker volume. Create an empty directory and add this `compose.yaml` file:
 
-Create a `.env` file beside `docker-compose.yaml` with a private runtime key:
+```yaml
+services:
+  app:
+    image: henrywhitaker3/speedtest-tracker:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      ACCEPT_EULA: "true"
+      DB_DRIVER: sqlite
+      DB_URL: /data/speedtest-tracker.db
+    volumes:
+      - speedtest-tracker:/data
+
+volumes:
+  speedtest-tracker:
+```
+
+Create a `.env` file beside it with a private runtime key:
 
 ```dotenv
 RUNTIME_PSK=replace-with-the-output-of-openssl-rand-hex-32
@@ -43,19 +62,21 @@ For example:
 openssl rand -hex 32
 ```
 
-Then build and start the stack:
+Then start the application:
 
 ```sh
-docker compose up --build -d
+docker compose up -d
 ```
 
-Open <http://localhost:8080>. The included PostgreSQL volume retains results between restarts. Jaeger's UI is available at <http://localhost:16686>.
+Open <http://localhost:8080>. The SQLite database is stored in the `speedtest-tracker` Docker volume and survives container recreation.
 
 To stop the stack without removing its data:
 
 ```sh
 docker compose down
 ```
+
+The repository's `docker-compose.yaml` starts PostgreSQL and Jaeger too; it is intended for local development.
 
 ## Configuration
 
