@@ -7,25 +7,24 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/labstack/echo/v5"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 type Result struct {
-	ID         uuid.UUID                                    `json:"id"`
-	CreatedAt  time.Time                                    `json:"created_at"`
-	UpdatedAt  time.Time                                    `json:"updated_at"`
-	DeletedAt  gorm.DeletedAt                               `json:"deleted_at"`
-	Ping       *float64                                     `json:"ping"`
-	Download   *int64                                       `json:"download"`
-	Upload     *int64                                       `json:"upload"`
-	ServerID   *int                                         `json:"server_id"`
-	ServerHost *string                                      `json:"server_host"`
-	ServerName *string                                      `json:"server_name"`
-	URL        *string                                      `json:"url"`
-	Error      *string                                      `json:"error,omitempty"`
-	Complete   bool                                         `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
-	Raw        *datatypes.JSONType[results.SpeedtestOutput] `json:"raw,omitempty"`
+	ID         uuid.UUID                `json:"id"`
+	CreatedAt  time.Time                `json:"created_at"`
+	UpdatedAt  time.Time                `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt           `json:"deleted_at"`
+	Ping       *float64                 `json:"ping"`
+	Download   *int64                   `json:"download"`
+	Upload     *int64                   `json:"upload"`
+	ServerID   *int                     `json:"server_id"`
+	ServerHost *string                  `json:"server_host"`
+	ServerName *string                  `json:"server_name"`
+	URL        *string                  `json:"url"`
+	Error      *string                  `json:"error,omitempty"`
+	Complete   bool                     `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
+	Raw        *results.SpeedtestOutput `json:"raw,omitempty"`
 }
 
 func convert(c *echo.Context, r results.Result) Result {
@@ -45,9 +44,16 @@ func convert(c *echo.Context, r results.Result) Result {
 		Complete:   r.Complete,
 	}
 
-	if auth.IsAuthenticated(c) {
-		out.Raw = r.Raw
+	var output *results.SpeedtestOutput
+	if r.Raw != nil {
+		output = new(r.Raw.Data())
 	}
+
+	if !auth.IsAuthenticated(c) && output != nil {
+		output.Sanitise()
+	}
+
+	out.Raw = output
 
 	return out
 }

@@ -12,19 +12,30 @@ import (
 	"gorm.io/datatypes"
 )
 
-func TestConvertIncludesRawOnlyForAuthenticatedUsersOrWhenAuthIsDisabled(t *testing.T) {
-	raw := datatypes.NewJSONType(results.SpeedtestOutput{})
+func TestConvertSanitisesRawOutputForUnauthenticatedUsers(t *testing.T) {
+	isp := "Example ISP"
+	raw := datatypes.NewJSONType(results.SpeedtestOutput{
+		Type:       "result",
+		PacketLoss: 1.5,
+		Isp:        &isp,
+		Interface: &results.Interface{
+			InternalIP: "192.168.1.2",
+			ExternalIP: "203.0.113.1",
+		},
+		Server: &results.Server{Host: "speedtest.example.com"},
+		Result: &results.OoklaResult{URL: "https://www.speedtest.net/result/1"},
+	})
 	result := results.Result{Raw: &raw}
 
 	tests := []struct {
 		name          string
 		authEnabled   bool
 		authorization string
-		wantRaw       bool
+		wantPII       bool
 	}{
-		{name: "hides raw from anonymous users", authEnabled: true},
-		{name: "includes raw for authenticated users", authEnabled: true, authorization: "Bearer valid-token", wantRaw: true},
-		{name: "includes raw when authentication is disabled", wantRaw: true},
+		{name: "removes PII from anonymous users", authEnabled: true},
+		{name: "includes PII for authenticated users", authEnabled: true, authorization: "Bearer valid-token", wantPII: true},
+		{name: "includes PII when authentication is disabled", wantPII: true},
 	}
 
 	for _, tt := range tests {
@@ -51,8 +62,15 @@ func TestConvertIncludesRawOnlyForAuthenticatedUsersOrWhenAuthIsDisabled(t *test
 			if rec.Code != http.StatusNoContent {
 				t.Fatalf("status = %d, want %d", rec.Code, http.StatusNoContent)
 			}
-			if (got.Raw != nil) != tt.wantRaw {
-				t.Errorf("Raw included = %t, want %t", got.Raw != nil, tt.wantRaw)
+			if got.Raw == nil {
+				t.Fatal("raw output was omitted")
+			}
+			if got.Raw.Type != "result" || got.Raw.PacketLoss != 1.5 {
+				t.Errorf("non-PII raw data = %+v, want type and packet loss preserved", got.Raw)
+			}
+			hasPII := got.Raw.Isp != nil || got.Raw.Interface != nil || got.Raw.Server != nil || got.Raw.Result != nil
+			if hasPII != tt.wantPII {
+				t.Errorf("raw output contains PII = %t, want %t", hasPII, tt.wantPII)
 			}
 		})
 	}
