@@ -124,7 +124,7 @@ func notifier(conf *config.Config) (*notifications.Notifier, error) {
 
 	for _, n := range conf.Notifications {
 		if n.Kind == config.Telegram {
-			bot, err := bot.New(string(n.BotToken))
+			bot, err := bot.New(string(n.BotToken), bot.WithSkipGetMe())
 			if err != nil {
 				return nil, fmt.Errorf("build telegram bot: %w", err)
 			}
