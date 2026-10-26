@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/go-telegram/bot"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
@@ -64,7 +65,10 @@ func Bootstrap(
 	}
 
 	resultsRepo := results.NewRepo(db)
-	notifier := notifications.New(conf.Notifications)
+	notifier, err := notifier(conf)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("build notifier: %w", err)
+	}
 
 	workflow, err := ookla.RegisterActor(ookla.RegisterActorOpts{
 		Host:         host,
@@ -110,6 +114,26 @@ func Bootstrap(
 	}
 
 	return http, db, host, nil
+}
+
+func notifier(conf *config.Config) (*notifications.Notifier, error) {
+	opts := notifications.NotifierOpts{
+		Notifications: conf.Notifications,
+		UIURL:         conf.App.UIURL,
+	}
+
+	for _, n := range conf.Notifications {
+		if n.Kind == config.Telegram {
+			bot, err := bot.New(string(n.BotToken))
+			if err != nil {
+				return nil, fmt.Errorf("build telegram bot: %w", err)
+			}
+			opts.Telegram = bot
+			break
+		}
+	}
+
+	return notifications.New(opts), nil
 }
 
 func runtime(db config.Database, conf config.Runtime) (*local.Host, error) {

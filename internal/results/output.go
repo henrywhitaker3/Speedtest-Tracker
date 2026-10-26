@@ -1,6 +1,8 @@
 package results
 
-import "time"
+import (
+	"time"
+)
 
 type Ping struct {
 	Jitter  float64 `json:"jitter"`

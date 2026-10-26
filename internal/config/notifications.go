@@ -6,6 +6,8 @@ import (
 	"os"
 	"slices"
 	"strings"
+
+	"github.com/henrywhitaker3/windowframe/v2/config"
 )
 
 type NotificationPhase string
@@ -15,13 +17,14 @@ type NotificationKind string
 const (
 	Webhook     NotificationKind = "webhook"
 	Healthcheck NotificationKind = "healthcheck"
+	Telegram    NotificationKind = "telegram"
 
 	PreRun  NotificationPhase = "pre-run"
 	PostRun NotificationPhase = "post-run"
 )
 
 var (
-	ValidNotificationKinds  = []NotificationKind{Webhook, Healthcheck}
+	ValidNotificationKinds  = []NotificationKind{Webhook, Healthcheck, Telegram}
 	ValidNotificationPhases = []NotificationPhase{PreRun, PostRun}
 )
 
@@ -29,6 +32,10 @@ type Notification struct {
 	Kind   NotificationKind    `json:"kind"`
 	Phases []NotificationPhase `json:"phases"`
 	URL    string              `json:"url"`
+
+	// Telegram-specific options
+	BotToken config.RedactedString `json:"botToken"`
+	ChatID   config.RedactedString `json:"chatID"`
 }
 
 func (n Notification) validate() error {
@@ -40,11 +47,26 @@ func (n Notification) validate() error {
 			return fmt.Errorf("invalid phase %s", p)
 		}
 	}
-	if !strings.HasPrefix(n.URL, "https://") && !strings.HasPrefix(n.URL, "http://") {
-		return fmt.Errorf("url does not start with http(s):// scheme")
-	}
-	if _, err := url.Parse(n.URL); err != nil {
-		return fmt.Errorf("invalid url: %w", err)
+
+	switch n.Kind {
+	case Telegram:
+		if n.BotToken == "" {
+			return fmt.Errorf("telegram bot token must be set")
+		}
+		if n.ChatID == "" {
+			return fmt.Errorf("telegram chat id must be set")
+		}
+	case Webhook:
+		fallthrough
+	case Healthcheck:
+		if !strings.HasPrefix(n.URL, "https://") && !strings.HasPrefix(n.URL, "http://") {
+			return fmt.Errorf("url does not start with http(s):// scheme")
+		}
+		if _, err := url.Parse(n.URL); err != nil {
+			return fmt.Errorf("invalid url: %w", err)
+		}
+	default:
+		return fmt.Errorf("unknown notification kind %s", n.Kind)
 	}
 	return nil
 }
@@ -59,24 +81,25 @@ func (notificationExtractor) Extract(conf *Config) error {
 
 		kind, hasKind := os.LookupEnv(prefix + "KIND")
 		phasesRaw, hasPhases := os.LookupEnv(prefix + "PHASES")
-		url, hasURL := os.LookupEnv(prefix + "URL")
 
-		if !hasKind && !hasPhases && !hasURL {
+		if !hasKind && !hasPhases {
 			return nil
 		}
-		if !hasKind || !hasPhases || !hasURL {
-			return fmt.Errorf("notification %d must have KIND, PHASES and URL", i)
+		if !hasKind || !hasPhases {
+			return fmt.Errorf("notification %d must have KIND, PHASES", i)
 		}
 
 		phases := []NotificationPhase{}
-		for _, p := range strings.Split(phasesRaw, ",") {
+		for p := range strings.SplitSeq(phasesRaw, ",") {
 			phases = append(phases, NotificationPhase(p))
 		}
 
 		notification := Notification{
-			Kind:   NotificationKind(kind),
-			Phases: phases,
-			URL:    url,
+			Kind:     NotificationKind(kind),
+			Phases:   phases,
+			URL:      os.Getenv(prefix + "URL"),
+			BotToken: config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_BOT_TOKEN")),
+			ChatID:   config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_CHAT_ID")),
 		}
 		if err := notification.validate(); err != nil {
 			return fmt.Errorf("notification %d: %w", i, err)

@@ -13,7 +13,9 @@ type NotificationError struct {
 
 func (ne *NotificationError) push(n config.Notification, err error) {
 	ne.errors = append(ne.errors, err)
-	ne.redactions = append(ne.redactions, n.URL)
+	if n.URL != "" {
+		ne.redactions = append(ne.redactions, n.URL)
+	}
 }
 
 func (ne NotificationError) Error() string {

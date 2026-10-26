@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/units"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
@@ -93,15 +94,15 @@ func latestResponse(c *echo.Context, result *results.Result) *LatestResponse {
 	}
 
 	if result.Download != nil && *result.Download != 0 {
-		bits := bytesToBits(*result.Download)
+		bits := units.BytesToBits(*result.Download)
 		response.DownloadBits = &bits
-		human := formatBits(bits) + "ps"
+		human := units.BitsHuman(bits)
 		response.DownloadBitsHuman = &human
 	}
 	if result.Upload != nil && *result.Upload != 0 {
-		bits := bytesToBits(*result.Upload)
+		bits := units.BytesToBits(*result.Upload)
 		response.UploadBits = &bits
-		human := formatBits(bits) + "ps"
+		human := units.BitsHuman(bits)
 		response.UploadBitsHuman = &human
 	}
 	if result.Raw != nil {
@@ -129,21 +130,6 @@ func resultStatus(result *results.Result) string {
 		return "completed"
 	}
 	return "running"
-}
-
-func bytesToBits(bytes int64) int64 {
-	return bytes * 8
-}
-
-func formatBits(bits int64) string {
-	units := []string{"b", "kb", "Mb", "Gb", "Tb"}
-	power := int(math.Floor(math.Log(float64(bits)) / math.Log(1000)))
-	if bits == 0 {
-		power = 0
-	}
-	power = min(power, len(units)-1)
-
-	return fmt.Sprintf("%.2f %s", float64(bits)/math.Pow(1000, float64(power)), units[power])
 }
 
 func formatFileSize(bytes int) string {

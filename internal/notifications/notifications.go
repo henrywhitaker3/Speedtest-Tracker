@@ -3,6 +3,7 @@ package notifications
 
 import (
 	"context"
+	"fmt"
 	"slices"
 	"time"
 
@@ -10,25 +11,16 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 )
 
-type telegramSender func(
-	ctx context.Context,
-	botToken string,
-	chatID string,
-	uiURL string,
-	phase Phase,
-	result results.Result,
-) error
-
 type NotifierOpts struct {
 	UIURL         string
 	Notifications config.Notifications
-	Telegram      telegramSender
+	Telegram      telegramMessageSender
 }
 
 type Notifier struct {
 	uiURL         string
 	notifications config.Notifications
-	telegram      telegramSender
+	telegram      telegramMessageSender
 }
 
 func New(opts NotifierOpts) *Notifier {
@@ -66,6 +58,12 @@ func (no Notifier) Notify(ctx context.Context, phase Phase, result results.Resul
 			}
 		case config.Webhook:
 			if err := sendWebhook(nctx, n.URL, result); err != nil {
+				errors.push(n, err)
+			}
+		case config.Telegram:
+			if no.telegram == nil {
+				errors.push(n, fmt.Errorf("telegram sender is not configured"))
+			} else if err := SendTelegram(nctx, no.telegram, n, no.uiURL, phase, result); err != nil {
 				errors.push(n, err)
 			}
 		}
