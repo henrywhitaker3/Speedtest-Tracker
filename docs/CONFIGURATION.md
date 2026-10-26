@@ -33,15 +33,17 @@ The Speedtest binary receives Ookla's EULA and GDPR flags when it runs. `ACCEPT_
 
 ## Notifications
 
-Configure each notification with a zero-based, contiguous index. Every notification requires all three variables:
+Configure each notification with a zero-based, contiguous index. Every notification requires its kind and phases:
 
 | Variable | Description |
 | --- | --- |
-| `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck` or `webhook`. |
+| `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck`, `webhook`, or `telegram`. |
 | `NOTIFICATIONS_<index>_PHASES` | Comma-separated phases: `pre-run`, `post-run`, or both. |
-| `NOTIFICATIONS_<index>_URL` | Destination URL. |
+| `NOTIFICATIONS_<index>_URL` | Destination URL, required for `healthcheck` and `webhook`. |
+| `NOTIFICATIONS_TELEGRAM_BOT_TOKEN` | Telegram bot token, required when a `telegram` notification is configured. |
+| `NOTIFICATIONS_TELEGRAM_CHAT_ID` | Telegram chat ID, required when a `telegram` notification is configured. |
 
-For example, this configures a Healthchecks.io notification before and after the speedtest, plus a webhook after it finishes:
+For example, this configures a Healthchecks.io notification before and after the speedtest, a webhook after it finishes, and Telegram messages before and after each test:
 
 ```dotenv
 NOTIFICATIONS_0_KIND=healthcheck
@@ -51,7 +53,14 @@ NOTIFICATIONS_0_URL=https://hc-ping.com/your-check-id
 NOTIFICATIONS_1_KIND=webhook
 NOTIFICATIONS_1_PHASES=post-run
 NOTIFICATIONS_1_URL=https://example.com/speedtest-complete
+
+NOTIFICATIONS_2_KIND=telegram
+NOTIFICATIONS_2_PHASES=pre-run,post-run
+NOTIFICATIONS_TELEGRAM_BOT_TOKEN=123456:replace-with-your-bot-token
+NOTIFICATIONS_TELEGRAM_CHAT_ID=-1001234567890
 ```
+
+Telegram credentials are shared by every Telegram notification. The post-run message contains the result measurements or failure reason and links to the result in the UI.
 
 `NOTIFICATIONS_HEALTHCHECKS` remains supported for compatibility. It creates one `healthcheck` notification for both `pre-run` and `post-run` phases.
 

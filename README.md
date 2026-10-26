@@ -40,6 +40,7 @@ services:
       - "8080:8080"
     env_file: .env
     environment:
+      APP_URL: "https://speedtest.example.org"
       ACCEPT_EULA: "true"
       DB_DRIVER: sqlite
       DB_URL: /data/speedtest-tracker.db
