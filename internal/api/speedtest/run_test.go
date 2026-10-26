@@ -115,15 +115,15 @@ func TestRunEndpointAuthentication(t *testing.T) {
 			}).Handler()
 
 			e := echo.New()
-			e.Use(authapi.SessionMiddleware())
-			e.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
+			e.Use(authapi.Middleware(authapi.MiddlewareOpts{
+				Enabled:   true,
 				Service:   service,
 				TokenRepo: tokenRepo,
 				Routes: authapi.ProtectedRoutes{{
 					Method: http.MethodPost,
 					Path:   "/v1/speedtest/run",
 				}},
-			}))
+			})...)
 			e.POST("/v1/speedtest/run", func(c *echo.Context) error {
 				response, err := run(c, nil)
 				if err != nil {

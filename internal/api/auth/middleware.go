@@ -18,17 +18,18 @@ import (
 const (
 	sessionCookieName = "__Host-speedtest-session"
 
-	authContextKey  = "auth"
-	adminContextKey = "admin"
+	authEnabledContextKey   = "auth-enabled"
+	authenticatedContextKey = "authenticated"
+	adminContextKey         = "admin"
 )
 
 func AddContext(authEnabled bool) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
 			if authEnabled {
-				c.Set(authContextKey, true)
+				c.Set(authEnabledContextKey, true)
 			} else {
-				c.Set(authContextKey, false)
+				c.Set(authEnabledContextKey, false)
 			}
 			return next(c)
 		}
@@ -36,14 +37,12 @@ func AddContext(authEnabled bool) echo.MiddlewareFunc {
 }
 
 func IsAdmin(c *echo.Context) bool {
-	authEnabled, configured := c.Get(authContextKey).(bool)
-	if !configured {
-		return false
+	if !authEnabled(c) {
+		return true
 	}
 
-	// If auth is disabled, allow anyone to do admin things
-	if !authEnabled {
-		return true
+	if !IsAuthenticated(c) {
+		return false
 	}
 
 	// If auth is enabled (or this is a context assembled by a focused handler
@@ -53,6 +52,23 @@ func IsAdmin(c *echo.Context) bool {
 	}
 
 	return false
+}
+
+func authEnabled(c *echo.Context) bool {
+	authEnabled, configured := c.Get(authEnabledContextKey).(bool)
+	if !configured {
+		return false
+	}
+	return authEnabled
+}
+
+func IsAuthenticated(c *echo.Context) bool {
+	if !authEnabled(c) {
+		return true
+	}
+
+	authenticated, ok := c.Get(authenticatedContextKey).(bool)
+	return authenticated && ok
 }
 
 func SessionMiddleware() echo.MiddlewareFunc {
@@ -112,6 +128,38 @@ type AuthMiddlewareOpts struct {
 	AdminGroup string
 }
 
+// MiddlewareOpts configures the API authentication middleware stack.
+type MiddlewareOpts struct {
+	Enabled bool
+
+	Service     actorInvoker
+	TokenRepo   tokenRepo
+	AdminGroup  string
+	Routes      ProtectedRoutes
+	AdminRoutes ProtectedRoutes
+}
+
+// Middleware returns the authentication middleware in the order used by the
+// API. Authentication context is always available; request authentication and
+// administrator authorisation are only needed when auth is enabled.
+func Middleware(opts MiddlewareOpts) []echo.MiddlewareFunc {
+	middleware := []echo.MiddlewareFunc{AddContext(opts.Enabled)}
+	if !opts.Enabled {
+		return middleware
+	}
+
+	return append(middleware,
+		SessionMiddleware(),
+		AuthMiddleware(AuthMiddlewareOpts{
+			Service:    opts.Service,
+			TokenRepo:  opts.TokenRepo,
+			AdminGroup: opts.AdminGroup,
+			Routes:     opts.Routes,
+		}),
+		Admin(AdminOpts{Routes: opts.AdminRoutes}),
+	)
+}
+
 func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
@@ -126,6 +174,10 @@ func AuthMiddleware(opts AuthMiddlewareOpts) echo.MiddlewareFunc {
 			} else {
 				span.SetAttributes(attribute.String("auth.method", "session"))
 				err = handleSessionAuth(ctx, c, opts.Service, opts.AdminGroup)
+			}
+
+			if err == nil {
+				c.Set(authenticatedContextKey, true)
 			}
 
 			if !opts.Routes.Contains(c) {

@@ -45,7 +45,7 @@ func convert(c *echo.Context, r results.Result) Result {
 		Complete:   r.Complete,
 	}
 
-	if auth.IsAdmin(c) {
+	if auth.IsAuthenticated(c) {
 		out.Raw = r.Raw
 	}
 

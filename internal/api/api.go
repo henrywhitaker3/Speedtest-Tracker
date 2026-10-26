@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/compat"
 	configapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/restore"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/speedtest"
@@ -56,18 +57,15 @@ func New(
 	h.Use(mw.LoggerAt(slog.LevelDebug))
 	h.Use(corsMiddleware(conf.App.UIURL))
 	h.Use(staticMiddleware(conf.App.UIDir))
-	h.Use(authapi.AddContext(conf.Auth.Enabled))
-	if conf.Auth.Enabled {
-		h.Use(authapi.SessionMiddleware())
-		h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
-			Service:    host.Service(),
-			TokenRepo:  auth.NewRepo(db),
-			AdminGroup: conf.Auth.AdminGroup,
-			Routes:     authRoutes(),
-		}))
-		h.Use(authapi.Admin(authapi.AdminOpts{
-			Routes: adminRoutes(),
-		}))
+	for _, middleware := range authapi.Middleware(authapi.MiddlewareOpts{
+		Enabled:     conf.Auth.Enabled,
+		Service:     host.Service(),
+		TokenRepo:   auth.NewRepo(db),
+		AdminGroup:  conf.Auth.AdminGroup,
+		Routes:      authRoutes(),
+		AdminRoutes: adminRoutes(),
+	}) {
+		h.Use(middleware)
 	}
 	if err := registerRoutes(h, db, host, runner, conf); err != nil {
 		return nil, err
@@ -150,7 +148,7 @@ func staticMiddleware(root string) echo.MiddlewareFunc {
 		Skipper: func(c *echo.Context) bool {
 			path := c.Request().URL.Path
 			return path == "/v1" || strings.HasPrefix(path, "/v1/") ||
-				strings.HasPrefix(path, "/docs")
+				strings.HasPrefix(path, "/docs") || strings.HasPrefix(path, "/api")
 		},
 	})
 }
@@ -170,6 +168,7 @@ func registerRoutes(
 	}
 	configapi.RegisterRoutes(h, conf)
 	restore.Register(h, db)
+	compat.Register(h, db)
 	return nil
 }
 

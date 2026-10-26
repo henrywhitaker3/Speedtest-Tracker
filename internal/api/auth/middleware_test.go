@@ -47,19 +47,17 @@ func TestAdminMiddleware(t *testing.T) {
 			}
 			called := false
 			e := echo.New()
-			e.Use(AddContext(true))
-			e.Use(AuthMiddleware(AuthMiddlewareOpts{
-				Service:    service,
-				AdminGroup: "speedtest-admins",
-				Routes: ProtectedRoutes{{
-					Method: http.MethodGet,
-					Path:   "/admin-only",
-				}},
-			}))
-			e.Use(Admin(AdminOpts{Routes: ProtectedRoutes{{
+			routes := ProtectedRoutes{{
 				Method: http.MethodGet,
 				Path:   "/admin-only",
-			}}}))
+			}}
+			e.Use(Middleware(MiddlewareOpts{
+				Enabled:     true,
+				Service:     service,
+				AdminGroup:  "speedtest-admins",
+				Routes:      routes,
+				AdminRoutes: routes,
+			})...)
 			e.GET("/admin-only", func(c *echo.Context) error {
 				called = true
 				return c.NoContent(http.StatusNoContent)
@@ -86,18 +84,16 @@ func TestAdminMiddlewareRejectsAPIToken(t *testing.T) {
 	tokenRepo := &adminTokenRepoStub{}
 	called := false
 	e := echo.New()
-	e.Use(AddContext(true))
-	e.Use(AuthMiddleware(AuthMiddlewareOpts{
-		TokenRepo: tokenRepo,
-		Routes: ProtectedRoutes{{
-			Method: http.MethodGet,
-			Path:   "/admin-only",
-		}},
-	}))
-	e.Use(Admin(AdminOpts{Routes: ProtectedRoutes{{
+	routes := ProtectedRoutes{{
 		Method: http.MethodGet,
 		Path:   "/admin-only",
-	}}}))
+	}}
+	e.Use(Middleware(MiddlewareOpts{
+		Enabled:     true,
+		TokenRepo:   tokenRepo,
+		Routes:      routes,
+		AdminRoutes: routes,
+	})...)
 	e.GET("/admin-only", func(c *echo.Context) error {
 		called = true
 		return c.NoContent(http.StatusNoContent)
@@ -144,15 +140,15 @@ func TestAuthMiddlewareOptionallyAuthenticatesPublicRoute(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := echo.New()
-			e.Use(AddContext(true))
-			e.Use(AuthMiddleware(AuthMiddlewareOpts{
+			e.Use(Middleware(MiddlewareOpts{
+				Enabled: true,
 				Service: &actorInvokerStub{
 					envelope: sessionEnvelope{
 						value: authactor.AuthenticateResult{Groups: tt.groups},
 					},
 				},
 				AdminGroup: "speedtest-admins",
-			}))
+			})...)
 			e.GET("/results", func(c *echo.Context) error {
 				if got := IsAdmin(c); got != tt.wantAdmin {
 					t.Errorf("IsAdmin() = %t, want %t", got, tt.wantAdmin)

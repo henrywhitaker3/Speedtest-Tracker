@@ -57,20 +57,19 @@ func TestPurgeEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 			repo := &purgeRepoStub{}
 			service := &authenticatedSessionInvokerStub{groups: tt.groups}
 			h := windowhttp.New(windowhttp.HTTPOpts{})
-			h.Use(authapi.AddContext(true))
-			h.Use(authapi.SessionMiddleware())
-			h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
-				Service:    service,
-				AdminGroup: "administrators",
-				Routes: authapi.ProtectedRoutes{{
-					Method: http.MethodDelete,
-					Path:   "/v1/speedtest/purge",
-				}},
-			}))
-			h.Use(authapi.Admin(authapi.AdminOpts{Routes: authapi.ProtectedRoutes{{
+			routes := authapi.ProtectedRoutes{{
 				Method: http.MethodDelete,
 				Path:   "/v1/speedtest/purge",
-			}}}))
+			}}
+			for _, middleware := range authapi.Middleware(authapi.MiddlewareOpts{
+				Enabled:     true,
+				Service:     service,
+				AdminGroup:  "administrators",
+				Routes:      routes,
+				AdminRoutes: routes,
+			}) {
+				h.Use(middleware)
+			}
 			h.Register(&purgeHandler{repo: repo})
 
 			req := httptest.NewRequest(http.MethodDelete, "/v1/speedtest/purge", nil)

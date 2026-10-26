@@ -13,14 +13,18 @@ import (
 func TestListTokensHandlerRequiresAuthentication(t *testing.T) {
 	repo := &listTokensRepoStub{}
 	h := windowhttp.New(windowhttp.HTTPOpts{})
-	h.Use(SessionMiddleware())
-	h.Use(AuthMiddleware(AuthMiddlewareOpts{
-		TokenRepo: repo,
-		Routes: ProtectedRoutes{{
-			Method: http.MethodGet,
-			Path:   "/v1/auth/tokens",
-		}},
-	}))
+	routes := ProtectedRoutes{{
+		Method: http.MethodGet,
+		Path:   "/v1/auth/tokens",
+	}}
+	for _, middleware := range Middleware(MiddlewareOpts{
+		Enabled:     true,
+		TokenRepo:   repo,
+		Routes:      routes,
+		AdminRoutes: routes,
+	}) {
+		h.Use(middleware)
+	}
 	h.Register(&listTokensHandler{repo: repo})
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/auth/tokens", nil)
