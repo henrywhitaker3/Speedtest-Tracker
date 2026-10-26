@@ -31,11 +31,11 @@ var (
 type Notification struct {
 	Kind   NotificationKind    `json:"kind"`
 	Phases []NotificationPhase `json:"phases"`
-	URL    string              `json:"url"`
+	URL    string              `json:"url,omitempty"`
 
 	// Telegram-specific options
-	BotToken config.RedactedString `json:"botToken"`
-	ChatID   config.RedactedString `json:"chatID"`
+	BotToken config.RedactedString `json:"botToken,omitempty"`
+	ChatID   config.RedactedString `json:"chatID,omitempty"`
 }
 
 func (n Notification) validate() error {

@@ -38,9 +38,9 @@ func SendTelegram(
 	}
 
 	params := &bot.SendMessageParams{
-		ChatID:    n.ChatID,
+		ChatID:    string(n.ChatID),
 		Text:      msg,
-		ParseMode: models.ParseModeMarkdown,
+		ParseMode: models.ParseModeMarkdownV1,
 	}
 
 	if _, err := sender.SendMessage(ctx, params); err != nil {
@@ -73,5 +73,5 @@ func buildErrorMessage(r results.Result, uiURL string) string {
 }
 
 func buildResultsURL(uiURL string, r results.Result) string {
-	return fmt.Sprintf("%s/results/%s", uiURL, r.ID.String())
+	return fmt.Sprintf("[See result](%s/results/%s)", uiURL, r.ID.String())
 }

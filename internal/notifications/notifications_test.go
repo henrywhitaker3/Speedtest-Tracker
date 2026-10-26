@@ -14,7 +14,6 @@ import (
 	"github.com/go-telegram/bot/models"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
-	wconf "github.com/henrywhitaker3/windowframe/v2/config"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/stretchr/testify/require"
 )
@@ -161,26 +160,26 @@ func TestNotifierSendsTelegramMessages(t *testing.T) {
 			name:   "sends a starting message before a speedtest",
 			phase:  PreRun,
 			result: result,
-			want:   "*Starting speedtest*\n" + resultURL,
+			want:   "*Starting speedtest*\n[See result](" + resultURL + ")",
 		},
 		{
 			name:   "sends completed measurements after a speedtest",
 			phase:  PostRun,
 			result: result,
-			want:   "*New speedtest*\nPing: *7.50 ms*\nDownload: *80.00 Mbps*\nUpload: *40.00 Mbps*\n" + resultURL,
+			want:   "*New speedtest*\nPing: *7.50 ms*\nDownload: *80.00 Mbps*\nUpload: *40.00 Mbps*\n[See result](" + resultURL + ")",
 		},
 		{
 			name:   "sends an error after a failed speedtest",
 			phase:  PostRun,
 			result: failedResult,
-			want:   "*Failed speedtest*\nError: speedtest failed\n" + resultURL,
+			want:   "*Failed speedtest*\nError: speedtest failed\n[See result](" + resultURL + ")",
 		},
 		{
 			name:    "returns a delivery error",
 			phase:   PreRun,
 			result:  result,
 			sendErr: sendErr,
-			want:    "*Starting speedtest*\n" + resultURL,
+			want:    "*Starting speedtest*\n[See result](" + resultURL + ")",
 			wantErr: true,
 		},
 	}
@@ -207,8 +206,8 @@ func TestNotifierSendsTelegramMessages(t *testing.T) {
 
 			require.Len(t, sender.params, 1)
 			params := sender.params[0]
-			require.Equal(t, "123456", string(params.ChatID.(wconf.RedactedString)))
-			require.Equal(t, models.ParseModeMarkdown, params.ParseMode)
+			require.Equal(t, "123456", params.ChatID)
+			require.Equal(t, models.ParseModeMarkdownV1, params.ParseMode)
 			require.Equal(t, tt.want, params.Text)
 		})
 	}
