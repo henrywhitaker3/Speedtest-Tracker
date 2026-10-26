@@ -13,14 +13,18 @@ import (
 func TestDeleteTokenHandlerRequiresAuthentication(t *testing.T) {
 	repo := &deleteTokenRepoStub{}
 	h := windowhttp.New(windowhttp.HTTPOpts{})
-	h.Use(SessionMiddleware())
-	h.Use(AuthMiddleware(AuthMiddlewareOpts{
-		TokenRepo: repo,
-		Routes: ProtectedRoutes{{
-			Method: http.MethodDelete,
-			Path:   "/v1/auth/tokens/:id",
-		}},
-	}))
+	routes := ProtectedRoutes{{
+		Method: http.MethodDelete,
+		Path:   "/v1/auth/tokens/:id",
+	}}
+	for _, middleware := range Middleware(MiddlewareOpts{
+		Enabled:     true,
+		TokenRepo:   repo,
+		Routes:      routes,
+		AdminRoutes: routes,
+	}) {
+		h.Use(middleware)
+	}
 	h.Register(&deleteHandler{repo: repo})
 
 	req := httptest.NewRequest(

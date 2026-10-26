@@ -66,20 +66,19 @@ func TestDeleteEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &resultDeleteRepoStub{}
 			h := windowhttp.New(windowhttp.HTTPOpts{})
-			h.Use(authapi.AddContext(true))
-			h.Use(authapi.SessionMiddleware())
-			h.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
-				Service:    &authenticatedSessionInvokerStub{groups: tt.groups},
-				AdminGroup: "administrators",
-				Routes: authapi.ProtectedRoutes{{
-					Method: http.MethodDelete,
-					Path:   "/v1/speedtest/:id",
-				}},
-			}))
-			h.Use(authapi.Admin(authapi.AdminOpts{Routes: authapi.ProtectedRoutes{{
+			routes := authapi.ProtectedRoutes{{
 				Method: http.MethodDelete,
 				Path:   "/v1/speedtest/:id",
-			}}}))
+			}}
+			for _, middleware := range authapi.Middleware(authapi.MiddlewareOpts{
+				Enabled:     true,
+				Service:     &authenticatedSessionInvokerStub{groups: tt.groups},
+				AdminGroup:  "administrators",
+				Routes:      routes,
+				AdminRoutes: routes,
+			}) {
+				h.Use(middleware)
+			}
 			h.Register(&deleteHandler{repo: repo})
 
 			req := httptest.NewRequest(http.MethodDelete, "/v1/speedtest/"+uuid.MustOrdered().String(), nil)

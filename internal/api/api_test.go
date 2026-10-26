@@ -84,16 +84,13 @@ func TestNotificationsEndpointAccess(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			called := false
 			e := echo.New()
-			if tt.authEnabled {
-				e.Use(authapi.AddContext(true))
-				e.Use(authapi.SessionMiddleware())
-				e.Use(authapi.AuthMiddleware(authapi.AuthMiddlewareOpts{
-					Service:    &notificationsSessionServiceStub{groups: tt.groups},
-					AdminGroup: "speedtest-admins",
-					Routes:     authRoutes(),
-				}))
-				e.Use(authapi.Admin(authapi.AdminOpts{Routes: adminRoutes()}))
-			}
+			e.Use(authapi.Middleware(authapi.MiddlewareOpts{
+				Enabled:     tt.authEnabled,
+				Service:     &notificationsSessionServiceStub{groups: tt.groups},
+				AdminGroup:  "speedtest-admins",
+				Routes:      authRoutes(),
+				AdminRoutes: adminRoutes(),
+			})...)
 			e.GET("/v1/config/notifications", func(c *echo.Context) error {
 				called = true
 				return c.NoContent(http.StatusNoContent)
