@@ -32,7 +32,12 @@ outputs = [".output/public/_nuxt/**"]
 [tasks.serve]
 description = "Run the app"
 depends = ["dev"]
-run = "APP_UI_DIR=frontend/.output/public go run main.go | jq"
+run = '''
+APP_UI_DIR=frontend/.output/public go run main.go | (
+  trap '' INT TERM
+  jq
+)
+'''
 
 [tasks.psk]
 description = "Generate a runtime PSK"
