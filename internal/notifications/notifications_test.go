@@ -1,6 +1,7 @@
 package notifications
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,15 +10,16 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
-	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNotifierNotify(t *testing.T) {
-	result := results.Result{BaseModel: database.BaseModel{ID: uuid.MustOrdered()}, Complete: true}
+	result := results.Result{ID: uuid.MustOrdered(), Complete: true}
 	failedResult := result
 	failedMessage := "speedtest failed"
 	failedResult.Error = &failedMessage
@@ -107,7 +109,11 @@ func TestNotifierNotify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			server := newNotificationServer(t, tt.statuses)
-			err := New(tt.notifications(server.URL())).Notify(t.Context(), tt.phase, tt.result)
+			err := New(NotifierOpts{Notifications: tt.notifications(server.URL())}).Notify(
+				t.Context(),
+				tt.phase,
+				tt.result,
+			)
 
 			if tt.wantErr {
 				require.Error(t, err)
@@ -122,6 +128,87 @@ func TestNotifierNotify(t *testing.T) {
 				require.Equal(t, "application/json", request.contentType)
 				require.Equal(t, tt.result.ID, request.result.ID)
 			}
+		})
+	}
+}
+
+func TestNotifierSendsTelegramMessages(t *testing.T) {
+	ping := 7.5
+	download := int64(10_000_000)
+	upload := int64(5_000_000)
+	result := results.Result{
+		ID:       uuid.MustOrdered(),
+		Ping:     &ping,
+		Download: &download,
+		Upload:   &upload,
+	}
+	failedResult := result
+	failure := "speedtest failed"
+	failedResult.Error = &failure
+	resultURL := "https://speedtest.example/results/" + result.ID.String()
+	sendErr := fmt.Errorf("telegram unavailable")
+
+	tests := []struct {
+		name    string
+		phase   Phase
+		result  results.Result
+		sendErr error
+		want    string
+		wantErr bool
+	}{
+		{
+			name:   "sends a starting message before a speedtest",
+			phase:  PreRun,
+			result: result,
+			want:   "*Starting speedtest*\n[See result](" + resultURL + ")",
+		},
+		{
+			name:   "sends completed measurements after a speedtest",
+			phase:  PostRun,
+			result: result,
+			want:   "*New speedtest*\nPing: *7.50 ms*\nDownload: *80.00 Mbps*\nUpload: *40.00 Mbps*\n[See result](" + resultURL + ")",
+		},
+		{
+			name:   "sends an error after a failed speedtest",
+			phase:  PostRun,
+			result: failedResult,
+			want:   "*Failed speedtest*\nError: speedtest failed\n[See result](" + resultURL + ")",
+		},
+		{
+			name:    "returns a delivery error",
+			phase:   PreRun,
+			result:  result,
+			sendErr: sendErr,
+			want:    "*Starting speedtest*\n[See result](" + resultURL + ")",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sender := &telegramSenderStub{err: tt.sendErr}
+			notifier := New(NotifierOpts{
+				UIURL: "https://speedtest.example",
+				Notifications: config.Notifications{{
+					Kind:   config.Telegram,
+					Phases: []config.NotificationPhase{notificationPhase(tt.phase)},
+					ChatID: "123456",
+				}},
+				Telegram: sender,
+			})
+
+			err := notifier.Notify(t.Context(), tt.phase, tt.result)
+			if tt.wantErr {
+				require.ErrorContains(t, err, sendErr.Error())
+			} else {
+				require.NoError(t, err)
+			}
+
+			require.Len(t, sender.params, 1)
+			params := sender.params[0]
+			require.Equal(t, "123456", params.ChatID)
+			require.Equal(t, models.ParseModeMarkdownV1, params.ParseMode)
+			require.Equal(t, tt.want, params.Text)
 		})
 	}
 }
@@ -146,6 +233,27 @@ func healthcheck(url string, phases ...config.NotificationPhase) config.Notifica
 		Phases: phases,
 		URL:    url,
 	}}
+}
+
+func notificationPhase(phase Phase) config.NotificationPhase {
+	if phase == PreRun {
+		return config.PreRun
+	}
+	return config.PostRun
+}
+
+type telegramSenderStub struct {
+	params []*bot.SendMessageParams
+	err    error
+}
+
+func (s *telegramSenderStub) SendMessage(
+	_ context.Context,
+	params *bot.SendMessageParams,
+) (*models.Message, error) {
+	copy := *params
+	s.params = append(s.params, &copy)
+	return &models.Message{}, s.err
 }
 
 type notificationRequest struct {

@@ -6,6 +6,7 @@ require (
 	github.com/adhocore/gronx v1.20.5
 	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-playground/validator/v10 v10.30.5
+	github.com/go-telegram/bot v1.27.0
 	github.com/henrywhitaker3/windowframe/v2 v2.6.9
 	github.com/italypaleale/francis v0.1.2
 	github.com/joho/godotenv v1.5.1
