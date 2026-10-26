@@ -67,6 +67,29 @@ export type HttpErrorJson = {
     message?: string;
 };
 
+export type RestoreLegacyResult = {
+    created_at?: RestoreLegcayTime;
+    download?: number;
+    failed?: number;
+    id?: number;
+    ping?: number;
+    server_host?: string;
+    server_id?: number;
+    server_name?: string;
+    updated_at?: RestoreLegcayTime;
+    upload?: number;
+    url?: string;
+};
+
+export type RestoreLegcayTime = {
+    [key: string]: unknown;
+};
+
+export type RestoreRestoreResponse = {
+    restored?: number;
+    skipped?: number;
+};
+
 export type ResultsStat = {
     created_at?: string;
     download?: number | null;
@@ -329,6 +352,45 @@ export type GetNotificationsResponses = {
 };
 
 export type GetNotificationsResponse = GetNotificationsResponses[keyof GetNotificationsResponses];
+
+export type RestoreJsonData = {
+    body?: Array<RestoreLegacyResult>;
+    path?: never;
+    query?: never;
+    url: '/v1/restore/json';
+};
+
+export type RestoreJsonErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type RestoreJsonError = RestoreJsonErrors[keyof RestoreJsonErrors];
+
+export type RestoreJsonResponses = {
+    /**
+     * OK
+     */
+    200: RestoreRestoreResponse;
+};
+
+export type RestoreJsonResponse = RestoreJsonResponses[keyof RestoreJsonResponses];
 
 export type ListResultsData = {
     body?: never;

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
+import type { CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RestoreJsonData, RestoreJsonErrors, RestoreJsonResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -53,6 +53,20 @@ export const getConfig = <ThrowOnError extends boolean = false>(options?: Option
  * Show configured notification channels
  */
 export const getNotifications = <ThrowOnError extends boolean = false>(options?: Options<GetNotificationsData, ThrowOnError>): RequestResult<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError>({ url: '/v1/config/notifications', ...options });
+
+/**
+ * Restore legacy backup
+ *
+ * Restore legacy speedtest json backups
+ */
+export const restoreJson = <ThrowOnError extends boolean = false>(options?: Options<RestoreJsonData, ThrowOnError>): RequestResult<RestoreJsonResponses, RestoreJsonErrors, ThrowOnError> => (options?.client ?? client).post<RestoreJsonResponses, RestoreJsonErrors, ThrowOnError>({
+    url: '/v1/restore/json',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
 
 /**
  * List results

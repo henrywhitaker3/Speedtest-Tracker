@@ -8,7 +8,7 @@ git-cliff = "v2.14.2"
 
 [tasks.dev]
 description = "Bring up dev things"
-run = "docker compose up -d jaeger"
+run = "docker compose up -d jaeger postgres"
 
 [tasks.build-ui]
 description = "Build the static UI served by the API"
