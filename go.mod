@@ -8,7 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.5
 	github.com/go-telegram/bot v1.27.0
 	github.com/henrywhitaker3/windowframe/v2 v2.6.9
-	github.com/italypaleale/francis v0.1.2
+	github.com/italypaleale/francis v0.2.0
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.2
 	github.com/orandin/slog-gorm v1.4.0
@@ -55,7 +55,7 @@ require (
 	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/henrywhitaker3/ctxgen v1.0.1 // indirect
 	github.com/italypaleale/go-kit v1.2.5 // indirect
-	github.com/italypaleale/go-sql-utils v0.3.11 // indirect
+	github.com/italypaleale/go-sql-utils v0.3.12 // indirect
 	github.com/jackc/pgerrcode v0.0.0-20250907135507-afb5586c32a6 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -79,7 +79,7 @@ require (
 	github.com/prometheus/otlptranslator v1.0.0 // indirect
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.62.0 // indirect
+	github.com/quic-go/quic-go v0.63.0 // indirect
 	github.com/quic-go/webtransport-go v0.13.0 // indirect
 	github.com/redis/rueidis v1.0.79 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
