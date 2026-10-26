@@ -1,3 +1,20 @@
+## [2.5.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.5..v2.5.0) - 2026-10-26
+
+### 🚀 Features
+
+- *(result)* Add api handler to restore legacy json backups - ([1baad7e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1baad7e95f022540fe42c67c80beacd0c0a80d20))
+- *(results)* Add function to batch restores of results with de-duplication - ([8c79de8](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8c79de8e40e06d98caa18790d9daf003591b02c9))
+
+### 🐛 Bug Fixes
+
+- *(results)* Skip restoring results with a zero created_at field - ([aac576b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/aac576bf8d05394e92a08b2f49e5f7c588c4e16b))
+- *(results)* Chunk existing timestamp lookup - ([95c4bd6](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/95c4bd66fb0821baab213b5ec25ca84c4166898a))
+- *(ui)* Add a restore action to the settings page - ([b939131](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b9391319f33bf64ffb894046fcb0538c1543d7e2))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([3f895b3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3f895b300fce5eb3a8aa9d8c93f9211adcb7c6d4))
+- Update readme with example docker compose - ([1ecfbe5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1ecfbe5867e82abb89d2ccee557141cbac5cc16a))
 ## [2.4.5](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.4..v2.4.5) - 2026-10-25
 
 ### 🐛 Bug Fixes
