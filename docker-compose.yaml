@@ -44,5 +44,12 @@ services:
       - "4317:4317" # OTLP/gRPC
       - "4318:4318" # OTLP/HTTP
 
+  francis:
+    image: ghcr.io/italypaleale/francis:0.2.0
+    entrypoint: francis
+    command: dashboard -bind 0.0.0.0
+    ports:
+      - 7402:7402
+
 volumes:
   postgres:

@@ -154,12 +154,25 @@ func runtime(db config.Database, conf config.Runtime) (*local.Host, error) {
 		})
 	}
 
-	host, err := local.NewHost(
+	hostOptions := []local.HostOption{
 		local.WithAddress(net.JoinHostPort(hostname, "7157")),
 		local.WithRuntimePSKs([]byte(conf.PSK)),
 		local.WithLogger(slog.With("component", "runtime")),
 		dbOpt,
-	)
+	}
+	if len(conf.ManagementTokens) > 0 {
+		mgmtToken := []string{}
+		for _, t := range conf.ManagementTokens {
+			mgmtToken = append(mgmtToken, string(t))
+		}
+		hostOptions = append(hostOptions, local.WithManagementAPI(local.ManagementOptions{
+			Bind:             ":7401",
+			ManagementTokens: mgmtToken,
+			AllowedOrigins:   conf.ManagementAllowedOrigins,
+		}))
+	}
+
+	host, err := local.NewHost(hostOptions...)
 	if err != nil {
 		return nil, fmt.Errorf("init host: %w", err)
 	}

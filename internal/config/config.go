@@ -26,8 +26,10 @@ type Database struct {
 }
 
 type Runtime struct {
-	Hostname string                `env:"HOSTNAME"`
-	PSK      config.RedactedString `env:"PSK"`
+	Hostname                 string                  `env:"HOSTNAME"`
+	PSK                      config.RedactedString   `env:"PSK"`
+	ManagementTokens         []config.RedactedString `env:"MANAGEMENT_TOKENS"`
+	ManagementAllowedOrigins []string                `env:"MANAGEMENT_ALLOWED_ORIGINS,default=http://localhost:7402"`
 }
 
 type Auth struct {
