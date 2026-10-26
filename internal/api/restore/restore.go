@@ -61,8 +61,15 @@ func (r *restoreHandler) Handler() handlers.Handler[[]LegacyResult, RestoreRespo
 		ctx, span := tracing.NewSpan(c.Request().Context(), "Restore results")
 		defer span.End()
 
+		var empty time.Time
+		countEmpty := 0
+
 		mapped := []results.Result{}
 		for _, r := range req {
+			if time.Time(r.CreatedAt).Equal(empty) {
+				countEmpty++
+				continue
+			}
 			id, _ := uuid.OrderedAt(time.Time(r.CreatedAt))
 			mapped = append(mapped, results.Result{
 				ID:         id,
@@ -87,7 +94,7 @@ func (r *restoreHandler) Handler() handlers.Handler[[]LegacyResult, RestoreRespo
 
 		return &RestoreResponse{
 			Restored: restored,
-			Skipped:  skipped,
+			Skipped:  skipped + countEmpty,
 		}, nil
 	}
 }
