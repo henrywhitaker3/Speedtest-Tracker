@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -205,16 +206,22 @@ func (r *Repository) Restore(
 }
 
 func timesToSkip(ctx context.Context, db *gorm.DB, all []Result) (map[int64]struct{}, error) {
+	ctx, span := tracing.NewSpan(ctx, "Find existing timestamps")
+	defer span.End()
+
 	check := uniqueCreateAts(all)
-	var existing []time.Time
-	if err := db.WithContext(ctx).Unscoped().Model(&Result{}).
-		Where("created_at IN ?", check).
-		Pluck("created_at", &existing).Error; err != nil {
-		return nil, fmt.Errorf("find restored result duplicates: %w", err)
-	}
 	out := map[int64]struct{}{}
-	for _, e := range existing {
-		out[e.UTC().UnixNano()] = struct{}{}
+
+	for chunk := range slices.Chunk(check, 1000) {
+		var existing []time.Time
+		if err := db.WithContext(ctx).Unscoped().Model(&Result{}).
+			Where("created_at IN ?", chunk).
+			Pluck("created_at", &existing).Error; err != nil {
+			return nil, fmt.Errorf("find restored result duplicates: %w", err)
+		}
+		for _, e := range existing {
+			out[e.UTC().UnixNano()] = struct{}{}
+		}
 	}
 	return out, nil
 }
