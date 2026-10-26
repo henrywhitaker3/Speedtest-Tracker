@@ -289,6 +289,79 @@ func TestRepositoryForgetWithZeroPeriodDeletesAllResults(t *testing.T) {
 	}
 }
 
+func TestRepositoryRestoreBatchesAndSkipsDuplicateCreatedAt(t *testing.T) {
+	repo := testRepository(t)
+	ctx := context.Background()
+
+	first := time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)
+	existing := restoreResult(first)
+	if err := repo.db.Create(&existing).Error; err != nil {
+		t.Fatal(err)
+	}
+
+	toRestore := []Result{restoreResult(first)}
+	for i := 1; i <= restoreBatchSize+1; i++ {
+		toRestore = append(toRestore, restoreResult(first.Add(time.Duration(i)*time.Second)))
+	}
+	toRestore = append(toRestore, restoreResult(first.Add(time.Second)))
+
+	restored, skipped, err := repo.Restore(ctx, toRestore)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if restored != restoreBatchSize+1 {
+		t.Errorf("Restore() restored %d results, want %d", restored, restoreBatchSize+1)
+	}
+	if skipped != 2 {
+		t.Errorf("Restore() skipped %d results, want 2", skipped)
+	}
+
+	var count int64
+	if err := repo.db.Model(&Result{}).Count(&count).Error; err != nil {
+		t.Fatal(err)
+	}
+	if count != int64(restoreBatchSize+2) {
+		t.Errorf("stored result count = %d, want %d", count, restoreBatchSize+2)
+	}
+}
+
+func TestRepositoryRestoreSkipsDuplicateCreatedAtWithinBatch(t *testing.T) {
+	repo := testRepository(t)
+	ctx := context.Background()
+
+	createdAt := time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)
+	restored, skipped, err := repo.Restore(ctx, []Result{
+		restoreResult(createdAt),
+		restoreResult(createdAt),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if restored != 1 {
+		t.Errorf("Restore() restored %d results, want 1", restored)
+	}
+	if skipped != 1 {
+		t.Errorf("Restore() skipped %d results, want 1", skipped)
+	}
+
+	var count int64
+	if err := repo.db.Model(&Result{}).Count(&count).Error; err != nil {
+		t.Fatal(err)
+	}
+	if count != 1 {
+		t.Errorf("stored result count = %d, want 1", count)
+	}
+}
+
+func restoreResult(createdAt time.Time) Result {
+	return Result{
+		ID:        uuid.Must(uuid.OrderedAt(createdAt)),
+		CreatedAt: createdAt,
+		UpdatedAt: createdAt,
+		Complete:  true,
+	}
+}
+
 func TestRegisterCreatesTimeseriesIndex(t *testing.T) {
 	db, err := database.Sqlite(filepath.Join(t.TempDir(), "results.db"))
 	if err != nil {

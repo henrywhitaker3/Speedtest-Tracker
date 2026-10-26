@@ -84,6 +84,8 @@ Configuration is read from environment variables (and a local `.env` file when r
 
 For optional OpenID Connect authentication setup, see [Authentication](docs/AUTH.md).
 
+To import results from a Speedtest Tracker v1 JSON backup, see [Restore a v1 backup](docs/RESTORE.md).
+
 ## Local development
 
 The project uses [mise](https://mise.jdx.dev/) to provision the backend tooling. The frontend has its own `frontend/mise.toml` for Node.js and pnpm.
@@ -147,4 +149,4 @@ The image expects a database and the configuration described above. Use the supp
 
 ## Notes on v2
 
-This branch is a new implementation. The legacy Laravel/React configuration, authentication, notification, backup, and external-service integration instructions from v1 do not apply to v2.
+This branch is a new implementation. The v1 Laravel/React configuration, authentication, notification, and external-service integration instructions do not apply to v2. v1 JSON result backups can be imported using the [restore process](docs/RESTORE.md).

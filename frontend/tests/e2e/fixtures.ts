@@ -11,6 +11,7 @@ export type ApiMocks = {
   notifications?: MockResponse
   result?: MockResponse
   results?: MockResponse
+  restore?: MockResponse
   run?: MockResponse
   session?: MockResponse
   stats?: MockResponse
@@ -64,6 +65,7 @@ const responses = {
       total_rows: 1
     }
   },
+  restore: { body: { restored: 0, skipped: 0 } },
   run: { body: { id: result.id } },
   session: { status: 401, body: { message: 'unauthenticated' } },
   stats: {
@@ -99,6 +101,7 @@ function responseKey(path: string, method: string): keyof ApiMocks | undefined {
   if (path === '/v1/speedtest/latest') return 'latest'
   if (path === '/v1/speedtest/timeseries') return 'stats'
   if (path === '/v1/speedtest/run') return 'run'
+  if (path === '/v1/restore/json') return 'restore'
   if (path === '/v1/speedtest') return 'results'
   if (path.startsWith('/v1/speedtest/') && method === 'GET') return 'result'
 }

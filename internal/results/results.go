@@ -4,9 +4,11 @@ package results
 import (
 	"context"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -162,6 +164,97 @@ func (r *Repository) Delete(ctx context.Context, id uuid.UUID) error {
 		return fmt.Errorf("delete result: %w", err)
 	}
 	return nil
+}
+
+const restoreBatchSize = 500
+
+func (r *Repository) Restore(
+	ctx context.Context,
+	results []Result,
+) (restored int, skipped int, err error) {
+	db := r.db.WithContext(ctx).Begin()
+	if db.Error != nil {
+		return 0, 0, fmt.Errorf("begin restore transaction: %w", db.Error)
+	}
+	defer db.Rollback()
+
+	seenCreatedAt, err := timesToSkip(ctx, db, results)
+	if err != nil {
+		return 0, 0, fmt.Errorf("get timestamps to filter out: %w", err)
+	}
+
+	for chunk := range slices.Chunk(results, restoreBatchSize) {
+		toInsert := resultsToInsert(chunk, seenCreatedAt)
+
+		skipped += len(chunk) - len(toInsert)
+
+		if len(toInsert) == 0 {
+			continue
+		}
+
+		if err := db.WithContext(ctx).CreateInBatches(&toInsert, len(toInsert)).Error; err != nil {
+			return 0, 0, fmt.Errorf("store restored results: %w", err)
+		}
+		restored += len(toInsert)
+	}
+
+	if err := db.WithContext(ctx).Commit().Error; err != nil {
+		return 0, 0, fmt.Errorf("commit restored results: %w", err)
+	}
+
+	return restored, skipped, nil
+}
+
+func timesToSkip(ctx context.Context, db *gorm.DB, all []Result) (map[int64]struct{}, error) {
+	ctx, span := tracing.NewSpan(ctx, "Find existing timestamps")
+	defer span.End()
+
+	check := uniqueCreateAts(all)
+	out := map[int64]struct{}{}
+
+	for chunk := range slices.Chunk(check, 1000) {
+		var existing []time.Time
+		if err := db.WithContext(ctx).Unscoped().Model(&Result{}).
+			Where("created_at IN ?", chunk).
+			Pluck("created_at", &existing).Error; err != nil {
+			return nil, fmt.Errorf("find restored result duplicates: %w", err)
+		}
+		for _, e := range existing {
+			out[e.UTC().UnixNano()] = struct{}{}
+		}
+	}
+	return out, nil
+}
+
+func resultsToInsert(
+	chunk []Result,
+	seenCreatedAt map[int64]struct{},
+) []Result {
+	out := make([]Result, 0, len(chunk))
+	for _, r := range chunk {
+		key := r.CreatedAt.UTC().UnixNano()
+		if _, ok := seenCreatedAt[key]; ok {
+			continue
+		}
+		seenCreatedAt[key] = struct{}{}
+		out = append(out, r)
+	}
+
+	return out
+}
+
+func uniqueCreateAts(in []Result) []time.Time {
+	seen := make(map[int64]struct{}, len(in))
+	out := make([]time.Time, 0, len(in))
+	for _, r := range in {
+		key := r.CreatedAt.UTC().UnixNano()
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		out = append(out, r.CreatedAt)
+	}
+	return out
 }
 
 func Register(db *gorm.DB) error {

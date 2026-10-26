@@ -12,6 +12,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	configapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/config"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/restore"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/speedtest"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
@@ -126,6 +127,7 @@ func authRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
+		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
 
@@ -137,6 +139,7 @@ func adminRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
+		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
 
@@ -166,6 +169,7 @@ func registerRoutes(
 		return err
 	}
 	configapi.RegisterRoutes(h, conf)
+	restore.Register(h, db)
 	return nil
 }
 
