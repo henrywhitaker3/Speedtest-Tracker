@@ -1,3 +1,27 @@
+## [2.6.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.5.0..v2.6.0) - 2026-10-26
+
+### 🚀 Features
+
+- *(notifications)* Add telegram notifications - ([4ec99af](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4ec99af7de14ff0397c4b655812c03421894780c))
+
+### 🐛 Bug Fixes
+
+- *(api)* Sanaitise raw output instead of nulling it - ([22ac945](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/22ac945e84d04c9f4e4ec8605f52e67e286752c8))
+- *(compat)* Added a ltest result handler compatible with gethomepage v2 widget - ([5e8d443](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5e8d443d3d53b4a76c6c874959b55727d5af57c1))
+- *(telegram)* Update message formatting - ([6743e00](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6743e00488796086abc57b49b2af4e1ca43fa1b5))
+- Skip telegram GetMe call on bootstrap - ([62d536b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/62d536b7d8325ed44c8852b656192f86376fc0da))
+- Redact telegram details in notification errors - ([d9a7aef](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9a7aefa182b615d15b5cf3cb8e3ca34c789f1b4))
+- Add handling for negative bits to human values - ([92e4de4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/92e4de4dc2e35dffb35076aa252dd90dc5122211))
+
+### 🚜 Refactor
+
+- *(api)* Use new helpers for middleware auth status - ([4f641be](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4f641bebe5769c17d71268d7178e9b647defa140))
+- *(notifications)* Split webhooks and errors into own files - ([eec7396](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/eec7396edaa386e1cdbbabd9068a3c5e8e573142))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([5b0eac9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5b0eac955eae0843f6ff9a3a31f039e2f95c954c))
+- *(docs)* Add info on telegram notifications - ([11644dd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/11644dd0b69f5f043eb08dce73bcdaaf68652fe0))
 ## [2.5.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.5..v2.5.0) - 2026-10-26
 
 ### 🚀 Features
