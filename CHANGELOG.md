@@ -1,3 +1,17 @@
+## [2.6.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.0..v2.6.1) - 2026-10-27
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update module github.com/italypaleale/francis to v0.2.0 - ([fdecc67](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fdecc67a88981940d4c3f8d47e9d086112b9a294))
+- *(ookla)* Pick random server from nearest list when one is not configured - ([2329ba4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2329ba43a682e8a1f68a9dcfbb49587fdb60de2d))
+- *(runtime)* Add optional runtime management api activation - ([f517be4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f517be4e94a55a523a2932dc1ad2f87e24dc74ac))
+- *(ui)* Replace vue default favicon - ([4ea508f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4ea508f8e94e61a0eba1ce47e5a8bbb39bb74ae8))
+- *(ui)* Result delete button not working in table view - ([83c96c0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/83c96c0d1f96626ccf921b7390a013a6a6c3205a))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([60740c5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/60740c5e1fa8aefc34e3965ceb52f1e261c3bf5f))
+- Better handling for interrupts when running locally - ([313051e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/313051e93fbb34e5de9afc94a81ca61fe85850de))
 ## [2.6.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.5.0..v2.6.0) - 2026-10-26
 
 ### 🚀 Features
