@@ -24,12 +24,11 @@ func newTestCronjob(
 	repo resultCreator,
 	runner worflowRunner,
 	schedule string,
-	serverID int,
 ) (*cronjob.CronJob, error) {
 	job, err := cronjob.New(
 		"speedtest",
 		cronjob.WithCron(schedule),
-		cronjob.WithJob(runScheduleTest(repo, runner, serverID)),
+		cronjob.WithJob(runScheduleTest(repo, runner)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("build speedtest cronjob: %w", err)
@@ -40,7 +39,6 @@ func newTestCronjob(
 func runScheduleTest(
 	repo resultCreator,
 	runner worflowRunner,
-	serverID int,
 ) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
 		slog.InfoContext(ctx, "triggering scheduled speedtest")
@@ -53,8 +51,7 @@ func runScheduleTest(
 		if _, _, err := runner.Start(
 			ctx,
 			RunWorkflow{
-				ServerID: serverID,
-				Result:   *result,
+				Result: *result,
 			},
 			workflow.WithInstanceID(result.ID.String()),
 		); err != nil {

@@ -26,11 +26,13 @@ func TestSpeedtestWorkflow(t *testing.T) {
 		notifications          bool
 		preNotificationErr     error
 		postNotificationErr    error
+		pickServerErr          error
 		freshErr               error
 		runnerErr              error
 		updateErr              error
 		complete               bool
 		wantStatus             workflow.Status
+		wantPickServerCalls    int
 		wantFreshCalls         int
 		wantRunnerCalls        int
 		wantUpdateCalls        int
@@ -43,7 +45,8 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			name:                   "stores a successful result and sends notifications",
 			notifications:          true,
 			wantStatus:             workflow.StatusCompleted,
-			wantFreshCalls:         1,
+			wantPickServerCalls:    1,
+			wantFreshCalls:         2,
 			wantRunnerCalls:        1,
 			wantUpdateCalls:        1,
 			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
@@ -60,7 +63,8 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			notifications:          true,
 			runnerErr:              errors.New("speedtest failed"),
 			wantStatus:             workflow.StatusCompleted,
-			wantFreshCalls:         1,
+			wantPickServerCalls:    1,
+			wantFreshCalls:         2,
 			wantRunnerCalls:        1,
 			wantUpdateCalls:        1,
 			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
@@ -84,7 +88,8 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			wantAttempts: map[string]int{
 				"notify":                 1,
 				"pre-run notifications":  0,
-				"run test":               1,
+				"pick server":            1,
+				"run test":               0,
 				"store result":           0,
 				"post-run notifications": 0,
 			},
@@ -95,10 +100,11 @@ func TestSpeedtestWorkflow(t *testing.T) {
 				actor.ErrJobPermanentFailure,
 				errors.New("database unavailable"),
 			),
-			wantStatus:      workflow.StatusFailed,
-			wantFreshCalls:  1,
-			wantRunnerCalls: 1,
-			wantUpdateCalls: 1,
+			wantStatus:          workflow.StatusFailed,
+			wantPickServerCalls: 1,
+			wantFreshCalls:      2,
+			wantRunnerCalls:     1,
+			wantUpdateCalls:     1,
 			wantAttempts: map[string]int{
 				"notify":                 1,
 				"pre-run notifications":  0,
@@ -108,13 +114,14 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			},
 		},
 		{
-			name:               "continues when pre-run notifications fail",
-			notifications:      true,
-			preNotificationErr: errors.New("notification failed"),
-			wantStatus:         workflow.StatusCompleted,
-			wantFreshCalls:     1,
-			wantRunnerCalls:    1,
-			wantUpdateCalls:    1,
+			name:                "continues when pre-run notifications fail",
+			notifications:       true,
+			preNotificationErr:  errors.New("notification failed"),
+			wantStatus:          workflow.StatusCompleted,
+			wantPickServerCalls: 1,
+			wantFreshCalls:      2,
+			wantRunnerCalls:     1,
+			wantUpdateCalls:     1,
 			wantNotificationPhases: []notifications.Phase{
 				notifications.PreRun,
 				notifications.PreRun,
@@ -137,7 +144,8 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			notifications:       true,
 			postNotificationErr: errors.New("notification failed"),
 			wantStatus:          workflow.StatusCompleted,
-			wantFreshCalls:      1,
+			wantPickServerCalls: 1,
+			wantFreshCalls:      2,
 			wantRunnerCalls:     1,
 			wantUpdateCalls:     1,
 			wantNotificationPhases: []notifications.Phase{
@@ -158,11 +166,12 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			},
 		},
 		{
-			name:            "skips notifications when none are configured",
-			wantStatus:      workflow.StatusCompleted,
-			wantFreshCalls:  1,
-			wantRunnerCalls: 1,
-			wantUpdateCalls: 1,
+			name:                "skips notifications when none are configured",
+			wantStatus:          workflow.StatusCompleted,
+			wantPickServerCalls: 1,
+			wantFreshCalls:      2,
+			wantRunnerCalls:     1,
+			wantUpdateCalls:     1,
 			wantAttempts: map[string]int{
 				"notify":                 1,
 				"pre-run notifications":  0,
@@ -176,7 +185,8 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			notifications:          true,
 			complete:               true,
 			wantStatus:             workflow.StatusCompleted,
-			wantFreshCalls:         1,
+			wantPickServerCalls:    0,
+			wantFreshCalls:         2,
 			wantUpdateCalls:        1,
 			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
 			wantAttempts: map[string]int{
@@ -187,12 +197,36 @@ func TestSpeedtestWorkflow(t *testing.T) {
 				"post-run notifications": 1,
 			},
 		},
+		{
+			name: "fails when selecting a server fails",
+			pickServerErr: errors.Join(
+				actor.ErrJobPermanentFailure,
+				errors.New("no nearby server available"),
+			),
+			wantStatus:          workflow.StatusFailed,
+			wantPickServerCalls: 1,
+			wantFreshCalls:      1,
+			wantUpdateCalls:     1,
+			wantResultError:     "job failed permanently\nno nearby server available",
+			wantAttempts: map[string]int{
+				"notify":                 1,
+				"pre-run notifications":  0,
+				"pick server":            1,
+				"run test":               0,
+				"store result":           0,
+				"post-run notifications": 0,
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &workflowRepoStub{freshErr: tt.freshErr, updateErr: tt.updateErr}
-			runner := &workflowRunnerStub{err: tt.runnerErr}
+			runner := &workflowRunnerStub{
+				pickErr:        tt.pickServerErr,
+				runErr:         tt.runnerErr,
+				pickedServerID: 42,
+			}
 			notifier := &workflowNotifierStub{
 				shouldNotify: tt.notifications,
 				errs: map[notifications.Phase]error{
@@ -203,7 +237,7 @@ func TestSpeedtestWorkflow(t *testing.T) {
 
 			wf, err := buildWorkflow(WorkflowOpts{
 				Repo:     repo,
-				Runner:   runner.run,
+				Runner:   runner,
 				Notifier: notifier,
 			})
 			if err != nil {
@@ -216,7 +250,7 @@ func TestSpeedtestWorkflow(t *testing.T) {
 				ID:       uuid.MustOrdered(),
 			}
 
-			id, _, err := service.Start(t.Context(), RunWorkflow{ServerID: 42, Result: result})
+			id, _, err := service.Start(t.Context(), RunWorkflow{Result: result})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -236,6 +270,9 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			if got := runner.callCount(); got != tt.wantRunnerCalls {
 				t.Errorf("runner calls = %d, want %d", got, tt.wantRunnerCalls)
 			}
+			if got := runner.pickServerCallCount(); got != tt.wantPickServerCalls {
+				t.Errorf("PickServer calls = %d, want %d", got, tt.wantPickServerCalls)
+			}
 			if got := repo.updateCallCount(); got != tt.wantUpdateCalls {
 				t.Errorf("Update calls = %d, want %d", got, tt.wantUpdateCalls)
 			}
@@ -253,10 +290,10 @@ func TestSpeedtestWorkflow(t *testing.T) {
 				}
 			}
 
-			if tt.wantRunnerCalls > 0 && runner.serverID != 42 {
-				t.Errorf("runner server ID = %d, want 42", runner.serverID)
+			if tt.wantRunnerCalls > 0 && runner.runServerID != 42 {
+				t.Errorf("runner server ID = %d, want 42", runner.runServerID)
 			}
-			if tt.wantUpdateCalls > 0 {
+			if repo.updateCallCount() > 0 {
 				updated := repo.lastUpdatedResult()
 				if updated.ID != result.ID || !updated.Complete {
 					t.Errorf("stored result = %#v, want completed result %q", updated, result.ID)
@@ -310,24 +347,40 @@ func (r *workflowRepoStub) lastUpdatedResult() results.Result {
 }
 
 type workflowRunnerStub struct {
-	mu       sync.Mutex
-	err      error
-	calls    int
-	serverID int
+	mu             sync.Mutex
+	pickErr        error
+	runErr         error
+	pickCalls      int
+	calls          int
+	pickedServerID int
+	runServerID    int
 }
 
-func (r *workflowRunnerStub) run(_ context.Context, serverID int, _ *results.Result) error {
+func (r *workflowRunnerStub) PickServer(context.Context) (int, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.pickCalls++
+	return r.pickedServerID, r.pickErr
+}
+
+func (r *workflowRunnerStub) Run(_ context.Context, serverID int, _ *results.Result) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.calls++
-	r.serverID = serverID
-	return r.err
+	r.runServerID = serverID
+	return r.runErr
 }
 
 func (r *workflowRunnerStub) callCount() int {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	return r.calls
+}
+
+func (r *workflowRunnerStub) pickServerCallCount() int {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.pickCalls
 }
 
 type workflowNotifierStub struct {

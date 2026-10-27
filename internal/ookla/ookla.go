@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -72,7 +73,61 @@ func init() {
 	prometheus.MustRegister(speedtestPingMilliseconds)
 }
 
-func Run(ctx context.Context, server int, result *results.Result) error {
+type Ookla struct {
+	server int
+}
+
+func New(ctx context.Context, version string, serverID int) (*Ookla, error) {
+	if err := ensureBinary(ctx, version); err != nil {
+		return nil, err
+	}
+	return &Ookla{
+		server: serverID,
+	}, nil
+}
+
+type serverEnvelope struct {
+	Type      string    `json:"type"`
+	Timestamp time.Time `json:"timestamp"`
+	Servers   []server  `json:"servers"`
+}
+
+type server struct {
+	ID       int    `json:"id"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Name     string `json:"name"`
+	Location string `json:"location"`
+	Country  string `json:"country"`
+}
+
+func (o *Ookla) PickServer(ctx context.Context) (int, error) {
+	if o.server != 0 {
+		return o.server, nil
+	}
+
+	cmd := exec.CommandContext(ctx, binaryFile, "--servers", "--format=json")
+	raw, err := cmd.Output()
+	if err != nil {
+		return 0, fmt.Errorf("list nearest servers: %w", err)
+	}
+
+	var servers serverEnvelope
+	if err := json.Unmarshal(raw, &servers); err != nil {
+		return 0, fmt.Errorf("unmarshal server data: %w", err)
+	}
+
+	if len(servers.Servers) == 0 {
+		return 0, fmt.Errorf("no servers listed")
+	}
+
+	pick := servers.Servers[rand.Intn(len(servers.Servers))]
+	slog.DebugContext(ctx, "picked server from list", "server", pick)
+
+	return pick.ID, nil
+}
+
+func (o *Ookla) Run(ctx context.Context, server int, result *results.Result) error {
 	ctx, span := tracing.NewSpan(ctx, "Run speedtest")
 	defer span.End()
 
@@ -160,7 +215,7 @@ func downloadURLForPlatform(version, goos, goarch string) (string, error) {
 }
 
 // EnsureBinary downloads the ookla speedtest cli
-func EnsureBinary(ctx context.Context, version string) error {
+func ensureBinary(ctx context.Context, version string) error {
 	url, err := downloadURL(version)
 	if err != nil {
 		return err

@@ -32,7 +32,6 @@ type runHandler struct {
 	repo     resultCreator
 	workflow worflowRunner
 	limiter  rateLimiter
-	serverID int
 }
 
 type RunResponse struct {
@@ -61,8 +60,7 @@ func (r *runHandler) Handler() handlers.Handler[any, RunResponse] {
 		if _, _, err := r.workflow.Start(
 			runCtx,
 			ookla.RunWorkflow{
-				Result:   *result,
-				ServerID: r.serverID,
+				Result: *result,
 			},
 			workflow.WithInstanceID(result.ID.String()),
 		); err != nil {

@@ -18,7 +18,10 @@ type workflowRepo interface {
 	Update(context.Context, *results.Result) error
 }
 
-type runFunc func(context.Context, int, *results.Result) error
+type testRunner interface {
+	Run(context.Context, int, *results.Result) error
+	PickServer(context.Context) (int, error)
+}
 
 type notifier interface {
 	ShouldNotify() bool
@@ -28,14 +31,14 @@ type notifier interface {
 type WorkflowOpts struct {
 	Host     *local.Host
 	Repo     workflowRepo
-	Runner   runFunc
+	Runner   testRunner
 	Notifier notifier
 }
 
 func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 	return workflow.New(
 		"speedtest",
-		workflow.WithVersion(4),
+		workflow.WithVersion(7),
 		workflow.WithUnknownVersionPolicy(workflow.FailUnknownVersion),
 		workflow.WithMeter(otel.Meter("speedtest")),
 		workflow.WithSteps(
@@ -50,8 +53,13 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 				workflow.WithOptional(),
 			),
 			workflow.Step(
+				"pick server",
+				workflow.WithRun(pickServer(opts.Runner, opts.Repo)),
+			),
+			workflow.Step(
 				"run test",
 				workflow.WithRun(workflowRun(opts.Repo, opts.Runner)),
+				workflow.WithInputFrom("pick server"),
 			),
 			workflow.Step(
 				"store result",
@@ -68,11 +76,10 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 }
 
 type RunWorkflow struct {
-	ServerID int
-	Result   results.Result
+	Result results.Result
 }
 
-func workflowRun(repo workflowRepo, runner runFunc) workflow.RunFunc {
+func pickServer(runner testRunner, repo workflowRepo) workflow.RunFunc {
 	return func(ctx context.Context, task workflow.Task) (any, error) {
 		var opts RunWorkflow
 		if err := task.DecodeInput(&opts); err != nil {
@@ -86,10 +93,43 @@ func workflowRun(repo workflowRepo, runner runFunc) workflow.RunFunc {
 		ctx = log.WithLogAttr(ctx, "result", result.ID)
 		if result.Complete {
 			slog.WarnContext(ctx, "speedest already complete")
+			return 0, nil
+		}
+
+		server, err := runner.PickServer(ctx)
+		if err != nil {
+			result.Complete = true
+			result.Error = new(err.Error())
+			_ = repo.Update(ctx, &result)
+		}
+
+		return server, err
+	}
+}
+
+func workflowRun(repo workflowRepo, runner testRunner) workflow.RunFunc {
+	return func(ctx context.Context, task workflow.Task) (any, error) {
+		var opts RunWorkflow
+		if err := task.DecodeInput(&opts); err != nil {
+			return nil, fmt.Errorf("decode result model: %w", err)
+		}
+
+		var server int
+		if err := task.DecodeOutput("pick server", &server); err != nil {
+			return nil, fmt.Errorf("get pick server output: %w", err)
+		}
+
+		result := opts.Result
+		if err := repo.Fresh(ctx, &result); err != nil {
+			return nil, fmt.Errorf("refresh result: %w", err)
+		}
+		ctx = log.WithLogAttr(ctx, "result", result.ID)
+		if result.Complete {
+			slog.WarnContext(ctx, "speedest already complete")
 			return result, nil
 		}
 
-		err := runner(ctx, opts.ServerID, &result)
+		err := runner.Run(ctx, server, &result)
 		result.Complete = true
 		if err != nil {
 			slog.WarnContext(ctx, "speedtest failed", "error", err)

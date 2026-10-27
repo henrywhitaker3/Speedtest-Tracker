@@ -49,7 +49,7 @@ func TestRunHandler(t *testing.T) {
 			repo := &resultCreatorStub{result: result, err: tt.createErr}
 			workflow := &workflowRunnerStub{err: tt.startErr}
 			limiter := &rateLimiterStub{allowed: tt.limiterAllowed, err: tt.limiterErr}
-			handler := (&runHandler{repo: repo, workflow: workflow, limiter: limiter, serverID: 42}).Handler()
+			handler := (&runHandler{repo: repo, workflow: workflow, limiter: limiter}).Handler()
 
 			got, err := handler(testContext(t), nil)
 			if !errors.Is(err, tt.wantErr) {
@@ -72,8 +72,8 @@ func TestRunHandler(t *testing.T) {
 			}
 			if tt.wantStart {
 				input, ok := workflow.input.(ookla.RunWorkflow)
-				if !ok || input.Result.ID != result.ID || input.ServerID != 42 {
-					t.Errorf("workflow input = %#v, want result %q and server 42", workflow.input, result.ID)
+				if !ok || input.Result.ID != result.ID {
+					t.Errorf("workflow input = %#v, want result %q", workflow.input, result.ID)
 				}
 			}
 			if limiter.key != "test" {

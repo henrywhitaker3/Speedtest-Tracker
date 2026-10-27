@@ -36,7 +36,6 @@ func Register(
 	h.Register(&runHandler{
 		repo:     repo,
 		workflow: runner,
-		serverID: serverID,
 		limiter:  runLimiter.Service(host.Service()),
 	})
 	h.Register(&getHandler{

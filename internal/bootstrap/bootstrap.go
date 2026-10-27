@@ -44,8 +44,9 @@ func Bootstrap(
 
 	slog.Debug("loaded config", "config", conf)
 
-	if err := ookla.EnsureBinary(ctx, ooklaVersion); err != nil {
-		return nil, nil, nil, fmt.Errorf("download speedtest-cli: %w", err)
+	ooklaCLI, err := ookla.New(ctx, ooklaVersion, conf.Server)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("init ookla: %w", err)
 	}
 
 	db, err := database.Open(conf.Database.Driver, string(conf.Database.URL))
@@ -72,8 +73,7 @@ func Bootstrap(
 
 	workflow, err := ookla.RegisterActor(ookla.RegisterActorOpts{
 		Host:         host,
-		ServerID:     conf.Server,
-		Runner:       ookla.Run,
+		Runner:       ooklaCLI,
 		WorkflowRepo: resultsRepo,
 		CronjobRepo:  resultsRepo,
 		Schedule:     conf.Schedule,

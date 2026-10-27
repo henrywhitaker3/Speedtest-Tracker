@@ -12,8 +12,7 @@ type RegisterActorOpts struct {
 	CronjobRepo  resultCreator
 	WorkflowRepo workflowRepo
 	Schedule     string
-	ServerID     int
-	Runner       runFunc
+	Runner       testRunner
 	Notifier     notifier
 }
 
@@ -35,7 +34,6 @@ func RegisterActor(opts RegisterActorOpts) (*workflow.WorkflowService, error) {
 		opts.CronjobRepo,
 		workflow.Service(opts.Host.Service()),
 		opts.Schedule,
-		opts.ServerID,
 	)
 	if err != nil {
 		return nil, err
