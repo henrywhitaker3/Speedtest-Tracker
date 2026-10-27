@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/labstack/echo/v5"
 )
@@ -21,21 +24,20 @@ func TestLoginRedirectsToActorProvidedURL(t *testing.T) {
 	ctx := echo.NewContext(req, recorder)
 
 	response, err := handler(ctx, nil)
-	if err != nil {
-		t.Fatalf("Handler() error = %v", err)
-	}
-	if response != nil {
-		t.Errorf("Handler() response = %#v, want nil", response)
-	}
-	if recorder.Code != http.StatusFound {
-		t.Errorf("status = %d, want %d", recorder.Code, http.StatusFound)
-	}
-	if recorder.Header().Get(echo.HeaderLocation) != "https://issuer.example/authorize" {
-		t.Errorf("Location = %q, want issuer URL", recorder.Header().Get(echo.HeaderLocation))
-	}
-	if service.actorType != authactor.Actor || service.method != authactor.BeginLogin || service.actorID != "session-id" {
-		t.Errorf("actor invocation = type=%q ID=%q method=%q", service.actorType, service.actorID, service.method)
-	}
+	require.Equalf(t, nil, err, "Handler() error = %v", err)
+	assert.Nilf(t, response, "Handler() response = %#v, want nil", response)
+	assert.Equalf(
+		t,
+		http.StatusFound,
+		recorder.Code,
+		"status = %d, want %d",
+		recorder.Code,
+		http.StatusFound,
+	)
+	assert.Equal(t, "https://issuer.example/authorize", recorder.Header().Get(echo.HeaderLocation))
+	assert.Equal(t, authactor.Actor, service.actorType)
+	assert.Equal(t, authactor.BeginLogin, service.method)
+	assert.Equal(t, "session-id", service.actorID)
 }
 
 func TestLoginWrapsActorError(t *testing.T) {
@@ -47,9 +49,7 @@ func TestLoginWrapsActorError(t *testing.T) {
 	ctx := echo.NewContext(req, recorder)
 
 	_, err := handler(ctx, nil)
-	if !errors.Is(err, actorErr) {
-		t.Errorf("Handler() error = %v, want %v", err, actorErr)
-	}
+	assert.ErrorIs(t, err, actorErr)
 }
 
 type loginEnvelope struct {

@@ -5,9 +5,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
 	"time"
 
-	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/labstack/echo/v5"
 	"gorm.io/datatypes"
@@ -29,38 +32,26 @@ func TestLatestResponse(t *testing.T) {
 		httptest.NewRecorder(),
 	)
 	response := latestResponse(context, &results.Result{
-		BaseModel: database.BaseModel{
-			CreatedAt: createdAt,
-			UpdatedAt: updatedAt,
-		},
-		Ping:     &ping,
-		Download: &download,
-		Upload:   &upload,
-		Complete: true,
-		Raw:      &raw,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		Ping:      &ping,
+		Download:  &download,
+		Upload:    &upload,
+		Complete:  true,
+		Raw:       &raw,
 	})
 
-	if response.Service != "ookla" || response.Status != "completed" || !response.Healthy || !response.Scheduled {
-		t.Fatalf("unexpected result metadata: %+v", response)
-	}
-	if got := *response.DownloadBits; got != 8_000_000 {
-		t.Errorf("download_bits = %d, want 8000000", got)
-	}
-	if got := *response.DownloadBitsHuman; got != "8.00 Mbps" {
-		t.Errorf("download_bits_human = %q, want %q", got, "8.00 Mbps")
-	}
-	if got := *response.UploadBitsHuman; got != "4.00 kbps" {
-		t.Errorf("upload_bits_human = %q, want %q", got, "4.00 kbps")
-	}
-	if got := *response.DownloadBytesHuman; got != "2 KB" {
-		t.Errorf("download_bytes_human = %q, want %q", got, "2 KB")
-	}
-	if got := *response.UploadBytesHuman; got != "512 B" {
-		t.Errorf("upload_bytes_human = %q, want %q", got, "512 B")
-	}
-	if response.CreatedAt != "2026-01-02 03:04:05" || response.UpdatedAt != "2026-01-02 03:05:05" {
-		t.Errorf("timestamps = %q, %q", response.CreatedAt, response.UpdatedAt)
-	}
+	assert.Equal(t, "ookla", response.Service)
+	assert.Equal(t, "completed", response.Status)
+	assert.True(t, response.Healthy)
+	assert.True(t, response.Scheduled)
+	assert.Equal(t, int64(8_000_000), *response.DownloadBits)
+	assert.Equal(t, "8.00 Mbps", *response.DownloadBitsHuman)
+	assert.Equal(t, "4.00 kbps", *response.UploadBitsHuman)
+	assert.Equal(t, "2 KB", *response.DownloadBytesHuman)
+	assert.Equal(t, "512 B", *response.UploadBytesHuman)
+	assert.Equal(t, "2026-01-02 03:04:05", response.CreatedAt)
+	assert.Equal(t, "2026-01-02 03:05:05", response.UpdatedAt)
 }
 
 func TestLatestResponseWithoutRawData(t *testing.T) {
@@ -70,9 +61,7 @@ func TestLatestResponseWithoutRawData(t *testing.T) {
 	)
 
 	response := latestResponse(context, &results.Result{})
-	if response.Data != nil {
-		t.Errorf("data = %#v, want nil", response.Data)
-	}
+	assert.Nilf(t, response.Data, "data = %#v, want nil", response.Data)
 }
 
 func TestLatestResponseEnvelope(t *testing.T) {
@@ -80,21 +69,22 @@ func TestLatestResponseEnvelope(t *testing.T) {
 	response := LatestResponseEnvelope{Data: &LatestResponse{Download: &download}}
 
 	encoded, err := json.Marshal(response)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	var decoded struct {
 		Data struct {
 			Download int64 `json:"download"`
 		} `json:"data"`
 	}
-	if err := json.Unmarshal(encoded, &decoded); err != nil {
-		t.Fatal(err)
-	}
-	if decoded.Data.Download != download {
-		t.Errorf("data.download = %d, want %d", decoded.Data.Download, download)
-	}
+	require.Nil(t, json.Unmarshal(encoded, &decoded))
+	assert.Equalf(
+		t,
+		download,
+		decoded.Data.Download,
+		"data.download = %d, want %d",
+		decoded.Data.Download,
+		download,
+	)
 }
 
 func TestResultStatus(t *testing.T) {
@@ -110,9 +100,7 @@ func TestResultStatus(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := resultStatus(&tt.result); got != tt.want {
-				t.Errorf("resultStatus() = %q, want %q", got, tt.want)
-			}
+			assert.Equal(t, tt.want, resultStatus(&tt.result))
 		})
 	}
 }

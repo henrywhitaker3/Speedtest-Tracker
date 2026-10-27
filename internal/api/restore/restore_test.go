@@ -5,7 +5,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/labstack/echo/v5"
@@ -20,18 +24,11 @@ func TestRestoreHandlerSkipsResultsWithZeroCreatedAt(t *testing.T) {
 		{CreatedAt: LegcayTime{}},
 		{CreatedAt: LegcayTime(createdAt)},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got.Restored != 1 || got.Skipped != 1 {
-		t.Errorf("Handler() response = %+v, want restored 1 and skipped 1", got)
-	}
-	if len(repo.results) != 1 {
-		t.Fatalf("Restore() received %d results, want 1", len(repo.results))
-	}
-	if !repo.results[0].CreatedAt.Equal(createdAt) {
-		t.Errorf("Restore() received created_at %v, want %v", repo.results[0].CreatedAt, createdAt)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, 1, got.Restored)
+	assert.Equal(t, 1, got.Skipped)
+	require.Equal(t, 1, repo.restored)
+	assert.Equal(t, createdAt, repo.results[0].CreatedAt)
 }
 
 type restoreRepoStub struct {
@@ -48,5 +45,8 @@ func (r *restoreRepoStub) Restore(_ context.Context, got []results.Result) (int,
 
 func testContext(t *testing.T) *echo.Context {
 	t.Helper()
-	return echo.NewContext(httptest.NewRequest(http.MethodPost, "/v1/restore/json", nil), httptest.NewRecorder())
+	return echo.NewContext(
+		httptest.NewRequest(http.MethodPost, "/v1/restore/json", nil),
+		httptest.NewRecorder(),
+	)
 }

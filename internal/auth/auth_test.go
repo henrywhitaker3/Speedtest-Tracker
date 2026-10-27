@@ -3,9 +3,11 @@ package auth
 import (
 	"context"
 	"errors"
-	"reflect"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/italypaleale/francis/actor"
@@ -28,11 +30,9 @@ func TestInvokeAuthenticateStoresOIDCResponse(t *testing.T) {
 		Name:         "Person Example",
 		Groups:       []string{"speedtest-admins"},
 	}})
-	if err != nil {
-		t.Fatalf("invokeAuthenticate() error = %v", err)
-	}
+	require.NoError(t, err)
 
-	if !reflect.DeepEqual(client.state.OIDCResponse, OIDCResponse{
+	assert.Equal(t, OIDCResponse{
 		AccessToken:  "access-token",
 		TokenType:    "Bearer",
 		RefreshToken: "refresh-token",
@@ -43,15 +43,11 @@ func TestInvokeAuthenticateStoresOIDCResponse(t *testing.T) {
 		Email:        "person@example.com",
 		Name:         "Person Example",
 		Groups:       []string{"speedtest-admins"},
-	}) {
-		t.Errorf("stored OIDC response = %#v", client.state.OIDCResponse)
-	}
-	if client.state.AuthenticatedAt.IsZero() {
-		t.Error("AuthenticatedAt was not set")
-	}
-	if client.setOpts == nil || client.setOpts.TTL != sessionTTL {
-		t.Errorf("authenticated session TTL = %#v, want %v", client.setOpts, sessionTTL)
-	}
+	}, client.state.OIDCResponse)
+
+	assert.False(t, client.state.AuthenticatedAt.IsZero())
+	require.NotNil(t, client.setOpts)
+	assert.Equal(t, sessionTTL, client.setOpts.TTL)
 
 	want := &AuthenticateResult{
 		Subject:   "issuer-user-id",
@@ -60,9 +56,7 @@ func TestInvokeAuthenticateStoresOIDCResponse(t *testing.T) {
 		Groups:    []string{"speedtest-admins"},
 		ExpiresAt: expiresAt,
 	}
-	if !reflect.DeepEqual(result, want) {
-		t.Errorf("result = %#v, want %#v", result, want)
-	}
+	assert.Equal(t, want, result)
 }
 
 func TestNewAuthActorConfiguresOIDCDependencies(t *testing.T) {
@@ -70,19 +64,15 @@ func TestNewAuthActorConfiguresOIDCDependencies(t *testing.T) {
 	callbackURL := "https://speedtest.example/v1/auth/callback"
 
 	auth, ok := newAuthActor(conf, callbackURL, nil)("session-id", nil).(*Auth)
-	if !ok {
-		t.Fatal("newAuthActor() did not create an Auth actor")
-	}
+	require.True(t, ok)
 
-	if _, ok := auth.authorizer.(oidcAuthorizationURLBuilder); !ok {
-		t.Errorf("authorizer = %T, want oidcAuthorizationURLBuilder", auth.authorizer)
-	}
-	if _, ok := auth.exchanger.(oidcTokenExchanger); !ok {
-		t.Errorf("exchanger = %T, want oidcTokenExchanger", auth.exchanger)
-	}
-	if _, ok := auth.refresher.(oidcTokenRefresher); !ok {
-		t.Errorf("refresher = %T, want oidcTokenRefresher", auth.refresher)
-	}
+	_, ok = auth.authorizer.(oidcAuthorizationURLBuilder)
+	require.True(t, ok)
+
+	_, ok = auth.exchanger.(oidcTokenExchanger)
+	require.True(t, ok)
+	_, ok = auth.refresher.(oidcTokenRefresher)
+	require.True(t, ok)
 }
 
 func TestInvokeAuthenticateDoesNotStoreInvalidResponse(t *testing.T) {
@@ -90,12 +80,8 @@ func TestInvokeAuthenticateDoesNotStoreInvalidResponse(t *testing.T) {
 	auth := &Auth{client: client}
 
 	_, err := auth.invokeAuthenticate(context.Background(), envelope{value: OIDCResponse{}})
-	if err == nil {
-		t.Fatal("invokeAuthenticate() error = nil, want error")
-	}
-	if client.setCalled {
-		t.Error("SetState was called for an invalid issuer response")
-	}
+	require.Error(t, err)
+	assert.False(t, client.setCalled)
 }
 
 func TestInvokeAuthenticateReturnsStoreError(t *testing.T) {
@@ -103,10 +89,11 @@ func TestInvokeAuthenticateReturnsStoreError(t *testing.T) {
 	client := &fakeStateClient{setErr: storeErr}
 	auth := &Auth{client: client}
 
-	_, err := auth.invokeAuthenticate(context.Background(), envelope{value: OIDCResponse{Subject: "issuer-user-id"}})
-	if !errors.Is(err, storeErr) {
-		t.Errorf("invokeAuthenticate() error = %v, want %v", err, storeErr)
-	}
+	_, err := auth.invokeAuthenticate(
+		context.Background(),
+		envelope{value: OIDCResponse{Subject: "issuer-user-id"}},
+	)
+	assert.ErrorIs(t, err, storeErr)
 }
 
 func TestInvokeBeginLoginStoresTransaction(t *testing.T) {
@@ -115,25 +102,18 @@ func TestInvokeBeginLoginStoresTransaction(t *testing.T) {
 	auth := &Auth{client: client, authorizer: authorizer}
 
 	response, err := auth.invokeBeginLogin(context.Background())
-	if err != nil {
-		t.Fatalf("invokeBeginLogin() error = %v", err)
-	}
-	if response.RedirectURL != authorizer.url {
-		t.Errorf("redirect URL = %q, want %q", response.RedirectURL, authorizer.url)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, authorizer.url, response.RedirectURL)
 	transaction := client.state.LoginTransaction
-	if transaction == nil || transaction.State == "" || transaction.Verifier == "" || transaction.Nonce == "" {
-		t.Errorf("stored transaction = %#v, want generated state, verifier, and nonce", transaction)
-	}
-	if transaction != nil && !transaction.ExpiresAt.After(time.Now()) {
-		t.Errorf("transaction expiry = %v, want future time", transaction.ExpiresAt)
-	}
-	if !authorizer.called {
-		t.Error("authorization URL builder was not called")
-	}
-	if !client.setCalled || client.setOpts == nil || client.setOpts.TTL != loginTransactionTTL {
-		t.Errorf("transaction was not stored with the expected TTL: %#v", client.setOpts)
-	}
+	require.NotNil(t, transaction)
+	assert.NotEmpty(t, transaction.State)
+	assert.NotEmpty(t, transaction.Verifier)
+	assert.NotEmpty(t, transaction.Nonce)
+	assert.True(t, transaction.ExpiresAt.After(time.Now()))
+	assert.True(t, authorizer.called)
+	assert.True(t, client.setCalled)
+	require.NotNil(t, client.setOpts)
+	assert.Equal(t, loginTransactionTTL, client.setOpts.TTL)
 }
 
 func TestInvokeCompleteLoginExchangesAndStoresSession(t *testing.T) {
@@ -155,27 +135,27 @@ func TestInvokeCompleteLoginExchangesAndStoresSession(t *testing.T) {
 	exchanger := &tokenExchangerStub{response: response}
 	auth := &Auth{client: client, exchanger: exchanger}
 
-	result, err := auth.invokeCompleteLogin(context.Background(), envelope{value: CompleteLoginRequest{
-		Code: "authorization-code", State: "state",
-	}})
-	if err != nil {
-		t.Fatalf("invokeCompleteLogin() error = %v", err)
-	}
-	if !exchanger.called || exchanger.code != "authorization-code" || exchanger.verifier != "verifier" || exchanger.nonce != "nonce" {
-		t.Errorf("exchanger input = %#v", exchanger)
-	}
-	if client.state.LoginTransaction != nil {
-		t.Error("login transaction was not cleared after successful authentication")
-	}
-	if !reflect.DeepEqual(client.state.OIDCResponse, response) {
-		t.Errorf("stored response = %#v, want %#v", client.state.OIDCResponse, response)
-	}
-	if client.setOpts == nil || client.setOpts.TTL != sessionTTL {
-		t.Errorf("authenticated session TTL = %#v, want %v", client.setOpts, sessionTTL)
-	}
-	if result.Subject != response.Subject || result.ExpiresAt != response.ExpiresAt {
-		t.Errorf("result = %#v, want response summary", result)
-	}
+	result, err := auth.invokeCompleteLogin(
+		context.Background(),
+		envelope{value: CompleteLoginRequest{
+			Code: "authorization-code", State: "state",
+		}},
+	)
+	require.NoError(t, err)
+	assert.True(t, exchanger.called)
+	assert.Equal(t, "authorization-code", exchanger.code)
+	assert.Equal(t, "verifier", exchanger.verifier)
+	assert.Equal(t, "nonce", exchanger.nonce)
+	assert.Nilf(
+		t,
+		client.state.LoginTransaction,
+		"login transaction was not cleared after successful authentication",
+	)
+	assert.Equal(t, response, client.state.OIDCResponse)
+	require.NotNil(t, client.setOpts)
+	assert.Equal(t, sessionTTL, client.setOpts.TTL)
+	assert.Equal(t, response.Subject, result.Subject)
+	assert.Equal(t, response.ExpiresAt, result.ExpiresAt)
 }
 
 func TestInvokeCompleteLoginRejectsMismatchedState(t *testing.T) {
@@ -188,12 +168,9 @@ func TestInvokeCompleteLoginRejectsMismatchedState(t *testing.T) {
 	_, err := auth.invokeCompleteLogin(context.Background(), envelope{value: CompleteLoginRequest{
 		Code: "authorization-code", State: "wrong-state",
 	}})
-	if err == nil {
-		t.Fatal("invokeCompleteLogin() error = nil, want state validation error")
-	}
-	if exchanger.called || client.setCalled {
-		t.Error("state mismatch exchanged or mutated the login transaction")
-	}
+	require.Error(t, err)
+	assert.False(t, exchanger.called)
+	assert.False(t, client.setCalled)
 }
 
 func TestInvokeSessionReturnsSafeSessionDetails(t *testing.T) {
@@ -211,9 +188,7 @@ func TestInvokeSessionReturnsSafeSessionDetails(t *testing.T) {
 	auth := &Auth{client: client}
 
 	result, err := auth.invokeSession(context.Background())
-	if err != nil {
-		t.Fatalf("invokeSession() error = %v", err)
-	}
+	require.NoError(t, err)
 
 	want := AuthenticateResult{
 		Subject:   "issuer-user-id",
@@ -222,12 +197,9 @@ func TestInvokeSessionReturnsSafeSessionDetails(t *testing.T) {
 		Groups:    []string{"speedtest-admins"},
 		ExpiresAt: expiresAt,
 	}
-	if !reflect.DeepEqual(result, want) {
-		t.Errorf("result = %#v, want %#v", result, want)
-	}
-	if client.haltCalled || client.deleteCalled {
-		t.Error("valid session was halted or deleted")
-	}
+	assert.Equal(t, want, result)
+	assert.False(t, client.haltCalled)
+	assert.False(t, client.deleteCalled)
 }
 
 func TestInvokeSessionRejectsStateWithoutAuthenticatedSession(t *testing.T) {
@@ -235,12 +207,9 @@ func TestInvokeSessionRejectsStateWithoutAuthenticatedSession(t *testing.T) {
 	auth := &Auth{client: client}
 
 	_, err := auth.invokeSession(context.Background())
-	if !errors.Is(err, errNoAuthenticatedSession) {
-		t.Errorf("invokeSession() error = %v, want %v", err, errNoAuthenticatedSession)
-	}
-	if client.haltCalled || client.deleteCalled {
-		t.Error("empty state was halted or deleted")
-	}
+	assert.ErrorIs(t, err, errNoAuthenticatedSession)
+	assert.False(t, client.haltCalled)
+	assert.False(t, client.deleteCalled)
 }
 
 func TestInvokeSessionRefreshesExpiringSession(t *testing.T) {
@@ -263,21 +232,14 @@ func TestInvokeSessionRefreshesExpiringSession(t *testing.T) {
 	auth := &Auth{client: client, refresher: refresher}
 
 	result, err := auth.invokeSession(context.Background())
-	if err != nil {
-		t.Fatalf("invokeSession() error = %v", err)
-	}
-	if !refresher.called {
-		t.Error("refresher was not called for an expiring session")
-	}
-	if client.state.OIDCResponse.AccessToken != "new-access-token" {
-		t.Errorf("stored access token = %q, want refreshed token", client.state.OIDCResponse.AccessToken)
-	}
-	if !client.setCalled || client.setOpts == nil || client.setOpts.TTL != sessionTTL {
-		t.Errorf("refreshed session TTL = %#v, want %v", client.setOpts, sessionTTL)
-	}
-	if got := result.(AuthenticateResult); got.ExpiresAt != newExpiry {
-		t.Errorf("session expiry = %v, want %v", got.ExpiresAt, newExpiry)
-	}
+	require.NoError(t, err)
+	assert.True(t, refresher.called)
+	assert.Equal(t, "new-access-token", client.state.OIDCResponse.AccessToken)
+	require.True(t, client.setCalled)
+	require.NotNil(t, client.setOpts)
+	assert.Equal(t, sessionTTL, client.setOpts.TTL)
+	got := result.(AuthenticateResult)
+	assert.Equal(t, newExpiry, got.ExpiresAt)
 }
 
 func TestInvokeSessionInvalidatesExpiredSessionWhenRefreshFails(t *testing.T) {
@@ -290,12 +252,9 @@ func TestInvokeSessionInvalidatesExpiredSessionWhenRefreshFails(t *testing.T) {
 	auth := &Auth{client: client, refresher: &tokenRefresherStub{err: refreshErr}}
 
 	_, err := auth.invokeSession(context.Background())
-	if !errors.Is(err, refreshErr) {
-		t.Errorf("invokeSession() error = %v, want %v", err, refreshErr)
-	}
-	if !client.haltCalled || !client.deleteCalled {
-		t.Error("expired session was not halted and deleted after refresh failed")
-	}
+	assert.ErrorIs(t, err, refreshErr)
+	assert.True(t, client.haltCalled)
+	assert.True(t, client.deleteCalled)
 }
 
 func TestInvokeSessionExpiresAndDeletesState(t *testing.T) {
@@ -306,15 +265,10 @@ func TestInvokeSessionExpiresAndDeletesState(t *testing.T) {
 	auth := &Auth{client: client}
 
 	_, err := auth.invokeSession(context.Background())
-	if err == nil || err.Error() != "expired session" {
-		t.Errorf("invokeSession() error = %v, want expired session", err)
-	}
-	if !client.haltCalled {
-		t.Error("Halt was not called for an expired session")
-	}
-	if !client.deleteCalled {
-		t.Error("DeleteState was not called for an expired session")
-	}
+	require.Error(t, err)
+	assert.Equal(t, "expired session", err.Error())
+	assert.True(t, client.haltCalled)
+	assert.True(t, client.deleteCalled)
 }
 
 func TestInvokeSessionReturnsStateReadError(t *testing.T) {
@@ -322,9 +276,7 @@ func TestInvokeSessionReturnsStateReadError(t *testing.T) {
 	auth := &Auth{client: &fakeStateClient{getErr: readErr}}
 
 	_, err := auth.invokeSession(context.Background())
-	if !errors.Is(err, readErr) {
-		t.Errorf("invokeSession() error = %v, want %v", err, readErr)
-	}
+	assert.ErrorIs(t, err, readErr)
 }
 
 type fakeStateClient struct {
@@ -342,7 +294,11 @@ func (f *fakeStateClient) GetState(context.Context) (authState, error) {
 	return f.state, f.getErr
 }
 
-func (f *fakeStateClient) SetState(_ context.Context, state authState, opts *actor.SetStateOpts) error {
+func (f *fakeStateClient) SetState(
+	_ context.Context,
+	state authState,
+	opts *actor.SetStateOpts,
+) error {
 	f.setCalled = true
 	f.setOpts = opts
 	if f.setErr != nil {
@@ -373,12 +329,18 @@ type authorizationURLBuilderStub struct {
 	called bool
 }
 
-func (a *authorizationURLBuilderStub) AuthorizationURL(_ context.Context, _ LoginTransaction) (string, error) {
+func (a *authorizationURLBuilderStub) AuthorizationURL(
+	_ context.Context,
+	_ LoginTransaction,
+) (string, error) {
 	a.called = true
 	return a.url, a.err
 }
 
-func (e *tokenExchangerStub) Exchange(_ context.Context, code, verifier, nonce string) (OIDCResponse, error) {
+func (e *tokenExchangerStub) Exchange(
+	_ context.Context,
+	code, verifier, nonce string,
+) (OIDCResponse, error) {
 	e.called = true
 	e.code = code
 	e.verifier = verifier

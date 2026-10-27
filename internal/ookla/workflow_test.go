@@ -11,6 +11,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
@@ -240,9 +243,7 @@ func TestSpeedtestWorkflow(t *testing.T) {
 				Runner:   runner,
 				Notifier: notifier,
 			})
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.NoError(t, err)
 			host := startWorkflowHost(t, wf)
 			service := wf.Service(host.Service())
 			result := results.Result{
@@ -251,56 +252,29 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			}
 
 			id, _, err := service.Start(t.Context(), RunWorkflow{Result: result})
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.NoError(t, err)
 			status := awaitWorkflowStatus(t, service, id)
-			if status.Status != tt.wantStatus {
-				t.Errorf(
-					"workflow status = %q, want %q (cause: %s)",
-					status.Status,
-					tt.wantStatus,
-					status.Cause,
-				)
-			}
-
-			if got := repo.freshCallCount(); got != tt.wantFreshCalls {
-				t.Errorf("Fresh calls = %d, want %d", got, tt.wantFreshCalls)
-			}
-			if got := runner.callCount(); got != tt.wantRunnerCalls {
-				t.Errorf("runner calls = %d, want %d", got, tt.wantRunnerCalls)
-			}
-			if got := runner.pickServerCallCount(); got != tt.wantPickServerCalls {
-				t.Errorf("PickServer calls = %d, want %d", got, tt.wantPickServerCalls)
-			}
-			if got := repo.updateCallCount(); got != tt.wantUpdateCalls {
-				t.Errorf("Update calls = %d, want %d", got, tt.wantUpdateCalls)
-			}
-			if got := notifier.phases(); !slices.Equal(got, tt.wantNotificationPhases) {
-				t.Errorf("notification phases = %v, want %v", got, tt.wantNotificationPhases)
-			}
+			assert.Equalf(t, tt.wantStatus, status.Status, "workflow cause: %s", status.Cause)
+			assert.Equal(t, tt.wantFreshCalls, repo.freshCallCount())
+			assert.Equal(t, tt.wantRunnerCalls, runner.callCount())
+			assert.Equal(t, tt.wantPickServerCalls, runner.pickServerCallCount())
+			assert.Equal(t, tt.wantUpdateCalls, repo.updateCallCount())
+			assert.Equal(t, tt.wantNotificationPhases, notifier.phases())
 			for step, want := range tt.wantAttempts {
-				if got := workflowStepAttempts(t, status, step); got != want {
-					t.Errorf("%s attempts = %d, want %d", step, got, want)
-				}
+				assert.Equalf(t, want, workflowStepAttempts(t, status, step), "%s attempts", step)
 			}
 			for step, want := range tt.wantStepStatus {
-				if got := workflowStepStatus(t, status, step); got != want {
-					t.Errorf("%s status = %q, want %q", step, got, want)
-				}
+				assert.Equalf(t, want, workflowStepStatus(t, status, step), "%s status", step)
 			}
 
-			if tt.wantRunnerCalls > 0 && runner.runServerID != 42 {
-				t.Errorf("runner server ID = %d, want 42", runner.runServerID)
+			if tt.wantRunnerCalls > 0 {
+				assert.Equal(t, 42, runner.runServerID)
 			}
 			if repo.updateCallCount() > 0 {
 				updated := repo.lastUpdatedResult()
-				if updated.ID != result.ID || !updated.Complete {
-					t.Errorf("stored result = %#v, want completed result %q", updated, result.ID)
-				}
-				if got := errorString(updated.Error); got != tt.wantResultError {
-					t.Errorf("stored result error = %q, want %q", got, tt.wantResultError)
-				}
+				assert.Equal(t, result.ID, updated.ID)
+				assert.True(t, updated.Complete)
+				assert.Equal(t, tt.wantResultError, errorString(updated.Error))
 			}
 		})
 	}
@@ -424,12 +398,8 @@ func startWorkflowHost(t *testing.T, wf *workflow.Workflow) *local.Host {
 		local.WithAlarmsPollInterval(100*time.Millisecond),
 		local.WithLogger(slog.New(slog.DiscardHandler)),
 	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := host.RegisterBuiltInActor(wf); err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
+	require.NoError(t, host.RegisterBuiltInActor(wf))
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errCh := make(chan error, 1)
@@ -438,17 +408,15 @@ func startWorkflowHost(t *testing.T, wf *workflow.Workflow) *local.Host {
 	case <-host.Ready():
 	case <-time.After(10 * time.Second):
 		cancel()
-		t.Fatal("workflow host did not become ready")
+		require.FailNow(t, "assertion failed", "workflow host did not become ready")
 	}
 	t.Cleanup(func() {
 		cancel()
 		select {
 		case err := <-errCh:
-			if err != nil && !errors.Is(err, context.Canceled) {
-				t.Errorf("workflow host stopped with error: %v", err)
-			}
+			assert.Truef(t, err == nil || errors.Is(err, context.Canceled), "workflow host stopped with error: %v", err)
 		case <-time.After(10 * time.Second):
-			t.Error("workflow host did not stop")
+			assert.Fail(t, "workflow host did not stop")
 		}
 	})
 	return host
@@ -458,13 +426,9 @@ func freeUDPAddress(t *testing.T) string {
 	t.Helper()
 
 	listener, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP("127.0.0.1")})
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 	address := listener.LocalAddr().String()
-	if err := listener.Close(); err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, listener.Close())
 	return address
 }
 
@@ -487,7 +451,7 @@ func awaitWorkflowStatus(
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
-	t.Fatalf(
+	require.FailNowf(t, "assertion failed",
 		"workflow %q did not finish; last status %q on step %q (%s)",
 		id,
 		last.Status,
@@ -504,7 +468,7 @@ func workflowStepAttempts(t *testing.T, status workflow.InstanceStatus, name str
 			return step.Attempts
 		}
 	}
-	t.Fatalf("workflow status has no %q step", name)
+	require.FailNowf(t, "assertion failed", "workflow status has no %q step", name)
 	return 0
 }
 
@@ -515,7 +479,7 @@ func workflowStepStatus(t *testing.T, status workflow.InstanceStatus, name strin
 			return step.Status
 		}
 	}
-	t.Fatalf("workflow status has no %q step", name)
+	require.FailNowf(t, "assertion failed", "workflow status has no %q step", name)
 	return ""
 }
 

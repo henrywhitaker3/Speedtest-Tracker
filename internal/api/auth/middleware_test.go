@@ -8,6 +8,7 @@ import (
 
 	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/labstack/echo/v5"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAdminMiddleware(t *testing.T) {
@@ -70,12 +71,22 @@ func TestAdminMiddleware(t *testing.T) {
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 
-			if rec.Code != tt.wantStatus {
-				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
-			}
-			if called != tt.wantCalled {
-				t.Errorf("handler called = %t, want %t", called, tt.wantCalled)
-			}
+			assert.Equalf(
+				t,
+				tt.wantStatus,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				tt.wantStatus,
+			)
+			assert.Equalf(
+				t,
+				tt.wantCalled,
+				called,
+				"handler called = %t, want %t",
+				called,
+				tt.wantCalled,
+			)
 		})
 	}
 }
@@ -104,19 +115,17 @@ func TestAdminMiddlewareRejectsAPIToken(t *testing.T) {
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusForbidden {
-		t.Errorf("status = %d, want %d", rec.Code, http.StatusForbidden)
-	}
-	if !tokenRepo.called || tokenRepo.token != "valid-api-token" {
-		t.Errorf(
-			"token validation = called %t with %q, want valid API token",
-			tokenRepo.called,
-			tokenRepo.token,
-		)
-	}
-	if called {
-		t.Error("admin handler was called for an API token")
-	}
+	assert.Equalf(
+		t,
+		http.StatusForbidden,
+		rec.Code,
+		"status = %d, want %d",
+		rec.Code,
+		http.StatusForbidden,
+	)
+	assert.True(t, tokenRepo.called)
+	assert.Equal(t, "valid-api-token", tokenRepo.token)
+	assert.False(t, called)
 }
 
 func TestAuthMiddlewareOptionallyAuthenticatesPublicRoute(t *testing.T) {
@@ -151,7 +160,13 @@ func TestAuthMiddlewareOptionallyAuthenticatesPublicRoute(t *testing.T) {
 			})...)
 			e.GET("/results", func(c *echo.Context) error {
 				if got := IsAdmin(c); got != tt.wantAdmin {
-					t.Errorf("IsAdmin() = %t, want %t", got, tt.wantAdmin)
+					assert.Failf(
+						t,
+						"assertion failed",
+						"IsAdmin() = %t, want %t",
+						got,
+						tt.wantAdmin,
+					)
 				}
 				return c.NoContent(http.StatusOK)
 			})
@@ -163,9 +178,14 @@ func TestAuthMiddlewareOptionallyAuthenticatesPublicRoute(t *testing.T) {
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 
-			if rec.Code != http.StatusOK {
-				t.Errorf("status = %d, want %d", rec.Code, http.StatusOK)
-			}
+			assert.Equalf(
+				t,
+				http.StatusOK,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				http.StatusOK,
+			)
 		})
 	}
 }

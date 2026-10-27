@@ -5,8 +5,10 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/italypaleale/francis/actor"
@@ -25,28 +27,31 @@ func TestCallbackInvokesAuthenticateForCookieSession(t *testing.T) {
 		ctx,
 		CallbackRequest{Code: "authorization-code", State: "state"},
 	)
-	if err != nil {
-		t.Fatalf("Handler() error = %v", err)
-	}
-	if got != nil {
-		t.Errorf("Handler() result = %#v, want nil", got)
-	}
-	if location := ctx.Response().Header().Get(echo.HeaderLocation); location != "https://speedtest.example/" {
-		t.Errorf("Location = %q, want dashboard", location)
-	}
-	if service.actorType != authactor.Actor {
-		t.Errorf("actor type = %q, want %q", service.actorType, authactor.Actor)
-	}
-	if service.actorID != "session-id" {
-		t.Errorf("actor ID = %q, want session cookie value", service.actorID)
-	}
-	if service.method != authactor.CompleteLogin {
-		t.Errorf("actor method = %q, want %q", service.method, authactor.CompleteLogin)
-	}
-	want := authactor.CompleteLoginRequest{Code: "authorization-code", State: "state"}
-	if !reflect.DeepEqual(service.data, want) {
-		t.Errorf("actor data = %#v, want %#v", service.data, want)
-	}
+	require.Equalf(t, nil, err, "Handler() error = %v", err)
+	assert.Nilf(t, got, "Handler() result = %#v, want nil", got)
+	assert.Equal(t, "https://speedtest.example/", ctx.Response().Header().Get(echo.HeaderLocation))
+	assert.Equalf(
+		t,
+		authactor.Actor,
+		service.actorType,
+		"actor type = %q, want %q",
+		service.actorType,
+		authactor.Actor,
+	)
+	assert.Equal(t, "session-id", service.actorID)
+	assert.Equalf(
+		t,
+		authactor.CompleteLogin,
+		service.method,
+		"actor method = %q, want %q",
+		service.method,
+		authactor.CompleteLogin,
+	)
+	require.Equal(
+		t,
+		authactor.CompleteLoginRequest{Code: "authorization-code", State: "state"},
+		service.data,
+	)
 }
 
 func TestCallbackRejectsMissingSessionCookie(t *testing.T) {
@@ -58,12 +63,9 @@ func TestCallbackRejectsMissingSessionCookie(t *testing.T) {
 		CallbackRequest{Code: "authorization-code", State: "state"},
 	)
 	var httpErr *echo.HTTPError
-	if !errors.As(err, &httpErr) || httpErr.Code != http.StatusUnauthorized {
-		t.Errorf("Handler() error = %v, want 401", err)
-	}
-	if service.invoked {
-		t.Error("actor was invoked without a session cookie")
-	}
+	require.ErrorAs(t, err, &httpErr)
+	assert.Equal(t, http.StatusUnauthorized, httpErr.Code)
+	assert.False(t, service.invoked)
 }
 
 func TestCallbackWrapsActorError(t *testing.T) {
@@ -75,9 +77,7 @@ func TestCallbackWrapsActorError(t *testing.T) {
 		callbackContext(t, "session-id"),
 		CallbackRequest{Code: "authorization-code", State: "state"},
 	)
-	if !errors.Is(err, invokeErr) {
-		t.Errorf("Handler() error = %v, want %v", err, invokeErr)
-	}
+	assert.ErrorIs(t, err, invokeErr)
 }
 
 func TestCallbackReturnsIssuerErrorWithoutInvokingActor(t *testing.T) {
@@ -89,12 +89,9 @@ func TestCallbackReturnsIssuerErrorWithoutInvokingActor(t *testing.T) {
 		CallbackRequest{Error: "access_denied"},
 	)
 	var httpErr *echo.HTTPError
-	if !errors.As(err, &httpErr) || httpErr.Code != http.StatusBadRequest {
-		t.Errorf("Handler() error = %v, want 400", err)
-	}
-	if service.invoked {
-		t.Error("callback invoked the actor after the issuer returned an error")
-	}
+	require.ErrorAs(t, err, &httpErr)
+	assert.Equal(t, http.StatusBadRequest, httpErr.Code)
+	assert.False(t, service.invoked)
 }
 
 func callbackContext(t *testing.T, sessionID string) *echo.Context {

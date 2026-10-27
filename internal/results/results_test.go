@@ -2,11 +2,12 @@ package results
 
 import (
 	"context"
-	"errors"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
@@ -18,26 +19,14 @@ func TestRepositoryCreateAndGet(t *testing.T) {
 	ctx := context.Background()
 
 	created, err := repo.Create(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if created.ID == (uuid.UUID{}) {
-		t.Fatal("created result has an empty ID")
-	}
-	if created.Complete {
-		t.Fatal("new result is marked complete")
-	}
+	require.NoError(t, err)
+	assert.NotEqual(t, uuid.UUID{}, created.ID)
+	assert.False(t, created.Complete)
 
 	got, err := repo.Get(ctx, created.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got.ID != created.ID {
-		t.Errorf("got ID %q, want %q", got.ID, created.ID)
-	}
-	if got.Complete {
-		t.Fatal("stored result is marked complete")
-	}
+	require.NoError(t, err)
+	assert.Equal(t, created.ID, got.ID)
+	assert.False(t, got.Complete)
 }
 
 func TestRepositoryUpdateAndFresh(t *testing.T) {
@@ -45,9 +34,7 @@ func TestRepositoryUpdateAndFresh(t *testing.T) {
 	ctx := context.Background()
 
 	result, err := repo.Create(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	result.Ping = new(12.5)
 	result.Download = new(int64(123_456))
@@ -57,47 +44,31 @@ func TestRepositoryUpdateAndFresh(t *testing.T) {
 	result.ServerName = new("Example Server")
 	result.URL = new("https://www.speedtest.net/result/42")
 	result.Complete = true
-	if err := repo.Update(ctx, result); err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, repo.Update(ctx, result))
 
 	stored, err := repo.Get(ctx, result.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if stored.Ping == nil || *stored.Ping != 12.5 {
-		t.Errorf("stored ping = %v, want 12.5", stored.Ping)
-	}
-	if stored.Download == nil || *stored.Download != 123_456 {
-		t.Errorf("stored download = %v, want 123456.7", stored.Download)
-	}
-	if stored.ServerName == nil || *stored.ServerName != "Example Server" {
-		t.Errorf("stored server name = %v, want Example Server", stored.ServerName)
-	}
-	if !stored.Complete {
-		t.Fatal("stored result is not complete")
-	}
+	require.NoError(t, err)
+	require.NotNil(t, stored.Ping)
+	assert.Equal(t, 12.5, *stored.Ping)
+	require.NotNil(t, stored.Download)
+	assert.Equal(t, int64(123_456), *stored.Download)
+	require.NotNil(t, stored.ServerName)
+	assert.Equal(t, "Example Server", *stored.ServerName)
+	assert.True(t, stored.Complete)
 
 	result.Ping = new(0.0)
 	result.Complete = false
-	if err := repo.Fresh(ctx, result); err != nil {
-		t.Fatal(err)
-	}
-	if result.Ping == nil || *result.Ping != 12.5 {
-		t.Errorf("fresh ping = %v, want 12.5", result.Ping)
-	}
-	if !result.Complete {
-		t.Fatal("fresh result is not complete")
-	}
+	require.NoError(t, repo.Fresh(ctx, result))
+	require.NotNil(t, result.Ping)
+	assert.Equal(t, 12.5, *result.Ping)
+	assert.True(t, result.Complete)
 }
 
 func TestRepositoryGetMissing(t *testing.T) {
 	repo := testRepository(t)
 
 	_, err := repo.Get(context.Background(), uuid.MustOrdered())
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		t.Errorf("Get() error = %v, want record-not-found error", err)
-	}
+	assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
 }
 
 func TestRepositoryListPaginatesNewestFirst(t *testing.T) {
@@ -107,79 +78,36 @@ func TestRepositoryListPaginatesNewestFirst(t *testing.T) {
 	created := make([]*Result, 3)
 	for i := range created {
 		result, err := repo.Create(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
+		require.NoError(t, err)
 		created[i] = result
 	}
 
 	firstPage, err := repo.List(ctx, ListOpts{Page: 1, Limit: 2})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if firstPage.Page != 1 || firstPage.Limit != 2 {
-		t.Errorf(
-			"first page metadata = page %d, limit %d; want page 1, limit 2",
-			firstPage.Page,
-			firstPage.Limit,
-		)
-	}
-	if firstPage.Total != 3 || firstPage.TotalPages != 2 {
-		t.Errorf(
-			"first page totals = %d rows, %d pages; want 3 rows, 2 pages",
-			firstPage.Total,
-			firstPage.TotalPages,
-		)
-	}
-	if len(firstPage.Data) != 2 {
-		t.Fatalf("first page has %d results, want 2", len(firstPage.Data))
-	}
-	if firstPage.Data[0].ID != created[2].ID || firstPage.Data[1].ID != created[1].ID {
-		t.Errorf(
-			"first page IDs = [%q %q], want [%q %q]",
-			firstPage.Data[0].ID,
-			firstPage.Data[1].ID,
-			created[2].ID,
-			created[1].ID,
-		)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, 1, firstPage.Page)
+	assert.Equal(t, 2, firstPage.Limit)
+	assert.Equal(t, int64(3), firstPage.Total)
+	assert.Equal(t, 2, firstPage.TotalPages)
+	require.Len(t, firstPage.Data, 2)
+	assert.Equal(t, created[2].ID, firstPage.Data[0].ID)
+	assert.Equal(t, created[1].ID, firstPage.Data[1].ID)
 
 	secondPage, err := repo.List(ctx, ListOpts{Page: 2, Limit: 2})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(secondPage.Data) != 1 {
-		t.Fatalf("second page has %d results, want 1", len(secondPage.Data))
-	}
-	if secondPage.Data[0].ID != created[0].ID {
-		t.Errorf("second page ID = %q, want %q", secondPage.Data[0].ID, created[0].ID)
-	}
+	require.NoError(t, err)
+	require.Len(t, secondPage.Data, 1)
+	assert.Equal(t, created[0].ID, secondPage.Data[0].ID)
 }
 
 func TestRepositoryListUsesDefaultPaginationForEmptyResults(t *testing.T) {
 	repo := testRepository(t)
 
 	page, err := repo.List(context.Background(), ListOpts{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if page.Page != 1 || page.Limit != 25 {
-		t.Errorf(
-			"default metadata = page %d, limit %d; want page 1, limit 25",
-			page.Page,
-			page.Limit,
-		)
-	}
-	if page.Total != 0 || page.TotalPages != 0 {
-		t.Errorf(
-			"empty page totals = %d rows, %d pages; want 0 rows, 0 pages",
-			page.Total,
-			page.TotalPages,
-		)
-	}
-	if len(page.Data) != 0 {
-		t.Errorf("empty page has %d results, want 0", len(page.Data))
-	}
+	require.NoError(t, err)
+	assert.Equal(t, 1, page.Page)
+	assert.Equal(t, 25, page.Limit)
+	assert.Zero(t, page.Total)
+	assert.Zero(t, page.TotalPages)
+	assert.Empty(t, page.Data)
 }
 
 func TestRepositoryTimeseriesQueriesResults(t *testing.T) {
@@ -187,38 +115,23 @@ func TestRepositoryTimeseriesQueriesResults(t *testing.T) {
 	ctx := context.Background()
 
 	complete, err := repo.Create(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 	complete.Ping = new(12.5)
 	complete.Download = new(int64(123_456))
 	complete.Upload = new(int64(98_765))
 	complete.Complete = true
-	if err := repo.Update(ctx, complete); err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, repo.Update(ctx, complete))
 
 	incomplete, err := repo.Create(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	stats, err := repo.Timeseries(ctx, time.Hour)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(stats) != 1 {
-		t.Fatalf("timeseries returned %d stats, want 1", len(stats))
-	}
-	if stats[0].ID != complete.ID {
-		t.Errorf("timeseries result ID = %q, want %q", stats[0].ID, complete.ID)
-	}
-	if stats[0].Ping == nil || *stats[0].Ping != *complete.Ping {
-		t.Errorf("timeseries ping = %v, want %v", stats[0].Ping, complete.Ping)
-	}
-	if incomplete.Complete {
-		t.Fatal("test fixture should remain incomplete")
-	}
+	require.NoError(t, err)
+	require.Len(t, stats, 1)
+	assert.Equal(t, complete.ID, stats[0].ID)
+	require.NotNil(t, stats[0].Ping)
+	assert.Equal(t, *complete.Ping, *stats[0].Ping)
+	assert.False(t, incomplete.Complete)
 }
 
 func TestRepositoryForgetDeletesExpiredResults(t *testing.T) {
@@ -226,40 +139,26 @@ func TestRepositoryForgetDeletesExpiredResults(t *testing.T) {
 	ctx := context.Background()
 
 	expired, err := repo.Create(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 	current, err := repo.Create(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
-	if err := repo.db.Model(&Result{}).
+	require.NoError(t, repo.db.Model(&Result{}).
 		Where("id = ?", expired.ID).
-		Update("created_at", time.Now().Add(-2*time.Hour)).Error; err != nil {
-		t.Fatal(err)
-	}
-	if err := repo.db.Model(&Result{}).
+		Update("created_at", time.Now().Add(-2*time.Hour)).Error)
+	require.NoError(t, repo.db.Model(&Result{}).
 		Where("id = ?", current.ID).
-		Update("created_at", time.Now().Add(-30*time.Minute)).Error; err != nil {
-		t.Fatal(err)
-	}
+		Update("created_at", time.Now().Add(-30*time.Minute)).Error)
 
 	deleted, err := repo.Forget(ctx, time.Hour)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if deleted != 1 {
-		t.Errorf("Forget() deleted %d results, want 1", deleted)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, 1, deleted)
 
 	var deletedResult Result
-	if err := repo.db.Unscoped().Where("id = ?", expired.ID).First(&deletedResult).Error; !errors.Is(err, gorm.ErrRecordNotFound) {
-		t.Errorf("expired result unscoped lookup error = %v, want record-not-found error", err)
-	}
-	if _, err := repo.Get(ctx, current.ID); err != nil {
-		t.Errorf("current result Get() error = %v, want nil", err)
-	}
+	err = repo.db.Unscoped().Where("id = ?", expired.ID).First(&deletedResult).Error
+	assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
+	_, err = repo.Get(ctx, current.ID)
+	assert.NoError(t, err)
 }
 
 func TestRepositoryForgetWithZeroPeriodDeletesAllResults(t *testing.T) {
@@ -267,26 +166,17 @@ func TestRepositoryForgetWithZeroPeriodDeletesAllResults(t *testing.T) {
 	ctx := context.Background()
 
 	for range 2 {
-		if _, err := repo.Create(ctx); err != nil {
-			t.Fatal(err)
-		}
+		_, err := repo.Create(ctx)
+		require.NoError(t, err)
 	}
 
 	deleted, err := repo.Forget(ctx, 0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if deleted != 2 {
-		t.Errorf("Forget() with zero period deleted %d results, want 2", deleted)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, 2, deleted)
 
 	var remaining int64
-	if err := repo.db.Unscoped().Model(&Result{}).Count(&remaining).Error; err != nil {
-		t.Fatal(err)
-	}
-	if remaining != 0 {
-		t.Errorf("remaining results after Forget() with zero period = %d, want 0", remaining)
-	}
+	require.NoError(t, repo.db.Unscoped().Model(&Result{}).Count(&remaining).Error)
+	assert.Zero(t, remaining)
 }
 
 func TestRepositoryRestoreBatchesAndSkipsDuplicateCreatedAt(t *testing.T) {
@@ -295,9 +185,7 @@ func TestRepositoryRestoreBatchesAndSkipsDuplicateCreatedAt(t *testing.T) {
 
 	first := time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)
 	existing := restoreResult(first)
-	if err := repo.db.Create(&existing).Error; err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, repo.db.Create(&existing).Error)
 
 	toRestore := []Result{restoreResult(first)}
 	for i := 1; i <= restoreBatchSize+1; i++ {
@@ -306,23 +194,13 @@ func TestRepositoryRestoreBatchesAndSkipsDuplicateCreatedAt(t *testing.T) {
 	toRestore = append(toRestore, restoreResult(first.Add(time.Second)))
 
 	restored, skipped, err := repo.Restore(ctx, toRestore)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if restored != restoreBatchSize+1 {
-		t.Errorf("Restore() restored %d results, want %d", restored, restoreBatchSize+1)
-	}
-	if skipped != 2 {
-		t.Errorf("Restore() skipped %d results, want 2", skipped)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, restoreBatchSize+1, restored)
+	assert.Equal(t, 2, skipped)
 
 	var count int64
-	if err := repo.db.Model(&Result{}).Count(&count).Error; err != nil {
-		t.Fatal(err)
-	}
-	if count != int64(restoreBatchSize+2) {
-		t.Errorf("stored result count = %d, want %d", count, restoreBatchSize+2)
-	}
+	require.NoError(t, repo.db.Model(&Result{}).Count(&count).Error)
+	assert.EqualValues(t, restoreBatchSize+2, count)
 }
 
 func TestRepositoryRestoreSkipsDuplicateCreatedAtWithinBatch(t *testing.T) {
@@ -334,23 +212,13 @@ func TestRepositoryRestoreSkipsDuplicateCreatedAtWithinBatch(t *testing.T) {
 		restoreResult(createdAt),
 		restoreResult(createdAt),
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if restored != 1 {
-		t.Errorf("Restore() restored %d results, want 1", restored)
-	}
-	if skipped != 1 {
-		t.Errorf("Restore() skipped %d results, want 1", skipped)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, 1, restored)
+	assert.Equal(t, 1, skipped)
 
 	var count int64
-	if err := repo.db.Model(&Result{}).Count(&count).Error; err != nil {
-		t.Fatal(err)
-	}
-	if count != 1 {
-		t.Errorf("stored result count = %d, want 1", count)
-	}
+	require.NoError(t, repo.db.Model(&Result{}).Count(&count).Error)
+	assert.EqualValues(t, 1, count)
 }
 
 func restoreResult(createdAt time.Time) Result {
@@ -364,39 +232,25 @@ func restoreResult(createdAt time.Time) Result {
 
 func TestRegisterCreatesTimeseriesIndex(t *testing.T) {
 	db, err := database.Sqlite(filepath.Join(t.TempDir(), "results.db"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := Register(db); err != nil {
-		t.Fatal(err)
-	}
-	if !db.Migrator().HasIndex(&Result{}, "idx_results_timeseries") {
-		t.Fatal("timeseries index was not created")
-	}
+	require.NoError(t, err)
+	require.NoError(t, Register(db))
+	require.True(t, db.Migrator().HasIndex(&Result{}, "idx_results_timeseries"))
 
 	var definition string
-	if err := db.Raw(
+	require.NoError(t, db.Raw(
 		"SELECT sql FROM sqlite_master WHERE type = 'index' AND name = ?",
 		"idx_results_timeseries",
-	).Scan(&definition).Error; err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(definition, "created_at") ||
-		!strings.Contains(definition, "complete = true AND deleted_at IS NULL") {
-		t.Fatalf("timeseries index definition = %q", definition)
-	}
+	).Scan(&definition).Error)
+	assert.Contains(t, definition, "created_at")
+	assert.Contains(t, definition, "complete = true AND deleted_at IS NULL")
 }
 
 func testRepository(t *testing.T) *Repository {
 	t.Helper()
 
 	db, err := database.Sqlite(filepath.Join(t.TempDir(), "results.db"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := Register(db); err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
+	require.NoError(t, Register(db))
 
 	return NewRepo(db)
 }

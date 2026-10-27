@@ -3,8 +3,9 @@ package speedtest
 import (
 	"context"
 	"errors"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
@@ -45,15 +46,16 @@ func TestGetHandler(t *testing.T) {
 			request := GetRequest{ID: uuid.MustOrdered()}
 
 			got, err := handler(testContext(t), request)
-			if !errors.Is(err, tt.wantErr) {
-				t.Errorf("Handler() error = %v, want %v", err, tt.wantErr)
-			}
-			if !reflect.DeepEqual(got, tt.wantResult) {
-				t.Errorf("Handler() result = %v, want %v", got, tt.wantResult)
-			}
-			if repo.id != request.ID {
-				t.Errorf("repository ID = %q, want %q", repo.id, request.ID)
-			}
+			assert.ErrorIs(t, err, tt.wantErr)
+			assert.Equal(t, tt.wantResult, got)
+			assert.Equalf(
+				t,
+				request.ID,
+				repo.id,
+				"repository ID = %q, want %q",
+				repo.id,
+				request.ID,
+			)
 		})
 	}
 }
@@ -64,7 +66,10 @@ type workflowCheckerStub struct {
 	id     string
 }
 
-func (w *workflowCheckerStub) GetStatus(_ context.Context, id string) (workflow.InstanceStatus, error) {
+func (w *workflowCheckerStub) GetStatus(
+	_ context.Context,
+	id string,
+) (workflow.InstanceStatus, error) {
 	w.id = id
 	return w.status, w.err
 }

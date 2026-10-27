@@ -7,7 +7,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
 	"time"
+
+	"github.com/stretchr/testify/assert"
 
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
@@ -37,9 +40,29 @@ func TestRunHandler(t *testing.T) {
 		wantStart      bool
 		wantDelete     bool
 	}{
-		{name: "creates a result and starts its workflow", limiterAllowed: true, wantID: result.ID, wantCreate: true, wantStart: true},
-		{name: "wraps result creation errors", limiterAllowed: true, createErr: createErr, wantErr: createErr, wantCreate: true},
-		{name: "wraps workflow start errors and deletes the result", limiterAllowed: true, startErr: startErr, wantErr: startErr, wantCreate: true, wantStart: true, wantDelete: true},
+		{
+			name:           "creates a result and starts its workflow",
+			limiterAllowed: true,
+			wantID:         result.ID,
+			wantCreate:     true,
+			wantStart:      true,
+		},
+		{
+			name:           "wraps result creation errors",
+			limiterAllowed: true,
+			createErr:      createErr,
+			wantErr:        createErr,
+			wantCreate:     true,
+		},
+		{
+			name:           "wraps workflow start errors and deletes the result",
+			limiterAllowed: true,
+			startErr:       startErr,
+			wantErr:        startErr,
+			wantCreate:     true,
+			wantStart:      true,
+			wantDelete:     true,
+		},
 		{name: "rejects rate limited request", wantErr: echo.ErrTooManyRequests},
 		{name: "rejects limiter error", limiterErr: limiterErr, wantErr: echo.ErrTooManyRequests},
 	}
@@ -52,33 +75,62 @@ func TestRunHandler(t *testing.T) {
 			handler := (&runHandler{repo: repo, workflow: workflow, limiter: limiter}).Handler()
 
 			got, err := handler(testContext(t), nil)
-			if !errors.Is(err, tt.wantErr) {
-				t.Errorf("Handler() error = %v, want %v", err, tt.wantErr)
-			}
+			assert.ErrorIs(t, err, tt.wantErr)
 			if tt.wantErr == nil && (got == nil || got.ID != tt.wantID) {
-				t.Errorf("Handler() result = %v, want ID %q", got, tt.wantID)
+				assert.Failf(
+					t,
+					"assertion failed",
+					"Handler() result = %v, want ID %q",
+					got,
+					tt.wantID,
+				)
 			}
-			if repo.called != tt.wantCreate {
-				t.Errorf("Create called = %t, want %t", repo.called, tt.wantCreate)
-			}
-			if workflow.called != tt.wantStart {
-				t.Errorf("workflow Start called = %t, want %t", workflow.called, tt.wantStart)
-			}
-			if repo.deleteCalled != tt.wantDelete {
-				t.Errorf("Delete called = %t, want %t", repo.deleteCalled, tt.wantDelete)
-			}
+			assert.Equalf(
+				t,
+				tt.wantCreate,
+				repo.called,
+				"Create called = %t, want %t",
+				repo.called,
+				tt.wantCreate,
+			)
+			assert.Equalf(
+				t,
+				tt.wantStart,
+				workflow.called,
+				"workflow Start called = %t, want %t",
+				workflow.called,
+				tt.wantStart,
+			)
+			assert.Equalf(
+				t,
+				tt.wantDelete,
+				repo.deleteCalled,
+				"Delete called = %t, want %t",
+				repo.deleteCalled,
+				tt.wantDelete,
+			)
 			if tt.wantDelete && repo.deletedID != result.ID {
-				t.Errorf("deleted result ID = %q, want %q", repo.deletedID, result.ID)
+				assert.Failf(
+					t,
+					"assertion failed",
+					"deleted result ID = %q, want %q",
+					repo.deletedID,
+					result.ID,
+				)
 			}
 			if tt.wantStart {
 				input, ok := workflow.input.(ookla.RunWorkflow)
 				if !ok || input.Result.ID != result.ID {
-					t.Errorf("workflow input = %#v, want result %q", workflow.input, result.ID)
+					assert.Failf(
+						t,
+						"assertion failed",
+						"workflow input = %#v, want result %q",
+						workflow.input,
+						result.ID,
+					)
 				}
 			}
-			if limiter.key != "test" {
-				t.Errorf("limiter key = %q, want %q", limiter.key, "test")
-			}
+			assert.Equal(t, "test", limiter.key)
 		})
 	}
 }
@@ -96,11 +148,38 @@ func TestRunEndpointAuthentication(t *testing.T) {
 		wantSessionCall bool
 		wantTokenCall   bool
 	}{
-		{name: "rejects a request without a browser session cookie", wantStatus: http.StatusUnauthorized},
-		{name: "rejects a browser session without authenticated state", withCookie: true, sessionErr: errors.New("no authenticated session"), wantStatus: http.StatusUnauthorized, wantSessionCall: true},
-		{name: "allows an authenticated session", withCookie: true, wantStatus: http.StatusOK, wantRunCall: true, wantSessionCall: true},
-		{name: "rejects an invalid API token", authorization: "Bearer invalid-token", tokenErr: errors.New("token not found"), wantStatus: http.StatusUnauthorized, wantTokenCall: true},
-		{name: "allows a valid API token without a browser session", authorization: "Bearer valid-token", wantStatus: http.StatusOK, wantRunCall: true, wantTokenCall: true},
+		{
+			name:       "rejects a request without a browser session cookie",
+			wantStatus: http.StatusUnauthorized,
+		},
+		{
+			name:            "rejects a browser session without authenticated state",
+			withCookie:      true,
+			sessionErr:      errors.New("no authenticated session"),
+			wantStatus:      http.StatusUnauthorized,
+			wantSessionCall: true,
+		},
+		{
+			name:            "allows an authenticated session",
+			withCookie:      true,
+			wantStatus:      http.StatusOK,
+			wantRunCall:     true,
+			wantSessionCall: true,
+		},
+		{
+			name:          "rejects an invalid API token",
+			authorization: "Bearer invalid-token",
+			tokenErr:      errors.New("token not found"),
+			wantStatus:    http.StatusUnauthorized,
+			wantTokenCall: true,
+		},
+		{
+			name:          "allows a valid API token without a browser session",
+			authorization: "Bearer valid-token",
+			wantStatus:    http.StatusOK,
+			wantRunCall:   true,
+			wantTokenCall: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -142,20 +221,46 @@ func TestRunEndpointAuthentication(t *testing.T) {
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 
-			if rec.Code != tt.wantStatus {
-				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
-			}
-			if runner.called != tt.wantRunCall {
-				t.Errorf("workflow Start called = %t, want %t", runner.called, tt.wantRunCall)
-			}
-			if service.sessionCalled != tt.wantSessionCall {
-				t.Errorf("session actor called = %t, want %t", service.sessionCalled, tt.wantSessionCall)
-			}
-			if tokenRepo.called != tt.wantTokenCall {
-				t.Errorf("token repository called = %t, want %t", tokenRepo.called, tt.wantTokenCall)
-			}
-			if tt.wantTokenCall && tokenRepo.token != strings.TrimPrefix(tt.authorization, "Bearer ") {
-				t.Errorf("token = %q, want bearer token from request", tokenRepo.token)
+			assert.Equalf(
+				t,
+				tt.wantStatus,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				tt.wantStatus,
+			)
+			assert.Equalf(
+				t,
+				tt.wantRunCall,
+				runner.called,
+				"workflow Start called = %t, want %t",
+				runner.called,
+				tt.wantRunCall,
+			)
+			assert.Equalf(
+				t,
+				tt.wantSessionCall,
+				service.sessionCalled,
+				"session actor called = %t, want %t",
+				service.sessionCalled,
+				tt.wantSessionCall,
+			)
+			assert.Equalf(
+				t,
+				tt.wantTokenCall,
+				tokenRepo.called,
+				"token repository called = %t, want %t",
+				tokenRepo.called,
+				tt.wantTokenCall,
+			)
+			if tt.wantTokenCall &&
+				tokenRepo.token != strings.TrimPrefix(tt.authorization, "Bearer ") {
+				assert.Failf(
+					t,
+					"assertion failed",
+					"token = %q, want bearer token from request",
+					tokenRepo.token,
+				)
 			}
 		})
 	}
@@ -187,7 +292,11 @@ type workflowRunnerStub struct {
 	called bool
 }
 
-func (r *workflowRunnerStub) Start(_ context.Context, input any, _ ...workflow.StartOption) (string, bool, error) {
+func (r *workflowRunnerStub) Start(
+	_ context.Context,
+	input any,
+	_ ...workflow.StartOption,
+) (string, bool, error) {
 	r.called = true
 	r.input = input
 	return "workflow-id", true, r.err

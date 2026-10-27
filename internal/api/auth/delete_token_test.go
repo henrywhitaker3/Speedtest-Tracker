@@ -8,6 +8,7 @@ import (
 
 	windowhttp "github.com/henrywhitaker3/windowframe/v2/http"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteTokenHandlerRequiresAuthentication(t *testing.T) {
@@ -35,12 +36,15 @@ func TestDeleteTokenHandlerRequiresAuthentication(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("status = %d, want %d", rec.Code, http.StatusUnauthorized)
-	}
-	if repo.called {
-		t.Error("repository Delete was called without authentication")
-	}
+	assert.Equalf(
+		t,
+		http.StatusUnauthorized,
+		rec.Code,
+		"status = %d, want %d",
+		rec.Code,
+		http.StatusUnauthorized,
+	)
+	assert.False(t, repo.called)
 }
 
 type deleteTokenRepoStub struct {

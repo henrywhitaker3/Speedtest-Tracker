@@ -7,6 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	windowhttp "github.com/henrywhitaker3/windowframe/v2/http"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
@@ -17,22 +20,20 @@ func TestDeleteHandlerDeletesResult(t *testing.T) {
 	repo := &resultDeleteRepoStub{}
 
 	_, err := (&deleteHandler{repo: repo}).Handler()(testContext(t), DeleteRequest{ID: id})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !repo.called || repo.id != id {
-		t.Errorf("Delete called = %t with ID %q, want true and %q", repo.called, repo.id, id)
-	}
+	require.NoError(t, err)
+	assert.True(t, repo.called)
+	assert.Equal(t, id, repo.id)
 }
 
 func TestDeleteHandlerWrapsRepositoryError(t *testing.T) {
 	want := errors.New("delete result")
 	repo := &resultDeleteRepoStub{err: want}
 
-	_, err := (&deleteHandler{repo: repo}).Handler()(testContext(t), DeleteRequest{ID: uuid.MustOrdered()})
-	if !errors.Is(err, want) {
-		t.Errorf("Handler() error = %v, want %v", err, want)
-	}
+	_, err := (&deleteHandler{repo: repo}).Handler()(
+		testContext(t),
+		DeleteRequest{ID: uuid.MustOrdered()},
+	)
+	assert.ErrorIs(t, err, want)
 }
 
 func TestDeleteEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
@@ -81,19 +82,33 @@ func TestDeleteEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 			}
 			h.Register(&deleteHandler{repo: repo})
 
-			req := httptest.NewRequest(http.MethodDelete, "/v1/speedtest/"+uuid.MustOrdered().String(), nil)
+			req := httptest.NewRequest(
+				http.MethodDelete,
+				"/v1/speedtest/"+uuid.MustOrdered().String(),
+				nil,
+			)
 			if tt.withCookie {
 				req.AddCookie(&http.Cookie{Name: "__Host-speedtest-session", Value: "session-id"})
 			}
 			rec := httptest.NewRecorder()
 			h.ServeHTTP(rec, req)
 
-			if rec.Code != tt.wantStatus {
-				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
-			}
-			if repo.called != tt.wantDelete {
-				t.Errorf("Delete called = %t, want %t", repo.called, tt.wantDelete)
-			}
+			assert.Equalf(
+				t,
+				tt.wantStatus,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				tt.wantStatus,
+			)
+			assert.Equalf(
+				t,
+				tt.wantDelete,
+				repo.called,
+				"Delete called = %t, want %t",
+				repo.called,
+				tt.wantDelete,
+			)
 		})
 	}
 }

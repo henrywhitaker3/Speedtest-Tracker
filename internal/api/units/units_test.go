@@ -1,6 +1,10 @@
 package units
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestBitsHuman(t *testing.T) {
 	tests := []struct {
@@ -16,9 +20,7 @@ func TestBitsHuman(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := BitsHuman(tt.bits); got != tt.want {
-				t.Errorf("BitsHuman(%d) = %q, want %q", tt.bits, got, tt.want)
-			}
+			assert.Equal(t, tt.want, BitsHuman(tt.bits))
 		})
 	}
 }

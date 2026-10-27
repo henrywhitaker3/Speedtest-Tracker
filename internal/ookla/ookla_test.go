@@ -9,6 +9,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 )
 
@@ -56,20 +59,15 @@ func TestDownloadURLForPlatform(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := downloadURLForPlatform(version, tt.goos, tt.goarch)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if got != tt.want {
-				t.Errorf("downloadURLForPlatform() = %q, want %q", got, tt.want)
-			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
 func TestDownloadURLForPlatformRejectsUnsupportedPlatform(t *testing.T) {
-	if _, err := downloadURLForPlatform("1.2.0", "windows", "amd64"); err == nil {
-		t.Fatal("downloadURLForPlatform() succeeded for an unsupported platform")
-	}
+	_, err := downloadURLForPlatform("1.2.0", "windows", "amd64")
+	require.Error(t, err)
 }
 
 func TestExtractBinary(t *testing.T) {
@@ -78,51 +76,30 @@ func TestExtractBinary(t *testing.T) {
 	var archive bytes.Buffer
 	gzipWriter := gzip.NewWriter(&archive)
 	tarWriter := tar.NewWriter(gzipWriter)
-	if err := tarWriter.WriteHeader(
+	require.NoError(t, tarWriter.WriteHeader(
 		&tar.Header{Name: "speedtest", Mode: 0o755, Size: int64(len(contents))},
-	); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := tarWriter.Write([]byte(contents)); err != nil {
-		t.Fatal(err)
-	}
-	if err := tarWriter.Close(); err != nil {
-		t.Fatal(err)
-	}
-	if err := gzipWriter.Close(); err != nil {
-		t.Fatal(err)
-	}
+	))
+	_, err := tarWriter.Write([]byte(contents))
+	require.NoError(t, err)
+	require.NoError(t, tarWriter.Close())
+	require.NoError(t, gzipWriter.Close())
 
 	destination := filepath.Join(t.TempDir(), "missing", "speedtest")
-	if err := extractBinary(&archive, destination); err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, extractBinary(&archive, destination))
 
 	got, err := os.ReadFile(destination)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(got) != contents {
-		t.Errorf("extracted contents = %q, want %q", got, contents)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, contents, string(got))
 
 	info, err := os.Stat(destination)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if permissions := info.Mode().Perm(); permissions != 0o755 {
-		t.Errorf("permissions = %o, want 755", permissions)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, os.FileMode(0o755), info.Mode().Perm())
 }
 
 func TestOoklaOutputUnmarshalsFractionalPacketLoss(t *testing.T) {
 	const packetLoss = 0.43859649122807015
 
 	var output results.SpeedtestOutput
-	if err := json.Unmarshal([]byte(`{"packetLoss":0.43859649122807015}`), &output); err != nil {
-		t.Fatal(err)
-	}
-	if output.PacketLoss != packetLoss {
-		t.Errorf("packet loss = %v, want %v", output.PacketLoss, packetLoss)
-	}
+	require.NoError(t, json.Unmarshal([]byte(`{"packetLoss":0.43859649122807015}`), &output))
+	assert.Equal(t, packetLoss, output.PacketLoss)
 }

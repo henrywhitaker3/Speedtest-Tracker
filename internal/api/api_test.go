@@ -9,6 +9,9 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/italypaleale/francis/actor"
@@ -34,12 +37,12 @@ func TestAuthMiddlewareRouteConfiguration(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.method+" "+tt.path, func(t *testing.T) {
-			if got := hasProtectedRoute(authRoutes(), tt.method, tt.path); got != tt.auth {
-				t.Errorf("authenticated = %t, want %t", got, tt.auth)
-			}
-			if got := hasProtectedRoute(adminRoutes(), tt.method, tt.path); got != tt.adminOnly {
-				t.Errorf("admin-only = %t, want %t", got, tt.adminOnly)
-			}
+			assert.Equal(t, tt.auth, hasProtectedRoute(authRoutes(), tt.method, tt.path))
+			assert.Equal(
+				t,
+				tt.adminOnly,
+				hasProtectedRoute(adminRoutes(), tt.method, tt.path),
+			)
 		})
 	}
 }
@@ -103,12 +106,22 @@ func TestNotificationsEndpointAccess(t *testing.T) {
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 
-			if rec.Code != tt.wantStatus {
-				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
-			}
-			if called != tt.wantCalled {
-				t.Errorf("handler called = %t, want %t", called, tt.wantCalled)
-			}
+			assert.Equalf(
+				t,
+				tt.wantStatus,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				tt.wantStatus,
+			)
+			assert.Equalf(
+				t,
+				tt.wantCalled,
+				called,
+				"handler called = %t, want %t",
+				called,
+				tt.wantCalled,
+			)
 		})
 	}
 }
@@ -185,14 +198,24 @@ func TestCORSMiddleware(t *testing.T) {
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 
-			if rec.Code != tt.status {
-				t.Errorf("status = %d, want %d", rec.Code, tt.status)
+			assert.Equalf(t, tt.status, rec.Code, "status = %d, want %d", rec.Code, tt.status)
+			if origin := rec.Header().
+				Get(echo.HeaderAccessControlAllowOrigin); origin != "https://ui.example" {
+				assert.Failf(
+					t,
+					"assertion failed",
+					"Access-Control-Allow-Origin = %q, want configured UI origin",
+					origin,
+				)
 			}
-			if origin := rec.Header().Get(echo.HeaderAccessControlAllowOrigin); origin != "https://ui.example" {
-				t.Errorf("Access-Control-Allow-Origin = %q, want configured UI origin", origin)
-			}
-			if credentials := rec.Header().Get(echo.HeaderAccessControlAllowCredentials); credentials != "true" {
-				t.Errorf("Access-Control-Allow-Credentials = %q, want true", credentials)
+			if credentials := rec.Header().
+				Get(echo.HeaderAccessControlAllowCredentials); credentials != "true" {
+				assert.Failf(
+					t,
+					"assertion failed",
+					"Access-Control-Allow-Credentials = %q, want true",
+					credentials,
+				)
 			}
 		})
 	}
@@ -200,8 +223,12 @@ func TestCORSMiddleware(t *testing.T) {
 
 func TestStaticMiddleware(t *testing.T) {
 	root := t.TempDir()
-	if err := os.WriteFile(filepath.Join(root, "index.html"), []byte("<h1>Speedtest Tracker</h1>"), 0o644); err != nil {
-		t.Fatal(err)
+	if err := os.WriteFile(
+		filepath.Join(root, "index.html"),
+		[]byte("<h1>Speedtest Tracker</h1>"),
+		0o644,
+	); err != nil {
+		require.FailNow(t, "assertion failed", err)
 	}
 
 	e := echo.New()
@@ -236,11 +263,16 @@ func TestStaticMiddleware(t *testing.T) {
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 
-			if rec.Code != tt.wantStatus {
-				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
-			}
+			assert.Equalf(
+				t,
+				tt.wantStatus,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				tt.wantStatus,
+			)
 			if body := rec.Body.String(); tt.wantBody != "" && body != tt.wantBody {
-				t.Errorf("body = %q, want %q", body, tt.wantBody)
+				assert.Failf(t, "assertion failed", "body = %q, want %q", body, tt.wantBody)
 			}
 		})
 	}

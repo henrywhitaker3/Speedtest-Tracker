@@ -7,6 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	authactor "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	windowhttp "github.com/henrywhitaker3/windowframe/v2/http"
@@ -17,11 +20,9 @@ func TestPurgeHandlerPurgesErroredResults(t *testing.T) {
 	repo := &purgeRepoStub{}
 
 	_, err := (&purgeHandler{repo: repo}).Handler()(testContext(t), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 	if !repo.called {
-		t.Error("PurgeErrors was not called")
+		assert.Fail(t, "assertion failed", "PurgeErrors was not called")
 	}
 }
 
@@ -79,12 +80,22 @@ func TestPurgeEndpointRequiresAuthenticatedAdministrator(t *testing.T) {
 			rec := httptest.NewRecorder()
 			h.ServeHTTP(rec, req)
 
-			if rec.Code != tt.wantStatus {
-				t.Errorf("status = %d, want %d", rec.Code, tt.wantStatus)
-			}
-			if repo.called != tt.wantPurge {
-				t.Errorf("PurgeErrors called = %t, want %t", repo.called, tt.wantPurge)
-			}
+			assert.Equalf(
+				t,
+				tt.wantStatus,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				tt.wantStatus,
+			)
+			assert.Equalf(
+				t,
+				tt.wantPurge,
+				repo.called,
+				"PurgeErrors called = %t, want %t",
+				repo.called,
+				tt.wantPurge,
+			)
 		})
 	}
 }
@@ -94,9 +105,7 @@ func TestPurgeHandlerWrapsRepositoryError(t *testing.T) {
 	repo := &purgeRepoStub{err: want}
 
 	_, err := (&purgeHandler{repo: repo}).Handler()(testContext(t), nil)
-	if !errors.Is(err, want) {
-		t.Errorf("Handler() error = %v, want %v", err, want)
-	}
+	assert.ErrorIs(t, err, want)
 }
 
 type purgeRepoStub struct {

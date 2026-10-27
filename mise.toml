@@ -49,7 +49,16 @@ run = "curl -X POST -s http://localhost:8080/v1/speedtest/run | jq"
 
 [tasks.test]
 description = "Run the unit tests"
-run = "gotestsum --format testname --packages ./..."
+usage = 'arg "[packages]" var=#true help="Go package patterns to test"'
+run = '''
+#!/usr/bin/env bash
+if [[ -n "${usage_packages:-}" ]]; then
+  eval "packages=($usage_packages)"
+else
+  packages=(./...)
+fi
+gotestsum --format testname --packages "${packages[@]}"
+'''
 
 [tasks.coverage]
 description = "Generate an HTML Go coverage report"

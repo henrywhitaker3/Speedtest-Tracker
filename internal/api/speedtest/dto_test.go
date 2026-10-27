@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/labstack/echo/v5"
@@ -34,7 +37,12 @@ func TestConvertSanitisesRawOutputForUnauthenticatedUsers(t *testing.T) {
 		wantPII       bool
 	}{
 		{name: "removes PII from anonymous users", authEnabled: true},
-		{name: "includes PII for authenticated users", authEnabled: true, authorization: "Bearer valid-token", wantPII: true},
+		{
+			name:          "includes PII for authenticated users",
+			authEnabled:   true,
+			authorization: "Bearer valid-token",
+			wantPII:       true,
+		},
 		{name: "includes PII when authentication is disabled", wantPII: true},
 	}
 
@@ -59,18 +67,25 @@ func TestConvertSanitisesRawOutputForUnauthenticatedUsers(t *testing.T) {
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 
-			if rec.Code != http.StatusNoContent {
-				t.Fatalf("status = %d, want %d", rec.Code, http.StatusNoContent)
-			}
-			if got.Raw == nil {
-				t.Fatal("raw output was omitted")
-			}
-			if got.Raw.Type != "result" || got.Raw.PacketLoss != 1.5 {
-				t.Errorf("non-PII raw data = %+v, want type and packet loss preserved", got.Raw)
-			}
-			hasPII := got.Raw.Isp != nil || got.Raw.Interface != nil || got.Raw.Server != nil || got.Raw.Result != nil
-			if hasPII != tt.wantPII {
-				t.Errorf("raw output contains PII = %t, want %t", hasPII, tt.wantPII)
+			require.Equalf(
+				t,
+				http.StatusNoContent,
+				rec.Code,
+				"status = %d, want %d",
+				rec.Code,
+				http.StatusNoContent,
+			)
+			require.NotNilf(t, got.Raw, "raw output was omitted")
+			assert.Equal(t, "result", got.Raw.Type)
+			assert.Equal(t, 1.5, got.Raw.PacketLoss)
+			if !tt.wantPII {
+				assert.Nil(t, got.Raw.Isp)
+				assert.Nil(t, got.Raw.Interface)
+				assert.Nil(t, got.Raw.Server)
+				assert.Nil(t, got.URL)
+				assert.Nil(t, got.ServerHost)
+				assert.Nil(t, got.ServerID)
+				assert.Nil(t, got.ServerName)
 			}
 		})
 	}

@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	internalAuth "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	windowhttp "github.com/henrywhitaker3/windowframe/v2/http"
@@ -27,12 +30,15 @@ func TestCreateTokenRejectsBlankNameBeforeCreatingToken(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnprocessableEntity {
-		t.Errorf("status = %d, want %d", rec.Code, http.StatusUnprocessableEntity)
-	}
-	if repo.called {
-		t.Error("repository Create was called for a blank name")
-	}
+	assert.Equalf(
+		t,
+		http.StatusUnprocessableEntity,
+		rec.Code,
+		"status = %d, want %d",
+		rec.Code,
+		http.StatusUnprocessableEntity,
+	)
+	assert.False(t, repo.called)
 }
 
 func TestCreateTokenRejectsShortNameBeforeCreatingToken(t *testing.T) {
@@ -49,21 +55,22 @@ func TestCreateTokenRejectsShortNameBeforeCreatingToken(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnprocessableEntity {
-		t.Errorf("status = %d, want %d", rec.Code, http.StatusUnprocessableEntity)
-	}
-	if repo.called {
-		t.Error("repository Create was called for a name shorter than five characters")
-	}
+	assert.Equalf(
+		t,
+		http.StatusUnprocessableEntity,
+		rec.Code,
+		"status = %d, want %d",
+		rec.Code,
+		http.StatusUnprocessableEntity,
+	)
+	assert.False(t, repo.called)
 }
 
 func TestCreateTokenWithShortNameDoesNotPersistToken(t *testing.T) {
 	db, err := database.Sqlite(filepath.Join(t.TempDir(), "auth.db"))
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 	if err := internalAuth.Register(db); err != nil {
-		t.Fatal(err)
+		require.FailNow(t, "assertion failed", err)
 	}
 
 	repo := internalAuth.NewRepo(db)
@@ -79,17 +86,18 @@ func TestCreateTokenWithShortNameDoesNotPersistToken(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnprocessableEntity {
-		t.Fatalf("status = %d, want %d", rec.Code, http.StatusUnprocessableEntity)
-	}
+	require.Equalf(
+		t,
+		http.StatusUnprocessableEntity,
+		rec.Code,
+		"status = %d, want %d",
+		rec.Code,
+		http.StatusUnprocessableEntity,
+	)
 
 	tokens, err := repo.List(context.Background())
-	if err != nil {
-		t.Fatalf("List() error = %v", err)
-	}
-	if len(tokens) != 0 {
-		t.Errorf("stored tokens = %d, want 0", len(tokens))
-	}
+	require.Equalf(t, nil, err, "List() error = %v", err)
+	require.Len(t, tokens, 0)
 }
 
 func TestCreateTokenHandlerRequiresAuthentication(t *testing.T) {
@@ -113,12 +121,15 @@ func TestCreateTokenHandlerRequiresAuthentication(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("status = %d, want %d", rec.Code, http.StatusUnauthorized)
-	}
-	if repo.called {
-		t.Error("repository Create was called without authentication")
-	}
+	assert.Equalf(
+		t,
+		http.StatusUnauthorized,
+		rec.Code,
+		"status = %d, want %d",
+		rec.Code,
+		http.StatusUnauthorized,
+	)
+	assert.False(t, repo.called)
 }
 
 type createRepoStub struct {

@@ -3,12 +3,12 @@ package speedtest
 import (
 	"context"
 	"errors"
-	"reflect"
 	"testing"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListHandler(t *testing.T) {
@@ -18,7 +18,7 @@ func TestListHandler(t *testing.T) {
 		Total:      3,
 		TotalPages: 3,
 		Data: []results.Result{
-			{BaseModel: database.BaseModel{ID: uuid.MustOrdered()}},
+			{ID: uuid.MustOrdered()},
 		},
 	}
 	repoErr := errors.New("list failed")
@@ -52,13 +52,9 @@ func TestListHandler(t *testing.T) {
 			handler := (&listHandler{repo: repo}).Handler()
 
 			got, err := handler(testContext(t), tt.opts)
-			if !errors.Is(err, tt.wantErr) {
-				t.Errorf("Handler() error = %v, want %v", err, tt.wantErr)
-			}
+			assert.ErrorIs(t, err, tt.wantErr)
 			if tt.page == nil {
-				if got != nil {
-					t.Errorf("Handler() result = %v, want nil", got)
-				}
+				assert.Nilf(t, got, "Handler() result = %v, want nil", got)
 			} else {
 				want := &database.Pagination[Result]{
 					Page:       tt.page.Page,
@@ -69,13 +65,16 @@ func TestListHandler(t *testing.T) {
 				for _, result := range tt.page.Data {
 					want.Data = append(want.Data, Result{ID: result.ID})
 				}
-				if !reflect.DeepEqual(got, want) {
-					t.Errorf("Handler() result = %v, want %v", got, want)
-				}
+				assert.Equal(t, want, got)
 			}
-			if repo.opts != tt.wantOpts {
-				t.Errorf("repository options = %+v, want %+v", repo.opts, tt.wantOpts)
-			}
+			assert.Equalf(
+				t,
+				tt.wantOpts,
+				repo.opts,
+				"repository options = %+v, want %+v",
+				repo.opts,
+				tt.wantOpts,
+			)
 		})
 	}
 }
@@ -86,7 +85,10 @@ type listRepoStub struct {
 	opts results.ListOpts
 }
 
-func (r *listRepoStub) List(_ context.Context, opts results.ListOpts) (*database.Pagination[results.Result], error) {
+func (r *listRepoStub) List(
+	_ context.Context,
+	opts results.ListOpts,
+) (*database.Pagination[results.Result], error) {
 	r.opts = opts
 	return r.page, r.err
 }
