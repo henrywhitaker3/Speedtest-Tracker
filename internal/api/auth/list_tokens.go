@@ -46,5 +46,11 @@ func (l *listTokensHandler) Metadata() handlers.Metadata {
 		Method:       http.MethodGet,
 		Code:         http.StatusOK,
 		GenerateSpec: true,
+		Auths: []handlers.Auth{
+			{
+				Enabled: true,
+				Name:    SessionSecurityScheme,
+			},
+		},
 	}
 }

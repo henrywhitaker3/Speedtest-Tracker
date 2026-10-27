@@ -44,7 +44,7 @@ func (c *callbackHandler) Handler() handlers.Handler[CallbackRequest, any] {
 			return nil, echo.NewHTTPError(http.StatusBadRequest, "missing OIDC code or state")
 		}
 
-		sessionID, err := cookieValue(ctx, sessionCookieName)
+		sessionID, err := cookieValue(ctx, SessionCookieName)
 		if err != nil {
 			return nil, err
 		}

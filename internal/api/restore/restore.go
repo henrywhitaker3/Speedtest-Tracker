@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
@@ -125,5 +126,11 @@ func (r *restoreHandler) Metadata() handlers.Metadata {
 		Code:           http.StatusOK,
 		GenerateSpec:   true,
 		SkipValidation: true,
+		Auths: []handlers.Auth{
+			{
+				Enabled: true,
+				Name:    authapi.SessionSecurityScheme,
+			},
+		},
 	}
 }

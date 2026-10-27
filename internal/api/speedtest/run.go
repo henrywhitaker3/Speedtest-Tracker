@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
@@ -89,5 +90,15 @@ func (r *runHandler) Metadata() handlers.Metadata {
 		Code:         http.StatusOK,
 		Description:  "Run a new speedtest",
 		GenerateSpec: true,
+		Auths: []handlers.Auth{
+			{
+				Enabled: true,
+				Name:    authapi.APITokenSecurityScheme,
+			},
+			{
+				Enabled: true,
+				Name:    authapi.SessionSecurityScheme,
+			},
+		},
 	}
 }

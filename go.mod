@@ -8,7 +8,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-playground/validator/v10 v10.30.5
 	github.com/go-telegram/bot v1.27.0
-	github.com/henrywhitaker3/windowframe/v2 v2.6.9
+	github.com/henrywhitaker3/windowframe/v2 v2.7.0
 	github.com/italypaleale/francis v0.2.0
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.2

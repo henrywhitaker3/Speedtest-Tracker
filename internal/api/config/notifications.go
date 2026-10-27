@@ -3,6 +3,7 @@ package config
 import (
 	"net/http"
 
+	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/labstack/echo/v5"
@@ -32,5 +33,11 @@ func (n *notificationsHandler) Metadata() handlers.Metadata {
 		Code:         http.StatusOK,
 		Method:       http.MethodGet,
 		GenerateSpec: true,
+		Auths: []handlers.Auth{
+			{
+				Enabled: true,
+				Name:    authapi.SessionSecurityScheme,
+			},
+		},
 	}
 }

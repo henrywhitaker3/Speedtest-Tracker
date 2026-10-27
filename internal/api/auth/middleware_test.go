@@ -66,7 +66,7 @@ func TestAdminMiddleware(t *testing.T) {
 
 			req := httptest.NewRequest(http.MethodGet, "/admin-only", nil)
 			if tt.withCookie {
-				req.AddCookie(&http.Cookie{Name: sessionCookieName, Value: "session-id"})
+				req.AddCookie(&http.Cookie{Name: SessionCookieName, Value: "session-id"})
 			}
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
@@ -173,7 +173,7 @@ func TestAuthMiddlewareOptionallyAuthenticatesPublicRoute(t *testing.T) {
 
 			req := httptest.NewRequest(http.MethodGet, "/results", nil)
 			if tt.withCookie {
-				req.AddCookie(&http.Cookie{Name: sessionCookieName, Value: "session-id"})
+				req.AddCookie(&http.Cookie{Name: SessionCookieName, Value: "session-id"})
 			}
 			rec := httptest.NewRecorder()
 			e.ServeHTTP(rec, req)

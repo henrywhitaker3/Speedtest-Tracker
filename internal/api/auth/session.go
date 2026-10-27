@@ -15,7 +15,7 @@ type sessionHandler struct {
 
 func (s *sessionHandler) Handler() handlers.Handler[any, authactor.AuthenticateResult] {
 	return func(ctx *echo.Context, _ any) (*authactor.AuthenticateResult, error) {
-		sessionID, err := cookieValue(ctx, sessionCookieName)
+		sessionID, err := cookieValue(ctx, SessionCookieName)
 		if err != nil {
 			return nil, err
 		}

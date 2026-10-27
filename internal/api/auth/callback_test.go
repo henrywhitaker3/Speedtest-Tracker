@@ -98,7 +98,7 @@ func callbackContext(t *testing.T, sessionID string) *echo.Context {
 	t.Helper()
 	req := httptest.NewRequest(http.MethodGet, "/v1/auth/callback", nil)
 	if sessionID != "" {
-		req.AddCookie(&http.Cookie{Name: sessionCookieName, Value: sessionID})
+		req.AddCookie(&http.Cookie{Name: SessionCookieName, Value: sessionID})
 	}
 	return echo.NewContext(req, httptest.NewRecorder())
 }

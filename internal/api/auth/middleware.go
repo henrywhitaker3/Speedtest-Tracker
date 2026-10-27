@@ -16,7 +16,9 @@ import (
 )
 
 const (
-	sessionCookieName = "__Host-speedtest-session"
+	SessionCookieName      = "__Host-speedtest-session"
+	APITokenSecurityScheme = "api_token"
+	SessionSecurityScheme  = "session"
 
 	authEnabledContextKey   = "auth-enabled"
 	authenticatedContextKey = "authenticated"
@@ -81,7 +83,7 @@ func SessionMiddleware() echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			if cookie, err := c.Cookie(sessionCookieName); err == nil && cookie.Value != "" {
+			if cookie, err := c.Cookie(SessionCookieName); err == nil && cookie.Value != "" {
 				return next(c)
 			}
 
@@ -233,7 +235,7 @@ func handleSessionAuth(
 	service actorInvoker,
 	adminGroup string,
 ) error {
-	sessionID, err := cookieValue(c, sessionCookieName)
+	sessionID, err := cookieValue(c, SessionCookieName)
 	if err != nil {
 		return err
 	}
@@ -273,7 +275,7 @@ func newSessionID() (string, error) {
 
 func setSessionCookie(c *echo.Context, value string) {
 	cookie := &http.Cookie{
-		Name:     sessionCookieName,
+		Name:     SessionCookieName,
 		Value:    value,
 		Path:     "/",
 		Secure:   true,

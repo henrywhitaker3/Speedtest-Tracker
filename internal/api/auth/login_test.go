@@ -20,7 +20,7 @@ func TestLoginRedirectsToActorProvidedURL(t *testing.T) {
 	handler := (&loginHandler{service: service}).Handler()
 	recorder := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/v1/auth/login", nil)
-	req.AddCookie(&http.Cookie{Name: sessionCookieName, Value: "session-id"})
+	req.AddCookie(&http.Cookie{Name: SessionCookieName, Value: "session-id"})
 	ctx := echo.NewContext(req, recorder)
 
 	response, err := handler(ctx, nil)
@@ -45,7 +45,7 @@ func TestLoginWrapsActorError(t *testing.T) {
 	handler := (&loginHandler{service: &actorInvokerStub{err: actorErr}}).Handler()
 	recorder := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/v1/auth/login", nil)
-	req.AddCookie(&http.Cookie{Name: sessionCookieName, Value: "session-id"})
+	req.AddCookie(&http.Cookie{Name: SessionCookieName, Value: "session-id"})
 	ctx := echo.NewContext(req, recorder)
 
 	_, err := handler(ctx, nil)

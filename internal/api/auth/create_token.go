@@ -58,5 +58,11 @@ func (h *createHandler) Metadata() handlers.Metadata {
 		Method:       http.MethodPost,
 		Code:         http.StatusOK,
 		GenerateSpec: true,
+		Auths: []handlers.Auth{
+			{
+				Enabled: true,
+				Name:    SessionSecurityScheme,
+			},
+		},
 	}
 }

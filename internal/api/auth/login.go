@@ -15,7 +15,7 @@ type loginHandler struct {
 
 func (l *loginHandler) Handler() handlers.Handler[any, any] {
 	return func(c *echo.Context, _ any) (*any, error) {
-		sessionID, err := cookieValue(c, sessionCookieName)
+		sessionID, err := cookieValue(c, SessionCookieName)
 		if err != nil {
 			return nil, err
 		}

@@ -26,6 +26,7 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/swaggest/jsonschema-go"
+	"github.com/swaggest/openapi-go"
 	"github.com/swaggest/openapi-go/openapi3"
 	"gorm.io/gorm"
 )
@@ -39,16 +40,28 @@ func New(
 	host *local.Host,
 	runner *workflow.WorkflowService,
 ) (*http.HTTP, error) {
+	openapiOpts := openapiOpts(version, conf.App.URL)
+	mut := specMutations()
+	if !conf.Auth.Enabled {
+		openapiOpts.AuthConfig = nil
+	} else {
+		mut = append(
+			mut,
+			func(r *openapi3.Reflector) {
+				r.SpecEns().SetAPIKeySecurity(
+					authapi.SessionSecurityScheme,
+					authapi.SessionCookieName,
+					openapi.InCookie,
+					"Browser session authentication.",
+				)
+			},
+		)
+	}
 	h := http.New(http.HTTPOpts{
-		Port: 8080,
-		Openapi: http.OpenapiOpts{
-			Enabled:        true,
-			ServiceName:    serviceName,
-			ServiceVersion: version,
-			PublicURL:      conf.App.URL,
-		},
+		Port:          8080,
+		Openapi:       openapiOpts,
 		Logger:        slog.With("component", "api"),
-		SpecMutations: specMutations(),
+		SpecMutations: mut,
 	})
 
 	h.Use(middleware.Recover())
@@ -73,6 +86,28 @@ func New(
 	registerValidators(h)
 
 	return h, nil
+}
+
+func openapiOpts(version, publicURL string) http.OpenapiOpts {
+	return http.OpenapiOpts{
+		Enabled:        true,
+		ServiceName:    serviceName,
+		ServiceVersion: version,
+		PublicURL:      publicURL,
+		AuthConfig: []struct {
+			Enabled     bool
+			Name        string
+			Format      string
+			Description string
+		}{
+			{
+				Enabled:     true,
+				Name:        authapi.APITokenSecurityScheme,
+				Format:      "API token",
+				Description: "Send an API token as `Authorization: Bearer <token>`.",
+			},
+		},
+	}
 }
 
 func specMutations() []http.SpecMutator {

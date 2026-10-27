@@ -49,5 +49,11 @@ func (d *deleteHandler) Metadata() handlers.Metadata {
 		Method:       http.MethodDelete,
 		Code:         http.StatusOK,
 		GenerateSpec: true,
+		Auths: []handlers.Auth{
+			{
+				Enabled: true,
+				Name:    SessionSecurityScheme,
+			},
+		},
 	}
 }
