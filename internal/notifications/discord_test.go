@@ -38,14 +38,14 @@ func TestSendDiscord(t *testing.T) {
 			name:      "sends a starting embed before a speedtest",
 			phase:     PreRun,
 			result:    result,
-			wantTitle: "Starting Speedtest",
+			wantTitle: StartingTitle,
 			wantColor: discordInfoColor,
 		},
 		{
 			name:      "sends measurements after a speedtest",
 			phase:     PostRun,
 			result:    result,
-			wantTitle: "Finished Speedtest",
+			wantTitle: SuccessTitle,
 			wantColor: discordSuccessColor,
 			wantFields: []*discord.MessageEmbedField{
 				{Name: "Ping", Value: "7.50 ms", Inline: true},
@@ -57,7 +57,7 @@ func TestSendDiscord(t *testing.T) {
 			name:      "sends the failure reason after a failed speedtest",
 			phase:     PostRun,
 			result:    failedResult,
-			wantTitle: "Speedtest Failed",
+			wantTitle: ErrorTitle,
 			wantColor: discordFailureColor,
 			wantFields: []*discord.MessageEmbedField{
 				{Name: "Error", Value: failure},

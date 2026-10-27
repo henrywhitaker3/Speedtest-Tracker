@@ -35,7 +35,7 @@ func sendDiscord(ctx context.Context, url, uiURL string, phase Phase, result res
 func buildDiscordPreRun(r results.Result, uiURL string) *discord.WebhookParams {
 	return &discord.WebhookParams{
 		Embeds: []*discord.MessageEmbed{{
-			Title: "Starting Speedtest",
+			Title: StartingTitle,
 			URL:   buildResultsURL(uiURL, r),
 			Color: discordInfoColor,
 		}},
@@ -46,7 +46,7 @@ func buildDiscordPostRun(r results.Result, uiURL string) *discord.WebhookParams 
 	if r.Error != nil {
 		return &discord.WebhookParams{
 			Embeds: []*discord.MessageEmbed{{
-				Title: "Speedtest Failed",
+				Title: ErrorTitle,
 				URL:   buildResultsURL(uiURL, r),
 				Color: discordFailureColor,
 				Fields: []*discord.MessageEmbedField{{
@@ -59,7 +59,7 @@ func buildDiscordPostRun(r results.Result, uiURL string) *discord.WebhookParams 
 
 	return &discord.WebhookParams{
 		Embeds: []*discord.MessageEmbed{{
-			Title: "Finished Speedtest",
+			Title: SuccessTitle,
 			URL:   buildResultsURL(uiURL, r),
 			Color: discordSuccessColor,
 			Fields: []*discord.MessageEmbedField{

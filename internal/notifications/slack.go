@@ -25,11 +25,11 @@ func sendSlack(ctx context.Context, url, uiURL string, phase Phase, result resul
 
 func buildSlackPreRun(r results.Result, uiURL string) *slack.WebhookMessage {
 	return &slack.WebhookMessage{
-		Text: "Starting Speedtest",
+		Text: StartingTitle,
 		Blocks: &slack.Blocks{
 			BlockSet: []slack.Block{
 				slack.NewHeaderBlock(
-					slack.NewTextBlockObject("plain_text", "Starting Speedtest", true, false),
+					slack.NewTextBlockObject("plain_text", StartingTitle, true, false),
 				),
 				slack.NewSectionBlock(
 					buildSlackResultButton(r, uiURL),
@@ -66,11 +66,11 @@ func buildSlackSuccessMessage(r results.Result, uiURL string) *slack.WebhookMess
 	}
 
 	return &slack.WebhookMessage{
-		Text: "Finished Speedtest",
+		Text: SuccessTitle,
 		Blocks: &slack.Blocks{
 			BlockSet: []slack.Block{
 				slack.NewHeaderBlock(
-					slack.NewTextBlockObject("plain_text", "Finished Speedtest", true, false),
+					slack.NewTextBlockObject("plain_text", SuccessTitle, true, false),
 				),
 				slack.NewSectionBlock(nil, fields, nil),
 				slack.NewSectionBlock(
@@ -85,11 +85,11 @@ func buildSlackSuccessMessage(r results.Result, uiURL string) *slack.WebhookMess
 
 func buildSlackErrorMessage(r results.Result, uiURL string) *slack.WebhookMessage {
 	return &slack.WebhookMessage{
-		Text: "Failed Speedtest",
+		Text: ErrorTitle,
 		Blocks: &slack.Blocks{
 			BlockSet: []slack.Block{
 				slack.NewHeaderBlock(
-					slack.NewTextBlockObject("plain_text", "Failed Speedtest", true, false),
+					slack.NewTextBlockObject("plain_text", ErrorTitle, true, false),
 				),
 				slack.NewSectionBlock(
 					slack.NewTextBlockObject(

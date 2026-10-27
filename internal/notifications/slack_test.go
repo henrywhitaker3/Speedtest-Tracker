@@ -36,15 +36,15 @@ func TestBuildSlackMessages(t *testing.T) {
 		{
 			name:           "builds a starting message",
 			message:        buildSlackPreRun(result, "https://speedtest.example"),
-			wantText:       "Starting Speedtest",
-			wantHeader:     "Starting Speedtest",
+			wantText:       StartingTitle,
+			wantHeader:     StartingTitle,
 			wantBlockCount: 2,
 		},
 		{
 			name:       "builds a completed message with measurements",
 			message:    buildSlackPostRun(result, "https://speedtest.example"),
-			wantText:   "Finished Speedtest",
-			wantHeader: "Finished Speedtest",
+			wantText:   SuccessTitle,
+			wantHeader: SuccessTitle,
 			wantFields: []string{
 				"*Ping*\n7.50 ms",
 				"*Download*\n80.00 Mbps",
@@ -55,8 +55,8 @@ func TestBuildSlackMessages(t *testing.T) {
 		{
 			name:           "builds a failed message with the error",
 			message:        buildSlackPostRun(failedResult, "https://speedtest.example"),
-			wantText:       "Failed Speedtest",
-			wantHeader:     "Failed Speedtest",
+			wantText:       ErrorTitle,
+			wantHeader:     ErrorTitle,
 			wantBody:       "*Error*\nspeedtest failed",
 			wantBlockCount: 3,
 		},
