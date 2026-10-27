@@ -1,3 +1,25 @@
+## [2.7.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.2..v2.7.0) - 2026-10-27
+
+### 🚀 Features
+
+- *(notifications)* Add slack notification channel - ([44ff29c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/44ff29ca30e7d5f95638fea4c31db26fdf15d086))
+- *(notifications)* Add discord notifications - ([7ff632f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7ff632fb029c979e50fd8a6e16482c3a98d11e33))
+
+### 🐛 Bug Fixes
+
+- *(api)* Redact more server info for unauthenticated users - ([a2ae03c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a2ae03c03bf8fc31c8b4be9800491eb176723123))
+- *(notifications)* Use constants for standardised message titles - ([60f99d2](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/60f99d2911f2d433bd812cf8a19df1aa5dcf2eba))
+- *(notifications)* Use constrained context for discord and slack notifications - ([f9dff72](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f9dff72d5217272a3d3b29a6c06ffdac9f7d115e))
+
+### 🚜 Refactor
+
+- *(test)* Use testify instead of manual assertions - ([642f58d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/642f58d8e4644bc1b5a286cbf319847ab95efdae))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([d88fc1e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d88fc1ec3d251adacd665b7d862f4d36dd7ff19d))
+- *(docs)* Add info on new notification channels - ([3b6aa3f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3b6aa3f6c5744fff86714218e2423fc02c0a054a))
+- *(docs)* Update openapi schema with auth info - ([30dd18f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/30dd18f59acffa42bdc34906b04b27963c445d9b))
 ## [2.6.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.1..v2.6.2) - 2026-10-27
 
 ### 🐛 Bug Fixes
