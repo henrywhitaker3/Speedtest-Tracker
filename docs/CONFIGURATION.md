@@ -37,13 +37,13 @@ Configure each notification with a zero-based, contiguous index. Every notificat
 
 | Variable | Description |
 | --- | --- |
-| `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck`, `webhook`, or `telegram`. |
+| `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck`, `webhook`, `telegram`, `slack`, or `discord`. |
 | `NOTIFICATIONS_<index>_PHASES` | Comma-separated phases: `pre-run`, `post-run`, or both. |
-| `NOTIFICATIONS_<index>_URL` | Destination URL, required for `healthcheck` and `webhook`. |
+| `NOTIFICATIONS_<index>_URL` | Destination URL, required for `healthcheck`, `webhook`, `slack`, and `discord`. |
 | `NOTIFICATIONS_TELEGRAM_BOT_TOKEN` | Telegram bot token, required when a `telegram` notification is configured. |
 | `NOTIFICATIONS_TELEGRAM_CHAT_ID` | Telegram chat ID, required when a `telegram` notification is configured. |
 
-For example, this configures a Healthchecks.io notification before and after the speedtest, a webhook after it finishes, and Telegram messages before and after each test:
+For example, this configures a Healthchecks.io notification before and after the speedtest, a webhook after it finishes, and Telegram, Slack, and Discord messages before and after each test:
 
 ```dotenv
 NOTIFICATIONS_0_KIND=healthcheck
@@ -58,9 +58,19 @@ NOTIFICATIONS_2_KIND=telegram
 NOTIFICATIONS_2_PHASES=pre-run,post-run
 NOTIFICATIONS_TELEGRAM_BOT_TOKEN=123456:replace-with-your-bot-token
 NOTIFICATIONS_TELEGRAM_CHAT_ID=-1001234567890
+
+NOTIFICATIONS_3_KIND=slack
+NOTIFICATIONS_3_PHASES=pre-run,post-run
+NOTIFICATIONS_3_URL=https://hooks.slack.com/services/your-webhook-id
+
+NOTIFICATIONS_4_KIND=discord
+NOTIFICATIONS_4_PHASES=pre-run,post-run
+NOTIFICATIONS_4_URL=https://discord.com/api/webhooks/your-webhook-id/your-webhook-token
 ```
 
 Telegram credentials are shared by every Telegram notification. The post-run message contains the result measurements or failure reason and links to the result in the UI.
+
+Slack notifications use an [Incoming Webhook](https://api.slack.com/messaging/webhooks) and render native Block Kit messages. Discord notifications use a standard [Discord webhook](https://discord.com/developers/docs/resources/webhook#execute-webhook), without the `/slack` suffix, and render native embeds. Both include the speedtest result link; successful post-run messages show ping, download, and upload, while failed tests show the error.
 
 `NOTIFICATIONS_HEALTHCHECKS` remains supported for compatibility. It creates one `healthcheck` notification for both `pre-run` and `post-run` phases.
 
