@@ -71,11 +71,11 @@ func (no Notifier) Notify(ctx context.Context, phase Phase, result results.Resul
 				errors.push(n, err)
 			}
 		case config.Slack:
-			if err := sendSlack(ctx, n.URL, no.uiURL, phase, result); err != nil {
+			if err := sendSlack(nctx, n.URL, no.uiURL, phase, result); err != nil {
 				errors.push(n, err)
 			}
 		case config.Discord:
-			if err := sendDiscord(ctx, n.URL, no.uiURL, phase, result); err != nil {
+			if err := sendDiscord(nctx, n.URL, no.uiURL, phase, result); err != nil {
 				errors.push(n, err)
 			}
 		}
