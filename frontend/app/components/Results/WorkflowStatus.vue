@@ -68,6 +68,8 @@ const prettyName = (name?: string) => {
       return 'Store Result'
     case 'post-run notifications':
       return 'Send Post-run Notifications'
+    case 'pick server':
+      return 'Pick Server'
     default:
       return name
   }
@@ -83,6 +85,8 @@ const description = (name?: string) => {
       return 'Store the speedtest results'
     case 'post-run notifications':
       return 'Send configured post-run notifications'
+    case 'pick server':
+      return 'Choose which server the speedtest is run against'
     default:
       return undefined
   }
