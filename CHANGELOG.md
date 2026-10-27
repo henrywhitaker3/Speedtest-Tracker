@@ -1,3 +1,13 @@
+## [2.6.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.1..v2.6.2) - 2026-10-27
+
+### 🐛 Bug Fixes
+
+- *(api)* Redact more server info for unauthenticated users - ([c1451b3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c1451b332364964dd363e7084e73913b6ea22d1b))
+- *(ui)* Nicer title and description for pick server step - ([7659674](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/76596749d0adaa013ce80edda1cf69ed06b998bb))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([18aa2c6](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/18aa2c685fc58fdadd780a1d7b0b3d9f10abcea8))
 ## [2.6.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.0..v2.6.1) - 2026-10-27
 
 ### 🐛 Bug Fixes
