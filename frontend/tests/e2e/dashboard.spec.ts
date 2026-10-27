@@ -30,4 +30,22 @@ test.describe('dashboard', () => {
 
     await expect.poll(() => requestedPeriod).toBe('7d')
   })
+
+  test('deletes a result using its concrete id', async ({ page }) => {
+    let deletePathname: string | undefined
+    await page.route('**/v1/speedtest/**', async (route) => {
+      if (route.request().method() === 'DELETE') {
+        deletePathname = new URL(route.request().url()).pathname
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        return
+      }
+
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await page.getByLabel('Expand').click()
+
+    await expect.poll(() => deletePathname).toBe('/v1/speedtest/result-1')
+  })
 })

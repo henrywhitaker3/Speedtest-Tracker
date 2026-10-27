@@ -9,7 +9,7 @@
   />
   <TableDelete
     v-if="props.variant == 'table' && (!config.authEnabled() || auth.isAdmin())"
-    @click="deleteResult"
+    @click="deleteTestResult"
   />
 </template>
 

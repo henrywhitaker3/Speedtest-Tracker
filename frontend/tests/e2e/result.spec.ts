@@ -95,11 +95,11 @@ test('shows a clear error for a missing result', async ({ page }) => {
 })
 
 test('deletes a result and returns to the dashboard', async ({ page }) => {
-  let deleteRequested = false
+  let deletePathname: string | undefined
   await mockApi(page)
-  await page.route(`**/v1/speedtest/${result.id}`, async (route) => {
+  await page.route('**/v1/speedtest/**', async (route) => {
     if (route.request().method() === 'DELETE') {
-      deleteRequested = true
+      deletePathname = new URL(route.request().url()).pathname
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       return
     }
@@ -110,6 +110,6 @@ test('deletes a result and returns to the dashboard', async ({ page }) => {
   await page.goto(`/results/${result.id}`)
   await page.getByRole('button', { name: 'Delete' }).click()
 
-  await expect.poll(() => deleteRequested).toBe(true)
+  await expect.poll(() => deletePathname).toBe(`/v1/speedtest/${result.id}`)
   await expect(page).toHaveURL('/')
 })
