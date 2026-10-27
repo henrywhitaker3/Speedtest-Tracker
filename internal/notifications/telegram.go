@@ -60,7 +60,7 @@ func buildSuccessMessage(r results.Result, uiURL string) string {
 		*r.Ping,
 		units.BitsHuman(units.BytesToBits(*r.Download)),
 		units.BitsHuman(units.BytesToBits(*r.Upload)),
-		buildResultsURL(uiURL, r),
+		buildMarkdownURL(uiURL, r),
 	)
 }
 
@@ -68,7 +68,7 @@ func buildErrorMessage(r results.Result, uiURL string) string {
 	return fmt.Sprintf(
 		"*Failed speedtest*\nError: %s\n%s",
 		*r.Error,
-		buildResultsURL(uiURL, r),
+		buildMarkdownURL(uiURL, r),
 	)
 }
 

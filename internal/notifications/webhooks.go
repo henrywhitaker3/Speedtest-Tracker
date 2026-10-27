@@ -23,7 +23,11 @@ func notifyHealthcheck(ctx context.Context, url string, phase Phase, result resu
 }
 
 func sendWebhook(ctx context.Context, url string, result results.Result) error {
-	body, err := json.Marshal(result)
+	return sendJSON(ctx, url, result)
+}
+
+func sendJSON(ctx context.Context, url string, payload any) error {
+	body, err := json.Marshal(payload)
 	if err != nil {
 		return fmt.Errorf("marshal payload: %w", err)
 	}

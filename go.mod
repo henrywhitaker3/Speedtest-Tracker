@@ -4,6 +4,7 @@ go 1.27.3
 
 require (
 	github.com/adhocore/gronx v1.20.5
+	github.com/bwmarrin/discordgo v0.29.0
 	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-playground/validator/v10 v10.30.5
 	github.com/go-telegram/bot v1.27.0
