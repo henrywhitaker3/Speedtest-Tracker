@@ -36,6 +36,10 @@ type Phase int
 const (
 	PreRun Phase = iota
 	PostRun
+
+	StartingTitle = "Starting Speedtest"
+	SuccessTitle  = "Finished Speedtest"
+	ErrorTitle    = "Failed Speedtest"
 )
 
 func (no Notifier) ShouldNotify() bool {
@@ -64,6 +68,14 @@ func (no Notifier) Notify(ctx context.Context, phase Phase, result results.Resul
 			if no.telegram == nil {
 				errors.push(n, fmt.Errorf("telegram sender is not configured"))
 			} else if err := SendTelegram(nctx, no.telegram, n, no.uiURL, phase, result); err != nil {
+				errors.push(n, err)
+			}
+		case config.Slack:
+			if err := sendSlack(nctx, n.URL, no.uiURL, phase, result); err != nil {
+				errors.push(n, err)
+			}
+		case config.Discord:
+			if err := sendDiscord(nctx, n.URL, no.uiURL, phase, result); err != nil {
 				errors.push(n, err)
 			}
 		}

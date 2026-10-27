@@ -18,13 +18,15 @@ const (
 	Webhook     NotificationKind = "webhook"
 	Healthcheck NotificationKind = "healthcheck"
 	Telegram    NotificationKind = "telegram"
+	Slack       NotificationKind = "slack"
+	Discord     NotificationKind = "discord"
 
 	PreRun  NotificationPhase = "pre-run"
 	PostRun NotificationPhase = "post-run"
 )
 
 var (
-	ValidNotificationKinds  = []NotificationKind{Webhook, Healthcheck, Telegram}
+	ValidNotificationKinds  = []NotificationKind{Webhook, Healthcheck, Telegram, Slack, Discord}
 	ValidNotificationPhases = []NotificationPhase{PreRun, PostRun}
 )
 
@@ -57,6 +59,10 @@ func (n Notification) validate() error {
 			return fmt.Errorf("telegram chat id must be set")
 		}
 	case Webhook:
+		fallthrough
+	case Discord:
+		fallthrough
+	case Slack:
 		fallthrough
 	case Healthcheck:
 		if !strings.HasPrefix(n.URL, "https://") && !strings.HasPrefix(n.URL, "http://") {
