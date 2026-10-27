@@ -52,9 +52,9 @@ func convert(c *echo.Context, r results.Result) Result {
 	if !auth.IsAuthenticated(c) && output != nil {
 		out.URL = nil
 		output.Sanitise()
-		r.ServerHost = nil
-		r.ServerID = nil
-		r.ServerName = nil
+		out.ServerHost = nil
+		out.ServerID = nil
+		out.ServerName = nil
 	}
 
 	out.Raw = output
