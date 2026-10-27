@@ -51,7 +51,7 @@ func SendTelegram(
 }
 
 func buildTestStartingMessage(r results.Result, uiURL string) string {
-	return fmt.Sprintf("*Starting speedtest*\n%s", buildResultsURL(uiURL, r))
+	return fmt.Sprintf("*Starting speedtest*\n%s", buildMarkdownURL(uiURL, r))
 }
 
 func buildSuccessMessage(r results.Result, uiURL string) string {
@@ -72,6 +72,10 @@ func buildErrorMessage(r results.Result, uiURL string) string {
 	)
 }
 
+func buildMarkdownURL(uiURL string, r results.Result) string {
+	return fmt.Sprintf("[See result](%s)", buildResultsURL(uiURL, r))
+}
+
 func buildResultsURL(uiURL string, r results.Result) string {
-	return fmt.Sprintf("[See result](%s/results/%s)", uiURL, r.ID.String())
+	return fmt.Sprintf("%s/results/%s", uiURL, r.ID.String())
 }

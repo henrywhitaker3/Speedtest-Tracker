@@ -66,6 +66,14 @@ func (no Notifier) Notify(ctx context.Context, phase Phase, result results.Resul
 			} else if err := SendTelegram(nctx, no.telegram, n, no.uiURL, phase, result); err != nil {
 				errors.push(n, err)
 			}
+		case config.Slack:
+			if err := sendSlack(ctx, n.URL, no.uiURL, phase, result); err != nil {
+				errors.push(n, err)
+			}
+		case config.Discord:
+			if err := sendDiscord(ctx, n.URL, no.uiURL, phase, result); err != nil {
+				errors.push(n, err)
+			}
 		}
 		cancel()
 	}
