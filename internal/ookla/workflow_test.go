@@ -3,9 +3,6 @@ package ookla
 import (
 	"context"
 	"errors"
-	"log/slog"
-	"net"
-	"path/filepath"
 	"slices"
 	"sync"
 	"testing"
@@ -16,10 +13,10 @@ import (
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/testutils"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
 	"github.com/italypaleale/francis/builtin/workflow"
-	"github.com/italypaleale/francis/components/sqlite"
 	"github.com/italypaleale/francis/host/local"
 )
 
@@ -45,14 +42,17 @@ func TestSpeedtestWorkflow(t *testing.T) {
 		wantStepStatus         map[string]workflow.StepStatus
 	}{
 		{
-			name:                   "stores a successful result and sends notifications",
-			notifications:          true,
-			wantStatus:             workflow.StatusCompleted,
-			wantPickServerCalls:    1,
-			wantFreshCalls:         2,
-			wantRunnerCalls:        1,
-			wantUpdateCalls:        1,
-			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
+			name:                "stores a successful result and sends notifications",
+			notifications:       true,
+			wantStatus:          workflow.StatusCompleted,
+			wantPickServerCalls: 1,
+			wantFreshCalls:      2,
+			wantRunnerCalls:     1,
+			wantUpdateCalls:     1,
+			wantNotificationPhases: []notifications.Phase{
+				notifications.PreRun,
+				notifications.PostRun,
+			},
 			wantAttempts: map[string]int{
 				"notify":                 1,
 				"pre-run notifications":  1,
@@ -62,16 +62,19 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			},
 		},
 		{
-			name:                   "stores runner failures and sends post-run notifications",
-			notifications:          true,
-			runnerErr:              errors.New("speedtest failed"),
-			wantStatus:             workflow.StatusCompleted,
-			wantPickServerCalls:    1,
-			wantFreshCalls:         2,
-			wantRunnerCalls:        1,
-			wantUpdateCalls:        1,
-			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
-			wantResultError:        "speedtest failed",
+			name:                "stores runner failures and sends post-run notifications",
+			notifications:       true,
+			runnerErr:           errors.New("speedtest failed"),
+			wantStatus:          workflow.StatusCompleted,
+			wantPickServerCalls: 1,
+			wantFreshCalls:      2,
+			wantRunnerCalls:     1,
+			wantUpdateCalls:     1,
+			wantNotificationPhases: []notifications.Phase{
+				notifications.PreRun,
+				notifications.PostRun,
+			},
+			wantResultError: "speedtest failed",
 			wantAttempts: map[string]int{
 				"notify":                 1,
 				"pre-run notifications":  1,
@@ -184,14 +187,17 @@ func TestSpeedtestWorkflow(t *testing.T) {
 			},
 		},
 		{
-			name:                   "does not rerun an already complete result",
-			notifications:          true,
-			complete:               true,
-			wantStatus:             workflow.StatusCompleted,
-			wantPickServerCalls:    0,
-			wantFreshCalls:         2,
-			wantUpdateCalls:        1,
-			wantNotificationPhases: []notifications.Phase{notifications.PreRun, notifications.PostRun},
+			name:                "does not rerun an already complete result",
+			notifications:       true,
+			complete:            true,
+			wantStatus:          workflow.StatusCompleted,
+			wantPickServerCalls: 0,
+			wantFreshCalls:      2,
+			wantUpdateCalls:     1,
+			wantNotificationPhases: []notifications.Phase{
+				notifications.PreRun,
+				notifications.PostRun,
+			},
 			wantAttempts: map[string]int{
 				"notify":                 1,
 				"pre-run notifications":  1,
@@ -364,19 +370,36 @@ type workflowNotifierStub struct {
 	calls        []notifications.Phase
 }
 
-func (n *workflowNotifierStub) ShouldNotify() bool {
-	return n.shouldNotify
-}
-
-func (n *workflowNotifierStub) Notify(
+func (n *workflowNotifierStub) Invoke(
 	_ context.Context,
-	phase notifications.Phase,
-	_ results.Result,
-) error {
-	n.mu.Lock()
-	defer n.mu.Unlock()
-	n.calls = append(n.calls, phase)
-	return n.errs[phase]
+	_ string,
+	_ string,
+	method string,
+	data any,
+	_ ...actor.InvokeOption,
+) (actor.Envelope, error) {
+	switch method {
+	case notifications.ShouldNotify:
+		return workflowNotifierEnvelope{shouldNotify: n.shouldNotify}, nil
+	case notifications.Notify:
+		input, ok := data.(notifications.NotifyInput)
+		if !ok {
+			return nil, errors.New("unexpected notification input")
+		}
+		phase := input.Phase
+		n.mu.Lock()
+		n.calls = append(n.calls, phase)
+		err := n.errs[phase]
+		n.mu.Unlock()
+		if err == nil {
+			return workflowNotifierEnvelope{}, nil
+		}
+		return workflowNotifierEnvelope{
+			notificationError: &notifications.NotificationError{Errors: []error{err}},
+		}, nil
+	default:
+		return nil, errors.New("unexpected notifier method")
+	}
 }
 
 func (n *workflowNotifierStub) phases() []notifications.Phase {
@@ -385,51 +408,28 @@ func (n *workflowNotifierStub) phases() []notifications.Phase {
 	return slices.Clone(n.calls)
 }
 
+type workflowNotifierEnvelope struct {
+	shouldNotify      bool
+	notificationError *notifications.NotificationError
+}
+
+func (e workflowNotifierEnvelope) Decode(into any) error {
+	switch value := into.(type) {
+	case *bool:
+		*value = e.shouldNotify
+	case **notifications.NotificationError:
+		*value = e.notificationError
+	default:
+		return errors.New("unexpected notification response target")
+	}
+	return nil
+}
+
 func startWorkflowHost(t *testing.T, wf *workflow.Workflow) *local.Host {
 	t.Helper()
 
-	address := freeUDPAddress(t)
-	host, err := local.NewHost(
-		local.WithAddress(address),
-		local.WithSQLiteProvider(sqlite.SQLiteProviderOptions{
-			ConnectionString: filepath.Join(t.TempDir(), "workflow.db"),
-		}),
-		local.WithRuntimePSKs([]byte("workflow-test-runtime-psk-0123456789")),
-		local.WithAlarmsPollInterval(100*time.Millisecond),
-		local.WithLogger(slog.New(slog.DiscardHandler)),
-	)
-	require.NoError(t, err)
-	require.NoError(t, host.RegisterBuiltInActor(wf))
-
-	ctx, cancel := context.WithCancel(context.Background())
-	errCh := make(chan error, 1)
-	go func() { errCh <- host.Run(ctx) }()
-	select {
-	case <-host.Ready():
-	case <-time.After(10 * time.Second):
-		cancel()
-		require.FailNow(t, "assertion failed", "workflow host did not become ready")
-	}
-	t.Cleanup(func() {
-		cancel()
-		select {
-		case err := <-errCh:
-			assert.Truef(t, err == nil || errors.Is(err, context.Canceled), "workflow host stopped with error: %v", err)
-		case <-time.After(10 * time.Second):
-			assert.Fail(t, "workflow host did not stop")
-		}
-	})
+	host := testutils.Host(t, testutils.WithWorkflow(wf))
 	return host
-}
-
-func freeUDPAddress(t *testing.T) string {
-	t.Helper()
-
-	listener, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP("127.0.0.1")})
-	require.NoError(t, err)
-	address := listener.LocalAddr().String()
-	require.NoError(t, listener.Close())
-	return address
 }
 
 func awaitWorkflowStatus(
@@ -472,7 +472,11 @@ func workflowStepAttempts(t *testing.T, status workflow.InstanceStatus, name str
 	return 0
 }
 
-func workflowStepStatus(t *testing.T, status workflow.InstanceStatus, name string) workflow.StepStatus {
+func workflowStepStatus(
+	t *testing.T,
+	status workflow.InstanceStatus,
+	name string,
+) workflow.StepStatus {
 	t.Helper()
 	for _, step := range status.Steps {
 		if step.Name == name {

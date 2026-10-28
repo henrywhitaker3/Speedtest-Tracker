@@ -87,17 +87,19 @@ func TestNotifierSendsTelegramMessages(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			sender := &telegramSenderStub{err: tt.sendErr}
-			notifier := New(NotifierOpts{
-				UIURL: "https://speedtest.example",
-				Notifications: config.Notifications{{
-					Kind:   config.Telegram,
-					Phases: []config.NotificationPhase{notificationPhase(tt.phase)},
-					ChatID: "123456",
-				}},
-				Telegram: sender,
-			})
-
-			err := notifier.Notify(t.Context(), tt.phase, tt.result)
+			notification := config.Notification{
+				Kind:   config.Telegram,
+				Phases: []config.NotificationPhase{notificationPhase(tt.phase)},
+				ChatID: "123456",
+			}
+			err := notify(
+				t.Context(),
+				"https://speedtest.example",
+				sender,
+				notification,
+				tt.phase,
+				tt.result,
+			)
 			if tt.wantErr {
 				require.ErrorContains(t, err, sendErr.Error())
 			} else {

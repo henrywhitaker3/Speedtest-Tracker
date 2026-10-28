@@ -4,17 +4,23 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"slices"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
+	"github.com/italypaleale/francis/components/sqlite"
+	"github.com/italypaleale/francis/host/local"
 	"github.com/stretchr/testify/require"
 )
 
@@ -109,16 +115,27 @@ func TestNotifierNotify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			server := newNotificationServer(t, tt.statuses)
-			err := New(NotifierOpts{Notifications: tt.notifications(server.URL())}).Notify(
-				t.Context(),
-				tt.phase,
-				tt.result,
-			)
+			notificationErrors := &NotificationError{}
+			for _, notification := range tt.notifications(server.URL()) {
+				if !notifiesAtPhase(notification, tt.phase) {
+					continue
+				}
+				if err := notify(
+					t.Context(),
+					"https://speedtest.example",
+					nil,
+					notification,
+					tt.phase,
+					tt.result,
+				); err != nil {
+					notificationErrors.push(notification, err)
+				}
+			}
 
 			if tt.wantErr {
-				require.Error(t, err)
+				require.False(t, notificationErrors.Nil())
 			} else {
-				require.NoError(t, err)
+				require.True(t, notificationErrors.Nil())
 			}
 
 			requests := server.requests()
@@ -144,6 +161,146 @@ func TestNotificationErrorFormatsAndRedactsDestinationURLs(t *testing.T) {
 		"request to [REDACTED] failed, request to [REDACTED] failed",
 		err.Error(),
 	)
+}
+
+func TestItDoesntSendToSuccessfulChannelOnRetry(t *testing.T) {
+	server := newNotificationServer(t, map[string]int{"/start": http.StatusOK})
+	service := startNotifierHost(t, NotifierOpts{
+		Notifications: config.Notifications{
+			{
+				Kind:   config.Healthcheck,
+				URL:    server.URL(),
+				Phases: []config.NotificationPhase{config.PreRun},
+			},
+		},
+	})
+	res := results.Result{
+		ID: uuid.MustNew(),
+	}
+	require.Nil(t, invokeNotifier(t, service, PreRun, res))
+	require.Len(t, server.received, 1)
+	require.Nil(t, invokeNotifier(t, service, PreRun, res))
+	require.Len(t, server.received, 1)
+}
+
+func TestItDoesSendToErroredChannelOnRetry(t *testing.T) {
+	server := newNotificationServer(t, map[string]int{"/start": http.StatusServiceUnavailable})
+	service := startNotifierHost(t, NotifierOpts{
+		Notifications: config.Notifications{
+			{
+				Kind:   config.Healthcheck,
+				URL:    server.URL(),
+				Phases: []config.NotificationPhase{config.PreRun},
+			},
+		},
+	})
+	res := results.Result{
+		ID: uuid.MustNew(),
+	}
+	require.NotNil(t, invokeNotifier(t, service, PreRun, res))
+	require.Len(t, server.received, 1)
+	require.NotNil(t, invokeNotifier(t, service, PreRun, res))
+	require.Len(t, server.received, 2)
+}
+
+func TestNotifierRetriesOnlyFailedChannels(t *testing.T) {
+	server := newNotificationServer(t, map[string]int{
+		"/successful/start": http.StatusOK,
+		"/failed/start":     http.StatusServiceUnavailable,
+	})
+	service := startNotifierHost(t, NotifierOpts{
+		Notifications: config.Notifications{
+			{
+				Kind:   config.Healthcheck,
+				URL:    server.URL() + "/successful",
+				Phases: []config.NotificationPhase{config.PreRun},
+			},
+			{
+				Kind:   config.Healthcheck,
+				URL:    server.URL() + "/failed",
+				Phases: []config.NotificationPhase{config.PreRun},
+			},
+		},
+	})
+	result := results.Result{ID: uuid.MustNew()}
+
+	require.NotNil(t, invokeNotifier(t, service, PreRun, result))
+	require.NotNil(t, invokeNotifier(t, service, PreRun, result))
+
+	require.Equal(
+		t,
+		[]string{"/successful/start", "/failed/start", "/failed/start"},
+		requestPaths(server.requests()),
+	)
+}
+
+func startNotifierHost(t *testing.T, opts NotifierOpts) *local.Host {
+	t.Helper()
+
+	address := freeNotifierUDPAddress(t)
+	host, err := local.NewHost(
+		local.WithAddress(address),
+		local.WithSQLiteProvider(sqlite.SQLiteProviderOptions{
+			ConnectionString: filepath.Join(t.TempDir(), "notifications.db"),
+		}),
+		local.WithRuntimePSKs([]byte("notifications-test-runtime-psk-0123456789")),
+		local.WithLogger(slog.New(slog.DiscardHandler)),
+	)
+	require.NoError(t, err)
+	opts.Host = host
+	require.NoError(t, RegisterActors(opts))
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errCh := make(chan error, 1)
+	go func() { errCh <- host.Run(ctx) }()
+	select {
+	case <-host.Ready():
+	case <-time.After(10 * time.Second):
+		cancel()
+		require.FailNow(t, "assertion failed", "notifications host did not become ready")
+	}
+	t.Cleanup(func() {
+		cancel()
+		select {
+		case <-errCh:
+		case <-time.After(10 * time.Second):
+			t.Error("notifications host did not stop")
+		}
+	})
+
+	return host
+}
+
+func invokeNotifier(
+	t *testing.T,
+	host *local.Host,
+	phase Phase,
+	result results.Result,
+) *NotificationError {
+	t.Helper()
+
+	response, err := host.Service().Invoke(
+		t.Context(),
+		Actor,
+		result.ID.String(),
+		Notify,
+		NotifyInput{Result: result, Phase: phase},
+	)
+	require.NoError(t, err)
+
+	var notificationErrors *NotificationError
+	require.NoError(t, response.Decode(&notificationErrors))
+	return notificationErrors
+}
+
+func freeNotifierUDPAddress(t *testing.T) string {
+	t.Helper()
+
+	listener, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP("127.0.0.1")})
+	require.NoError(t, err)
+	address := listener.LocalAddr().String()
+	require.NoError(t, listener.Close())
+	return address
 }
 
 func healthcheck(url string, phases ...config.NotificationPhase) config.Notifications {

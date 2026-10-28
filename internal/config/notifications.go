@@ -1,6 +1,8 @@
 package config
 
 import (
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os"
@@ -8,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/henrywhitaker3/windowframe/v2/config"
+	"github.com/henrywhitaker3/windowframe/v2/crypto"
 )
 
 type NotificationPhase string
@@ -38,6 +41,12 @@ type Notification struct {
 	// Telegram-specific options
 	BotToken config.RedactedString `json:"botToken,omitempty"`
 	ChatID   config.RedactedString `json:"chatID,omitempty"`
+}
+
+func (n Notification) String() string {
+	by, _ := json.Marshal(n)
+	sum := crypto.Sum(string(by))
+	return hex.EncodeToString([]byte(sum))
 }
 
 func (n Notification) validate() error {

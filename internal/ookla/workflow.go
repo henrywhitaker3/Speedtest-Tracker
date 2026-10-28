@@ -8,6 +8,8 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/log"
+	"github.com/henrywhitaker3/windowframe/v2/uuid"
+	"github.com/italypaleale/francis/actor"
 	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/italypaleale/francis/host/local"
 	"go.opentelemetry.io/otel"
@@ -24,8 +26,14 @@ type testRunner interface {
 }
 
 type notifier interface {
-	ShouldNotify() bool
-	Notify(context.Context, notifications.Phase, results.Result) error
+	Invoke(
+		context.Context,
+		string,
+		string,
+		string,
+		any,
+		...actor.InvokeOption,
+	) (actor.Envelope, error)
 }
 
 type WorkflowOpts struct {
@@ -156,9 +164,27 @@ func storeResult(repo workflowRepo) workflow.RunFunc {
 	}
 }
 
+// c.Request().Context(),
+// authactor.Actor,
+// sessionID,
+// authactor.BeginLogin,
+// nil,
+
 func shouldNotify(n notifier) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (any, error) {
-		return n.ShouldNotify(), nil
+		data, err := n.Invoke(
+			ctx,
+			notifications.Actor,
+			uuid.MustNew().String(),
+			notifications.ShouldNotify,
+			nil,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("invoke notifications actor: %w", err)
+		}
+		var should bool
+		_ = data.Decode(&should)
+		return should, nil
 	}
 }
 
@@ -168,7 +194,29 @@ func preRunNotify(n notifier) workflow.RunFunc {
 		if err := t.DecodeInput(&result); err != nil {
 			return nil, fmt.Errorf("decode input: %w", err)
 		}
-		return nil, n.Notify(ctx, notifications.PreRun, result.Result)
+
+		data, err := n.Invoke(
+			ctx,
+			notifications.Actor,
+			result.Result.ID.String(),
+			notifications.Notify,
+			notifications.NotifyInput{
+				Result: result.Result,
+				Phase:  notifications.PreRun,
+			},
+		)
+		if err != nil {
+			return nil, fmt.Errorf("invoke notifications actor: %w", err)
+		}
+		var errors *notifications.NotificationError
+		if err := data.Decode(&errors); err != nil {
+			return nil, fmt.Errorf("decode actor response: %w", err)
+		}
+		if errors == nil || errors.Nil() {
+			return nil, nil
+		}
+
+		return nil, errors
 	}
 }
 
@@ -176,8 +224,30 @@ func postRunNotify(n notifier) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (output any, err error) {
 		var result results.Result
 		if err := t.DecodeOutput("store result", &result); err != nil {
-			return nil, fmt.Errorf("decode store result output: %w", err)
+			return nil, fmt.Errorf("decode input: %w", err)
 		}
-		return nil, n.Notify(ctx, notifications.PostRun, result)
+
+		data, err := n.Invoke(
+			ctx,
+			notifications.Actor,
+			result.ID.String(),
+			notifications.Notify,
+			notifications.NotifyInput{
+				Result: result,
+				Phase:  notifications.PostRun,
+			},
+		)
+		if err != nil {
+			return nil, fmt.Errorf("invoke notifications actor: %w", err)
+		}
+		var errors *notifications.NotificationError
+		if err := data.Decode(&errors); err != nil {
+			return nil, fmt.Errorf("decode actor response: %w", err)
+		}
+		if errors == nil || errors.Nil() {
+			return nil, nil
+		}
+
+		return nil, errors
 	}
 }
