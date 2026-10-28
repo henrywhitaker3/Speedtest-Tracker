@@ -1,7 +1,7 @@
 #:schema https://mise.jdx.dev/schema/mise.json
 
 [tools]
-pnpm = "12.15.0"
+pnpm = "12.16.1"
 node = "26.12.1"
 
 [tasks.ui]
