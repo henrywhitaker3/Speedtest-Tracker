@@ -74,10 +74,10 @@ func init() {
 }
 
 type Ookla struct {
-	server int
+	server []int
 }
 
-func New(ctx context.Context, version string, serverID int) (*Ookla, error) {
+func New(ctx context.Context, version string, serverID []int) (*Ookla, error) {
 	if err := ensureBinary(ctx, version); err != nil {
 		return nil, err
 	}
@@ -102,8 +102,8 @@ type server struct {
 }
 
 func (o *Ookla) PickServer(ctx context.Context) (int, error) {
-	if o.server != 0 {
-		return o.server, nil
+	if len(o.server) > 0 {
+		return randomSliceValue(o.server)
 	}
 
 	cmd := exec.CommandContext(ctx, binaryFile, "--servers", "--format=json")
@@ -120,11 +120,19 @@ func (o *Ookla) PickServer(ctx context.Context) (int, error) {
 	if len(servers.Servers) == 0 {
 		return 0, fmt.Errorf("no servers listed")
 	}
-
-	pick := servers.Servers[rand.Intn(len(servers.Servers))]
+	pick, _ := randomSliceValue(servers.Servers)
 	slog.DebugContext(ctx, "picked server from list", "server", pick)
 
 	return pick.ID, nil
+}
+
+func randomSliceValue[T any](s []T) (T, error) {
+	if len(s) == 0 {
+		var empty T
+		return empty, fmt.Errorf("no items in slice")
+	}
+
+	return s[rand.Intn(len(s))], nil
 }
 
 func (o *Ookla) Run(ctx context.Context, server int, result *results.Result) error {

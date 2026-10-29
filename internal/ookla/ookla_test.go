@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -102,4 +103,20 @@ func TestOoklaOutputUnmarshalsFractionalPacketLoss(t *testing.T) {
 	var output results.SpeedtestOutput
 	require.NoError(t, json.Unmarshal([]byte(`{"packetLoss":0.43859649122807015}`), &output))
 	assert.Equal(t, packetLoss, output.PacketLoss)
+}
+
+func TestPickServerSelectsConfiguredServer(t *testing.T) {
+	serverIDs := []int{101, 202, 303}
+	ookla := Ookla{server: serverIDs}
+
+	picked := []int{}
+	for range 100 {
+		serverID, err := ookla.PickServer(t.Context())
+		require.NoError(t, err)
+		assert.Contains(t, serverIDs, serverID)
+		if !slices.Contains(picked, serverID) {
+			picked = append(picked, serverID)
+		}
+	}
+	require.NotEqual(t, 1, len(picked))
 }

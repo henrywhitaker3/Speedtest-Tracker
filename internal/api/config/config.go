@@ -21,7 +21,7 @@ type AuthResponse struct {
 type ConfigResponse struct {
 	Auth     AuthResponse `json:"auth"`
 	Schedule string       `json:"schedule"`
-	ServerID int          `json:"server_id"`
+	ServerID []int        `json:"server_id"`
 }
 
 func (h *configHandler) Handler() handlers.Handler[any, ConfigResponse] {

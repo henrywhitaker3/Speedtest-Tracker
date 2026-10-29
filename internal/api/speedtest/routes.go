@@ -18,7 +18,6 @@ func Register(
 	db *gorm.DB,
 	host *local.Host,
 	runner *workflow.WorkflowService,
-	serverID int,
 ) error {
 	runLimiter, err := ratelimit.New(
 		"run",

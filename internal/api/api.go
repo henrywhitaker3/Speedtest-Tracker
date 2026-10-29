@@ -198,7 +198,7 @@ func registerRoutes(
 	if err := authapi.RegisterRoutes(h, host, db, conf); err != nil {
 		return fmt.Errorf("register auth routes: %w", err)
 	}
-	if err := speedtest.Register(h, db, host, runner, conf.Server); err != nil {
+	if err := speedtest.Register(h, db, host, runner); err != nil {
 		return err
 	}
 	configapi.RegisterRoutes(h, conf)

@@ -28,7 +28,7 @@ The Speedtest binary receives Ookla's EULA and GDPR flags when it runs. `ACCEPT_
 | Variable | Default | Description |
 | --- | --- | --- |
 | `TEST_SCHEDULE` | `5 */2 * * *` | Cron expression for scheduled tests: by default, five minutes past every second hour. |
-| `TEST_SERVER` | unset | Optional Ookla server ID used for speedtests. When unset, Ookla selects a server. |
+| `TEST_SERVER` | unset | Optional comma-separated Ookla server IDs. One is selected at random for each speedtest. When unset, a nearby server is selected at random from Ookla's server list. |
 | `RETENTION_DAYS` | `0` (disabled) | Retention duration for results. Expired results are permanently deleted hourly. Use a Go-style duration such as `90d`; `0` disables cleanup. |
 
 ## Notifications
