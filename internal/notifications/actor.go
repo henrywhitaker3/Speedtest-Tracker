@@ -3,11 +3,13 @@ package notifications
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"slices"
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/windowframe/v2/log"
 	"github.com/italypaleale/francis/actor"
 	"github.com/italypaleale/francis/host/local"
 )
@@ -108,19 +110,29 @@ func (n *Notifier) invokeNotify(
 		return nil, fmt.Errorf("store state: %w", err)
 	}
 
+	ctx = log.WithLogAttr(ctx, "result", input.Result.ID)
+
 	errors := &NotificationError{}
 	for _, no := range n.notifications {
 		if !notifiesAtPhase(no, input.Phase) {
 			continue
 		}
-		if passed, exists := state.Record[fmt.Sprintf("%d:%s", input.Phase, no.String())]; passed &&
+
+		recordKey := fmt.Sprintf("%s:%s", input.Phase.String(), no.String())
+		nctx := log.WithLogAttr(ctx, "notification", no)
+		nctx = log.WithLogAttr(nctx, "phase", input.Phase.String())
+
+		if passed, exists := state.Record[recordKey]; passed &&
 			exists {
+			slog.DebugContext(nctx, "skipping due to previous success")
 			continue
 		}
 		if err := notify(ctx, n.uiURL, n.telegram, no, input.Phase, input.Result); err != nil {
+			slog.ErrorContext(nctx, "notification failed", "error", err)
 			errors.push(no, err)
 		} else {
-			state.Record[fmt.Sprintf("%d:%s", input.Phase, no.String())] = true
+			slog.InfoContext(nctx, "sent notification")
+			state.Record[recordKey] = true
 		}
 	}
 

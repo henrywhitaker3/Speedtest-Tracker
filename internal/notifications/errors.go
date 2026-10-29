@@ -20,6 +20,9 @@ func (ne *NotificationError) push(n config.Notification, err error) {
 	ne.Errors = append(ne.Errors, err)
 	if n.URL != "" {
 		ne.Redactions = append(ne.Redactions, n.URL)
+		withoutScheme := strings.ReplaceAll(n.URL, "http://", "")
+		withoutScheme = strings.ReplaceAll(withoutScheme, "https://", "")
+		ne.Redactions = append(ne.Redactions, withoutScheme)
 		if n.BotToken != "" {
 			if !slices.Contains(ne.Redactions, string(n.BotToken)) {
 				ne.Redactions = append(ne.Redactions, string(n.BotToken))
