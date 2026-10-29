@@ -2,7 +2,7 @@
 
 [tools]
 pnpm = "12.16.1"
-node = "26.12.1"
+node = "26.13.0"
 
 [tasks.ui]
 run = "pnpm run dev"
