@@ -110,6 +110,9 @@ func (n *Notifier) invokeNotify(
 
 	errors := &NotificationError{}
 	for _, no := range n.notifications {
+		if !notifiesAtPhase(no, input.Phase) {
+			continue
+		}
 		if passed, exists := state.Record[fmt.Sprintf("%d:%s", input.Phase, no.String())]; passed &&
 			exists {
 			continue

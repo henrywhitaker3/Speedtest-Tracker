@@ -177,7 +177,9 @@ func shouldNotify(n notifier) workflow.RunFunc {
 			return nil, fmt.Errorf("invoke notifications actor: %w", err)
 		}
 		var should bool
-		_ = data.Decode(&should)
+		if err := data.Decode(&should); err != nil {
+			slog.ErrorContext(ctx, "decode should notify output", "error", err)
+		}
 		return should, nil
 	}
 }
