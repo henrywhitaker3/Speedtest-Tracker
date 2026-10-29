@@ -109,16 +109,27 @@ func TestNotifierNotify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			server := newNotificationServer(t, tt.statuses)
-			err := New(NotifierOpts{Notifications: tt.notifications(server.URL())}).Notify(
-				t.Context(),
-				tt.phase,
-				tt.result,
-			)
+			notificationErrors := &NotificationError{}
+			for _, notification := range tt.notifications(server.URL()) {
+				if !notifiesAtPhase(notification, tt.phase) {
+					continue
+				}
+				if err := notify(
+					t.Context(),
+					"https://speedtest.example",
+					nil,
+					notification,
+					tt.phase,
+					tt.result,
+				); err != nil {
+					notificationErrors.push(notification, err)
+				}
+			}
 
 			if tt.wantErr {
-				require.Error(t, err)
+				require.False(t, notificationErrors.Nil())
 			} else {
-				require.NoError(t, err)
+				require.True(t, notificationErrors.Nil())
 			}
 
 			requests := server.requests()

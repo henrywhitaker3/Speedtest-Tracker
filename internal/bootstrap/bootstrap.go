@@ -66,18 +66,21 @@ func Bootstrap(
 	}
 
 	resultsRepo := results.NewRepo(db)
-	notifier, err := notifier(conf)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("build notifier: %w", err)
-	}
 
+	notifierOpts, err := notifier(conf, host)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("build notifier opts: %w", err)
+	}
+	if err := notifications.RegisterActors(notifierOpts); err != nil {
+		return nil, nil, nil, fmt.Errorf("register notifications actors: %w", err)
+	}
 	workflow, err := ookla.RegisterActor(ookla.RegisterActorOpts{
 		Host:         host,
 		Runner:       ooklaCLI,
 		WorkflowRepo: resultsRepo,
 		CronjobRepo:  resultsRepo,
 		Schedule:     conf.Schedule,
-		Notifier:     notifier,
+		Notifier:     host.Service(),
 	})
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("register ookla actors: %w", err)
@@ -116,24 +119,25 @@ func Bootstrap(
 	return http, db, host, nil
 }
 
-func notifier(conf *config.Config) (*notifications.Notifier, error) {
+func notifier(conf *config.Config, host *local.Host) (notifications.NotifierOpts, error) {
 	opts := notifications.NotifierOpts{
 		Notifications: conf.Notifications,
 		UIURL:         conf.App.UIURL,
+		Host:          host,
 	}
 
 	for _, n := range conf.Notifications {
 		if n.Kind == config.Telegram {
 			bot, err := bot.New(string(n.BotToken), bot.WithSkipGetMe())
 			if err != nil {
-				return nil, fmt.Errorf("build telegram bot: %w", err)
+				return notifications.NotifierOpts{}, fmt.Errorf("build telegram bot: %w", err)
 			}
 			opts.Telegram = bot
 			break
 		}
 	}
 
-	return notifications.New(opts), nil
+	return opts, nil
 }
 
 func runtime(db config.Database, conf config.Runtime) (*local.Host, error) {

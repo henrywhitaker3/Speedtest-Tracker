@@ -8,22 +8,26 @@ import (
 )
 
 type NotificationError struct {
-	errors     []error
-	redactions []string
+	Errors     []error
+	Redactions []string
+}
+
+func (n NotificationError) Nil() bool {
+	return len(n.Errors) == 0
 }
 
 func (ne *NotificationError) push(n config.Notification, err error) {
-	ne.errors = append(ne.errors, err)
+	ne.Errors = append(ne.Errors, err)
 	if n.URL != "" {
-		ne.redactions = append(ne.redactions, n.URL)
+		ne.Redactions = append(ne.Redactions, n.URL)
 		if n.BotToken != "" {
-			if !slices.Contains(ne.redactions, string(n.BotToken)) {
-				ne.redactions = append(ne.redactions, string(n.BotToken))
+			if !slices.Contains(ne.Redactions, string(n.BotToken)) {
+				ne.Redactions = append(ne.Redactions, string(n.BotToken))
 			}
 		}
 		if n.ChatID != "" {
-			if !slices.Contains(ne.redactions, string(n.ChatID)) {
-				ne.redactions = append(ne.redactions, string(n.ChatID))
+			if !slices.Contains(ne.Redactions, string(n.ChatID)) {
+				ne.Redactions = append(ne.Redactions, string(n.ChatID))
 			}
 		}
 	}
@@ -31,9 +35,9 @@ func (ne *NotificationError) push(n config.Notification, err error) {
 
 func (ne NotificationError) Error() string {
 	var out []string
-	for _, e := range ne.errors {
+	for _, e := range ne.Errors {
 		str := e.Error()
-		for _, r := range ne.redactions {
+		for _, r := range ne.Redactions {
 			str = strings.ReplaceAll(str, r, "[REDACTED]")
 		}
 		out = append(out, str)
