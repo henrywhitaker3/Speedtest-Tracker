@@ -1,3 +1,14 @@
+## [2.7.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.1..v2.7.2) - 2026-10-29
+
+### 🐛 Bug Fixes
+
+- *(config)* Allow comma-separated server ids - ([4905138](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4905138b0be35b5c19781c86552275879f479450))
+- *(ookla)* Pick random id from configured servers - ([0142748](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0142748461dd8a88d3726386523bf645ae5b74c8))
+- *(ui)* Add handling for multiple configured server ids - ([2434155](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/24341558838e5ff89cbc5047026f6d408c97f3a9))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([88caf0c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/88caf0c3ad935a3f42b4ade74efc7d3fea4e3456))
 ## [2.7.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.0..v2.7.1) - 2026-10-29
 
 ### 🐛 Bug Fixes
