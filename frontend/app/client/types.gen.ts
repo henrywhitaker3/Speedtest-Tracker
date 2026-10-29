@@ -24,6 +24,35 @@ export type AuthToken = {
     updated_at?: string;
 };
 
+export type CompatLatestResponse = {
+    benchmarks?: unknown;
+    comments?: unknown;
+    created_at?: string;
+    data?: ResultsSpeedtestOutput;
+    dispatched_by?: unknown;
+    download?: number | null;
+    download_bits?: number | null;
+    download_bits_human?: string | null;
+    download_bytes?: number | null;
+    download_bytes_human?: string | null;
+    healthy?: boolean;
+    id?: UuidUuid;
+    ping?: number | null;
+    scheduled?: boolean;
+    service?: string;
+    status?: string;
+    updated_at?: string;
+    upload?: number | null;
+    upload_bits?: number | null;
+    upload_bits_human?: string | null;
+    upload_bytes?: number | null;
+    upload_bytes_human?: string | null;
+};
+
+export type CompatLatestResponseEnvelope = {
+    data?: CompatLatestResponse;
+};
+
 export type ConfigAuthResponse = {
     admin_group?: string;
     enabled?: boolean;
@@ -32,10 +61,12 @@ export type ConfigAuthResponse = {
 export type ConfigConfigResponse = {
     auth?: ConfigAuthResponse;
     schedule?: string;
-    server_id?: number;
+    server_id?: Array<number> | null;
 };
 
 export type ConfigNotification = {
+    botToken?: string;
+    chatID?: string;
     kind?: ConfigNotificationKind;
     phases?: Array<ConfigNotificationPhase> | null;
     url?: string;
@@ -53,10 +84,6 @@ export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalA
     page?: number;
     total_pages?: number;
     total_rows?: number;
-};
-
-export type DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput = {
-    [key: string]: unknown;
 };
 
 export type GormDeletedAt = {
@@ -90,6 +117,64 @@ export type RestoreRestoreResponse = {
     skipped?: number;
 };
 
+export type ResultsInterface = {
+    externalIp?: string;
+    internalIp?: string;
+    isVpn?: boolean;
+    macAddr?: string;
+    name?: string;
+};
+
+export type ResultsLatency = {
+    high?: number;
+    iqm?: number;
+    jitter?: number;
+    low?: number;
+};
+
+export type ResultsMeasurement = {
+    bandwidth?: number;
+    bytes?: number;
+    elapsed?: number;
+    latency?: ResultsLatency;
+};
+
+export type ResultsOoklaResult = {
+    id?: string;
+    persisted?: boolean;
+    url?: string;
+};
+
+export type ResultsPing = {
+    high?: number;
+    jitter?: number;
+    latency?: number;
+    low?: number;
+};
+
+export type ResultsServer = {
+    country?: string;
+    host?: string;
+    id?: number;
+    ip?: string;
+    location?: string;
+    name?: string;
+    port?: number;
+};
+
+export type ResultsSpeedtestOutput = {
+    download?: ResultsMeasurement;
+    interface?: ResultsInterface;
+    isp?: string | null;
+    packetLoss?: number;
+    ping?: ResultsPing;
+    result?: ResultsOoklaResult;
+    server?: ResultsServer;
+    timestamp?: string;
+    type?: string;
+    upload?: ResultsMeasurement;
+};
+
 export type ResultsStat = {
     created_at?: string;
     download?: number | null;
@@ -106,7 +191,7 @@ export type SpeedtestGetResponse = {
     error?: string | null;
     id?: UuidUuid;
     ping?: number | null;
-    raw?: DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput;
+    raw?: ResultsSpeedtestOutput;
     server_host?: string | null;
     server_id?: number | null;
     server_name?: string | null;
@@ -124,7 +209,7 @@ export type SpeedtestResult = {
     error?: string | null;
     id?: UuidUuid;
     ping?: number | null;
-    raw?: DatatypesJsonTypeGithubComHenrywhitaker3SpeedtestTrackerV2InternalResultsSpeedtestOutput;
+    raw?: ResultsSpeedtestOutput;
     server_host?: string | null;
     server_id?: number | null;
     server_name?: string | null;
@@ -157,6 +242,45 @@ export type SpeedtestWorkflowStep = {
 export type UuidUuid = string;
 
 export type WorkflowStepStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped' | 'compensating' | 'compensated' | 'compensation-failed';
+
+export type CompatLatestData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/results/latest';
+};
+
+export type CompatLatestErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type CompatLatestError = CompatLatestErrors[keyof CompatLatestErrors];
+
+export type CompatLatestResponses = {
+    /**
+     * OK
+     */
+    200: CompatLatestResponseEnvelope;
+};
+
+export type CompatLatestResponse2 = CompatLatestResponses[keyof CompatLatestResponses];
 
 export type ListTokensData = {
     body?: never;

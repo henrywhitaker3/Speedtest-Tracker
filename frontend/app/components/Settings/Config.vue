@@ -20,7 +20,7 @@
           Server ID
         </dt>
         <dd class="mt-1 font-medium">
-          {{ configStore.config?.server_id ?? 'Not configured' }}
+          {{ serverIds }}
         </dd>
       </div>
     </dl>
@@ -56,4 +56,9 @@
 
 <script setup lang="ts">
 const configStore = useConfigStore()
+
+const serverIds = computed(() => {
+  const serverIds = configStore.config?.server_id
+  return serverIds?.length ? serverIds.join(', ') : '-'
+})
 </script>

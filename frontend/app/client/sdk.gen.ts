@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RestoreJsonData, RestoreJsonErrors, RestoreJsonResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
+import type { CompatLatestData, CompatLatestErrors, CompatLatestResponses, CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RestoreJsonData, RestoreJsonErrors, RestoreJsonResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -19,14 +19,34 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Latest results
+ *
+ * Compatible endpoint with alexjustesen/speedtest-tracker
+ */
+export const compatLatest = <ThrowOnError extends boolean = false>(options?: Options<CompatLatestData, ThrowOnError>): RequestResult<CompatLatestResponses, CompatLatestErrors, ThrowOnError> => (options?.client ?? client).get<CompatLatestResponses, CompatLatestErrors, ThrowOnError>({ url: '/api/v1/results/latest', ...options });
+
+/**
  * List tokens
  */
-export const listTokens = <ThrowOnError extends boolean = false>(options?: Options<ListTokensData, ThrowOnError>): RequestResult<ListTokensResponses, ListTokensErrors, ThrowOnError> => (options?.client ?? client).get<ListTokensResponses, ListTokensErrors, ThrowOnError>({ url: '/v1/auth/tokens', ...options });
+export const listTokens = <ThrowOnError extends boolean = false>(options?: Options<ListTokensData, ThrowOnError>): RequestResult<ListTokensResponses, ListTokensErrors, ThrowOnError> => (options?.client ?? client).get<ListTokensResponses, ListTokensErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/auth/tokens',
+    ...options
+});
 
 /**
  * Create token
  */
 export const createToken = <ThrowOnError extends boolean = false>(options?: Options<CreateTokenData, ThrowOnError>): RequestResult<CreateTokenResponses, CreateTokenErrors, ThrowOnError> => (options?.client ?? client).post<CreateTokenResponses, CreateTokenErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
     url: '/v1/auth/tokens',
     ...options,
     headers: {
@@ -38,7 +58,15 @@ export const createToken = <ThrowOnError extends boolean = false>(options?: Opti
 /**
  * Delete token
  */
-export const deleteToken = <ThrowOnError extends boolean = false>(options: Options<DeleteTokenData, ThrowOnError>): RequestResult<DeleteTokenResponses, DeleteTokenErrors, ThrowOnError> => (options.client ?? client).delete<DeleteTokenResponses, DeleteTokenErrors, ThrowOnError>({ url: '/v1/auth/tokens/{id}', ...options });
+export const deleteToken = <ThrowOnError extends boolean = false>(options: Options<DeleteTokenData, ThrowOnError>): RequestResult<DeleteTokenResponses, DeleteTokenErrors, ThrowOnError> => (options.client ?? client).delete<DeleteTokenResponses, DeleteTokenErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/auth/tokens/{id}',
+    ...options
+});
 
 /**
  * Config
@@ -52,7 +80,15 @@ export const getConfig = <ThrowOnError extends boolean = false>(options?: Option
  *
  * Show configured notification channels
  */
-export const getNotifications = <ThrowOnError extends boolean = false>(options?: Options<GetNotificationsData, ThrowOnError>): RequestResult<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError>({ url: '/v1/config/notifications', ...options });
+export const getNotifications = <ThrowOnError extends boolean = false>(options?: Options<GetNotificationsData, ThrowOnError>): RequestResult<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetNotificationsResponses, GetNotificationsErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/config/notifications',
+    ...options
+});
 
 /**
  * Restore legacy backup
@@ -60,6 +96,11 @@ export const getNotifications = <ThrowOnError extends boolean = false>(options?:
  * Restore legacy speedtest json backups
  */
 export const restoreJson = <ThrowOnError extends boolean = false>(options?: Options<RestoreJsonData, ThrowOnError>): RequestResult<RestoreJsonResponses, RestoreJsonErrors, ThrowOnError> => (options?.client ?? client).post<RestoreJsonResponses, RestoreJsonErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
     url: '/v1/restore/json',
     ...options,
     headers: {
@@ -78,7 +119,15 @@ export const listResults = <ThrowOnError extends boolean = false>(options?: Opti
 /**
  * Delete result
  */
-export const deleteResult = <ThrowOnError extends boolean = false>(options: Options<DeleteResultData, ThrowOnError>): RequestResult<DeleteResultResponses, DeleteResultErrors, ThrowOnError> => (options.client ?? client).delete<DeleteResultResponses, DeleteResultErrors, ThrowOnError>({ url: '/v1/speedtest/{id}', ...options });
+export const deleteResult = <ThrowOnError extends boolean = false>(options: Options<DeleteResultData, ThrowOnError>): RequestResult<DeleteResultResponses, DeleteResultErrors, ThrowOnError> => (options.client ?? client).delete<DeleteResultResponses, DeleteResultErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/speedtest/{id}',
+    ...options
+});
 
 /**
  * Get result
@@ -99,14 +148,30 @@ export const latestResult = <ThrowOnError extends boolean = false>(options?: Opt
  *
  * Delete test results that have an error
  */
-export const purge = <ThrowOnError extends boolean = false>(options?: Options<PurgeData, ThrowOnError>): RequestResult<PurgeResponses, PurgeErrors, ThrowOnError> => (options?.client ?? client).delete<PurgeResponses, PurgeErrors, ThrowOnError>({ url: '/v1/speedtest/purge', ...options });
+export const purge = <ThrowOnError extends boolean = false>(options?: Options<PurgeData, ThrowOnError>): RequestResult<PurgeResponses, PurgeErrors, ThrowOnError> => (options?.client ?? client).delete<PurgeResponses, PurgeErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/speedtest/purge',
+    ...options
+});
 
 /**
  * Run speedtest
  *
  * Run a new speedtest
  */
-export const run = <ThrowOnError extends boolean = false>(options?: Options<RunData, ThrowOnError>): RequestResult<RunResponses, RunErrors, ThrowOnError> => (options?.client ?? client).post<RunResponses, RunErrors, ThrowOnError>({ url: '/v1/speedtest/run', ...options });
+export const run = <ThrowOnError extends boolean = false>(options?: Options<RunData, ThrowOnError>): RequestResult<RunResponses, RunErrors, ThrowOnError> => (options?.client ?? client).post<RunResponses, RunErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/speedtest/run',
+    ...options
+});
 
 /**
  * Timeseries
