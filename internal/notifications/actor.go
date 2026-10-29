@@ -87,8 +87,6 @@ func (n *Notifier) invokeNotify(
 	if err != nil {
 		return nil, fmt.Errorf("get notifier state: %w", err)
 	}
-	defer func() {
-	}()
 
 	var input NotifyInput
 	if err := data.Decode(&input); err != nil {

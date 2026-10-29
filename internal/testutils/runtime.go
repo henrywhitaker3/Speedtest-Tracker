@@ -43,7 +43,7 @@ func Host(t testing.TB, opts ...HostOption) *local.Host {
 	host, err := local.NewHost(
 		local.WithAddress(address),
 		local.WithSQLiteProvider(sqlite.SQLiteProviderOptions{
-			ConnectionString: filepath.Join(t.TempDir(), "workflow.db"),
+			ConnectionString: filepath.Join(t.TempDir(), "host.db"),
 		}),
 		local.WithRuntimePSKs(psk),
 		local.WithAlarmsPollInterval(100*time.Millisecond),
@@ -62,7 +62,7 @@ func Host(t testing.TB, opts ...HostOption) *local.Host {
 	case <-host.Ready():
 	case <-time.After(10 * time.Second):
 		cancel()
-		require.FailNow(t, "assertion failed", "workflow host did not become ready")
+		require.FailNow(t, "assertion failed", "host did not become ready")
 	}
 	t.Cleanup(func() {
 		cancel()
@@ -71,11 +71,11 @@ func Host(t testing.TB, opts ...HostOption) *local.Host {
 			assert.Truef(
 				t,
 				err == nil || errors.Is(err, context.Canceled),
-				"workflow host stopped with error: %v",
+				"host host stopped with error: %v",
 				err,
 			)
 		case <-time.After(10 * time.Second):
-			assert.Fail(t, "workflow host did not stop")
+			assert.Fail(t, "host did not stop")
 		}
 	})
 	return host

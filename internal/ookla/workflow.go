@@ -164,12 +164,6 @@ func storeResult(repo workflowRepo) workflow.RunFunc {
 	}
 }
 
-// c.Request().Context(),
-// authactor.Actor,
-// sessionID,
-// authactor.BeginLogin,
-// nil,
-
 func shouldNotify(n notifier) workflow.RunFunc {
 	return func(ctx context.Context, t workflow.Task) (any, error) {
 		data, err := n.Invoke(
