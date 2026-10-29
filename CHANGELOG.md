@@ -1,3 +1,17 @@
+## [2.7.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.0..v2.7.1) - 2026-10-29
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update module github.com/slack-go/slack to v0.32.0 - ([d5bf856](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d5bf85621f557ba03e65eafa77f0ef35b5a4378d))
+- *(notifications)* Track notification history to stop repeated notifications when a single channel fails - ([d6bf9b0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d6bf9b07f26096bd0cafa2173089cf83ba18b90e))
+- *(notifications)* Filter out channels when they are not configured for the phase - ([ce07a67](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ce07a67ed4c918198c2257f7da1352f43ef76309))
+- *(notifications)* Add logging - ([a649282](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a649282dd630e0858b05876789709ce9ad429647))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([d199513](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d199513d19e126e583d3a571c2affb1045ae6539))
+- Remove duplicate tests - ([b4afdd3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b4afdd379f75d475ab93bb5caa8f2cc5ce89ebe6))
+- Remove leftover comments - ([656ad2c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/656ad2c7686a895052c219635c4c2a31e001d6c3))
 ## [2.7.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.2..v2.7.0) - 2026-10-27
 
 ### 🚀 Features
