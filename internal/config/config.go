@@ -69,7 +69,7 @@ type Config struct {
 	Runtime  Runtime  `env:",prefix=RUNTIME_"`
 
 	Schedule string `env:"TEST_SCHEDULE, default=5 */2 * * *"`
-	Server   int    `env:"TEST_SERVER"`
+	Server   []int  `env:"TEST_SERVER"`
 	// If 0, then retention is turned off
 	RetentionDays duration.StringDuration `env:"RETENTION_DAYS"`
 

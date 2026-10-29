@@ -157,3 +157,31 @@ func TestItParsesNotifications(t *testing.T) {
 		})
 	}
 }
+
+func TestItParsesServerIDs(t *testing.T) {
+	tcs := []struct {
+		name     string
+		val      string
+		expected []int
+	}{
+		{
+			name:     "single server id",
+			val:      "1",
+			expected: []int{1},
+		},
+		{
+			name:     "multiple comma-separated",
+			val:      "1,2,3",
+			expected: []int{1, 2, 3},
+		},
+	}
+	for _, c := range tcs {
+		t.Run(c.name, func(t *testing.T) {
+			t.Setenv("ACCEPT_EULA", "true")
+			t.Setenv("TEST_SERVER", c.val)
+			conf, err := Load()
+			require.Nil(t, err)
+			require.Equal(t, c.expected, conf.Server)
+		})
+	}
+}
