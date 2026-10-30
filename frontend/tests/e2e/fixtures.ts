@@ -49,7 +49,7 @@ const responses = {
   config: {
     body: {
       schedule: '0 * * * *',
-      server_id: 123,
+      server_id: [123],
       auth: { enabled: false }
     }
   },
