@@ -29,23 +29,36 @@ test('shows a sign in button instead of the speedtest action when auth is enable
 })
 
 test('shows a spinner and opens the running result after starting a speedtest', async ({ page }) => {
+  let testStarted = false
+
   await mockApi(page)
   await page.route('**/v1/speedtest/latest', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify({ ...result, complete: false })
+      body: JSON.stringify(testStarted ? { ...result, complete: false } : result)
+    })
+  })
+  await page.route('**/v1/speedtest/run', async (route) => {
+    testStarted = true
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({ id: result.id })
     })
   })
 
   await page.goto('/')
   const speedtest = page.getByRole('button', { name: 'Speedtest' })
+  const runResponse = page.waitForResponse('**/v1/speedtest/run')
   await speedtest.click()
+  await runResponse
 
   await expect(speedtest).toBeEnabled()
   await expect(speedtest.locator('.animate-spin')).toBeVisible()
 
-  await speedtest.click()
-  await expect(page).toHaveURL('/results/result-1')
+  await Promise.all([
+    page.waitForURL('/results/result-1'),
+    speedtest.click()
+  ])
 })
 
 test('stops loading when the started result first appears as complete', async ({ page }) => {
