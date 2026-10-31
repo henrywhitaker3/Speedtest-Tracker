@@ -40,6 +40,7 @@ Configure each notification with a zero-based, contiguous index. Every notificat
 | `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck`, `webhook`, `telegram`, `slack`, or `discord`. |
 | `NOTIFICATIONS_<index>_PHASES` | Comma-separated phases: `pre-run`, `post-run`, or both. |
 | `NOTIFICATIONS_<index>_URL` | Destination URL, required for `healthcheck`, `webhook`, `slack`, and `discord`. |
+| `NOTIFICATIONS_<index>_HEADERS` | Optional JSON object of custom HTTP headers for a `webhook` notification. |
 | `NOTIFICATIONS_TELEGRAM_BOT_TOKEN` | Telegram bot token, required when a `telegram` notification is configured. |
 | `NOTIFICATIONS_TELEGRAM_CHAT_ID` | Telegram chat ID, required when a `telegram` notification is configured. |
 
@@ -53,6 +54,7 @@ NOTIFICATIONS_0_URL=https://hc-ping.com/your-check-id
 NOTIFICATIONS_1_KIND=webhook
 NOTIFICATIONS_1_PHASES=post-run
 NOTIFICATIONS_1_URL=https://example.com/speedtest-complete
+NOTIFICATIONS_1_HEADERS='{"Authorization":"Bearer replace-with-token","X-Source":"speedtest-tracker"}'
 
 NOTIFICATIONS_2_KIND=telegram
 NOTIFICATIONS_2_PHASES=pre-run,post-run
@@ -69,6 +71,8 @@ NOTIFICATIONS_4_URL=https://discord.com/api/webhooks/your-webhook-id/your-webhoo
 ```
 
 Telegram credentials are shared by every Telegram notification. The post-run message contains the result measurements or failure reason and links to the result in the UI.
+
+Webhook headers are sent only for `webhook` notifications. Set `NOTIFICATIONS_<index>_HEADERS` to a JSON object whose keys and values are header names and values, respectively. The configured headers are added to the JSON `POST` request.
 
 Slack notifications use an [Incoming Webhook](https://api.slack.com/messaging/webhooks) and render native Block Kit messages. Discord notifications use a standard [Discord webhook](https://discord.com/developers/docs/resources/webhook#execute-webhook), without the `/slack` suffix, and render native embeds. Both include the speedtest result link; successful post-run messages show ping, download, and upload, while failed tests show the error.
 

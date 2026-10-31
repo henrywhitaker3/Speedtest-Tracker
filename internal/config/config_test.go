@@ -138,6 +138,35 @@ func TestItParsesNotifications(t *testing.T) {
 			},
 			error: true,
 		},
+		{
+			name: "parses correctly formatted webhook headers",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":    "healthcheck",
+				"NOTIFICATIONS_0_PHASES":  "post-run",
+				"NOTIFICATIONS_0_URL":     "http://example.com/",
+				"NOTIFICATIONS_0_HEADERS": `{"X-Bongo": "bingo"}`,
+			},
+			want: Notifications{
+				{
+					Kind:   Healthcheck,
+					Phases: []NotificationPhase{PostRun},
+					URL:    "http://example.com/",
+					Headers: map[string]string{
+						"X-Bongo": "bingo",
+					},
+				},
+			},
+		},
+		{
+			name: "errors with invalid format for headers",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":    "healthcheck",
+				"NOTIFICATIONS_0_PHASES":  "post-run",
+				"NOTIFICATIONS_0_URL":     "http://example.com/",
+				"NOTIFICATIONS_0_HEADERS": `"bongo": "bingo"`,
+			},
+			error: true,
+		},
 	}
 
 	for _, c := range tcs {

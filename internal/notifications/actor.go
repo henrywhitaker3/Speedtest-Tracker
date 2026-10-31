@@ -165,7 +165,7 @@ func notify(
 	case config.Healthcheck:
 		err = notifyHealthcheck(nctx, n.URL, phase, result)
 	case config.Webhook:
-		err = sendWebhook(nctx, n.URL, result)
+		err = sendWebhook(nctx, n.URL, n.Headers, result)
 	case config.Telegram:
 		err = SendTelegram(nctx, telegram, n, uiURL, phase, result)
 	case config.Slack:

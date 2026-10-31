@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"slices"
+	"strings"
 	"sync"
 	"testing"
 
@@ -31,6 +32,7 @@ func TestNotifierNotify(t *testing.T) {
 		notifications func(string) config.Notifications
 		statuses      map[string]int
 		wantPaths     []string
+		wantHeaders   map[string]string
 		wantErr       bool
 	}{
 		{
@@ -104,6 +106,21 @@ func TestNotifierNotify(t *testing.T) {
 			wantPaths: []string{"/start"},
 			wantErr:   true,
 		},
+		{
+			name:   "sends headers in the request",
+			phase:  PreRun,
+			result: result,
+			notifications: func(url string) config.Notifications {
+				return config.Notifications{{
+					Kind:    config.Webhook,
+					Phases:  []config.NotificationPhase{config.PreRun},
+					URL:     url + "/webhook",
+					Headers: map[string]string{"X-Bongo": "bingo"},
+				}}
+			},
+			wantPaths:   []string{"/webhook"},
+			wantHeaders: map[string]string{"X-Bongo": "bingo"},
+		},
 	}
 
 	for _, tt := range tests {
@@ -138,6 +155,10 @@ func TestNotifierNotify(t *testing.T) {
 				require.Equal(t, http.MethodPost, request.method)
 				require.Equal(t, "application/json", request.contentType)
 				require.Equal(t, tt.result.ID, request.result.ID)
+				for key, val := range tt.wantHeaders {
+					require.Contains(t, request.headers, key)
+					require.Equal(t, val, request.headers[key])
+				}
 			}
 		})
 	}
@@ -191,6 +212,7 @@ type notificationRequest struct {
 	path        string
 	contentType string
 	result      results.Result
+	headers     map[string]string
 }
 
 type notificationServer struct {
@@ -211,12 +233,18 @@ func newNotificationServer(t *testing.T, statuses map[string]int) *notificationS
 			return
 		}
 
+		headers := map[string]string{}
+		for key, val := range r.Header {
+			headers[key] = strings.Join(val, ";")
+		}
+
 		s.mu.Lock()
 		s.received = append(s.received, notificationRequest{
 			method:      r.Method,
 			path:        r.URL.Path,
 			contentType: r.Header.Get("Content-Type"),
 			result:      result,
+			headers:     headers,
 		})
 		status := s.statuses[r.URL.Path]
 		s.mu.Unlock()

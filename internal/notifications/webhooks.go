@@ -19,14 +19,19 @@ func notifyHealthcheck(ctx context.Context, url string, phase Phase, result resu
 			url += "/fail"
 		}
 	}
-	return sendWebhook(ctx, url, result)
+	return sendWebhook(ctx, url, nil, result)
 }
 
-func sendWebhook(ctx context.Context, url string, result results.Result) error {
-	return sendJSON(ctx, url, result)
+func sendWebhook(
+	ctx context.Context,
+	url string,
+	headers map[string]string,
+	result results.Result,
+) error {
+	return sendJSON(ctx, url, result, headers)
 }
 
-func sendJSON(ctx context.Context, url string, payload any) error {
+func sendJSON(ctx context.Context, url string, payload any, headers map[string]string) error {
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return fmt.Errorf("marshal payload: %w", err)
@@ -43,6 +48,9 @@ func sendJSON(ctx context.Context, url string, payload any) error {
 		return fmt.Errorf("build http request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	for key, val := range headers {
+		req.Header.Set(key, val)
+	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

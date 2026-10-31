@@ -26,7 +26,7 @@ func sendDiscord(ctx context.Context, url, uiURL string, phase Phase, result res
 		return fmt.Errorf("unknown phase %d", phase)
 	}
 
-	if err := sendJSON(ctx, url, params); err != nil {
+	if err := sendJSON(ctx, url, params, nil); err != nil {
 		return fmt.Errorf("send discord webhook: %w", err)
 	}
 	return nil

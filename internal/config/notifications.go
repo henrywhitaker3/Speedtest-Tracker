@@ -36,7 +36,10 @@ var (
 type Notification struct {
 	Kind   NotificationKind    `json:"kind"`
 	Phases []NotificationPhase `json:"phases"`
-	URL    string              `json:"url,omitempty"`
+
+	URL string `json:"url,omitempty"`
+	// Headers to add to webhook requests
+	Headers map[string]string `json:"headers,omitempty"`
 
 	// Telegram-specific options
 	BotToken config.RedactedString `json:"botToken,omitempty"`
@@ -109,10 +112,18 @@ func (notificationExtractor) Extract(conf *Config) error {
 			phases = append(phases, NotificationPhase(p))
 		}
 
+		var headers map[string]string
+		if raw, ok := os.LookupEnv(prefix + "HEADERS"); ok {
+			if err := json.Unmarshal([]byte(raw), &headers); err != nil {
+				return fmt.Errorf("unmarshal headers: %w", err)
+			}
+		}
+
 		notification := Notification{
 			Kind:     NotificationKind(kind),
 			Phases:   phases,
 			URL:      os.Getenv(prefix + "URL"),
+			Headers:  headers,
 			BotToken: config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_BOT_TOKEN")),
 			ChatID:   config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_CHAT_ID")),
 		}
