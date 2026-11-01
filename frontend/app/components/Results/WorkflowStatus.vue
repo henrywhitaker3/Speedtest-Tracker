@@ -38,9 +38,13 @@ const buildTimelineItem = (step: SpeedtestWorkflowStep): TimelineItem => {
   if (step.error) {
     desc += `: ${step.error}`
   }
+  let date = new Date(step.started_at as string)
+  if (step.status == 'skipped') {
+    date = new Date(step.completed_at as string)
+  }
   return {
     title: prettyName(step.name),
-    date: formatDatetime(new Date(step.started_at as string)),
+    date: formatDatetime(date),
     icon: stepIcon(step.status),
     description: desc,
     ui: {
