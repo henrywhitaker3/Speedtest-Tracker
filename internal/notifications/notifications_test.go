@@ -167,13 +167,17 @@ func TestNotifierNotify(t *testing.T) {
 func TestNotificationErrorFormatsAndRedactsDestinationURLs(t *testing.T) {
 	firstURL := "https://example.com/first-private-token"
 	secondURL := "https://example.com/second-private-token"
+	const gotifyToken = "private-gotify-token"
 	err := &NotificationError{}
-	err.push(config.Notification{URL: firstURL}, fmt.Errorf("request to %s failed", firstURL))
+	err.push(
+		config.Notification{URL: firstURL, GotifyToken: gotifyToken},
+		fmt.Errorf("request to %s with token %s failed", firstURL, gotifyToken),
+	)
 	err.push(config.Notification{URL: secondURL}, fmt.Errorf("request to %s failed", secondURL))
 
 	require.Equal(
 		t,
-		"request to [REDACTED] failed, request to [REDACTED] failed",
+		"request to [REDACTED] with token [REDACTED] failed, request to [REDACTED] failed",
 		err.Error(),
 	)
 }

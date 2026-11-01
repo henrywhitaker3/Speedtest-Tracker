@@ -54,6 +54,30 @@ func TestItParsesNotifications(t *testing.T) {
 			}},
 		},
 		{
+			name: "parses a gotify notification",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":         "gotify",
+				"NOTIFICATIONS_0_PHASES":       "pre-run,post-run",
+				"NOTIFICATIONS_0_URL":          "https://gotify.example",
+				"NOTIFICATIONS_0_GOTIFY_TOKEN": "application-token",
+			},
+			want: Notifications{{
+				Kind:        Gotify,
+				Phases:      []NotificationPhase{PreRun, PostRun},
+				URL:         "https://gotify.example",
+				GotifyToken: "application-token",
+			}},
+		},
+		{
+			name: "errors when a gotify notification has no token",
+			env: map[string]string{
+				"NOTIFICATIONS_0_KIND":   "gotify",
+				"NOTIFICATIONS_0_PHASES": "pre-run",
+				"NOTIFICATIONS_0_URL":    "https://gotify.example",
+			},
+			error: true,
+		},
+		{
 			name: "multiple notifications parsed",
 			env: map[string]string{
 				"NOTIFICATIONS_0_KIND":   "webhook",

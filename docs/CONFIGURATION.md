@@ -37,10 +37,11 @@ Configure each notification with a zero-based, contiguous index. Every notificat
 
 | Variable | Description |
 | --- | --- |
-| `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck`, `webhook`, `telegram`, `slack`, or `discord`. |
+| `NOTIFICATIONS_<index>_KIND` | Notification type: `healthcheck`, `webhook`, `telegram`, `slack`, `discord`, or `gotify`. |
 | `NOTIFICATIONS_<index>_PHASES` | Comma-separated phases: `pre-run`, `post-run`, or both. |
-| `NOTIFICATIONS_<index>_URL` | Destination URL, required for `healthcheck`, `webhook`, `slack`, and `discord`. |
+| `NOTIFICATIONS_<index>_URL` | Destination URL, required for `healthcheck`, `webhook`, `slack`, `discord`, and `gotify`. |
 | `NOTIFICATIONS_<index>_HEADERS` | Optional JSON object of custom HTTP headers for a `webhook` notification. |
+| `NOTIFICATIONS_<index>_GOTIFY_TOKEN` | Gotify application token, required for a `gotify` notification. |
 | `NOTIFICATIONS_TELEGRAM_BOT_TOKEN` | Telegram bot token, required when a `telegram` notification is configured. |
 | `NOTIFICATIONS_TELEGRAM_CHAT_ID` | Telegram chat ID, required when a `telegram` notification is configured. |
 
@@ -68,6 +69,11 @@ NOTIFICATIONS_3_URL=https://hooks.slack.com/services/your-webhook-id
 NOTIFICATIONS_4_KIND=discord
 NOTIFICATIONS_4_PHASES=pre-run,post-run
 NOTIFICATIONS_4_URL=https://discord.com/api/webhooks/your-webhook-id/your-webhook-token
+
+NOTIFICATIONS_5_KIND=gotify
+NOTIFICATIONS_5_PHASES=pre-run,post-run
+NOTIFICATIONS_5_URL=https://gotify.example
+NOTIFICATIONS_5_GOTIFY_TOKEN=replace-with-application-token
 ```
 
 Telegram credentials are shared by every Telegram notification. The post-run message contains the result measurements or failure reason and links to the result in the UI.
@@ -75,6 +81,8 @@ Telegram credentials are shared by every Telegram notification. The post-run mes
 Webhook headers are sent only for `webhook` notifications. Set `NOTIFICATIONS_<index>_HEADERS` to a JSON object whose keys and values are header names and values, respectively. The configured headers are added to the JSON `POST` request.
 
 Slack notifications use an [Incoming Webhook](https://api.slack.com/messaging/webhooks) and render native Block Kit messages. Discord notifications use a standard [Discord webhook](https://discord.com/developers/docs/resources/webhook#execute-webhook), without the `/slack` suffix, and render native embeds. Both include the speedtest result link; successful post-run messages show ping, download, and upload, while failed tests show the error.
+
+Gotify notifications use the [application message endpoint](https://gotify.net/docs/pushmsg). Set the URL to the Gotify server's base URL and provide an application token. Successful post-run messages include ping, download, and upload; failed tests include the error.
 
 `NOTIFICATIONS_HEALTHCHECKS` remains supported for compatibility. It creates one `healthcheck` notification for both `pre-run` and `post-run` phases.
 

@@ -172,6 +172,8 @@ func notify(
 		err = sendSlack(nctx, n.URL, uiURL, phase, result)
 	case config.Discord:
 		err = sendDiscord(nctx, n.URL, uiURL, phase, result)
+	case config.Gotify:
+		err = sendGotify(nctx, n.URL, string(n.GotifyToken), uiURL, phase, result)
 	}
 
 	if err == nil {

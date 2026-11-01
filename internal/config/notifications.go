@@ -23,13 +23,21 @@ const (
 	Telegram    NotificationKind = "telegram"
 	Slack       NotificationKind = "slack"
 	Discord     NotificationKind = "discord"
+	Gotify      NotificationKind = "gotify"
 
 	PreRun  NotificationPhase = "pre-run"
 	PostRun NotificationPhase = "post-run"
 )
 
 var (
-	ValidNotificationKinds  = []NotificationKind{Webhook, Healthcheck, Telegram, Slack, Discord}
+	ValidNotificationKinds = []NotificationKind{
+		Webhook,
+		Healthcheck,
+		Telegram,
+		Slack,
+		Discord,
+		Gotify,
+	}
 	ValidNotificationPhases = []NotificationPhase{PreRun, PostRun}
 )
 
@@ -44,6 +52,9 @@ type Notification struct {
 	// Telegram-specific options
 	BotToken config.RedactedString `json:"botToken,omitempty"`
 	ChatID   config.RedactedString `json:"chatID,omitempty"`
+
+	// Gotify-specific options
+	GotifyToken config.RedactedString `json:"gotifyToken,omitempty"`
 }
 
 func (n Notification) String() string {
@@ -70,13 +81,10 @@ func (n Notification) validate() error {
 		if n.ChatID == "" {
 			return fmt.Errorf("telegram chat id must be set")
 		}
-	case Webhook:
-		fallthrough
-	case Discord:
-		fallthrough
-	case Slack:
-		fallthrough
-	case Healthcheck:
+	case Webhook, Discord, Slack, Healthcheck, Gotify:
+		if n.Kind == Gotify && n.GotifyToken == "" {
+			return fmt.Errorf("gotify token not set")
+		}
 		if !strings.HasPrefix(n.URL, "https://") && !strings.HasPrefix(n.URL, "http://") {
 			return fmt.Errorf("url does not start with http(s):// scheme")
 		}
@@ -120,12 +128,13 @@ func (notificationExtractor) Extract(conf *Config) error {
 		}
 
 		notification := Notification{
-			Kind:     NotificationKind(kind),
-			Phases:   phases,
-			URL:      os.Getenv(prefix + "URL"),
-			Headers:  headers,
-			BotToken: config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_BOT_TOKEN")),
-			ChatID:   config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_CHAT_ID")),
+			Kind:        NotificationKind(kind),
+			Phases:      phases,
+			URL:         os.Getenv(prefix + "URL"),
+			Headers:     headers,
+			BotToken:    config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_BOT_TOKEN")),
+			ChatID:      config.RedactedString(os.Getenv("NOTIFICATIONS_TELEGRAM_CHAT_ID")),
+			GotifyToken: config.RedactedString(os.Getenv(prefix + "GOTIFY_TOKEN")),
 		}
 		if err := notification.validate(); err != nil {
 			return fmt.Errorf("notification %d: %w", i, err)

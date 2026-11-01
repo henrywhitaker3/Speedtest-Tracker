@@ -33,6 +33,11 @@ func (ne *NotificationError) push(n config.Notification, err error) {
 				ne.Redactions = append(ne.Redactions, string(n.ChatID))
 			}
 		}
+		if n.GotifyToken != "" {
+			if !slices.Contains(ne.Redactions, string(n.GotifyToken)) {
+				ne.Redactions = append(ne.Redactions, string(n.GotifyToken))
+			}
+		}
 	}
 }
 
