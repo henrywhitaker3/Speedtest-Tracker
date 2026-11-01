@@ -1,3 +1,25 @@
+## [2.8.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.2..v2.8.0) - 2026-11-01
+
+### 🚀 Features
+
+- *(notifications)* Add gotify support - ([692c224](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/692c2242155a86743ebbc0e4ad261f0401d4a3d9))
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update module github.com/labstack/echo/v5 to v5.4.4 - ([557dbe9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/557dbe96673d3ce1d7170f6d25615d4065749362))
+- *(deps)* Update module modernc.org/sqlite to v1.61.1 - ([76ea09d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/76ea09d33e4534e632270395cd754ebfc63fbee2))
+- *(deps)* Update module github.com/slack-go/slack to v0.33.0 - ([1717c1a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1717c1a807c7d511e7387c7ba3e3772f17bbdc4b))
+- *(notifications)* Allow configuring headers for webhooks - ([10029b9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/10029b9bb7fb933fff85ede417dce50d1a7c3d8f))
+- *(ui)* Use completed at instead of zero-valued started_at for skipped workflow steps - ([4afa2cf](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4afa2cfa11389cec95bd32de180cf8882610f299))
+
+### 🧪 Testing
+
+- Use correct shape for mock config - ([96daed4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/96daed4a87e4017c066b26094415383480f47108))
+- Fix flaky actions spinner test - ([68d8526](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/68d85261a20acd8eb773b039dc6becdcdff705b7))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([dbcb27f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/dbcb27faf06bd6e16c6ffa74eb04926251e12386))
 ## [2.7.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.1..v2.7.2) - 2026-10-29
 
 ### 🐛 Bug Fixes
