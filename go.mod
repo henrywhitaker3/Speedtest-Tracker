@@ -9,7 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.6
 	github.com/go-telegram/bot v1.27.0
 	github.com/gotify/go-api-client/v2 v2.0.4
-	github.com/henrywhitaker3/windowframe/v2 v2.7.0
+	github.com/henrywhitaker3/windowframe/v2 v2.7.1
 	github.com/italypaleale/francis v0.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.4
@@ -86,8 +86,8 @@ require (
 	github.com/jackc/pgerrcode v0.0.0-20250907135507-afb5586c32a6 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.11.0 // indirect
-	github.com/jackc/puddle/v2 v2.2.2 // indirect
+	github.com/jackc/pgx/v5 v5.12.0 // indirect
+	github.com/jackc/puddle/v2 v2.2.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.20.1 // indirect
@@ -141,7 +141,7 @@ require (
 	golang.org/x/time v0.16.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20261005182115-fad411399dd8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20261005182115-fad411399dd8 // indirect
-	google.golang.org/grpc v1.84.0 // indirect
+	google.golang.org/grpc v1.85.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
