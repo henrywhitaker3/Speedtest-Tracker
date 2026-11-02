@@ -10,7 +10,7 @@ require (
 	github.com/go-telegram/bot v1.27.0
 	github.com/gotify/go-api-client/v2 v2.0.4
 	github.com/henrywhitaker3/windowframe/v2 v2.7.0
-	github.com/italypaleale/francis v0.2.0
+	github.com/italypaleale/francis v0.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.4
 	github.com/orandin/slog-gorm v1.4.0
@@ -81,7 +81,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.31.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/henrywhitaker3/ctxgen v1.0.1 // indirect
-	github.com/italypaleale/go-kit v1.2.5 // indirect
+	github.com/italypaleale/go-kit v1.6.0 // indirect
 	github.com/italypaleale/go-sql-utils v0.3.12 // indirect
 	github.com/jackc/pgerrcode v0.0.0-20250907135507-afb5586c32a6 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -107,7 +107,7 @@ require (
 	github.com/prometheus/otlptranslator v1.0.0 // indirect
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.63.0 // indirect
+	github.com/quic-go/quic-go v0.64.1 // indirect
 	github.com/quic-go/webtransport-go v0.13.0 // indirect
 	github.com/redis/rueidis v1.0.79 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
@@ -148,7 +148,7 @@ require (
 	gorm.io/driver/clickhouse v0.7.0 // indirect
 	gorm.io/driver/mysql v1.5.7 // indirect
 	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3 // indirect
-	modernc.org/libc v1.79.0 // indirect
+	modernc.org/libc v1.79.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.12.1 // indirect
 )
