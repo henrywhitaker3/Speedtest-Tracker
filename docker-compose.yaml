@@ -45,7 +45,7 @@ services:
       - "4318:4318" # OTLP/HTTP
 
   francis:
-    image: ghcr.io/italypaleale/francis:0.2.0
+    image: ghcr.io/italypaleale/francis:0.2.1
     entrypoint: francis
     command: dashboard -bind 0.0.0.0
     ports:
