@@ -199,8 +199,8 @@ github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
 github.com/henrywhitaker3/ctxgen v1.0.1 h1:T1tsyUKS4ymBkqP9KBrVDh5fskzkdm2zTfLH0pw8dJ0=
 github.com/henrywhitaker3/ctxgen v1.0.1/go.mod h1:Q9fBma6LqFfEqJbltrc1Icdp9YUA5M3UVcz7tqGfPLc=
-github.com/henrywhitaker3/windowframe/v2 v2.7.1 h1:qQ3kEw6ZUdP0quwLuCq48CLUJh3Do280pg0e69K2R60=
-github.com/henrywhitaker3/windowframe/v2 v2.7.1/go.mod h1:/LJJgTIKJii/N5GY6OBVDqOQALZr4QIli5U7MjlnuIM=
+github.com/henrywhitaker3/windowframe/v2 v2.7.3 h1:2K5tSYzEaWPyphRla9vIHxMJw8bYhEjXTRCVe+ACbwE=
+github.com/henrywhitaker3/windowframe/v2 v2.7.3/go.mod h1:Shazn0YaYgKfc9241bHadiYYDF8RdzWWmGIZm3A3ayU=
 github.com/iancoleman/orderedmap v0.3.0 h1:5cbR2grmZR/DiVt+VJopEhtVs9YGInGIxAoMJn+Ichc=
 github.com/iancoleman/orderedmap v0.3.0/go.mod h1:XuLcCUkdL5owUCQeF2Ue9uuw1EptkJDkXXS7VoV7XGE=
 github.com/italypaleale/francis v0.2.1 h1:e/tzpXyrpu6pvdByaBbWyVg9SjCrvoOJr3wlDTApsfU=

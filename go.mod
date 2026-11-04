@@ -9,7 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.6
 	github.com/go-telegram/bot v1.27.0
 	github.com/gotify/go-api-client/v2 v2.0.4
-	github.com/henrywhitaker3/windowframe/v2 v2.7.1
+	github.com/henrywhitaker3/windowframe/v2 v2.7.3
 	github.com/italypaleale/francis v0.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.4
