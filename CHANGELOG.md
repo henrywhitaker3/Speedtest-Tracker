@@ -1,3 +1,19 @@
+## [2.8.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.0..v2.8.1) - 2026-11-05
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update module github.com/italypaleale/francis to v0.2.1 - ([1e1d708](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1e1d708127fd38e9b2a768567a6eeca85ca3cb9f))
+- *(deps)* Update module github.com/go-playground/validator/v10 to v10.30.6 - ([d8c9cae](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d8c9caeafc2697e1211fd99cba6d35c7e733dba8))
+- *(deps)* Update module windowframe to v2.7.1 - ([2e067bf](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2e067bfc8596935b3cb534228122fc93eeb633c5))
+- *(deps)* Update module github.com/slack-go/slack to v0.34.0 - ([1370dbd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1370dbd293d0339d8bc7e501b8befdd02ccc7b5a))
+- *(deps)* Update module github.com/henrywhitaker3/windowframe/v2 to v2.7.3 - ([cca46a4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/cca46a4d32300b49bbf3f33e1ad9ae6d70ba0582))
+- *(deps)* Update module github.com/adhocore/gronx to v1.20.6 - ([bee0fdc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/bee0fdcbb5b78e0a707835dd85c7464993641f31))
+- *(deps)* Update module github.com/slack-go/slack to v0.35.0 - ([487de9f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/487de9ff913d6c586c5b4f7f005378144f622079))
+- *(ui)* Add option to configure which columns display in results table - ([4b984dd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4b984dd267a48aebbe8b665eedcf222cad707788))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog [skip ci] - ([6042a30](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6042a30c76bb5154f7058c40e974a7e7628a9d3e))
 ## [2.8.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.2..v2.8.0) - 2026-11-01
 
 ### 🚀 Features
