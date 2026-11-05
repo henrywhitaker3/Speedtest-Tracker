@@ -1,4 +1,5 @@
 <template>
+  <ResultsTableFilters :table="table" />
   <UCard>
     <LoadingTable
       v-if="!data"
@@ -11,6 +12,7 @@
       <UTable
         ref="table"
         v-model:pagination="pagination"
+        v-model:column-visibility="visible"
         :columns="columns"
         :data="data.data ?? []"
       />
@@ -42,6 +44,7 @@ import type { TableColumn } from '@nuxt/ui'
 import RelativeDate from '../RelativeDate.vue'
 import RowActions from './RowActions.vue'
 import { listResults, type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalApiSpeedtestResult as Paginated, type SpeedtestResult } from '~/client'
+import { useLocalStorage } from '@vueuse/core'
 
 const data = ref<Paginated>()
 const route = useRoute()
@@ -101,6 +104,18 @@ on(() => {
   void refresh()
 })
 
+const visible = useLocalStorage('results:columns', {
+  ping: true,
+  packetLoss: false,
+  jitter: false,
+  download: true,
+  upload: true,
+  created_at: true,
+  error: false,
+  server_id: false,
+  server_host: false
+})
+
 const table = ref()
 const columns: TableColumn<SpeedtestResult>[] = [
   {
@@ -119,6 +134,31 @@ const columns: TableColumn<SpeedtestResult>[] = [
       }
 
       return row.getValue('ping') + ' ms'
+    }
+  },
+  {
+    accessorKey: 'raw',
+    header: 'Packet Loss',
+    id: 'packetLoss',
+    cell: ({ row }) => {
+      if (!row.original.raw) {
+        return '-'
+      }
+      return row.original.raw.packetLoss ?? '-'
+    }
+  },
+  {
+    accessorKey: 'raw',
+    header: 'Jitter',
+    id: 'jitter',
+    cell: ({ row }) => {
+      if (!row.original.raw) {
+        return '-'
+      }
+      if (row.original.raw.ping) {
+        return row.original.raw.ping.jitter + ' ms'
+      }
+      return '-'
     }
   },
   {
@@ -169,8 +209,33 @@ const columns: TableColumn<SpeedtestResult>[] = [
     }
   },
   {
+    accessorKey: 'error',
+    header: 'Error',
+    cell: ({ row }) => {
+      if (!row.original.error) {
+        return '-'
+      }
+      return row.original.error.replace('run speedtest: ', '')
+    }
+  },
+  {
+    accessorKey: 'server_id',
+    header: 'Server ID',
+    cell: ({ row }) => {
+      return row.original.server_id ?? '-'
+    }
+  },
+  {
+    accessorKey: 'server_host',
+    header: 'Server Host',
+    cell: ({ row }) => {
+      return row.original.server_host ?? '-'
+    }
+  },
+  {
     accessorKey: 'id',
     header: '',
+    enableHiding: false,
     cell: ({ row }) => {
       return h(
         RowActions,
