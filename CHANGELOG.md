@@ -2,6 +2,10 @@
 
 ### 🐛 Bug Fixes
 
+- *(ui)* Add option to configure which columns display in results table - ([4b984dd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4b984dd267a48aebbe8b665eedcf222cad707788))
+
+### 📦 Dependencies
+
 - *(deps)* Update module github.com/italypaleale/francis to v0.2.1 - ([1e1d708](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1e1d708127fd38e9b2a768567a6eeca85ca3cb9f))
 - *(deps)* Update module github.com/go-playground/validator/v10 to v10.30.6 - ([d8c9cae](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d8c9caeafc2697e1211fd99cba6d35c7e733dba8))
 - *(deps)* Update module windowframe to v2.7.1 - ([2e067bf](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2e067bfc8596935b3cb534228122fc93eeb633c5))
@@ -9,11 +13,6 @@
 - *(deps)* Update module github.com/henrywhitaker3/windowframe/v2 to v2.7.3 - ([cca46a4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/cca46a4d32300b49bbf3f33e1ad9ae6d70ba0582))
 - *(deps)* Update module github.com/adhocore/gronx to v1.20.6 - ([bee0fdc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/bee0fdcbb5b78e0a707835dd85c7464993641f31))
 - *(deps)* Update module github.com/slack-go/slack to v0.35.0 - ([487de9f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/487de9ff913d6c586c5b4f7f005378144f622079))
-- *(ui)* Add option to configure which columns display in results table - ([4b984dd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4b984dd267a48aebbe8b665eedcf222cad707788))
-
-### ⚙️ Miscellaneous Tasks
-
-- *(docs)* Update changelog [skip ci] - ([6042a30](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6042a30c76bb5154f7058c40e974a7e7628a9d3e))
 ## [2.8.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.2..v2.8.0) - 2026-11-01
 
 ### 🚀 Features
@@ -22,20 +21,19 @@
 
 ### 🐛 Bug Fixes
 
+- *(notifications)* Allow configuring headers for webhooks - ([10029b9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/10029b9bb7fb933fff85ede417dce50d1a7c3d8f))
+- *(ui)* Use completed at instead of zero-valued started_at for skipped workflow steps - ([4afa2cf](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4afa2cfa11389cec95bd32de180cf8882610f299))
+
+### 📦 Dependencies
+
 - *(deps)* Update module github.com/labstack/echo/v5 to v5.4.4 - ([557dbe9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/557dbe96673d3ce1d7170f6d25615d4065749362))
 - *(deps)* Update module modernc.org/sqlite to v1.61.1 - ([76ea09d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/76ea09d33e4534e632270395cd754ebfc63fbee2))
 - *(deps)* Update module github.com/slack-go/slack to v0.33.0 - ([1717c1a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1717c1a807c7d511e7387c7ba3e3772f17bbdc4b))
-- *(notifications)* Allow configuring headers for webhooks - ([10029b9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/10029b9bb7fb933fff85ede417dce50d1a7c3d8f))
-- *(ui)* Use completed at instead of zero-valued started_at for skipped workflow steps - ([4afa2cf](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4afa2cfa11389cec95bd32de180cf8882610f299))
 
 ### 🧪 Testing
 
 - Use correct shape for mock config - ([96daed4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/96daed4a87e4017c066b26094415383480f47108))
 - Fix flaky actions spinner test - ([68d8526](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/68d85261a20acd8eb773b039dc6becdcdff705b7))
-
-### ⚙️ Miscellaneous Tasks
-
-- *(docs)* Update changelog [skip ci] - ([dbcb27f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/dbcb27faf06bd6e16c6ffa74eb04926251e12386))
 ## [2.7.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.1..v2.7.2) - 2026-10-29
 
 ### 🐛 Bug Fixes
@@ -43,22 +41,20 @@
 - *(config)* Allow comma-separated server ids - ([4905138](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4905138b0be35b5c19781c86552275879f479450))
 - *(ookla)* Pick random id from configured servers - ([0142748](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0142748461dd8a88d3726386523bf645ae5b74c8))
 - *(ui)* Add handling for multiple configured server ids - ([2434155](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/24341558838e5ff89cbc5047026f6d408c97f3a9))
-
-### ⚙️ Miscellaneous Tasks
-
-- *(docs)* Update changelog [skip ci] - ([88caf0c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/88caf0c3ad935a3f42b4ade74efc7d3fea4e3456))
 ## [2.7.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.7.0..v2.7.1) - 2026-10-29
 
 ### 🐛 Bug Fixes
 
-- *(deps)* Update module github.com/slack-go/slack to v0.32.0 - ([d5bf856](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d5bf85621f557ba03e65eafa77f0ef35b5a4378d))
 - *(notifications)* Track notification history to stop repeated notifications when a single channel fails - ([d6bf9b0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d6bf9b07f26096bd0cafa2173089cf83ba18b90e))
 - *(notifications)* Filter out channels when they are not configured for the phase - ([ce07a67](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ce07a67ed4c918198c2257f7da1352f43ef76309))
 - *(notifications)* Add logging - ([a649282](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a649282dd630e0858b05876789709ce9ad429647))
 
+### 📦 Dependencies
+
+- *(deps)* Update module github.com/slack-go/slack to v0.32.0 - ([d5bf856](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d5bf85621f557ba03e65eafa77f0ef35b5a4378d))
+
 ### ⚙️ Miscellaneous Tasks
 
-- *(docs)* Update changelog [skip ci] - ([d199513](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d199513d19e126e583d3a571c2affb1045ae6539))
 - Remove duplicate tests - ([b4afdd3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b4afdd379f75d475ab93bb5caa8f2cc5ce89ebe6))
 - Remove leftover comments - ([656ad2c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/656ad2c7686a895052c219635c4c2a31e001d6c3))
 ## [2.7.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.2..v2.7.0) - 2026-10-27
@@ -80,7 +76,6 @@
 
 ### ⚙️ Miscellaneous Tasks
 
-- *(docs)* Update changelog [skip ci] - ([d88fc1e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d88fc1ec3d251adacd665b7d862f4d36dd7ff19d))
 - *(docs)* Add info on new notification channels - ([3b6aa3f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3b6aa3f6c5744fff86714218e2423fc02c0a054a))
 - *(docs)* Update openapi schema with auth info - ([30dd18f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/30dd18f59acffa42bdc34906b04b27963c445d9b))
 ## [2.6.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.1..v2.6.2) - 2026-10-27
@@ -89,23 +84,21 @@
 
 - *(api)* Redact more server info for unauthenticated users - ([c1451b3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c1451b332364964dd363e7084e73913b6ea22d1b))
 - *(ui)* Nicer title and description for pick server step - ([7659674](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/76596749d0adaa013ce80edda1cf69ed06b998bb))
-
-### ⚙️ Miscellaneous Tasks
-
-- *(docs)* Update changelog [skip ci] - ([18aa2c6](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/18aa2c685fc58fdadd780a1d7b0b3d9f10abcea8))
 ## [2.6.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.6.0..v2.6.1) - 2026-10-27
 
 ### 🐛 Bug Fixes
 
-- *(deps)* Update module github.com/italypaleale/francis to v0.2.0 - ([fdecc67](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fdecc67a88981940d4c3f8d47e9d086112b9a294))
 - *(ookla)* Pick random server from nearest list when one is not configured - ([2329ba4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2329ba43a682e8a1f68a9dcfbb49587fdb60de2d))
 - *(runtime)* Add optional runtime management api activation - ([f517be4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f517be4e94a55a523a2932dc1ad2f87e24dc74ac))
 - *(ui)* Replace vue default favicon - ([4ea508f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4ea508f8e94e61a0eba1ce47e5a8bbb39bb74ae8))
 - *(ui)* Result delete button not working in table view - ([83c96c0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/83c96c0d1f96626ccf921b7390a013a6a6c3205a))
 
+### 📦 Dependencies
+
+- *(deps)* Update module github.com/italypaleale/francis to v0.2.0 - ([fdecc67](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fdecc67a88981940d4c3f8d47e9d086112b9a294))
+
 ### ⚙️ Miscellaneous Tasks
 
-- *(docs)* Update changelog [skip ci] - ([60740c5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/60740c5e1fa8aefc34e3965ceb52f1e261c3bf5f))
 - Better handling for interrupts when running locally - ([313051e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/313051e93fbb34e5de9afc94a81ca61fe85850de))
 ## [2.6.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.5.0..v2.6.0) - 2026-10-26
 
@@ -129,7 +122,6 @@
 
 ### ⚙️ Miscellaneous Tasks
 
-- *(docs)* Update changelog [skip ci] - ([5b0eac9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5b0eac955eae0843f6ff9a3a31f039e2f95c954c))
 - *(docs)* Add info on telegram notifications - ([11644dd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/11644dd0b69f5f043eb08dce73bcdaaf68652fe0))
 ## [2.5.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.5..v2.5.0) - 2026-10-26
 
@@ -146,7 +138,6 @@
 
 ### ⚙️ Miscellaneous Tasks
 
-- *(docs)* Update changelog [skip ci] - ([3f895b3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3f895b300fce5eb3a8aa9d8c93f9211adcb7c6d4))
 - Update readme with example docker compose - ([1ecfbe5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1ecfbe5867e82abb89d2ccee557141cbac5cc16a))
 ## [2.4.5](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.4..v2.4.5) - 2026-10-25
 
@@ -155,15 +146,17 @@
 - *(api)* Add operation ids to spec handlers - ([7aa4553](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7aa45531bd1973485963f2631b174a7e27d99924))
 - *(api)* Add openapi spec definitions for enums - ([d9d5cdb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9d5cdbfb26d4e8425805c86548d716ce4320b70))
 - *(api)* Remove local replaced module - ([e360236](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e36023619ebf855667eeb09f2bc22627cc678f04))
-- *(deps)* Update module modernc.org/sqlite to v1.61.0 - ([0c5bff1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0c5bff16586ee2afcb90eddabb2cb598ee61c184))
 - *(ui)* Light mode raw result syntax highlighting - ([4f0a00c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4f0a00cec8b24c61fe27f9a40292b82592377128))
 - *(ui)* Run button navigates to result when test is in progress - ([12fb4e4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/12fb4e45556a96e257a4d3247029289b93b4003a))
 - *(ui)* Use new generated client types - ([22d8423](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/22d8423fb34d41d04ecee2bea66e39c2b454cfc6))
 
+### 📦 Dependencies
+
+- *(deps)* Update module modernc.org/sqlite to v1.61.0 - ([0c5bff1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0c5bff16586ee2afcb90eddabb2cb598ee61c184))
+
 ### ⚙️ Miscellaneous Tasks
 
 - *(ci)* Tag ordering to still trigger - ([0449538](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/04495389ebadc40b7962f7aa45c2339ba8cd9157))
-- *(docs)* Update changelog [skip ci] - ([e3494a7](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e3494a77db0b35db3881ddbeb1d43a4819e5c5d9))
 ## [2.4.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.3..v2.4.4) - 2026-10-25
 
 ### 🐛 Bug Fixes
@@ -172,16 +165,15 @@
 - *(ui)* Clean up typecheck errors - ([a78413a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a78413a0eb2ff989a13947276a875713be0360ad))
 - *(ui)* Add syntax highlighting to the raw result - ([2f90cea](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2f90cea6c5010ca017810ccc441515a9629e05cb))
 
+### ⚙️ Miscellaneous Tasks
+
+- *(ci)* Skip ci on changelog push - ([d9a0657](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9a065737279935227eed348453b18ba81b205fa))
+
 ### 🧪 Testing
 
 - *(ui)* Add a bunch of tests against a mock api - ([0cb2b02](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0cb2b02c1a927b76d266158f14a7e01cc68c33ad))
 - *(ui)* Add tests for when auth is enabled - ([0653239](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0653239bb43f1891318820a2cf1fa07e556c6266))
 - Added playwright commands - ([d5f370e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d5f370e8c2bcd069afb4b3a83f41f018f5add04c))
-
-### ⚙️ Miscellaneous Tasks
-
-- *(ci)* Skip ci on changelog push - ([d9a0657](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9a065737279935227eed348453b18ba81b205fa))
-- *(docs)* Update changelog [skip ci] - ([aa99beb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/aa99beb604a1f06c22ed1a18bc851e3bde81ee8a))
 ## [2.4.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.4.2..v2.4.3) - 2026-10-25
 
 ### 🐛 Bug Fixes
@@ -254,11 +246,6 @@
 - Close healthchecks response bodies - ([e74bbfe](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/e74bbfee39eeac1e45da36bf43f2cf0665e86edf))
 - Cleanup dangling result when workflow fails to start - ([82a7b1b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/82a7b1bf2db20b402759b9263f4540939452dcee))
 
-### 🧪 Testing
-
-- Add workflow testing - ([772176f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/772176fd8c1a34ec1aef5f6e2810aa244437ed2a))
-- Update tests to ensure workflow continues on healthcheck failure - ([c29d7e9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c29d7e9e07c93610ae1eaf0b2105643cee4c27eb))
-
 ### ⚙️ Miscellaneous Tasks
 
 - *(docs)* Update changelog - ([a127a44](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a127a44c4492b0c54fe84cc93f2d28f8989e7398))
@@ -268,6 +255,11 @@
 - Add ui build job too - ([a300ba8](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a300ba8d9012faf252a465c917e627d5aae96705))
 - Add ui build job too - ([d9c796b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d9c796b1e1d30164a024cca0bfe1742ef58d67bc))
 - Add lint job - ([dc07830](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/dc0783042ce408c47a8864680a96fbed74d870a1))
+
+### 🧪 Testing
+
+- Add workflow testing - ([772176f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/772176fd8c1a34ec1aef5f6e2810aa244437ed2a))
+- Update tests to ensure workflow continues on healthcheck failure - ([c29d7e9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c29d7e9e07c93610ae1eaf0b2105643cee4c27eb))
 ## [2.2.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.2.3..v2.2.4) - 2026-10-23
 
 ### 🐛 Bug Fixes
@@ -341,14 +333,14 @@
 - Add config endpoint - ([0a7da2d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0a7da2d46faeb07c9364e9634794d73018eaeee9))
 - Add token/:id paths to auth - ([71e1c8f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/71e1c8f4eb02009b5cb38ca9373e5454aab1e6e4))
 
-### 🧪 Testing
-
-- Add checks for auth in run endpoint - ([d492846](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d4928462f174b1ccb22da7a2838edac2ac1a80b0))
-
 ### ⚙️ Miscellaneous Tasks
 
 - *(docs)* Update readme with auth info - ([b2e0b82](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b2e0b828ede8964c52a7100bd280b7ccabb83c3e))
 - *(docs)* Update changelog - ([6fba9d0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6fba9d0eb71734cacca44f59fbc4b8623aba245c))
+
+### 🧪 Testing
+
+- Add checks for auth in run endpoint - ([d492846](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d4928462f174b1ccb22da7a2838edac2ac1a80b0))
 ## [2.1.4](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.1.3..v2.1.4) - 2026-10-23
 
 ### 🐛 Bug Fixes
@@ -399,8 +391,6 @@
 
 ### 🐛 Bug Fixes
 
-- *(deps)* Update module github.com/labstack/echo/v5 to v5.4.2 - ([8350704](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8350704c7cb296f2140ca4b9981c33ccb9ddeace))
-- *(deps)* Update module gorm.io/driver/postgres to v1.6.3 - ([6b07aa1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6b07aa1ab6290f053aa32bfd728fb93ae284c052))
 - Don't attempt a flood of requests when api is down - ([1c02622](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1c0262281724bc651adb76271e7cb64728371725))
 - Incorrect gorm table - ([386aa74](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/386aa74dd4dc8a6ad172bf2efd40ae8663b389b3))
 - Add ui support for 429s - ([88bda7c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/88bda7c255e378e56567e7465bceaa9c91a7fb65))
@@ -410,14 +400,19 @@
 
 - Add index for timeseries query - ([8672434](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/86724348a85c6743a9e34c2f8a8b114dd0d89331))
 
-### 🧪 Testing
+### 📦 Dependencies
 
-- Add checks for limiter - ([a48206f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a48206fd389f8f7a22e00f3592fe812310def788))
+- *(deps)* Update module github.com/labstack/echo/v5 to v5.4.2 - ([8350704](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8350704c7cb296f2140ca4b9981c33ccb9ddeace))
+- *(deps)* Update module gorm.io/driver/postgres to v1.6.3 - ([6b07aa1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6b07aa1ab6290f053aa32bfd728fb93ae284c052))
 
 ### ⚙️ Miscellaneous Tasks
 
 - *(docs)* Update changelog - ([2c6b3d5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2c6b3d5c8497040a28ef45fef70cc6a460ff3e6e))
 - Add release scripts - ([270f8bc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/270f8bc4fc99a12a12f6c26d1fd64863452cbaab))
+
+### 🧪 Testing
+
+- Add checks for limiter - ([a48206f](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a48206fd389f8f7a22e00f3592fe812310def788))
 ## [2.0.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.0.2..v2.0.3) - 2026-10-22
 
 ### 🐛 Bug Fixes
@@ -465,13 +460,6 @@
 
 - Move results to own package - ([6fd2fe3](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6fd2fe3ecf93ab8c7ce35afc74b496eec2a80354))
 
-### 🧪 Testing
-
-- Add results repo tests - ([2db1105](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2db1105118e8d5e9f8d2abbf4be0af02313fb807))
-- Add tests for listing - ([b82b51c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b82b51cfdc64af36cf6a78ea1dba35fdc0caf3ac))
-- Split them out a bit - ([908f534](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/908f53458bc019692446c465a9de3cba542f1d01))
-- Remove hist test - ([4284371](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/42843712fc32a162691ad8ec46ef1ba514233292))
-
 ### ⚙️ Miscellaneous Tasks
 
 - Initial empty branch - ([7614b56](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7614b5638b41374460f6bec19698d9f0e8988bcf))
@@ -484,3 +472,10 @@
 - Add build job - ([05c2c8d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/05c2c8d16ca285fad7e988ca2b8807314474abb2))
 - Add build job - ([1dc634e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1dc634e75e7c642b116bd4a446453666685b961e))
 - Add build job - ([90724db](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/90724dbeb4900c59accc223d464be012dc27fa54))
+
+### 🧪 Testing
+
+- Add results repo tests - ([2db1105](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/2db1105118e8d5e9f8d2abbf4be0af02313fb807))
+- Add tests for listing - ([b82b51c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b82b51cfdc64af36cf6a78ea1dba35fdc0caf3ac))
+- Split them out a bit - ([908f534](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/908f53458bc019692446c465a9de3cba542f1d01))
+- Remove hist test - ([4284371](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/42843712fc32a162691ad8ec46ef1ba514233292))
