@@ -1,3 +1,12 @@
+## [2.8.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.1..v2.8.2) - 2026-11-06
+
+### 🐛 Bug Fixes
+
+- Redact more data for unauthenticated users - ([af0443c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/af0443c93d0fbd315099d5f743f583d1a4336972))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update changelog to categorise dependencies separately - ([8720c5c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8720c5c54a26f5cc2e35ac6e4228a34bac1b5fed))
 ## [2.8.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.0..v2.8.1) - 2026-11-05
 
 ### 🐛 Bug Fixes
