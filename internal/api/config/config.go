@@ -4,6 +4,7 @@ package config
 import (
 	"net/http"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/labstack/echo/v5"
@@ -26,14 +27,20 @@ type ConfigResponse struct {
 
 func (h *configHandler) Handler() handlers.Handler[any, ConfigResponse] {
 	return func(c *echo.Context, req any) (*ConfigResponse, error) {
-		return &ConfigResponse{
+		resp := &ConfigResponse{
 			Auth: AuthResponse{
 				Enabled:    h.conf.Auth.Enabled,
 				AdminGroup: h.conf.Auth.AdminGroup,
 			},
 			Schedule: h.conf.Schedule,
 			ServerID: h.conf.Server,
-		}, nil
+		}
+
+		if !auth.IsAuthenticated(c) {
+			resp.ServerID = nil
+		}
+
+		return resp, nil
 	}
 }
 

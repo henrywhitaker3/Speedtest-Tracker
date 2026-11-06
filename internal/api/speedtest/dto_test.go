@@ -91,6 +91,39 @@ func TestConvertSanitisesRawOutputForUnauthenticatedUsers(t *testing.T) {
 	}
 }
 
+func TestConvertRedactsInfoWhenRawIsNull(t *testing.T) {
+	serverID := 123
+	serverHost := "speedtest.example.com"
+	serverName := "Example Server"
+	url := "https://www.speedtest.net/result/1"
+	result := results.Result{
+		ServerID:   &serverID,
+		ServerHost: &serverHost,
+		ServerName: &serverName,
+		URL:        &url,
+	}
+
+	e := echo.New()
+	e.Use(authapi.AddContext(true))
+
+	var got Result
+	e.GET("/v1/speedtest/latest", func(c *echo.Context) error {
+		got = convert(c, result)
+		return c.NoContent(http.StatusNoContent)
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/v1/speedtest/latest", nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusNoContent, rec.Code)
+	assert.Nil(t, got.Raw)
+	assert.Nil(t, got.URL)
+	assert.Nil(t, got.ServerHost)
+	assert.Nil(t, got.ServerID)
+	assert.Nil(t, got.ServerName)
+}
+
 type dtoTokenRepo struct{}
 
 func (dtoTokenRepo) Validate(context.Context, string) error {
