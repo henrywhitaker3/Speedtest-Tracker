@@ -7,7 +7,7 @@ require (
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-playground/validator/v10 v10.30.6
-	github.com/go-telegram/bot v1.27.0
+	github.com/go-telegram/bot v1.28.0
 	github.com/gotify/go-api-client/v2 v2.0.4
 	github.com/henrywhitaker3/windowframe/v2 v2.7.3
 	github.com/italypaleale/francis v0.2.1
