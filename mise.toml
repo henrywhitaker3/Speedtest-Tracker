@@ -1,7 +1,7 @@
 #:schema https://mise.jdx.dev/schema/mise.json
 
 [tools]
-go = "1.27.3"
+go = "1.27.4"
 gotestsum = "1.13.0"
 jq = "1.8.2"
 git-cliff = "v2.14.2"
