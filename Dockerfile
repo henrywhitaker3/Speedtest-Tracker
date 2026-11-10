@@ -20,7 +20,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 COPY frontend/ ./
 RUN mise exec -- pnpm build
 
-FROM --platform=$BUILDPLATFORM golang:1.27.3 AS gob
+FROM --platform=$BUILDPLATFORM golang:1.27.4 AS gob
 
 ARG VERSION="unknown"
 
