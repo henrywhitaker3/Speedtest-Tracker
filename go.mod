@@ -1,6 +1,6 @@
 module github.com/henrywhitaker3/Speedtest-Tracker/v2
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/adhocore/gronx v1.20.6
