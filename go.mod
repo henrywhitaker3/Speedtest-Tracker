@@ -3,7 +3,7 @@ module github.com/henrywhitaker3/Speedtest-Tracker/v2
 go 1.27.4
 
 require (
-	github.com/adhocore/gronx v1.20.6
+	github.com/adhocore/gronx v1.20.7
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-playground/validator/v10 v10.30.6
