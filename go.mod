@@ -12,7 +12,7 @@ require (
 	github.com/henrywhitaker3/windowframe/v2 v2.7.3
 	github.com/italypaleale/francis v0.2.1
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo/v5 v5.4.4
+	github.com/labstack/echo/v5 v5.4.5
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
 	github.com/slack-go/slack v0.35.0
