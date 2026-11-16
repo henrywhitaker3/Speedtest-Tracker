@@ -32,6 +32,7 @@ func TestAuthMiddlewareRouteConfiguration(t *testing.T) {
 		{method: http.MethodPost, path: "/v1/auth/tokens", auth: true, adminOnly: true},
 		{method: http.MethodDelete, path: "/v1/auth/tokens/:id", auth: true, adminOnly: true},
 		{method: http.MethodGet, path: "/v1/config/notifications", auth: true, adminOnly: true},
+		{method: http.MethodGet, path: "/v1/config/servers", auth: true, adminOnly: true},
 		{method: http.MethodGet, path: "/v1/speedtest/latest"},
 	}
 

@@ -89,10 +89,10 @@ func New(ctx context.Context, version string, serverID []int) (*Ookla, error) {
 type serverEnvelope struct {
 	Type      string    `json:"type"`
 	Timestamp time.Time `json:"timestamp"`
-	Servers   []server  `json:"servers"`
+	Servers   []Server  `json:"servers"`
 }
 
-type server struct {
+type Server struct {
 	ID       int    `json:"id"`
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
@@ -106,24 +106,33 @@ func (o *Ookla) PickServer(ctx context.Context) (int, error) {
 		return randomSliceValue(o.server)
 	}
 
+	servers, err := o.ListServers(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("list server: %w", err)
+	}
+
+	if len(servers) == 0 {
+		return 0, fmt.Errorf("no servers listed")
+	}
+	pick, _ := randomSliceValue(servers)
+	slog.DebugContext(ctx, "picked server from list", "server", pick)
+
+	return pick.ID, nil
+}
+
+func (o *Ookla) ListServers(ctx context.Context) ([]Server, error) {
 	cmd := exec.CommandContext(ctx, binaryFile, "--servers", "--format=json")
 	raw, err := cmd.Output()
 	if err != nil {
-		return 0, fmt.Errorf("list nearest servers: %w", err)
+		return nil, fmt.Errorf("list nearest servers: %w", err)
 	}
 
 	var servers serverEnvelope
 	if err := json.Unmarshal(raw, &servers); err != nil {
-		return 0, fmt.Errorf("unmarshal server data: %w", err)
+		return nil, fmt.Errorf("unmarshal server data: %w", err)
 	}
 
-	if len(servers.Servers) == 0 {
-		return 0, fmt.Errorf("no servers listed")
-	}
-	pick, _ := randomSliceValue(servers.Servers)
-	slog.DebugContext(ctx, "picked server from list", "server", pick)
-
-	return pick.ID, nil
+	return servers.Servers, nil
 }
 
 func randomSliceValue[T any](s []T) (T, error) {

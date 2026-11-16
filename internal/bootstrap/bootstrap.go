@@ -111,6 +111,7 @@ func Bootstrap(
 		db,
 		host,
 		workflow,
+		ooklaCLI,
 	)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("create api handler: %w", err)

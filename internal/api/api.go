@@ -17,6 +17,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/speedtest"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	mw "github.com/henrywhitaker3/windowframe/v2/http/middleware"
@@ -39,6 +40,7 @@ func New(
 	db *gorm.DB,
 	host *local.Host,
 	runner *workflow.WorkflowService,
+	serverLister *ookla.Ookla,
 ) (*http.HTTP, error) {
 	openapiOpts := openapiOpts(version, conf.App.URL)
 	mut := specMutations()
@@ -80,7 +82,7 @@ func New(
 	}) {
 		h.Use(middleware)
 	}
-	if err := registerRoutes(h, db, host, runner, conf); err != nil {
+	if err := registerRoutes(h, db, host, runner, conf, serverLister); err != nil {
 		return nil, err
 	}
 	registerValidators(h)
@@ -160,6 +162,7 @@ func authRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/servers"},
 		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
@@ -172,6 +175,7 @@ func adminRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodPost, Path: "/v1/auth/tokens"},
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/servers"},
 		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
@@ -194,6 +198,7 @@ func registerRoutes(
 	host *local.Host,
 	runner *workflow.WorkflowService,
 	conf *config.Config,
+	serverLister *ookla.Ookla,
 ) error {
 	if err := authapi.RegisterRoutes(h, host, db, conf); err != nil {
 		return fmt.Errorf("register auth routes: %w", err)
@@ -201,7 +206,7 @@ func registerRoutes(
 	if err := speedtest.Register(h, db, host, runner); err != nil {
 		return err
 	}
-	configapi.RegisterRoutes(h, conf)
+	configapi.RegisterRoutes(h, conf, serverLister)
 	restore.Register(h, db)
 	compat.Register(h, db)
 	return nil
