@@ -1,3 +1,18 @@
+## [2.8.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.2..v2.8.3) - 2026-11-16
+
+### 🐛 Bug Fixes
+
+- Revert typescript upgrade - ([b9abef9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b9abef936c6c84ca870aaeacd3aed4e03e847c78))
+
+### 📦 Dependencies
+
+- *(deps)* Update module modernc.org/sqlite to v1.62.0 - ([6492054](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6492054387b37d756d2a283d85d4e7dcc7130b81))
+- *(deps)* Update module github.com/go-telegram/bot to v1.28.0 - ([381362d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/381362df47bab75350473f414ff8fae53516963b))
+- *(deps)* Update module golang.org/x/oauth2 to v0.38.0 - ([22a0c4b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/22a0c4b0befc5cc67f90c1fbf096eb7e9b316e15))
+- *(deps)* Update windowframe to v2.7.4 - ([731fb3d](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/731fb3d218f2e4163bb70b8f14230e959f41191c))
+- *(deps)* Update module github.com/adhocore/gronx to v1.20.7 - ([7b09222](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7b092224d5490d10c4bbb01394e84624d526d4a3))
+- *(deps)* Update module github.com/slack-go/slack to v0.36.0 - ([c6fdffe](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/c6fdffebf58bb9b9de195341d513b1cf141e5945))
+- *(deps)* Update module github.com/labstack/echo/v5 to v5.4.6 - ([30bdbff](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/30bdbff66dc4cdaea39e7aca20bc3c44726fb141))
 ## [2.8.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.1..v2.8.2) - 2026-11-06
 
 ### 🐛 Bug Fixes
