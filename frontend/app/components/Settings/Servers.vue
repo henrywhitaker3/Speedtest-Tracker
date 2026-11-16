@@ -119,6 +119,12 @@ const loadServers = async () => {
 
   try {
     const response = await listServers()
+
+    if (response.error) {
+      error.value = 'Unable to load Speedtest servers.'
+      return
+    }
+
     servers.value = response.data ?? []
   } catch {
     error.value = 'Unable to load Speedtest servers.'
