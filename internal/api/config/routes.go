@@ -5,7 +5,8 @@ import (
 	"github.com/henrywhitaker3/windowframe/v2/http"
 )
 
-func RegisterRoutes(h *http.HTTP, conf *config.Config) {
+func RegisterRoutes(h *http.HTTP, conf *config.Config, lister serverLister) {
 	h.Register(&configHandler{conf: *conf})
 	h.Register(&notificationsHandler{conf: conf.Notifications})
+	h.Register(&listServersHandler{lister: lister})
 }

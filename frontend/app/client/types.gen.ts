@@ -67,6 +67,10 @@ export type ConfigConfigResponse = {
 export type ConfigNotification = {
     botToken?: string;
     chatID?: string;
+    gotifyToken?: string;
+    headers?: {
+        [key: string]: string;
+    };
     kind?: ConfigNotificationKind;
     phases?: Array<ConfigNotificationPhase> | null;
     url?: string;
@@ -92,6 +96,15 @@ export type GormDeletedAt = {
 
 export type HttpErrorJson = {
     message?: string;
+};
+
+export type OoklaServer = {
+    country?: string;
+    host?: string;
+    id?: number;
+    location?: string;
+    name?: string;
+    port?: number;
 };
 
 export type RestoreLegacyResult = {
@@ -476,6 +489,45 @@ export type GetNotificationsResponses = {
 };
 
 export type GetNotificationsResponse = GetNotificationsResponses[keyof GetNotificationsResponses];
+
+export type ListServersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/config/servers';
+};
+
+export type ListServersErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type ListServersError = ListServersErrors[keyof ListServersErrors];
+
+export type ListServersResponses = {
+    /**
+     * OK
+     */
+    200: Array<OoklaServer>;
+};
+
+export type ListServersResponse = ListServersResponses[keyof ListServersResponses];
 
 export type RestoreJsonData = {
     body?: Array<RestoreLegacyResult>;

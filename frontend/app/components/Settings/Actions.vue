@@ -24,11 +24,19 @@
         </dd>
       </div>
       <div>
-        <dl class="text-muted-text-sm">
+        <dl class="text-muted text-sm">
           Restore JSON Backup
         </dl>
         <dd class="mt-2 font-mono text-sm">
           <SettingsRestore />
+        </dd>
+      </div>
+      <div>
+        <dl class="text-muted text-sm">
+          List Servers
+        </dl>
+        <dd class="mt-2 font-mono text-sm">
+          <SettingsServers />
         </dd>
       </div>
     </dl>

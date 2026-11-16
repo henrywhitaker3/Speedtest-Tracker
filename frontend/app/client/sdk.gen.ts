@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CompatLatestData, CompatLatestErrors, CompatLatestResponses, CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RestoreJsonData, RestoreJsonErrors, RestoreJsonResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
+import type { CompatLatestData, CompatLatestErrors, CompatLatestResponses, CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListServersData, ListServersErrors, ListServersResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RestoreJsonData, RestoreJsonErrors, RestoreJsonResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -87,6 +87,21 @@ export const getNotifications = <ThrowOnError extends boolean = false>(options?:
             type: 'apiKey'
         }],
     url: '/v1/config/notifications',
+    ...options
+});
+
+/**
+ * List servers
+ *
+ * List nearby Speedtest servers
+ */
+export const listServers = <ThrowOnError extends boolean = false>(options?: Options<ListServersData, ThrowOnError>): RequestResult<ListServersResponses, ListServersErrors, ThrowOnError> => (options?.client ?? client).get<ListServersResponses, ListServersErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/config/servers',
     ...options
 });
 
