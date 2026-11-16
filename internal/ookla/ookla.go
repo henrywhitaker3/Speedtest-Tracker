@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -21,6 +22,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/prometheus/client_golang/prometheus"
+	"go.opentelemetry.io/otel/attribute"
 	"gorm.io/datatypes"
 )
 
@@ -121,10 +123,22 @@ func (o *Ookla) PickServer(ctx context.Context) (int, error) {
 }
 
 func (o *Ookla) ListServers(ctx context.Context) ([]Server, error) {
-	cmd := exec.CommandContext(ctx, binaryFile, "--servers", "--format=json")
+	execArgs := []string{"--servers", "--format=json"}
+	execCtx, span := tracing.NewSpan(ctx, "exec")
+	span.SetAttributes(
+		attribute.String("exec.binary", binaryFile),
+		attribute.StringSlice("exec.args", execArgs),
+	)
+
+	cmd := exec.CommandContext(execCtx, binaryFile, execArgs...)
 	raw, err := cmd.Output()
+	span.End()
 	if err != nil {
-		return nil, fmt.Errorf("list nearest servers: %w", err)
+		err := fmt.Errorf("list nearest servers: %w", err)
+		if exitErr, ok := errors.AsType[*exec.ExitError](err); ok {
+			err = fmt.Errorf("%w: %s", err, string(exitErr.Stderr))
+		}
+		return nil, err
 	}
 
 	var servers serverEnvelope
@@ -155,11 +169,22 @@ func (o *Ookla) Run(ctx context.Context, server int, result *results.Result) err
 		execArgs = append(execArgs, fmt.Sprintf("--server-id=%d", server))
 	}
 
-	cmd := exec.CommandContext(ctx, binaryFile, execArgs...)
+	execCtx, execSpan := tracing.NewSpan(ctx, "exec")
+	execSpan.SetAttributes(
+		attribute.String("exec.binary", binaryFile),
+		attribute.StringSlice("exec.args", execArgs),
+	)
+
+	cmd := exec.CommandContext(execCtx, binaryFile, execArgs...)
 	raw, err := cmd.Output()
+	execSpan.End()
 	if err != nil {
 		speedtestErrors.Inc()
-		return fmt.Errorf("run speedtest: %w", err)
+		err := fmt.Errorf("run speedtest: %w", err)
+		if exitErr, ok := errors.AsType[*exec.ExitError](err); ok {
+			err = fmt.Errorf("%w: %s", err, string(exitErr.Stderr))
+		}
+		return err
 	}
 
 	slog.DebugContext(ctx, "got raw speedtest output", "output", string(raw))
@@ -253,7 +278,9 @@ func ensureBinary(ctx context.Context, version string) error {
 	if err != nil {
 		return fmt.Errorf("download binary: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("got status code %d", resp.StatusCode)
@@ -271,7 +298,9 @@ func extractBinary(archive io.Reader, destination string) error {
 	if err != nil {
 		return fmt.Errorf("open gzip stream: %w", err)
 	}
-	defer gzipReader.Close()
+	defer func() {
+		_ = gzipReader.Close()
+	}()
 
 	tarReader := tar.NewReader(gzipReader)
 	for {
@@ -293,12 +322,13 @@ func extractBinary(archive io.Reader, destination string) error {
 		if err != nil {
 			return fmt.Errorf("open binary file: %w", err)
 		}
+		defer func() {
+			_ = binary.Close()
+		}()
 		if _, err := io.Copy(binary, tarReader); err != nil {
-			binary.Close()
 			return fmt.Errorf("write binary: %w", err)
 		}
 		if err := binary.Chmod(0o755); err != nil {
-			binary.Close()
 			return fmt.Errorf("set binary permissions: %w", err)
 		}
 		if err := binary.Close(); err != nil {
