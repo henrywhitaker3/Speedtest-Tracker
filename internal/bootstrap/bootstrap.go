@@ -44,7 +44,7 @@ func Bootstrap(
 
 	slog.Debug("loaded config", "config", conf)
 
-	ooklaCLI, err := ookla.New(ctx, ooklaVersion, conf.Server)
+	ooklaCLI, err := ookla.New(ctx, ooklaVersion, conf.Server, ookla.NewCaller())
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("init ookla: %w", err)
 	}

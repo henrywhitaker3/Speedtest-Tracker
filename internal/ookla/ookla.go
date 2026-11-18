@@ -5,24 +5,21 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log/slog"
 	"math/rand"
 	"net/http"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/prometheus/client_golang/prometheus"
-	"go.opentelemetry.io/otel/attribute"
 	"gorm.io/datatypes"
 )
 
@@ -76,15 +73,26 @@ func init() {
 }
 
 type Ookla struct {
+	caller caller
 	server []int
+
+	mu         *sync.Mutex
+	serverList *serverEnvelope
 }
 
-func New(ctx context.Context, version string, serverID []int) (*Ookla, error) {
+type caller interface {
+	listServers(context.Context) (serverEnvelope, error)
+	runTest(ctx context.Context, server int) (results.SpeedtestOutput, error)
+}
+
+func New(ctx context.Context, version string, serverID []int, c caller) (*Ookla, error) {
 	if err := ensureBinary(ctx, version); err != nil {
 		return nil, err
 	}
 	return &Ookla{
 		server: serverID,
+		caller: c,
+		mu:     &sync.Mutex{},
 	}, nil
 }
 
@@ -123,28 +131,21 @@ func (o *Ookla) PickServer(ctx context.Context) (int, error) {
 }
 
 func (o *Ookla) ListServers(ctx context.Context) ([]Server, error) {
-	execArgs := []string{"--servers", "--format=json"}
-	execCtx, span := tracing.NewSpan(ctx, "exec")
-	span.SetAttributes(
-		attribute.String("exec.binary", binaryFile),
-		attribute.StringSlice("exec.args", execArgs),
-	)
+	o.mu.Lock()
+	defer o.mu.Unlock()
 
-	cmd := exec.CommandContext(execCtx, binaryFile, execArgs...)
-	raw, err := cmd.Output()
-	span.End()
-	if err != nil {
-		err := fmt.Errorf("list nearest servers: %w", err)
-		if exitErr, ok := errors.AsType[*exec.ExitError](err); ok {
-			err = fmt.Errorf("%w: %s", err, string(exitErr.Stderr))
+	if o.serverList != nil {
+		if !o.serverList.Timestamp.Before(time.Now().Add(-time.Minute * 30)) {
+			return o.serverList.Servers, nil
 		}
+		o.serverList = nil
+	}
+
+	servers, err := o.caller.listServers(ctx)
+	if err != nil {
 		return nil, err
 	}
-
-	var servers serverEnvelope
-	if err := json.Unmarshal(raw, &servers); err != nil {
-		return nil, fmt.Errorf("unmarshal server data: %w", err)
-	}
+	o.serverList = &servers
 
 	return servers.Servers, nil
 }
@@ -164,36 +165,10 @@ func (o *Ookla) Run(ctx context.Context, server int, result *results.Result) err
 
 	start := time.Now()
 
-	execArgs := append([]string{}, agrs...)
-	if server != 0 {
-		execArgs = append(execArgs, fmt.Sprintf("--server-id=%d", server))
-	}
-
-	execCtx, execSpan := tracing.NewSpan(ctx, "exec")
-	execSpan.SetAttributes(
-		attribute.String("exec.binary", binaryFile),
-		attribute.StringSlice("exec.args", execArgs),
-	)
-
-	cmd := exec.CommandContext(execCtx, binaryFile, execArgs...)
-	raw, err := cmd.Output()
-	execSpan.End()
+	output, err := o.caller.runTest(ctx, server)
 	if err != nil {
-		speedtestErrors.Inc()
-		err := fmt.Errorf("run speedtest: %w", err)
-		if exitErr, ok := errors.AsType[*exec.ExitError](err); ok {
-			err = fmt.Errorf("%w: %s", err, string(exitErr.Stderr))
-		}
 		return err
 	}
-
-	slog.DebugContext(ctx, "got raw speedtest output", "output", string(raw))
-	var output results.SpeedtestOutput
-	if err := json.Unmarshal(raw, &output); err != nil {
-		speedtestErrors.Inc()
-		return fmt.Errorf("unmarshal output: %w", err)
-	}
-	slog.DebugContext(ctx, "got parsed speedtest output", "output", output)
 
 	labels := []string{fmt.Sprint(output.Server.ID)}
 	speedtestsRun.WithLabelValues(labels...).Inc()

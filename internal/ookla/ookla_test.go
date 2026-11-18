@@ -4,11 +4,15 @@ import (
 	"archive/tar"
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"slices"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -119,4 +123,89 @@ func TestPickServerSelectsConfiguredServer(t *testing.T) {
 		}
 	}
 	require.NotEqual(t, 1, len(picked))
+}
+
+func TestListServersCachesFreshServerList(t *testing.T) {
+	servers := []Server{{ID: 1, Name: "nearest"}}
+	caller := &callerStub{
+		serverLists: []serverEnvelope{{
+			Timestamp: time.Now().Add(-29 * time.Minute),
+			Servers:   servers,
+		}},
+	}
+	ookla := &Ookla{caller: caller, mu: &sync.Mutex{}}
+
+	first, err := ookla.ListServers(t.Context())
+	require.NoError(t, err)
+	second, err := ookla.ListServers(t.Context())
+	require.NoError(t, err)
+
+	assert.Equal(t, servers, first)
+	assert.Equal(t, servers, second)
+	assert.Equal(t, 1, caller.listServersCalls)
+}
+
+func TestListServersRefreshesExpiredServerList(t *testing.T) {
+	expiredServers := []Server{{ID: 1, Name: "expired"}}
+	refreshedServers := []Server{{ID: 2, Name: "refreshed"}}
+	caller := &callerStub{
+		serverLists: []serverEnvelope{
+			{Timestamp: time.Now().Add(-31 * time.Minute), Servers: expiredServers},
+			{Timestamp: time.Now(), Servers: refreshedServers},
+		},
+	}
+	ookla := &Ookla{caller: caller, mu: &sync.Mutex{}}
+
+	first, err := ookla.ListServers(t.Context())
+	require.NoError(t, err)
+	second, err := ookla.ListServers(t.Context())
+	require.NoError(t, err)
+
+	assert.Equal(t, expiredServers, first)
+	assert.Equal(t, refreshedServers, second)
+	assert.Equal(t, 2, caller.listServersCalls)
+}
+
+func TestListServersDoesNotCacheFailedRefreshes(t *testing.T) {
+	want := errors.New("list servers")
+	servers := []Server{{ID: 1, Name: "nearest"}}
+	caller := &callerStub{
+		listServersErrors: []error{want},
+		serverLists: []serverEnvelope{
+			{},
+			{Timestamp: time.Now(), Servers: servers},
+		},
+	}
+	ookla := &Ookla{caller: caller, mu: &sync.Mutex{}}
+
+	_, err := ookla.ListServers(t.Context())
+	require.ErrorIs(t, err, want)
+	got, err := ookla.ListServers(t.Context())
+	require.NoError(t, err)
+
+	assert.Equal(t, servers, got)
+	assert.Equal(t, 2, caller.listServersCalls)
+}
+
+type callerStub struct {
+	serverLists       []serverEnvelope
+	listServersErrors []error
+	listServersCalls  int
+}
+
+func (c *callerStub) listServers(context.Context) (serverEnvelope, error) {
+	call := c.listServersCalls
+	c.listServersCalls++
+
+	if call < len(c.listServersErrors) && c.listServersErrors[call] != nil {
+		return serverEnvelope{}, c.listServersErrors[call]
+	}
+	if call < len(c.serverLists) {
+		return c.serverLists[call], nil
+	}
+	return serverEnvelope{}, nil
+}
+
+func (*callerStub) runTest(context.Context, int) (results.SpeedtestOutput, error) {
+	return results.SpeedtestOutput{}, nil
 }
