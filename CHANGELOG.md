@@ -1,3 +1,18 @@
+## [2.9.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.3..v2.9.0) - 2026-11-18
+
+### 🚀 Features
+
+- *(ui)* Add modal to show nearest ookla servers - ([85512bb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/85512bb0ae733b8d19b10a151c8001e0c3989839))
+- Add endpoint to list speedtest servers - ([fba0bfd](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/fba0bfdc559652199c4ddf091518bf78610e9272))
+
+### 🐛 Bug Fixes
+
+- Add spans around exec calls - ([94f3bfa](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/94f3bfa3def0d7c7d459378d1c9a3c598f46cafd))
+- Improve server list error handling - ([1e5fc33](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1e5fc336a65aab47051e27512992ec264d2bb03e))
+
+### 📦 Dependencies
+
+- *(deps)* Update module github.com/go-telegram/bot to v1.29.0 - ([3478577](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3478577f355f384e94a43f79fb35f14d602a081a))
 ## [2.8.3](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.2..v2.8.3) - 2026-11-16
 
 ### 🐛 Bug Fixes
