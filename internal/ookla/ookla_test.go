@@ -14,6 +14,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	metricspb "github.com/prometheus/client_model/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -187,10 +189,75 @@ func TestListServersDoesNotCacheFailedRefreshes(t *testing.T) {
 	assert.Equal(t, 2, caller.listServersCalls)
 }
 
+func TestRunUpdatesResult(t *testing.T) {
+	output := speedtestOutput(10)
+	ookla := &Ookla{caller: &callerStub{speedtestOutput: output}}
+	result := &results.Result{}
+
+	require.NoError(t, ookla.Run(t.Context(), output.Server.ID, result))
+
+	assert.Equal(t, output.Ping.Latency, *result.Ping)
+	assert.Equal(t, int64(output.Download.Bandwidth), *result.Download)
+	assert.Equal(t, int64(output.Upload.Bandwidth), *result.Upload)
+	assert.Equal(t, output.Server.ID, *result.ServerID)
+	assert.Equal(t, "speedtest.example:8080", *result.ServerHost)
+	assert.Equal(t, output.Server.Name, *result.ServerName)
+	assert.Equal(t, output.Result.URL, *result.URL)
+	assert.True(t, result.Complete)
+	require.NotNil(t, result.Raw)
+	assert.Equal(t, output, result.Raw.Data())
+}
+
+func TestRunUpdatesPrometheusMetrics(t *testing.T) {
+	output := speedtestOutput(987654321)
+	ookla := &Ookla{caller: &callerStub{speedtestOutput: output}}
+	labels := []string{"987654321"}
+	runsBefore := metricValue(t, speedtestsRun.WithLabelValues(labels...)).GetCounter().GetValue()
+	durationCountBefore := metricValue(t, metricWithLabels(t, speedtestDurationSeconds.MetricVec, labels...)).GetHistogram().GetSampleCount()
+
+	require.NoError(t, ookla.Run(t.Context(), output.Server.ID, &results.Result{}))
+
+	assert.Equal(t, runsBefore+1, metricValue(t, speedtestsRun.WithLabelValues(labels...)).GetCounter().GetValue())
+	assert.Equal(t, durationCountBefore+1, metricValue(t, metricWithLabels(t, speedtestDurationSeconds.MetricVec, labels...)).GetHistogram().GetSampleCount())
+	assert.Equal(t, output.Ping.Latency, metricValue(t, speedtestPingMilliseconds.WithLabelValues(labels...)).GetGauge().GetValue())
+	assert.Equal(t, float64(output.Download.Bandwidth), metricValue(t, speedtestDownloadBytesPerSecond.WithLabelValues(labels...)).GetGauge().GetValue())
+	assert.Equal(t, float64(output.Upload.Bandwidth), metricValue(t, speedtestUploadBytesPerSecond.WithLabelValues(labels...)).GetGauge().GetValue())
+}
+
+func speedtestOutput(serverID int) results.SpeedtestOutput {
+	return results.SpeedtestOutput{
+		Ping:     results.Ping{Latency: 10.5},
+		Download: results.Measurement{Bandwidth: 1_000_000},
+		Upload:   results.Measurement{Bandwidth: 500_000},
+		Server: &results.Server{
+			ID:   serverID,
+			Host: "speedtest.example",
+			Port: 8080,
+			Name: "Speedtest",
+		},
+		Result: &results.OoklaResult{URL: "https://www.speedtest.net/result/1"},
+	}
+}
+
+func metricValue(t *testing.T, metric prometheus.Metric) *metricspb.Metric {
+	t.Helper()
+	value := &metricspb.Metric{}
+	require.NoError(t, metric.Write(value))
+	return value
+}
+
+func metricWithLabels(t *testing.T, vector *prometheus.MetricVec, labels ...string) prometheus.Metric {
+	t.Helper()
+	metric, err := vector.GetMetricWithLabelValues(labels...)
+	require.NoError(t, err)
+	return metric
+}
+
 type callerStub struct {
 	serverLists       []serverEnvelope
 	listServersErrors []error
 	listServersCalls  int
+	speedtestOutput   results.SpeedtestOutput
 }
 
 func (c *callerStub) listServers(context.Context) (serverEnvelope, error) {
@@ -206,6 +273,6 @@ func (c *callerStub) listServers(context.Context) (serverEnvelope, error) {
 	return serverEnvelope{}, nil
 }
 
-func (*callerStub) runTest(context.Context, int) (results.SpeedtestOutput, error) {
-	return results.SpeedtestOutput{}, nil
+func (c *callerStub) runTest(context.Context, int) (results.SpeedtestOutput, error) {
+	return c.speedtestOutput, nil
 }
