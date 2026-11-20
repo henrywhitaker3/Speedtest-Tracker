@@ -12,9 +12,10 @@ require (
 	github.com/henrywhitaker3/windowframe/v2 v2.7.4
 	github.com/italypaleale/francis v0.2.2
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo/v5 v5.4.6
+	github.com/labstack/echo/v5 v5.4.7
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/prometheus/client_golang v1.25.0
+	github.com/prometheus/client_model v0.6.3
 	github.com/slack-go/slack v0.36.0
 	github.com/stretchr/testify v1.12.1
 	github.com/swaggest/jsonschema-go v0.3.79
@@ -102,7 +103,6 @@ require (
 	github.com/paulmach/orb v0.11.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_model v0.6.3 // indirect
 	github.com/prometheus/common v0.72.1 // indirect
 	github.com/prometheus/otlptranslator v1.0.0 // indirect
 	github.com/prometheus/procfs v0.23.0 // indirect
