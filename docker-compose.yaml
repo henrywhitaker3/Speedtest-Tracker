@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:18-alpine
+    image: postgres:19-alpine
     environment:
       POSTGRES_DB: speedtest-tracker
       POSTGRES_USER: speedtest-tracker
