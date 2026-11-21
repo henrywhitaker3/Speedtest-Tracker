@@ -1,6 +1,6 @@
 # Speedtest Tracker v2
 
-[![Docker pulls](https://img.shields.io/docker/pulls/henrywhitaker3/speedtest-tracker?style=flat-square)](https://hub.docker.com/r/henrywhitaker3/speedtest-tracker)
+[![GitHub Container Registry](https://img.shields.io/badge/Container%20registry-GHCR-181717?style=flat-square&logo=github)](https://github.com/henrywhitaker3/Speedtest-Tracker/pkgs/container/speedtest-tracker)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/henrywhitaker3/Speedtest-Tracker/build.yaml?style=flat-square&label=Build)](https://github.com/henrywhitaker3/Speedtest-Tracker/actions/workflows/build.yaml)
 [![last_commit](https://img.shields.io/github/last-commit/henrywhitaker3/Speedtest-Tracker?style=flat-square?branch=v2)](https://github.com/henrywhitaker3/Speedtest-Tracker/commits)
 [![issues](https://img.shields.io/github/issues/henrywhitaker3/Speedtest-Tracker?style=flat-square)](https://github.com/henrywhitaker3/Speedtest-Tracker/issues)
@@ -34,7 +34,7 @@ For a simple deployment, use SQLite with a persistent Docker volume. Create an e
 ```yaml
 services:
   app:
-    image: henrywhitaker3/speedtest-tracker:latest
+    image: ghcr.io/henrywhitaker3/speedtest-tracker:v2
     restart: unless-stopped
     ports:
       - "8080:8080"
