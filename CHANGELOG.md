@@ -1,3 +1,22 @@
+## [2.9.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.9.0..v2.9.1) - 2026-11-21
+
+### 🐛 Bug Fixes
+
+- *(ui)* Data race in DataLoader - ([6f3afb5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6f3afb5baf33c974394bd589e3c5f5ad47807bfb))
+
+### ⚡ Performance
+
+- Cache list server output for 30 mins - ([ccfe49b](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ccfe49b7c7a5e933683da75bd0d775720f8a8718))
+
+### 📦 Dependencies
+
+- *(deps)* Update module github.com/labstack/echo/v5 to v5.4.7 - ([734d7c1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/734d7c176155bb6ca9dbe090f1e7cbb7913c372e))
+- *(deps)* Update module github.com/adhocore/gronx to v1.20.8 - ([7b38594](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7b38594d669774cf8981a55c5f76722d2038b3a8))
+- *(deps)* Update module github.com/go-telegram/bot to v1.30.0 - ([0b738e2](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0b738e23e40642969b345e49318a985fe3caf71e))
+
+### 🧪 Testing
+
+- Assert result and metrics get updated on run - ([8d8f451](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/8d8f451237041c340f5d87ca5879da8848256546))
 ## [2.9.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.8.3..v2.9.0) - 2026-11-18
 
 ### 🚀 Features
