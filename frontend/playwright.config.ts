@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000'
+const port = process.env.PLAYWRIGHT_PORT ?? '3000'
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${port}`
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -9,7 +10,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: 'NUXT_PUBLIC_API_URL=http://localhost:3000 pnpm exec nuxt dev --port 3000',
+        command: `NUXT_PUBLIC_API_URL=http://localhost:${port} NUXT_PUBLIC_VERSION=v1.2.0 pnpm exec nuxt dev --port ${port}`,
         url: baseURL,
         timeout: 120_000,
         reuseExistingServer: !process.env.CI
