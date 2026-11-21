@@ -17,6 +17,7 @@ onStarted(({ id }) => {
 
 const pollLatest = async () => {
   while (isPolling) {
+    const activeResultIDAtRequest = activeResultID.value
     const result = await latestResult()
 
     if (!isPolling) {
@@ -29,7 +30,8 @@ const pollLatest = async () => {
     }
 
     const isNewResult = latest.value?.id !== result.data?.id
-    const hasJustCompleted = result.data?.id === activeResultID.value
+    const hasJustCompleted = result.data?.id === activeResultIDAtRequest
+      && activeResultIDAtRequest === activeResultID.value
       && result.data.complete
     latest.value = result.data
 
