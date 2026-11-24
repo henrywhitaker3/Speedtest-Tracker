@@ -1,3 +1,18 @@
+## [2.9.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.9.1..v2.9.2) - 2026-11-24
+
+### 🐛 Bug Fixes
+
+- *(ui)* Add latest version check to changelog link - ([37cfffc](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/37cfffc4ed3ffe8cae8801b0dc28621c3cae1bd5))
+- Use a singleton actor to share server list cache between instances - ([90d1a02](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/90d1a024f213938470020ca6e1394bb815eca768))
+
+### 📦 Dependencies
+
+- *(deps)* Update module modernc.org/sqlite to v1.63.0 - ([7f9c4eb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7f9c4ebea530abaa82cb0719ae6f9b69b4d2b49f))
+- *(deps)* Update module github.com/adhocore/gronx to v1.20.9 - ([44eac74](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/44eac74f1eb974b94015389f4260312ef6ae8808))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update readme with correct docker registry - ([122acd9](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/122acd93bb4a7588bb69e1678e1e868bf15f7047))
 ## [2.9.1](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.9.0..v2.9.1) - 2026-11-21
 
 ### 🐛 Bug Fixes
