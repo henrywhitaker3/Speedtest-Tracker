@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
+	"github.com/italypaleale/francis/actor"
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,19 +16,25 @@ import (
 
 func TestListServersHandlerListsServers(t *testing.T) {
 	servers := []ookla.Server{{ID: 1, Name: "Speedtest"}}
-	lister := &serverListerStub{servers: servers}
+	invoker := &serverListerInvokerStub{
+		envelope: serverListEnvelope{servers: servers},
+	}
 
-	got, err := (&listServersHandler{lister: lister}).Handler()(testContext(t), nil)
+	got, err := (&listServersHandler{invoker: invoker}).Handler()(testContext(t), nil)
 
 	require.NoError(t, err)
 	assert.Equal(t, servers, *got)
-	assert.True(t, lister.called)
+	assert.True(t, invoker.called)
+	assert.Equal(t, ookla.Actor, invoker.actorType)
+	assert.Equal(t, actor.SingletonActorID, invoker.actorID)
+	assert.Equal(t, ookla.ListServers, invoker.method)
+	assert.Nil(t, invoker.data)
 }
 
-func TestListServersHandlerWrapsListerError(t *testing.T) {
-	want := errors.New("list servers")
+func TestListServersHandlerWrapsInvokeError(t *testing.T) {
+	want := errors.New("invoke list servers")
 
-	_, err := (&listServersHandler{lister: &serverListerStub{err: want}}).Handler()(
+	_, err := (&listServersHandler{invoker: &serverListerInvokerStub{err: want}}).Handler()(
 		testContext(t),
 		nil,
 	)
@@ -35,15 +42,51 @@ func TestListServersHandlerWrapsListerError(t *testing.T) {
 	assert.ErrorIs(t, err, want)
 }
 
-type serverListerStub struct {
-	servers []ookla.Server
-	err     error
-	called  bool
+func TestListServersHandlerWrapsDecodeError(t *testing.T) {
+	want := errors.New("decode servers")
+
+	_, err := (&listServersHandler{invoker: &serverListerInvokerStub{
+		envelope: serverListEnvelope{err: want},
+	}}).Handler()(testContext(t), nil)
+
+	assert.ErrorIs(t, err, want)
 }
 
-func (s *serverListerStub) ListServers(context.Context) ([]ookla.Server, error) {
+type serverListerInvokerStub struct {
+	envelope  actor.Envelope
+	err       error
+	actorType string
+	actorID   string
+	method    string
+	data      any
+	called    bool
+}
+
+func (s *serverListerInvokerStub) Invoke(
+	_ context.Context,
+	actorType, actorID, method string,
+	data any,
+	_ ...actor.InvokeOption,
+) (actor.Envelope, error) {
 	s.called = true
-	return s.servers, s.err
+	s.actorType = actorType
+	s.actorID = actorID
+	s.method = method
+	s.data = data
+	return s.envelope, s.err
+}
+
+type serverListEnvelope struct {
+	servers []ookla.Server
+	err     error
+}
+
+func (e serverListEnvelope) Decode(into any) error {
+	if e.err != nil {
+		return e.err
+	}
+	*into.(*[]ookla.Server) = e.servers
+	return nil
 }
 
 func testContext(t *testing.T) *echo.Context {

@@ -1,23 +1,20 @@
 package config
 
 import (
-	"context"
 	"net/http"
 
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
+	"github.com/henrywhitaker3/windowframe/v2/francis"
 	"github.com/henrywhitaker3/windowframe/v2/http/handlers"
 	"github.com/henrywhitaker3/windowframe/v2/http/httperrors"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
+	"github.com/italypaleale/francis/actor"
 	"github.com/labstack/echo/v5"
 )
 
-type serverLister interface {
-	ListServers(context.Context) ([]ookla.Server, error)
-}
-
 type listServersHandler struct {
-	lister serverLister
+	invoker francis.Invoker
 }
 
 func (l *listServersHandler) Handler() handlers.Handler[any, []ookla.Server] {
@@ -25,8 +22,19 @@ func (l *listServersHandler) Handler() handlers.Handler[any, []ookla.Server] {
 		ctx, span := tracing.NewSpan(c.Request().Context(), "List servers")
 		defer span.End()
 
-		servers, err := l.lister.ListServers(ctx)
+		data, err := l.invoker.Invoke(
+			ctx,
+			ookla.Actor,
+			actor.SingletonActorID,
+			ookla.ListServers,
+			nil,
+		)
 		if err != nil {
+			return nil, httperrors.Stack(err)
+		}
+
+		var servers []ookla.Server
+		if err := data.Decode(&servers); err != nil {
 			return nil, httperrors.Stack(err)
 		}
 

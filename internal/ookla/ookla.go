@@ -14,11 +14,12 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"sync"
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/windowframe/v2/francis"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
+	"github.com/italypaleale/francis/actor"
 	"github.com/prometheus/client_golang/prometheus"
 	"gorm.io/datatypes"
 )
@@ -74,25 +75,28 @@ func init() {
 
 type Ookla struct {
 	caller caller
+	client francis.Invoker
 	server []int
-
-	mu         *sync.Mutex
-	serverList *serverEnvelope
 }
 
 type caller interface {
-	listServers(context.Context) (serverEnvelope, error)
 	runTest(ctx context.Context, server int) (results.SpeedtestOutput, error)
 }
 
-func New(ctx context.Context, version string, serverID []int, c caller) (*Ookla, error) {
+func New(
+	ctx context.Context,
+	version string,
+	serverID []int,
+	c caller,
+	client francis.Invoker,
+) (*Ookla, error) {
 	if err := ensureBinary(ctx, version); err != nil {
 		return nil, err
 	}
 	return &Ookla{
 		server: serverID,
+		client: client,
 		caller: c,
-		mu:     &sync.Mutex{},
 	}, nil
 }
 
@@ -131,23 +135,15 @@ func (o *Ookla) PickServer(ctx context.Context) (int, error) {
 }
 
 func (o *Ookla) ListServers(ctx context.Context) ([]Server, error) {
-	o.mu.Lock()
-	defer o.mu.Unlock()
-
-	if o.serverList != nil {
-		if !o.serverList.Timestamp.Before(time.Now().Add(-time.Minute * 30)) {
-			return o.serverList.Servers, nil
-		}
-		o.serverList = nil
-	}
-
-	servers, err := o.caller.listServers(ctx)
+	data, err := o.client.Invoke(ctx, Actor, actor.SingletonActorID, ListServers, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invoke list servers: %w", err)
 	}
-	o.serverList = &servers
-
-	return servers.Servers, nil
+	var servers []Server
+	if err := data.Decode(&servers); err != nil {
+		return nil, fmt.Errorf("decode list servers data: %w", err)
+	}
+	return servers, nil
 }
 
 func randomSliceValue[T any](s []T) (T, error) {

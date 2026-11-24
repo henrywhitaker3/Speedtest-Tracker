@@ -206,7 +206,7 @@ func registerRoutes(
 	if err := speedtest.Register(h, db, host, runner); err != nil {
 		return err
 	}
-	configapi.RegisterRoutes(h, conf, serverLister)
+	configapi.RegisterRoutes(h, conf, host.Service())
 	restore.Register(h, db)
 	compat.Register(h, db)
 	return nil
