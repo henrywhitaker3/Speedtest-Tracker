@@ -10,10 +10,12 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"sync"
 	"testing"
 	"time"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/testutils"
+	"github.com/italypaleale/francis/actor"
+	"github.com/italypaleale/francis/host/local"
 	"github.com/prometheus/client_golang/prometheus"
 	metricspb "github.com/prometheus/client_model/go"
 	"github.com/stretchr/testify/assert"
@@ -135,11 +137,13 @@ func TestListServersCachesFreshServerList(t *testing.T) {
 			Servers:   servers,
 		}},
 	}
-	ookla := &Ookla{caller: caller, mu: &sync.Mutex{}}
+	host := serverListerHost(t, caller)
+	ookla := &Ookla{client: host.Service()}
+	otherInstance := &Ookla{client: host.Service()}
 
 	first, err := ookla.ListServers(t.Context())
 	require.NoError(t, err)
-	second, err := ookla.ListServers(t.Context())
+	second, err := otherInstance.ListServers(t.Context())
 	require.NoError(t, err)
 
 	assert.Equal(t, servers, first)
@@ -156,7 +160,7 @@ func TestListServersRefreshesExpiredServerList(t *testing.T) {
 			{Timestamp: time.Now(), Servers: refreshedServers},
 		},
 	}
-	ookla := &Ookla{caller: caller, mu: &sync.Mutex{}}
+	ookla := &Ookla{client: serverListerHost(t, caller).Service()}
 
 	first, err := ookla.ListServers(t.Context())
 	require.NoError(t, err)
@@ -178,7 +182,7 @@ func TestListServersDoesNotCacheFailedRefreshes(t *testing.T) {
 			{Timestamp: time.Now(), Servers: servers},
 		},
 	}
-	ookla := &Ookla{caller: caller, mu: &sync.Mutex{}}
+	ookla := &Ookla{client: serverListerHost(t, caller).Service()}
 
 	_, err := ookla.ListServers(t.Context())
 	require.ErrorIs(t, err, want)
@@ -213,15 +217,51 @@ func TestRunUpdatesPrometheusMetrics(t *testing.T) {
 	ookla := &Ookla{caller: &callerStub{speedtestOutput: output}}
 	labels := []string{"987654321"}
 	runsBefore := metricValue(t, speedtestsRun.WithLabelValues(labels...)).GetCounter().GetValue()
-	durationCountBefore := metricValue(t, metricWithLabels(t, speedtestDurationSeconds.MetricVec, labels...)).GetHistogram().GetSampleCount()
+	durationCountBefore := metricValue(
+		t,
+		metricWithLabels(t, speedtestDurationSeconds.MetricVec, labels...),
+	).GetHistogram().
+		GetSampleCount()
 
 	require.NoError(t, ookla.Run(t.Context(), output.Server.ID, &results.Result{}))
 
-	assert.Equal(t, runsBefore+1, metricValue(t, speedtestsRun.WithLabelValues(labels...)).GetCounter().GetValue())
-	assert.Equal(t, durationCountBefore+1, metricValue(t, metricWithLabels(t, speedtestDurationSeconds.MetricVec, labels...)).GetHistogram().GetSampleCount())
-	assert.Equal(t, output.Ping.Latency, metricValue(t, speedtestPingMilliseconds.WithLabelValues(labels...)).GetGauge().GetValue())
-	assert.Equal(t, float64(output.Download.Bandwidth), metricValue(t, speedtestDownloadBytesPerSecond.WithLabelValues(labels...)).GetGauge().GetValue())
-	assert.Equal(t, float64(output.Upload.Bandwidth), metricValue(t, speedtestUploadBytesPerSecond.WithLabelValues(labels...)).GetGauge().GetValue())
+	assert.Equal(
+		t,
+		runsBefore+1,
+		metricValue(t, speedtestsRun.WithLabelValues(labels...)).GetCounter().GetValue(),
+	)
+	assert.Equal(
+		t,
+		durationCountBefore+1,
+		metricValue(
+			t,
+			metricWithLabels(t, speedtestDurationSeconds.MetricVec, labels...),
+		).GetHistogram().
+			GetSampleCount(),
+	)
+	assert.Equal(
+		t,
+		output.Ping.Latency,
+		metricValue(t, speedtestPingMilliseconds.WithLabelValues(labels...)).GetGauge().GetValue(),
+	)
+	assert.Equal(
+		t,
+		float64(output.Download.Bandwidth),
+		metricValue(
+			t,
+			speedtestDownloadBytesPerSecond.WithLabelValues(labels...),
+		).GetGauge().
+			GetValue(),
+	)
+	assert.Equal(
+		t,
+		float64(output.Upload.Bandwidth),
+		metricValue(
+			t,
+			speedtestUploadBytesPerSecond.WithLabelValues(labels...),
+		).GetGauge().
+			GetValue(),
+	)
 }
 
 func speedtestOutput(serverID int) results.SpeedtestOutput {
@@ -246,7 +286,11 @@ func metricValue(t *testing.T, metric prometheus.Metric) *metricspb.Metric {
 	return value
 }
 
-func metricWithLabels(t *testing.T, vector *prometheus.MetricVec, labels ...string) prometheus.Metric {
+func metricWithLabels(
+	t *testing.T,
+	vector *prometheus.MetricVec,
+	labels ...string,
+) prometheus.Metric {
 	t.Helper()
 	metric, err := vector.GetMetricWithLabelValues(labels...)
 	require.NoError(t, err)
@@ -271,6 +315,21 @@ func (c *callerStub) listServers(context.Context) (serverEnvelope, error) {
 		return c.serverLists[call], nil
 	}
 	return serverEnvelope{}, nil
+}
+
+func serverListerHost(t *testing.T, lister lister) *local.Host {
+	t.Helper()
+	return testutils.Host(t, func(t testing.TB, host *local.Host) {
+		require.NoError(t, host.RegisterSingletonActor(
+			Actor,
+			func(actorID string, service *actor.Service) actor.Actor {
+				return &serverListerActor{
+					client: actor.NewActorClient[serverListerState](Actor, actorID, service),
+					lister: lister,
+				}
+			},
+		))
+	})
 }
 
 func (c *callerStub) runTest(context.Context, int) (results.SpeedtestOutput, error) {

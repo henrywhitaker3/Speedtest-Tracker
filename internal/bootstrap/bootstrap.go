@@ -44,11 +44,6 @@ func Bootstrap(
 
 	slog.Debug("loaded config", "config", conf)
 
-	ooklaCLI, err := ookla.New(ctx, ooklaVersion, conf.Server, ookla.NewCaller())
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("init ookla: %w", err)
-	}
-
 	db, err := database.Open(conf.Database.Driver, string(conf.Database.URL))
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("connect to db: %w", err)
@@ -65,6 +60,12 @@ func Bootstrap(
 		return nil, nil, nil, fmt.Errorf("init runtime: %w", err)
 	}
 
+	caller := ookla.NewCaller()
+	ooklaCLI, err := ookla.New(ctx, ooklaVersion, conf.Server, caller, host.Service())
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("init ookla: %w", err)
+	}
+
 	resultsRepo := results.NewRepo(db)
 
 	notifierOpts, err := notifier(conf, host)
@@ -77,6 +78,7 @@ func Bootstrap(
 	workflow, err := ookla.RegisterActor(ookla.RegisterActorOpts{
 		Host:         host,
 		Runner:       ooklaCLI,
+		Lister:       caller,
 		WorkflowRepo: resultsRepo,
 		CronjobRepo:  resultsRepo,
 		Schedule:     conf.Schedule,
