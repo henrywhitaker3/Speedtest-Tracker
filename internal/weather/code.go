@@ -1,8 +1,20 @@
 package weather
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/swaggest/jsonschema-go"
+)
 
 type WeatherCode int
+
+func (WeatherCode) JSONSchema() (jsonschema.Schema, error) {
+	reflector := jsonschema.Reflector{}
+	return reflector.Reflect(struct {
+		Name  string `json:"name" required:"true"`
+		Emoji string `json:"emoji" required:"true"`
+	}{})
+}
 
 func (w WeatherCode) MarshalJSON() ([]byte, error) {
 	data := map[string]string{
