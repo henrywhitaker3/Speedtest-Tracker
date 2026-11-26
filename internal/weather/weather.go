@@ -10,10 +10,14 @@ import (
 )
 
 type WeatherData struct {
-	Code          WeatherCode `json:"code"`
-	Temperature   float64     `json:"temperature"`
-	Precipitation float64     `json:"precipitation"`
-	WindSpeed     float64     `json:"wind_speed"`
+	// WMO weather interpretation code.
+	Code WeatherCode `json:"code"`
+	// Degrees Celsius.
+	Temperature float64 `json:"temperature"`
+	// Millimetres of rain and snow over the past hour.
+	Precipitation float64 `json:"precipitation"`
+	// Metres per second.
+	WindSpeed float64 `json:"wind_speed"`
 }
 
 type Weather struct {
