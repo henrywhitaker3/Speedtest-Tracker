@@ -10,9 +10,58 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"gorm.io/gorm"
 )
+
+func TestResultWeatherAssociation(t *testing.T) {
+	repo := testRepository(t)
+	result := Result{ID: uuid.MustOrdered(), Weather: &weather.Weather{}}
+	require.NoError(t, repo.db.Create(&result).Error)
+	assert.Equal(t, result.ID, result.Weather.ResultID)
+
+	var stored Result
+	require.NoError(t, repo.db.Preload("Weather").First(&stored, "id = ?", result.ID).Error)
+	require.NotNil(t, stored.Weather)
+	assert.Equal(t, result.ID, stored.Weather.ResultID)
+	assert.Error(t, repo.db.Create(&weather.Weather{ResultID: result.ID}).Error)
+}
+
+func TestRepositoryLoadsWeather(t *testing.T) {
+	repo := testRepository(t)
+	ctx := context.Background()
+	withoutWeather, err := repo.Create(ctx)
+	require.NoError(t, err)
+	withWeather, err := repo.Create(ctx)
+	require.NoError(t, err)
+	require.NoError(t, repo.db.Create(&weather.Weather{ResultID: withWeather.ID}).Error)
+
+	got, err := repo.Get(ctx, withWeather.ID)
+	require.NoError(t, err)
+	require.NotNil(t, got.Weather)
+	assert.Equal(t, withWeather.ID, got.Weather.ResultID)
+
+	got, err = repo.Get(ctx, withoutWeather.ID)
+	require.NoError(t, err)
+	assert.Nil(t, got.Weather)
+
+	latest, err := repo.Latest(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, latest.Weather)
+	assert.Equal(t, withWeather.ID, latest.Weather.ResultID)
+
+	require.NoError(t, repo.Fresh(ctx, withWeather))
+	require.NotNil(t, withWeather.Weather)
+	assert.Equal(t, withWeather.ID, withWeather.Weather.ResultID)
+
+	list, err := repo.List(ctx, ListOpts{})
+	require.NoError(t, err)
+	require.Len(t, list.Data, 2)
+	require.NotNil(t, list.Data[0].Weather)
+	assert.Equal(t, withWeather.ID, list.Data[0].Weather.ResultID)
+	assert.Nil(t, list.Data[1].Weather)
+}
 
 func TestRepositoryCreateAndGet(t *testing.T) {
 	repo := testRepository(t)
