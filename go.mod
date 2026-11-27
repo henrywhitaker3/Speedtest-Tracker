@@ -9,7 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.6
 	github.com/go-telegram/bot v1.30.0
 	github.com/gotify/go-api-client/v2 v2.0.4
-	github.com/henrywhitaker3/windowframe/v2 v2.7.4
+	github.com/henrywhitaker3/windowframe/v2 v2.7.5
 	github.com/italypaleale/francis v0.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.4.7
@@ -109,7 +109,7 @@ require (
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.64.1 // indirect
 	github.com/quic-go/webtransport-go v0.13.0 // indirect
-	github.com/redis/rueidis v1.0.79 // indirect
+	github.com/redis/rueidis v1.0.80 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
