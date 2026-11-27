@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
@@ -91,6 +92,7 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 				workflow.WithOptional(),
 				workflow.WithSkipIf("should store weather data", false),
 				workflow.WithInputFrom("store result"),
+				workflow.WithAttemptTimeout(time.Second*30),
 			),
 		),
 	)
