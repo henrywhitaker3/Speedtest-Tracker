@@ -39,6 +39,14 @@
           <SettingsServers />
         </dd>
       </div>
+      <div>
+        <dl class="text-muted text-sm">
+          Get Weather
+        </dl>
+        <dd class="mt-2 font-mono text-sm">
+          <SettingsWeather />
+        </dd>
+      </div>
     </dl>
   </UCard>
 </template>

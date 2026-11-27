@@ -62,6 +62,7 @@ export type ConfigConfigResponse = {
     auth?: ConfigAuthResponse;
     schedule?: string;
     server_id?: Array<number> | null;
+    weather?: ConfigWeatherResponse;
 };
 
 export type ConfigNotification = {
@@ -81,6 +82,13 @@ export type ConfigNotificationKind = 'healthcheck' | 'webhook';
 export type ConfigNotificationPhase = 'pre-run' | 'post-run';
 
 export type ConfigNotifications = Array<ConfigNotification>;
+
+export type ConfigWeatherResponse = {
+    enabled?: boolean;
+    latitude?: number;
+    longitude?: number;
+    provider?: string;
+};
 
 export type DatabasePaginationGithubComHenrywhitaker3SpeedtestTrackerV2InternalApiSpeedtestResult = {
     data?: Array<SpeedtestResult> | null;
@@ -194,6 +202,7 @@ export type ResultsStat = {
     id?: UuidUuid;
     ping?: number | null;
     upload?: number | null;
+    weather?: WeatherWeather;
 };
 
 export type SpeedtestGetResponse = {
@@ -253,6 +262,26 @@ export type SpeedtestWorkflowStep = {
  * UUID
  */
 export type UuidUuid = string;
+
+export type WeatherWeather = {
+    code?: WeatherWeatherCode;
+    precipitation?: number;
+    result_id?: UuidUuid;
+    temperature?: number;
+    wind_speed?: number;
+};
+
+export type WeatherWeatherCode = {
+    emoji: string;
+    name: string;
+};
+
+export type WeatherWeatherData = {
+    code?: WeatherWeatherCode;
+    precipitation?: number;
+    temperature?: number;
+    wind_speed?: number;
+};
 
 export type WorkflowStepStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped' | 'compensating' | 'compensated' | 'compensation-failed';
 
@@ -528,6 +557,45 @@ export type ListServersResponses = {
 };
 
 export type ListServersResponse = ListServersResponses[keyof ListServersResponses];
+
+export type GetCurrentWeatherData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/config/weather';
+};
+
+export type GetCurrentWeatherErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type GetCurrentWeatherError = GetCurrentWeatherErrors[keyof GetCurrentWeatherErrors];
+
+export type GetCurrentWeatherResponses = {
+    /**
+     * OK
+     */
+    200: WeatherWeatherData;
+};
+
+export type GetCurrentWeatherResponse = GetCurrentWeatherResponses[keyof GetCurrentWeatherResponses];
 
 export type RestoreJsonData = {
     body?: Array<RestoreLegacyResult>;

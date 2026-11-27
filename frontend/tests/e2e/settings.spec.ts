@@ -79,3 +79,30 @@ test('shows the settings link when an authenticated user is an admin', async ({ 
 
   await expect(page.getByRole('link', { name: 'Settings' })).toBeVisible()
 })
+
+test('loads and refreshes current weather and handles errors', async ({ page }) => {
+  await mockApi(page)
+  let requests = 0
+  await page.route('**/v1/config/weather', async (route) => {
+    requests++
+    await route.fulfill({
+      status: requests === 2 ? 503 : 200,
+      json: requests === 2
+        ? { message: 'weather is not configured' }
+        : { code: { name: 'Slight rain', emoji: '🌧️' }, temperature: 12.5, precipitation: 1.3, wind_speed: 3.2 }
+    })
+  })
+
+  await page.goto('/settings')
+  await page.getByRole('button', { name: 'Get Weather' }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByText('Slight rain')).toBeVisible()
+  await expect(dialog.getByText('12.5 °C')).toBeVisible()
+  await expect(dialog.getByText('1.3 mm')).toBeVisible()
+  await expect(dialog.getByText('3.2 m/s')).toBeVisible()
+  await dialog.getByRole('button', { name: 'Refresh weather' }).click()
+  await expect(dialog.getByText('Unable to load current weather.')).toBeVisible()
+  await dialog.getByRole('button', { name: 'Try again' }).click()
+  await expect(dialog.getByText('Slight rain')).toBeVisible()
+  expect(requests).toBe(3)
+})
