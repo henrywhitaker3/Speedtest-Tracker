@@ -165,6 +165,8 @@ func authRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/servers"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/weather"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/weather/backfill"},
+		{Method: stdhttp.MethodPost, Path: "/v1/config/weather/backfill"},
 		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
@@ -179,6 +181,8 @@ func adminRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/servers"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/weather"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/weather/backfill"},
+		{Method: stdhttp.MethodPost, Path: "/v1/config/weather/backfill"},
 		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
