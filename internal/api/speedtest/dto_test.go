@@ -2,6 +2,7 @@ package speedtest
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,9 +12,41 @@ import (
 
 	authapi "github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
+	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/labstack/echo/v5"
 	"gorm.io/datatypes"
 )
+
+func TestConvertWeather(t *testing.T) {
+	id := uuid.MustOrdered()
+	data := &weather.Weather{
+		ResultID: id,
+		WeatherData: weather.WeatherData{
+			Code: 61, Temperature: 3.5, Precipitation: 1.2, WindSpeed: 4.5,
+		},
+	}
+	for _, tt := range []struct {
+		name    string
+		weather *weather.Weather
+	}{
+		{name: "with weather", weather: data},
+		{name: "without weather"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			response := convert(testContext(t), results.Result{Weather: tt.weather})
+			encoded, err := json.Marshal(response)
+			require.NoError(t, err)
+			var body map[string]json.RawMessage
+			require.NoError(t, json.Unmarshal(encoded, &body))
+			if tt.weather == nil {
+				assert.NotContains(t, body, "weather")
+				return
+			}
+			assert.JSONEq(t, `{"result_id":"`+id.String()+`","code":{"name":"Slight rain","emoji":"🌧️"},"temperature":3.5,"precipitation":1.2,"wind_speed":4.5}`, string(body["weather"]))
+		})
+	}
+}
 
 func TestConvertSanitisesRawOutputForUnauthenticatedUsers(t *testing.T) {
 	isp := "Example ISP"
