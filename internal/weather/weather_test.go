@@ -18,7 +18,10 @@ func TestWithoutWeather(t *testing.T) {
 	db, err := database.Sqlite(filepath.Join(t.TempDir(), "weather.db"))
 	require.NoError(t, err)
 	require.NoError(t, results.Register(db))
-	missing := results.Result{ID: uuid.MustOrdered(), CreatedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC)}
+	missing := results.Result{
+		ID:        uuid.MustOrdered(),
+		CreatedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC),
+	}
 	withWeather := results.Result{ID: uuid.MustOrdered()}
 	deleted := results.Result{ID: uuid.MustOrdered()}
 	require.NoError(t, db.Create(&missing).Error)
@@ -30,6 +33,32 @@ func TestWithoutWeather(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, got, 1)
 	assert.True(t, missing.CreatedAt.Equal(got[missing.ID]))
+}
+
+func TestRepositoryStoreSkipsExistingWeather(t *testing.T) {
+	db, err := database.Sqlite(
+		filepath.Join(t.TempDir(), "weather.db") + "?_pragma=foreign_keys(1)",
+	)
+	require.NoError(t, err)
+	require.NoError(t, results.Register(db))
+	first := results.Result{ID: uuid.MustOrdered()}
+	second := results.Result{ID: uuid.MustOrdered()}
+	require.NoError(t, db.Create(&first).Error)
+	require.NoError(t, db.Create(&second).Error)
+	repo := weather.NewRepo(db)
+	existing := weather.Weather{
+		ResultID:    first.ID,
+		Temperature: 3,
+	}
+	require.NoError(t, repo.Store(context.Background(), []weather.Weather{existing}))
+	incoming := []weather.Weather{
+		{ResultID: first.ID, Temperature: 20},
+		{ResultID: second.ID, Temperature: 5},
+	}
+	require.NoError(t, repo.Store(context.Background(), incoming))
+	var stored []weather.Weather
+	require.NoError(t, db.Find(&stored).Error)
+	assert.ElementsMatch(t, []weather.Weather{existing, incoming[1]}, stored)
 }
 
 func TestRepositoryStore(t *testing.T) {
@@ -60,8 +89,11 @@ func TestRepositoryStore(t *testing.T) {
 				resultID = uuid.UUID{}
 			}
 			data := weather.Weather{
-				ResultID:    resultID,
-				WeatherData: weather.WeatherData{Code: 61, Temperature: 12.5, Precipitation: 1.2, WindSpeed: 7.5},
+				ResultID:      resultID,
+				Code:          61,
+				Temperature:   12.5,
+				Precipitation: 1.2,
+				WindSpeed:     7.5,
 			}
 
 			err = weather.NewRepo(db).Store(context.Background(), []weather.Weather{data})

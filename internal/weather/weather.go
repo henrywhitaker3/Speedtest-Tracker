@@ -8,6 +8,7 @@ import (
 
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type WeatherData struct {
@@ -64,7 +65,10 @@ func (r *Repository) Store(ctx context.Context, data []Weather) error {
 		}
 	}
 
-	if err := gorm.G[Weather](r.db).CreateInBatches(ctx, &data, 100); err != nil {
+	if err := gorm.G[Weather](
+		r.db,
+		clause.OnConflict{DoNothing: true},
+	).CreateInBatches(ctx, &data, 100); err != nil {
 		return fmt.Errorf("store weather data: %w", err)
 	}
 	return nil

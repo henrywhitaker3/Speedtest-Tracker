@@ -71,6 +71,12 @@ func (h *historicalActor) jobBackfill(ctx context.Context) error {
 
 	toStore := []Weather{}
 	for id, t := range toBackfill {
+		if len(toStore) >= 500 {
+			if err := h.repo.Store(ctx, toStore); err != nil {
+				return fmt.Errorf("store historical data: %w", err)
+			}
+			toStore = []Weather{}
+		}
 		val, err := h.getWeatherData(ctx, t)
 		if err != nil {
 			if ctx.Err() != nil {
