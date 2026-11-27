@@ -4,6 +4,7 @@ import (
 	"context"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
@@ -12,6 +13,24 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestWithoutWeather(t *testing.T) {
+	db, err := database.Sqlite(filepath.Join(t.TempDir(), "weather.db"))
+	require.NoError(t, err)
+	require.NoError(t, results.Register(db))
+	missing := results.Result{ID: uuid.MustOrdered(), CreatedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC)}
+	withWeather := results.Result{ID: uuid.MustOrdered()}
+	deleted := results.Result{ID: uuid.MustOrdered()}
+	require.NoError(t, db.Create(&missing).Error)
+	require.NoError(t, db.Create(&withWeather).Error)
+	require.NoError(t, db.Create(&deleted).Error)
+	require.NoError(t, db.Create(&weather.Weather{ResultID: withWeather.ID}).Error)
+	require.NoError(t, db.Delete(&deleted).Error)
+	got, err := weather.NewRepo(db).WithoutWeather(context.Background())
+	require.NoError(t, err)
+	require.Len(t, got, 1)
+	assert.True(t, missing.CreatedAt.Equal(got[missing.ID]))
+}
 
 func TestRepositoryStore(t *testing.T) {
 	tests := []struct {
@@ -41,14 +60,11 @@ func TestRepositoryStore(t *testing.T) {
 				resultID = uuid.UUID{}
 			}
 			data := weather.Weather{
-				ResultID:      resultID,
-				Code:          61,
-				Temperature:   12.5,
-				Precipitation: 1.2,
-				WindSpeed:     7.5,
+				ResultID:    resultID,
+				WeatherData: weather.WeatherData{Code: 61, Temperature: 12.5, Precipitation: 1.2, WindSpeed: 7.5},
 			}
 
-			err = weather.NewRepo(db).Store(context.Background(), &data)
+			err = weather.NewRepo(db).Store(context.Background(), []weather.Weather{data})
 			if tt.wantError != "" {
 				require.ErrorContains(t, err, tt.wantError)
 				var count int64

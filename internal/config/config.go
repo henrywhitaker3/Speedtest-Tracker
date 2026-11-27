@@ -57,12 +57,19 @@ func (a Auth) vaildate() error {
 	return fmt.Errorf("incomplete auth config")
 }
 
+type HistoricalWeather struct {
+	Enabled  bool                  `env:"ENABLED"`
+	Provider string                `env:"PROVIDER"`
+	APIKey   config.RedactedString `env:"API_KEY"`
+}
+
 type Weather struct {
-	Enabled   bool                  `env:"ENABLED"`
-	Provider  string                `env:"PROVIDER"`
-	APIKey    config.RedactedString `env:"API_KEY"`
-	Longitude float64               `env:"LON"`
-	Latitude  float64               `env:"LAT"`
+	Enabled    bool                  `env:"ENABLED"`
+	Provider   string                `env:"PROVIDER"`
+	APIKey     config.RedactedString `env:"API_KEY"`
+	Longitude  float64               `env:"LON"`
+	Latitude   float64               `env:"LAT"`
+	Historical HistoricalWeather     `env:",prefix=HISTORICAL_"`
 }
 
 func (w Weather) validate() error {
