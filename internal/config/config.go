@@ -57,6 +57,26 @@ func (a Auth) vaildate() error {
 	return fmt.Errorf("incomplete auth config")
 }
 
+type Weather struct {
+	Enabled   bool                  `env:"ENABLED"`
+	Provider  string                `env:"PROVIDER"`
+	APIKey    config.RedactedString `env:"API_KEY"`
+	Longitude float64               `env:"LON"`
+	Latitude  float64               `env:"LAT"`
+}
+
+func (w Weather) validate() error {
+	if !w.Enabled {
+		return nil
+	}
+
+	if !slices.Contains([]string{"openweathermap"}, w.Provider) {
+		return fmt.Errorf("invalid provider %s", w.Provider)
+	}
+
+	return nil
+}
+
 type Config struct {
 	App App `env:",prefix=APP_"`
 
@@ -74,6 +94,8 @@ type Config struct {
 	RetentionDays duration.StringDuration `env:"RETENTION_DAYS"`
 
 	Notifications Notifications
+
+	Weather Weather `env:",prefix=WEATHER_"`
 }
 
 func Load() (*Config, error) {
@@ -110,6 +132,9 @@ func Load() (*Config, error) {
 			Phases: []NotificationPhase{PreRun, PostRun},
 			URL:    healthcheck,
 		})
+	}
+	if err := conf.Weather.validate(); err != nil {
+		return nil, fmt.Errorf("invalid weather config: %w", err)
 	}
 
 	return &conf, nil

@@ -1,7 +1,19 @@
 package weather
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 type Provider interface {
-	Get(ctx context.Context, lon, lat float64) (*WeatherData, error)
+	Get(ctx context.Context) (*WeatherData, error)
+}
+
+func BuildProvider(provider, apiKey string, lon, lat float64) (Provider, error) {
+	switch provider {
+	case "openweathermap":
+		return newOpenWeatherMap(apiKey, lon, lat), nil
+	default:
+		return nil, fmt.Errorf("unknown provider %s", provider)
+	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/log"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
@@ -41,12 +42,13 @@ type WorkflowOpts struct {
 	Repo     workflowRepo
 	Runner   testRunner
 	Notifier notifier
+	Weather  weather.Provider
 }
 
 func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 	return workflow.New(
 		"speedtest",
-		workflow.WithVersion(7),
+		workflow.WithVersion(8),
 		workflow.WithUnknownVersionPolicy(workflow.FailUnknownVersion),
 		workflow.WithMeter(otel.Meter("speedtest")),
 		workflow.WithSteps(
@@ -78,6 +80,17 @@ func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 				workflow.WithRun(postRunNotify(opts.Notifier)),
 				workflow.WithOptional(),
 				workflow.WithSkipIf("notify", false),
+			),
+			workflow.Step(
+				"should store weather data",
+				workflow.WithRun(shouldGetWeather(opts.Weather)),
+			),
+			workflow.Step(
+				"store weather data",
+				workflow.WithRun(storeWeatherData(opts.Weather, opts.Repo)),
+				workflow.WithOptional(),
+				workflow.WithSkipIf("should store weather data", false),
+				workflow.WithInputFrom("store result"),
 			),
 		),
 	)
@@ -245,5 +258,36 @@ func postRunNotify(n notifier) workflow.RunFunc {
 		}
 
 		return nil, errors
+	}
+}
+
+func shouldGetWeather(p weather.Provider) workflow.RunFunc {
+	return func(ctx context.Context, t workflow.Task) (any, error) {
+		return p != nil, nil
+	}
+}
+
+func storeWeatherData(p weather.Provider, repo workflowRepo) workflow.RunFunc {
+	return func(ctx context.Context, t workflow.Task) (any, error) {
+		var result results.Result
+		if err := t.DecodeOutput("store result", &result); err != nil {
+			return nil, fmt.Errorf("decode input: %w", err)
+		}
+
+		data, err := p.Get(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("get current weather data: %w", err)
+		}
+
+		result.Weather = &weather.Weather{
+			ResultID:    result.ID,
+			WeatherData: *data,
+		}
+
+		if err := repo.Update(ctx, &result); err != nil {
+			return nil, fmt.Errorf("store weather data: %w", err)
+		}
+
+		return nil, nil
 	}
 }
