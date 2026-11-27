@@ -2,6 +2,7 @@ package results
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"testing"
 	"time"
@@ -10,9 +11,58 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"gorm.io/gorm"
 )
+
+func TestResultWeatherAssociation(t *testing.T) {
+	repo := testRepository(t)
+	result := Result{ID: uuid.MustOrdered(), Weather: &weather.Weather{}}
+	require.NoError(t, repo.db.Create(&result).Error)
+	assert.Equal(t, result.ID, result.Weather.ResultID)
+
+	var stored Result
+	require.NoError(t, repo.db.Preload("Weather").First(&stored, "id = ?", result.ID).Error)
+	require.NotNil(t, stored.Weather)
+	assert.Equal(t, result.ID, stored.Weather.ResultID)
+	assert.Error(t, repo.db.Create(&weather.Weather{ResultID: result.ID}).Error)
+}
+
+func TestRepositoryLoadsWeather(t *testing.T) {
+	repo := testRepository(t)
+	ctx := context.Background()
+	withoutWeather, err := repo.Create(ctx)
+	require.NoError(t, err)
+	withWeather, err := repo.Create(ctx)
+	require.NoError(t, err)
+	require.NoError(t, repo.db.Create(&weather.Weather{ResultID: withWeather.ID}).Error)
+
+	got, err := repo.Get(ctx, withWeather.ID)
+	require.NoError(t, err)
+	require.NotNil(t, got.Weather)
+	assert.Equal(t, withWeather.ID, got.Weather.ResultID)
+
+	got, err = repo.Get(ctx, withoutWeather.ID)
+	require.NoError(t, err)
+	assert.Nil(t, got.Weather)
+
+	latest, err := repo.Latest(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, latest.Weather)
+	assert.Equal(t, withWeather.ID, latest.Weather.ResultID)
+
+	require.NoError(t, repo.Fresh(ctx, withWeather))
+	require.NotNil(t, withWeather.Weather)
+	assert.Equal(t, withWeather.ID, withWeather.Weather.ResultID)
+
+	list, err := repo.List(ctx, ListOpts{})
+	require.NoError(t, err)
+	require.Len(t, list.Data, 2)
+	require.NotNil(t, list.Data[0].Weather)
+	assert.Equal(t, withWeather.ID, list.Data[0].Weather.ResultID)
+	assert.Nil(t, list.Data[1].Weather)
+}
 
 func TestRepositoryCreateAndGet(t *testing.T) {
 	repo := testRepository(t)
@@ -177,6 +227,42 @@ func TestRepositoryForgetWithZeroPeriodDeletesAllResults(t *testing.T) {
 	var remaining int64
 	require.NoError(t, repo.db.Unscoped().Model(&Result{}).Count(&remaining).Error)
 	assert.Zero(t, remaining)
+}
+
+func TestForgetDeletesWeatherAndRollsBackOnFailure(t *testing.T) {
+	for _, fail := range []bool{false, true} {
+		t.Run(fmt.Sprintf("failure=%t", fail), func(t *testing.T) {
+			db, err := database.Sqlite(filepath.Join(t.TempDir(), "results.db") + "?_pragma=foreign_keys(1)")
+			require.NoError(t, err)
+			require.NoError(t, Register(db))
+			repo := NewRepo(db)
+			expired, err := repo.Create(context.Background())
+			require.NoError(t, err)
+			current, err := repo.Create(context.Background())
+			require.NoError(t, err)
+			require.NoError(t, db.Model(&Result{}).Where("id = ?", expired.ID).Update("created_at", time.Now().Add(-2*time.Hour)).Error)
+			require.NoError(t, db.Create(&[]weather.Weather{{ResultID: expired.ID}, {ResultID: current.ID}}).Error)
+			if fail {
+				require.NoError(t, db.Exec("CREATE TRIGGER block_result_delete BEFORE DELETE ON results BEGIN SELECT RAISE(ABORT, 'blocked'); END").Error)
+			}
+			count, err := repo.Forget(context.Background(), time.Hour)
+			if fail {
+				require.Error(t, err)
+				assert.Zero(t, count)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, 1, count)
+			}
+			var rows []weather.Weather
+			require.NoError(t, db.Find(&rows).Error)
+			if fail {
+				assert.Len(t, rows, 2)
+			} else {
+				require.Len(t, rows, 1)
+				assert.Equal(t, current.ID, rows[0].ResultID)
+			}
+		})
+	}
 }
 
 func TestRepositoryRestoreBatchesAndSkipsDuplicateCreatedAt(t *testing.T) {

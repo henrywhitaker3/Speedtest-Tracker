@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"gorm.io/datatypes"
@@ -25,8 +26,9 @@ type Result struct {
 	ServerName *string                              `json:"server_name"`
 	URL        *string                              `json:"url"`
 	Error      *string                              `json:"error,omitempty"`
-	Complete   bool                                 `json:"complete"        gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
+	Complete   bool                                 `json:"complete"          gorm:"index:idx_results_timeseries,expression:created_at,where:complete = true AND deleted_at IS NULL"`
 	Raw        *datatypes.JSONType[SpeedtestOutput] `json:"raw"`
+	Weather    *weather.Weather                     `json:"weather,omitempty" gorm:"foreignKey:ResultID;references:ID"`
 }
 
 type Repository struct {
@@ -40,7 +42,7 @@ func NewRepo(db *gorm.DB) *Repository {
 }
 
 func (r *Repository) Latest(ctx context.Context) (*Result, error) {
-	result, err := gorm.G[Result](r.db).Order("id DESC").First(ctx)
+	result, err := gorm.G[Result](r.db).Preload("Weather", nil).Order("id DESC").First(ctx)
 	return &result, err
 }
 
@@ -65,7 +67,7 @@ func (r *Repository) Fresh(ctx context.Context, result *Result) error {
 }
 
 func (r *Repository) Get(ctx context.Context, id uuid.UUID) (*Result, error) {
-	result, err := gorm.G[Result](r.db).Where("id = ?", id).First(ctx)
+	result, err := gorm.G[Result](r.db).Preload("Weather", nil).Where("id = ?", id).First(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get result: %w", err)
 	}
@@ -100,7 +102,12 @@ func (r *Repository) List(
 		return nil, fmt.Errorf("build results paginator: %w", err)
 	}
 
-	results, err := gorm.G[Result](r.db).Scopes(paginator).Order("id DESC").Find(ctx)
+	results, err := gorm.G[Result](
+		r.db,
+	).Preload("Weather", nil).
+		Scopes(paginator).
+		Order("id DESC").
+		Find(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("list results paginated: %w", err)
 	}
@@ -110,16 +117,18 @@ func (r *Repository) List(
 }
 
 type Stat struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	Ping      *float64  `json:"ping"`
-	Download  *int64    `json:"download"`
-	Upload    *int64    `json:"upload"`
+	ID        uuid.UUID        `json:"id"`
+	CreatedAt time.Time        `json:"created_at"`
+	Ping      *float64         `json:"ping"`
+	Download  *int64           `json:"download"`
+	Upload    *int64           `json:"upload"`
+	Weather   *weather.Weather `json:"weather,omitempty"`
 }
 
 func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]Stat, error) {
 	stats, err := gorm.G[Result](r.db).
 		Select("id, ping, download, upload, created_at").
+		Preload("Weather", nil).
 		Where("created_at >= ?", time.Now().Add(-period)).
 		Where("created_at <= ?", time.Now()).
 		Where("complete = true").
@@ -137,6 +146,7 @@ func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]St
 			Ping:      s.Ping,
 			Download:  s.Download,
 			Upload:    s.Upload,
+			Weather:   s.Weather,
 		})
 	}
 
@@ -145,10 +155,23 @@ func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]St
 
 // Forget permanently deletes results older than the given period
 func (r *Repository) Forget(ctx context.Context, period time.Duration) (int, error) {
-	result := r.db.WithContext(ctx).Unscoped().
-		Where("created_at < ?", time.Now().Add(-period)).
-		Delete(&Result{})
-	return int(result.RowsAffected), result.Error
+	cutoff := time.Now().Add(-period)
+	var deleted int64
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		expired := tx.Unscoped().Model(&Result{}).Select("id").Where("created_at < ?", cutoff)
+		if err := tx.Where("result_id IN (?)", expired).
+			Delete(&weather.Weather{}).
+			Error; err != nil {
+			return err
+		}
+		result := tx.Unscoped().Where("created_at < ?", cutoff).Delete(&Result{})
+		deleted = result.RowsAffected
+		return result.Error
+	})
+	if err != nil {
+		return 0, err
+	}
+	return int(deleted), nil
 }
 
 // PurgeErrors soft-deletes all results that have an error
@@ -260,5 +283,6 @@ func uniqueCreateAts(in []Result) []time.Time {
 func Register(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&Result{},
+		&weather.Weather{},
 	)
 }

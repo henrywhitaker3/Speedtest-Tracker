@@ -5,6 +5,7 @@ import (
 
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/api/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/labstack/echo/v5"
 	"gorm.io/gorm"
@@ -25,6 +26,7 @@ type Result struct {
 	Error      *string                  `json:"error,omitempty"`
 	Complete   bool                     `json:"complete"`
 	Raw        *results.SpeedtestOutput `json:"raw,omitempty"`
+	Weather    *weather.Weather         `json:"weather,omitempty"`
 }
 
 func convert(c *echo.Context, r results.Result) Result {
@@ -42,6 +44,7 @@ func convert(c *echo.Context, r results.Result) Result {
 		URL:        r.URL,
 		Error:      r.Error,
 		Complete:   r.Complete,
+		Weather:    r.Weather,
 	}
 
 	var output *results.SpeedtestOutput

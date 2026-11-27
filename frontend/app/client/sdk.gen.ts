@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CompatLatestData, CompatLatestErrors, CompatLatestResponses, CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListServersData, ListServersErrors, ListServersResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RestoreJsonData, RestoreJsonErrors, RestoreJsonResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
+import type { CompatLatestData, CompatLatestErrors, CompatLatestResponses, CreateTokenData, CreateTokenErrors, CreateTokenResponses, DeleteResultData, DeleteResultErrors, DeleteResultResponses, DeleteTokenData, DeleteTokenErrors, DeleteTokenResponses, GetConfigData, GetConfigErrors, GetConfigResponses, GetCurrentWeatherData, GetCurrentWeatherErrors, GetCurrentWeatherResponses, GetNotificationsData, GetNotificationsErrors, GetNotificationsResponses, GetResultData, GetResultErrors, GetResultResponses, HistoricalWeatherBackfillData, HistoricalWeatherBackfillErrors, HistoricalWeatherBackfillResponses, HistoricalWeatherStatusData, HistoricalWeatherStatusErrors, HistoricalWeatherStatusResponses, LatestResultData, LatestResultErrors, LatestResultResponses, ListResultsData, ListResultsErrors, ListResultsResponses, ListServersData, ListServersErrors, ListServersResponses, ListTokensData, ListTokensErrors, ListTokensResponses, PurgeData, PurgeErrors, PurgeResponses, RestoreJsonData, RestoreJsonErrors, RestoreJsonResponses, RunData, RunErrors, RunResponses, TimeseriesData, TimeseriesErrors, TimeseriesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -102,6 +102,43 @@ export const listServers = <ThrowOnError extends boolean = false>(options?: Opti
             type: 'apiKey'
         }],
     url: '/v1/config/servers',
+    ...options
+});
+
+/**
+ * Current weather
+ *
+ * Get current weather for the configured location
+ */
+export const getCurrentWeather = <ThrowOnError extends boolean = false>(options?: Options<GetCurrentWeatherData, ThrowOnError>): RequestResult<GetCurrentWeatherResponses, GetCurrentWeatherErrors, ThrowOnError> => (options?.client ?? client).get<GetCurrentWeatherResponses, GetCurrentWeatherErrors, ThrowOnError>({ url: '/v1/config/weather', ...options });
+
+/**
+ * Historical Weather Data Status
+ *
+ * Get the status of historical weather data backfill
+ */
+export const historicalWeatherStatus = <ThrowOnError extends boolean = false>(options?: Options<HistoricalWeatherStatusData, ThrowOnError>): RequestResult<HistoricalWeatherStatusResponses, HistoricalWeatherStatusErrors, ThrowOnError> => (options?.client ?? client).get<HistoricalWeatherStatusResponses, HistoricalWeatherStatusErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/config/weather/backfill',
+    ...options
+});
+
+/**
+ * Historical Weather Data Backfill
+ *
+ * Backfill historical weather data
+ */
+export const historicalWeatherBackfill = <ThrowOnError extends boolean = false>(options?: Options<HistoricalWeatherBackfillData, ThrowOnError>): RequestResult<HistoricalWeatherBackfillResponses, HistoricalWeatherBackfillErrors, ThrowOnError> => (options?.client ?? client).post<HistoricalWeatherBackfillResponses, HistoricalWeatherBackfillErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-speedtest-session',
+            type: 'apiKey'
+        }],
+    url: '/v1/config/weather/backfill',
     ...options
 });
 

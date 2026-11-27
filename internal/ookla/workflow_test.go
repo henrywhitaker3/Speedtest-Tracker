@@ -3,6 +3,7 @@ package ookla
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"slices"
 	"sync"
 	"testing"
@@ -11,14 +12,118 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/database"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/testutils"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/uuid"
 	"github.com/italypaleale/francis/actor"
 	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/italypaleale/francis/host/local"
 )
+
+func TestSpeedtestWorkflowWeather(t *testing.T) {
+	tests := []struct {
+		name          string
+		provider      bool
+		providerErr   error
+		wantCalls     int
+		wantWeather   bool
+		weatherStatus workflow.StepStatus
+	}{
+		{
+			name:          "stores provider weather",
+			provider:      true,
+			wantCalls:     1,
+			wantWeather:   true,
+			weatherStatus: workflow.StepCompleted,
+		},
+		{name: "skips weather without a provider", weatherStatus: workflow.StepSkipped},
+		{
+			name:     "continues when provider fails",
+			provider: true,
+			providerErr: errors.Join(
+				actor.ErrJobPermanentFailure,
+				errors.New("weather unavailable"),
+			),
+			wantCalls:     1,
+			weatherStatus: workflow.StepFailed,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db, err := database.Sqlite(
+				filepath.Join(t.TempDir(), "results.db") + "?_pragma=foreign_keys(1)",
+			)
+			require.NoError(t, err)
+			require.NoError(t, results.Register(db))
+			repo := results.NewRepo(db)
+			result, err := repo.Create(t.Context())
+			require.NoError(t, err)
+			data := weather.WeatherData{
+				Code:          61,
+				Temperature:   12.5,
+				Precipitation: 1.2,
+				WindSpeed:     3.4,
+			}
+			provider := &workflowWeatherStub{data: data, err: tt.providerErr}
+			var configured weather.Provider
+			if tt.provider {
+				configured = provider
+			}
+			wf, err := buildWorkflow(WorkflowOpts{
+				Repo: repo, Runner: &workflowRunnerStub{pickedServerID: 42},
+				Notifier: &workflowNotifierStub{}, Weather: configured,
+			})
+			require.NoError(t, err)
+			host := startWorkflowHost(t, wf)
+			service := wf.Service(host.Service())
+			id, _, err := service.Start(t.Context(), RunWorkflow{Result: *result})
+			require.NoError(t, err)
+			status := awaitWorkflowStatus(t, service, id)
+			assert.Equalf(
+				t,
+				workflow.StatusCompleted,
+				status.Status,
+				"workflow cause: %s",
+				status.Cause,
+			)
+			assert.Equal(t, tt.weatherStatus, workflowStepStatus(t, status, "store weather data"))
+			assert.Equal(t, tt.wantCalls, provider.callCount())
+			stored, err := repo.Get(t.Context(), result.ID)
+			require.NoError(t, err)
+			assert.True(t, stored.Complete)
+			if tt.wantWeather {
+				require.NotNil(t, stored.Weather)
+				assert.Equal(t, result.ID, stored.Weather.ResultID)
+				assert.Equal(t, data, stored.Weather.WeatherData)
+			} else {
+				assert.Nil(t, stored.Weather)
+			}
+		})
+	}
+}
+
+type workflowWeatherStub struct {
+	mu    sync.Mutex
+	data  weather.WeatherData
+	err   error
+	calls int
+}
+
+func (p *workflowWeatherStub) Get(context.Context) (*weather.WeatherData, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.calls++
+	return &p.data, p.err
+}
+
+func (p *workflowWeatherStub) callCount() int {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.calls
+}
 
 func TestSpeedtestWorkflow(t *testing.T) {
 	tests := []struct {

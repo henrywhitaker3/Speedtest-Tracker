@@ -1,5 +1,8 @@
 <template>
-  <ResultsRangePicker v-model="period" />
+  <ResultsRangePicker
+    v-model="period"
+    v-model:show-weather="showWeather"
+  />
 
   <UCard v-if="!stats">
     <LoadingTable :count="7" />
@@ -11,11 +14,13 @@
   <ResultsPing
     v-if="stats"
     :data="stats"
+    :show-weather="showWeather"
     :time-domain="timeDomain"
   />
   <ResultsBandwidth
     v-if="stats"
     :data="stats"
+    :show-weather="showWeather"
     :time-domain="timeDomain"
   />
 </template>
@@ -27,6 +32,7 @@ import { useLocalStorage } from '@vueuse/core'
 
 const stats = ref<ResultsStat[]>()
 
+const showWeather = useLocalStorage('speedtest-tracker:chart-weather', true)
 const period = useLocalStorage<PickerPeriod>('speedtest-tracker:chart-range', '24h')
 const fetchedAt = ref(new Date())
 

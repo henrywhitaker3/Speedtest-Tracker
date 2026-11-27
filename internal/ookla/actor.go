@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/italypaleale/francis/actor"
 	"github.com/italypaleale/francis/builtin/workflow"
 	"github.com/italypaleale/francis/host/local"
@@ -18,6 +19,7 @@ type RegisterActorOpts struct {
 	Runner       testRunner
 	Lister       lister
 	Notifier     notifier
+	Weather      weather.Provider
 }
 
 func RegisterActor(opts RegisterActorOpts) (*workflow.WorkflowService, error) {
@@ -26,6 +28,7 @@ func RegisterActor(opts RegisterActorOpts) (*workflow.WorkflowService, error) {
 		Runner:   opts.Runner,
 		Repo:     opts.WorkflowRepo,
 		Notifier: opts.Notifier,
+		Weather:  opts.Weather,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("build workflow: %w", err)

@@ -75,6 +75,11 @@
 
       <ResultsDetails :result="result" />
 
+      <ResultsWeather
+        v-if="result.weather"
+        :weather="result.weather"
+      />
+
       <ResultsWorkflowStatus
         v-if="result.status"
         :status="result.status"
@@ -84,14 +89,14 @@
 </template>
 
 <script setup lang="ts">
-import { getResult, type SpeedtestGetResponse } from '~/client'
+import { getResult, type SpeedtestGetResponse, type WeatherWeather } from '~/client'
 import { useSpeedtestCompleted } from '~/events/speedtest'
 import { useIntervalFn } from '@vueuse/core'
 
 const route = useRoute()
 const { formatDatetime } = useDate()
 
-const result = ref<SpeedtestGetResponse>()
+const result = ref<SpeedtestGetResponse & { weather?: WeatherWeather }>()
 const error = ref<string>()
 const isLoading = ref(true)
 
@@ -127,8 +132,11 @@ const { pause: pausePolling, resume: resumePolling } = useIntervalFn(() => {
   }
 }, 3_000, { immediate: false })
 
-watch(() => result.value?.complete, (complete) => {
-  if (complete === true) {
+watch(result, (current) => {
+  const steps = current?.status?.steps
+  const finished = current?.complete === true && (!steps?.length
+    || steps.every(step => step.status != null && ['completed', 'failed', 'skipped', 'compensated', 'compensation-failed'].includes(step.status)))
+  if (finished) {
     pausePolling()
   } else {
     resumePolling()

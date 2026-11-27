@@ -18,6 +18,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/notifications"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/results"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	"github.com/henrywhitaker3/windowframe/v2/otel"
 	"github.com/henrywhitaker3/windowframe/v2/tracing"
@@ -54,6 +55,9 @@ func Bootstrap(
 	if err := auth.Register(db); err != nil {
 		return nil, nil, nil, fmt.Errorf("register auth models: %w", err)
 	}
+	if err := weather.RegisterDB(db); err != nil {
+		return nil, nil, nil, fmt.Errorf("register weather models: %w", err)
+	}
 
 	host, err := runtime(conf.Database, conf.Runtime)
 	if err != nil {
@@ -75,6 +79,41 @@ func Bootstrap(
 	if err := notifications.RegisterActors(notifierOpts); err != nil {
 		return nil, nil, nil, fmt.Errorf("register notifications actors: %w", err)
 	}
+
+	var weatherProvider weather.Provider
+	if conf.Weather.Enabled {
+		var err error
+		weatherProvider, err = weather.BuildProvider(
+			conf.Weather.Provider,
+			string(conf.Weather.APIKey),
+			conf.Weather.Longitude,
+			conf.Weather.Latitude,
+		)
+		if err != nil {
+			return nil, nil, nil, fmt.Errorf("build weather provider: %w", err)
+		}
+	}
+	var weatherHistoricalProvider weather.HistoricalProvider
+	if conf.Weather.Historical.Enabled {
+		var err error
+		weatherHistoricalProvider, err = weather.BuildHistoricalProvider(
+			conf.Weather.Historical.Provider,
+			string(conf.Weather.Historical.APIKey),
+			conf.Weather.Longitude,
+			conf.Weather.Latitude,
+		)
+		if err != nil {
+			return nil, nil, nil, fmt.Errorf("build historical weather provider: %w", err)
+		}
+	}
+	if err := weather.RegisterActor(
+		host,
+		weatherHistoricalProvider,
+		weather.NewRepo(db),
+	); err != nil {
+		return nil, nil, nil, fmt.Errorf("register weather actors: %w", err)
+	}
+
 	workflow, err := ookla.RegisterActor(ookla.RegisterActorOpts{
 		Host:         host,
 		Runner:       ooklaCLI,
@@ -83,6 +122,7 @@ func Bootstrap(
 		CronjobRepo:  resultsRepo,
 		Schedule:     conf.Schedule,
 		Notifier:     host.Service(),
+		Weather:      weatherProvider,
 	})
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("register ookla actors: %w", err)

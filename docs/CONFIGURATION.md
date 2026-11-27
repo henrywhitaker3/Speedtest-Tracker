@@ -31,6 +31,42 @@ The Speedtest binary receives Ookla's EULA and GDPR flags when it runs. `ACCEPT_
 | `TEST_SERVER` | unset | Optional comma-separated Ookla server IDs. One is selected at random for each speedtest. When unset, a nearby server is selected at random from Ookla's server list. |
 | `RETENTION_DAYS` | `0` (disabled) | Retention duration for results. Expired results are permanently deleted hourly. Use a Go-style duration such as `90d`; `0` disables cleanup. |
 
+## Weather
+
+Weather integration is optional. Configure the coordinates of the location where the speedtest runs, using decimal degrees. Latitude is north/south and longitude is east/west; use negative values for south and west. If coordinates are omitted, they default to `0`.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `WEATHER_ENABLED` | `false` | Fetch current weather for new speedtest results. |
+| `WEATHER_PROVIDER` | unset | Current weather provider: `openweathermap`. |
+| `WEATHER_API_KEY` | unset | OpenWeatherMap API key. |
+| `WEATHER_LAT` | `0` | Latitude in decimal degrees. |
+| `WEATHER_LON` | `0` | Longitude in decimal degrees. |
+| `WEATHER_HISTORICAL_ENABLED` | `false` | Enable historical weather backfill. |
+| `WEATHER_HISTORICAL_PROVIDER` | unset | Historical weather provider: `apifreaks`. |
+| `WEATHER_HISTORICAL_API_KEY` | unset | APIFreaks API key. |
+
+For example, to enable both providers for a location near Manchester:
+
+```dotenv
+WEATHER_ENABLED=true
+WEATHER_PROVIDER=openweathermap
+WEATHER_API_KEY=replace-with-openweathermap-api-key
+WEATHER_LAT=53.4474
+WEATHER_LON=-2.2593
+WEATHER_HISTORICAL_ENABLED=true
+WEATHER_HISTORICAL_PROVIDER=apifreaks
+WEATHER_HISTORICAL_API_KEY=replace-with-apifreaks-api-key
+```
+
+Obtain API keys from [OpenWeatherMap](https://openweathermap.org/) and [APIFreaks](https://apifreaks.com/), and restart the application after changing its environment. The providers use separate keys; historical weather uses the same coordinates as current weather.
+
+When current weather is enabled, the application attempts to attach weather to each new speedtest result. A weather lookup failure does not prevent the speedtest workflow from completing. The result page shows the recorded conditions, temperature in °C, precipitation over the previous hour in mm, and wind speed in m/s. Weather can also be shown on result charts, and the Settings page can fetch current weather for the configured location.
+
+To fill in weather for existing results, enable the historical provider and use **Backfill Weather** under **Settings → Actions**. The job looks up the nearest hour in UTC for results that do not already have weather; existing weather is preserved. Its status appears beside the action. Provider rate limits can make the job take time, and individual lookup failures are logged and skipped. Completed batches are saved during the job; a partially filled batch may need to be fetched again if the job is interrupted. Provider data availability and usage limits apply.
+
+The API exposes current weather at `GET /v1/config/weather`, and starts or checks a backfill with `POST` or `GET /v1/config/weather/backfill`, respectively. Backfill endpoints require administrator access when authentication is enabled. Result and time-series responses include weather when it is available.
+
 ## Notifications
 
 Configure each notification with a zero-based, contiguous index. Every notification requires its kind and phases:

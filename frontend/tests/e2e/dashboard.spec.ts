@@ -49,3 +49,39 @@ test.describe('dashboard', () => {
     await expect.poll(() => deletePathname).toBe('/v1/speedtest/result-1')
   })
 })
+
+test('shows spaced weather markers on both charts when weather is available', async ({ page }) => {
+  const now = Date.now()
+  await mockApi(page, {
+    stats: {
+      body: Array.from({ length: 100 }, (_, index) => ({
+        id: `weather-${index}`,
+        created_at: new Date(now - (100 - index) * 60_000).toISOString(),
+        ping: 10,
+        download: 100_000,
+        upload: 50_000,
+        weather: { code: { name: 'Clear sky', emoji: '☀️' }, temperature: 20 }
+      }))
+    }
+  })
+
+  await page.goto('/')
+  const overlays = page.locator('[data-weather-overlay]')
+  await expect(overlays).toHaveCount(2)
+  for (const overlay of await overlays.all()) {
+    await expect(overlay.locator('span').first()).toBeVisible()
+    expect(await overlay.locator('span').count()).toBeLessThan(100)
+  }
+
+  await page.getByRole('button', { name: 'Graph settings' }).click()
+  const option = page.getByRole('menuitemcheckbox', { name: 'Weather emojis' })
+  await expect(option).toHaveAttribute('aria-checked', 'true')
+  await option.click()
+  await expect(overlays).toHaveCount(0)
+  await page.reload()
+  await expect(overlays).toHaveCount(0)
+  await page.getByRole('button', { name: 'Graph settings' }).click()
+  await expect(option).toHaveAttribute('aria-checked', 'false')
+  await option.click()
+  await expect(overlays).toHaveCount(2)
+})
