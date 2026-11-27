@@ -26,6 +26,7 @@ Speedtest Tracker runs scheduled [Ookla Speedtest CLI](https://www.speedtest.net
 - Prometheus metrics, including a native histogram of Speedtest duration.
 - OpenTelemetry tracing support.
 - Optional OpenID Connect (OIDC) authentication.
+- Optional current weather for speedtest results, with historical backfill and chart overlays.
 
 ## Quick start with Docker Compose
 
@@ -81,7 +82,7 @@ The repository's `docker-compose.yaml` starts PostgreSQL and Jaeger too; it is i
 
 ## Configuration
 
-Configuration is read from environment variables (and a local `.env` file when running the binary directly). See the full [configuration reference](docs/CONFIGURATION.md), including result retention, scheduled tests, Healthchecks.io, and observability.
+Configuration is read from environment variables (and a local `.env` file when running the binary directly). See the full [configuration reference](docs/CONFIGURATION.md), including [weather setup and historical backfill](docs/CONFIGURATION.md#weather), result retention, scheduled tests, notifications, and observability.
 
 For optional OpenID Connect authentication setup, see [Authentication](docs/AUTH.md).
 
