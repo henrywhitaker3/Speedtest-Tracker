@@ -47,7 +47,7 @@ test('restores results from a JSON backup', async ({ page }) => {
   await modal.getByRole('button', { name: 'Restore', exact: true }).click()
 
   expect((await request).postDataJSON()).toEqual([{ id: 1 }])
-  await expect(page.getByText('Restored 1 results and skipped 2.')).toBeVisible()
+  await expect(page.getByText('Restored 1 results and skipped 2.', { exact: true })).toBeVisible()
 })
 
 test('does not show the settings link when an authenticated user is not an admin', async ({ page }) => {
@@ -81,7 +81,7 @@ test('shows the settings link when an authenticated user is an admin', async ({ 
 })
 
 test('loads and refreshes current weather and handles errors', async ({ page }) => {
-  await mockApi(page)
+  await mockApi(page, { config: { body: { auth: { enabled: false }, weather: { enabled: true } } } })
   let requests = 0
   await page.route('**/v1/config/weather', async (route) => {
     requests++

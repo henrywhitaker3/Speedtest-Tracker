@@ -1,6 +1,27 @@
 import { expect, test } from '@playwright/test'
 import { mockApi, result } from './fixtures'
 
+test('shows weather recorded with the result', async ({ page }) => {
+  await mockApi(page, {
+    result: { body: { ...result, weather: { code: { name: 'Slight rain', emoji: '🌧️' }, temperature: 3, precipitation: 0, wind_speed: 4.2 } } }
+  })
+
+  await page.goto(`/results/${result.id}`)
+
+  await expect(page.getByRole('heading', { name: 'Weather' })).toBeVisible()
+  await expect(page.getByText('🌧️ Slight rain')).toBeVisible()
+  await expect(page.getByText('3 °C')).toBeVisible()
+  await expect(page.getByText('0 mm')).toBeVisible()
+  await expect(page.getByText('4.2 m/s')).toBeVisible()
+})
+
+test('hides weather when the result has none', async ({ page }) => {
+  await mockApi(page)
+  await page.goto(`/results/${result.id}`)
+  await expect(page.getByRole('heading', { name: 'Test details' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Weather' })).toHaveCount(0)
+})
+
 test('shows a completed result with its details and workflow', async ({ page }) => {
   await mockApi(page)
 

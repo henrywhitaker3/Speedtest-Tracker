@@ -75,6 +75,11 @@
 
       <ResultsDetails :result="result" />
 
+      <ResultsWeather
+        v-if="result.weather"
+        :weather="result.weather"
+      />
+
       <ResultsWorkflowStatus
         v-if="result.status"
         :status="result.status"
@@ -84,14 +89,14 @@
 </template>
 
 <script setup lang="ts">
-import { getResult, type SpeedtestGetResponse } from '~/client'
+import { getResult, type SpeedtestGetResponse, type WeatherWeather } from '~/client'
 import { useSpeedtestCompleted } from '~/events/speedtest'
 import { useIntervalFn } from '@vueuse/core'
 
 const route = useRoute()
 const { formatDatetime } = useDate()
 
-const result = ref<SpeedtestGetResponse>()
+const result = ref<SpeedtestGetResponse & { weather?: WeatherWeather }>()
 const error = ref<string>()
 const isLoading = ref(true)
 

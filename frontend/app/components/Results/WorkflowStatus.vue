@@ -94,7 +94,7 @@ const description = (name?: string) => {
       return 'Send configured post-run notifications'
     case 'pick server':
       return 'Choose which server the speedtest is run against'
-    case 'Store Weather Data':
+    case 'store weather data':
       return 'Get and store weather data from an external provider'
     default:
       return undefined
