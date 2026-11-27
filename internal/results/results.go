@@ -146,6 +146,7 @@ func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]St
 			Ping:      s.Ping,
 			Download:  s.Download,
 			Upload:    s.Upload,
+			Weather:   s.Weather,
 		})
 	}
 

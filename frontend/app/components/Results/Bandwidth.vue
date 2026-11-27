@@ -11,11 +11,18 @@
     <UChart
       class="h-64 w-full"
       :definition="definition"
+      :ui="{ center: 'pointer-events-none' }"
       :height="256"
       aria-label="Bandwidth over time"
       aria-description="A line graph showing download/upload bandwidth in mbps"
     >
-      <template #tooltip="{ title, rows }">
+      <template #center>
+        <ResultsWeatherOverlay
+          :data="data"
+          :time-domain="timeDomain"
+        />
+      </template>
+      <template #tooltip="{ title, rows, primaryPoint }">
         <p
           v-if="title"
           class="text-muted mb-1 text-xs"
@@ -34,6 +41,10 @@
           <span class="text-muted">{{ row.label }}</span>
           <span class="ml-auto font-medium">{{ formatMbitPerSecond(Number(row.value)) }}</span>
         </div>
+        <ResultsWeatherTooltip
+          :data="data"
+          :time="primaryPoint?.xValue"
+        />
       </template>
     </UChart>
   </UCard>
