@@ -49,7 +49,7 @@ type WorkflowOpts struct {
 func buildWorkflow(opts WorkflowOpts) (*workflow.Workflow, error) {
 	return workflow.New(
 		"speedtest",
-		workflow.WithVersion(8),
+		workflow.WithVersion(9),
 		workflow.WithUnknownVersionPolicy(workflow.FailUnknownVersion),
 		workflow.WithMeter(otel.Meter("speedtest")),
 		workflow.WithSteps(
