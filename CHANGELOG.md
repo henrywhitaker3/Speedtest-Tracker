@@ -1,3 +1,46 @@
+## [2.10.0](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.9.2..v2.10.0) - 2026-11-27
+
+### 🚀 Features
+
+- *(ui)* Add weather overlay to the graphs - ([7f54c45](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/7f54c45662ee09e952c35869be0da2a108bc82e9))
+- Add WMO weather code mappings - ([f621e8a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f621e8a0336f2fdeafab5df75625d56f414d2538))
+- Add database models and relationships for weather data - ([cea4059](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/cea4059977d35d524c1e22153e867d12cf76ef32))
+- Add openweathermap provider implementation - ([cdc928e](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/cdc928e98f4731788672c466716693f74c55ed75))
+- Add openweathermap provider for current weather data - ([17ac683](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/17ac683c0ec2dbf8ad995f3e0d49e7d6046e1397))
+- Add optional weather data step to test workflow - ([f694ca7](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f694ca7d8d6e0721ec261fcc3ab79a14314ef742))
+- Add endpoint to get current weather data from provider - ([d650ddb](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d650ddba58070e6cfec48ad92ff9aa3883b545bb))
+- Add provider for backfilling historical weather data - ([5bc5f91](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5bc5f91ec49718394dd079682ccef5808f4601d9))
+- Add job to backfill historical weather data using configured provider - ([3623c28](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3623c2859d1410e9ebeb10d3ffa62e66225a7601))
+
+### 🐛 Bug Fixes
+
+- *(ui)* Add pretty names for weather-related workflow steps - ([f6b0882](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f6b0882beaba7480834b5922691a1d4cb627a6f8))
+- *(ui)* Add interface to get current weather data - ([3b006ab](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/3b006ab8901abf0a3a0ba29cac823014d11be076))
+- *(ui)* Show weather info on the results page - ([d319997](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/d3199978ead348b60f416809ffb83157603b926e))
+- *(ui)* Add action to trigger weather backfill - ([89da5da](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/89da5da54218dba6345c302a55718593b8ddfb5d))
+- *(ui)* Allow toggling visibilty of weather overlay in graphs - ([b961d79](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/b961d79644f7e13f6c0db1c3d588c48329f7d8e3))
+- *(ui)* Better handling of backfill button state - ([395b66c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/395b66c4986c3a00847fc06c15f27233cef3370b))
+- *(ui)* Show weather config in settings page - ([ac9ddd8](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ac9ddd8dc90a34626765d1458a62385eb60eb6cd))
+- *(ui)* Placement of weather overlay on the graph - ([1491c7c](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/1491c7c2d52acef8c40b34ae213ee8213e09e658))
+- Add jsonschema for weather code - ([f538f5a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f538f5a21312abb95dfedd84e5a69c0fd110f833))
+- Add weather data to api responses - ([ed5f7e0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/ed5f7e09e5119b5321a1b19db83a52a3b62bc4fb))
+- Handle throttling in historical data backfill job - ([41d9eb0](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/41d9eb0e9d433d5b62406aabd0331d7d34bcfa19))
+- Add handlers to check status of, and trigger weather backfill - ([a8efe5a](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/a8efe5ac3599ef3ca53db36f9039af531370af97))
+- Periodcally flush backfilled data to the db - ([6851a38](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/6851a387a4fb913712afc9767b1d5c3c9ede6ab3))
+- Redact long/lat in unauthenticated config responses - ([5053101](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/5053101324d451495215fcbea3d0317c644a2504))
+- Add timeout to store weather data step - ([12bd847](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/12bd847187e7600e719e39f12b612f2b8ff6b179))
+- Hard-delete failing for results with weather data - ([28998e5](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/28998e5b1343341b01c8d23a81ec1b32275e7775))
+- Bump workflow version - ([4cc3bf1](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/4cc3bf1735daa4980698b5d7f11e1f951538983a))
+
+### 📦 Dependencies
+
+- *(deps)* Update module github.com/adhocore/gronx to v1.20.11 - ([de1d3f4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/de1d3f4ce05ba43abaa02d74e09a1a34be7b9d1e))
+- *(deps)* Update module github.com/go-telegram/bot to v1.31.0 - ([f8402f8](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/f8402f8ec5244d8e4f50f4b89f7b5b8b26951a26))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(docs)* Update config docs with weather config info - ([19de2f4](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/19de2f4e7d70620b2fa8562bceb5775319263cef))
+- *(ui)* Pnpm update - ([0c67e63](https://github.com/henrywhitaker3/Speedtest-Tracker/commit/0c67e63a1326bc86612257c1a3dcf2d7d7101770))
 ## [2.9.2](https://github.com/henrywhitaker3/Speedtest-Tracker/compare/v2.9.1..v2.9.2) - 2026-11-24
 
 ### 🐛 Bug Fixes
