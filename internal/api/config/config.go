@@ -19,10 +19,18 @@ type AuthResponse struct {
 	AdminGroup string `json:"admin_group"`
 }
 
+type WeatherResponse struct {
+	Enabled   bool    `json:"enabled"`
+	Provider  string  `json:"provider"`
+	Longitude float64 `json:"longitude"`
+	Latitude  float64 `json:"latitude"`
+}
+
 type ConfigResponse struct {
-	Auth     AuthResponse `json:"auth"`
-	Schedule string       `json:"schedule"`
-	ServerID []int        `json:"server_id"`
+	Auth     AuthResponse    `json:"auth"`
+	Schedule string          `json:"schedule"`
+	ServerID []int           `json:"server_id"`
+	Weather  WeatherResponse `json:"weather"`
 }
 
 func (h *configHandler) Handler() handlers.Handler[any, ConfigResponse] {
@@ -34,6 +42,12 @@ func (h *configHandler) Handler() handlers.Handler[any, ConfigResponse] {
 			},
 			Schedule: h.conf.Schedule,
 			ServerID: h.conf.Server,
+			Weather: WeatherResponse{
+				Enabled:   h.conf.Weather.Enabled,
+				Provider:  h.conf.Weather.Provider,
+				Longitude: h.conf.Weather.Longitude,
+				Latitude:  h.conf.Weather.Latitude,
+			},
 		}
 
 		if !auth.IsAuthenticated(c) {

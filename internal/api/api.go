@@ -18,6 +18,7 @@ import (
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/auth"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/config"
 	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/ookla"
+	"github.com/henrywhitaker3/Speedtest-Tracker/v2/internal/weather"
 	"github.com/henrywhitaker3/windowframe/v2/duration"
 	"github.com/henrywhitaker3/windowframe/v2/http"
 	mw "github.com/henrywhitaker3/windowframe/v2/http/middleware"
@@ -163,6 +164,7 @@ func authRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/servers"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/weather"},
 		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
@@ -176,6 +178,7 @@ func adminRoutes() authapi.ProtectedRoutes {
 		{Method: stdhttp.MethodDelete, Path: "/v1/auth/tokens/:id"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/notifications"},
 		{Method: stdhttp.MethodGet, Path: "/v1/config/servers"},
+		{Method: stdhttp.MethodGet, Path: "/v1/config/weather"},
 		{Method: stdhttp.MethodPost, Path: "/v1/restore/json"},
 	}
 }
@@ -206,7 +209,20 @@ func registerRoutes(
 	if err := speedtest.Register(h, db, host, runner); err != nil {
 		return err
 	}
-	configapi.RegisterRoutes(h, conf, host.Service())
+	var provider weather.Provider
+	if conf.Weather.Enabled {
+		var err error
+		provider, err = weather.BuildProvider(
+			conf.Weather.Provider,
+			string(conf.Weather.APIKey),
+			conf.Weather.Longitude,
+			conf.Weather.Latitude,
+		)
+		if err != nil {
+			return fmt.Errorf("build weather provider: %w", err)
+		}
+	}
+	configapi.RegisterRoutes(h, conf, host.Service(), provider)
 	restore.Register(h, db)
 	compat.Register(h, db)
 	return nil
