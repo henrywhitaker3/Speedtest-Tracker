@@ -132,8 +132,12 @@ const { pause: pausePolling, resume: resumePolling } = useIntervalFn(() => {
   }
 }, 3_000, { immediate: false })
 
-watch(() => result.value?.complete, (complete) => {
-  if (complete === true) {
+watch(result, (current) => {
+  const steps = current?.status?.steps
+  const finished = steps?.length
+    ? steps.every(step => step.status != null && ['completed', 'failed', 'skipped', 'compensated', 'compensation-failed'].includes(step.status))
+    : current?.complete === true
+  if (finished) {
     pausePolling()
   } else {
     resumePolling()

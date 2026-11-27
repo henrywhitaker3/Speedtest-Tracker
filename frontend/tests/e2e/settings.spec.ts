@@ -166,3 +166,26 @@ test('updates backfill status after starting and allows retry after failure', as
   await expect(page.getByText('Weather backfill completed.')).toBeVisible({ timeout: 10_000 })
   await expect(button).toBeEnabled()
 })
+
+test('shows configured weather providers and coordinates', async ({ page }) => {
+  await mockApi(page, {
+    config: { body: { auth: { enabled: false }, weather: { enabled: true, provider: 'openweathermap', latitude: 0, longitude: -0.12, historical: { enabled: true, provider: 'apifreaks' } } } }
+  })
+  await page.goto('/settings')
+  const card = page.locator('div').filter({ has: page.getByRole('heading', { name: 'Weather', exact: true }) }).filter({ has: page.getByText('Latitude', { exact: true }) }).last()
+  await expect(card.getByText('openweathermap')).toBeVisible()
+  await expect(card.getByText('apifreaks')).toBeVisible()
+  await expect(card.getByText('0', { exact: true })).toBeVisible()
+  await expect(card.getByText('-0.12', { exact: true })).toBeVisible()
+})
+
+test('shows placeholders for missing weather coordinates and hides disabled weather', async ({ page }) => {
+  await mockApi(page, { config: { body: { auth: { enabled: false }, weather: { enabled: true, provider: 'openweathermap', latitude: null, longitude: null } } } })
+  await page.goto('/settings')
+  const card = page.locator('div').filter({ has: page.getByRole('heading', { name: 'Weather', exact: true }) }).filter({ has: page.getByText('Latitude', { exact: true }) }).last()
+  await expect(card.getByText('-', { exact: true })).toHaveCount(2)
+  await expect(card.getByText('Historical provider')).toHaveCount(0)
+  await mockApi(page, { config: { body: { auth: { enabled: false }, weather: { enabled: false } } } })
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Weather', exact: true })).toHaveCount(0)
+})
