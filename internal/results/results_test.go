@@ -2,6 +2,7 @@ package results
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"testing"
 	"time"
@@ -226,6 +227,42 @@ func TestRepositoryForgetWithZeroPeriodDeletesAllResults(t *testing.T) {
 	var remaining int64
 	require.NoError(t, repo.db.Unscoped().Model(&Result{}).Count(&remaining).Error)
 	assert.Zero(t, remaining)
+}
+
+func TestForgetDeletesWeatherAndRollsBackOnFailure(t *testing.T) {
+	for _, fail := range []bool{false, true} {
+		t.Run(fmt.Sprintf("failure=%t", fail), func(t *testing.T) {
+			db, err := database.Sqlite(filepath.Join(t.TempDir(), "results.db") + "?_pragma=foreign_keys(1)")
+			require.NoError(t, err)
+			require.NoError(t, Register(db))
+			repo := NewRepo(db)
+			expired, err := repo.Create(context.Background())
+			require.NoError(t, err)
+			current, err := repo.Create(context.Background())
+			require.NoError(t, err)
+			require.NoError(t, db.Model(&Result{}).Where("id = ?", expired.ID).Update("created_at", time.Now().Add(-2*time.Hour)).Error)
+			require.NoError(t, db.Create(&[]weather.Weather{{ResultID: expired.ID}, {ResultID: current.ID}}).Error)
+			if fail {
+				require.NoError(t, db.Exec("CREATE TRIGGER block_result_delete BEFORE DELETE ON results BEGIN SELECT RAISE(ABORT, 'blocked'); END").Error)
+			}
+			count, err := repo.Forget(context.Background(), time.Hour)
+			if fail {
+				require.Error(t, err)
+				assert.Zero(t, count)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, 1, count)
+			}
+			var rows []weather.Weather
+			require.NoError(t, db.Find(&rows).Error)
+			if fail {
+				assert.Len(t, rows, 2)
+			} else {
+				require.Len(t, rows, 1)
+				assert.Equal(t, current.ID, rows[0].ResultID)
+			}
+		})
+	}
 }
 
 func TestRepositoryRestoreBatchesAndSkipsDuplicateCreatedAt(t *testing.T) {

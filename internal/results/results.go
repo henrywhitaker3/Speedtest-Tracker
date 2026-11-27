@@ -155,10 +155,23 @@ func (r *Repository) Timeseries(ctx context.Context, period time.Duration) ([]St
 
 // Forget permanently deletes results older than the given period
 func (r *Repository) Forget(ctx context.Context, period time.Duration) (int, error) {
-	result := r.db.WithContext(ctx).Unscoped().
-		Where("created_at < ?", time.Now().Add(-period)).
-		Delete(&Result{})
-	return int(result.RowsAffected), result.Error
+	cutoff := time.Now().Add(-period)
+	var deleted int64
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		expired := tx.Unscoped().Model(&Result{}).Select("id").Where("created_at < ?", cutoff)
+		if err := tx.Where("result_id IN (?)", expired).
+			Delete(&weather.Weather{}).
+			Error; err != nil {
+			return err
+		}
+		result := tx.Unscoped().Where("created_at < ?", cutoff).Delete(&Result{})
+		deleted = result.RowsAffected
+		return result.Error
+	})
+	if err != nil {
+		return 0, err
+	}
+	return int(deleted), nil
 }
 
 // PurgeErrors soft-deletes all results that have an error
