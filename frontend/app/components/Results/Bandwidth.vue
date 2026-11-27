@@ -106,6 +106,7 @@ const { formatTimestamp } = useDate()
 
 const definition = computed(() => {
   return defineChart({
+    margin: props.showWeather ? { top: 60 } : undefined,
     marks: [
       lineY(chartData.value, {
         x: 'created_at',

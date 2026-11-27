@@ -8,7 +8,7 @@
     <span
       v-for="marker in markers"
       :key="marker.key"
-      class="absolute top-0 -translate-x-1/2 text-base leading-none"
+      class="absolute bottom-full mb-1 -translate-x-1/2 text-base leading-none"
       :style="{ left: `${marker.position}px` }"
     >{{ marker.emoji }}</span>
   </div>
