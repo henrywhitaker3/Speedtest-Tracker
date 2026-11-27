@@ -27,8 +27,8 @@ type HistoricalWeatherResponse struct {
 type WeatherResponse struct {
 	Enabled    bool                      `json:"enabled"`
 	Provider   string                    `json:"provider"`
-	Longitude  float64                   `json:"longitude"`
-	Latitude   float64                   `json:"latitude"`
+	Longitude  *float64                  `json:"longitude"`
+	Latitude   *float64                  `json:"latitude"`
 	Historical HistoricalWeatherResponse `json:"historical"`
 }
 
@@ -51,8 +51,8 @@ func (h *configHandler) Handler() handlers.Handler[any, ConfigResponse] {
 			Weather: WeatherResponse{
 				Enabled:   h.conf.Weather.Enabled,
 				Provider:  h.conf.Weather.Provider,
-				Longitude: h.conf.Weather.Longitude,
-				Latitude:  h.conf.Weather.Latitude,
+				Longitude: new(h.conf.Weather.Longitude),
+				Latitude:  new(h.conf.Weather.Latitude),
 				Historical: HistoricalWeatherResponse{
 					Enabled:  h.conf.Weather.Historical.Enabled,
 					Provider: h.conf.Weather.Historical.Provider,
@@ -62,6 +62,8 @@ func (h *configHandler) Handler() handlers.Handler[any, ConfigResponse] {
 
 		if !auth.IsAuthenticated(c) {
 			resp.ServerID = nil
+			resp.Weather.Latitude = nil
+			resp.Weather.Longitude = nil
 		}
 
 		return resp, nil
