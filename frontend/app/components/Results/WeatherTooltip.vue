@@ -13,7 +13,7 @@
       Precipitation: {{ weather.precipitation }} mm
     </p>
     <p v-if="weather.wind_speed != null">
-      Wind speed: {{ weather.wind_speed }} m/s
+      Wind speed: {{ formatWindSpeed(weather.wind_speed) }} m/s
     </p>
   </div>
 </template>

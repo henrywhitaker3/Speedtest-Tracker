@@ -65,6 +65,11 @@ export type ConfigConfigResponse = {
     weather?: ConfigWeatherResponse;
 };
 
+export type ConfigHistoricalWeatherBackfillResponse = {
+    created?: boolean;
+    job_id?: string;
+};
+
 export type ConfigNotification = {
     botToken?: string;
     chatID?: string;
@@ -221,6 +226,7 @@ export type SpeedtestGetResponse = {
     updated_at?: string;
     upload?: number | null;
     url?: string | null;
+    weather?: WeatherWeather;
 };
 
 export type SpeedtestResult = {
@@ -238,6 +244,7 @@ export type SpeedtestResult = {
     updated_at?: string;
     upload?: number | null;
     url?: string | null;
+    weather?: WeatherWeather;
 };
 
 export type SpeedtestRunResponse = {
@@ -596,6 +603,82 @@ export type GetCurrentWeatherResponses = {
 };
 
 export type GetCurrentWeatherResponse = GetCurrentWeatherResponses[keyof GetCurrentWeatherResponses];
+
+export type HistoricalWeatherStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/config/weather/backfill';
+};
+
+export type HistoricalWeatherStatusErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type HistoricalWeatherStatusError = HistoricalWeatherStatusErrors[keyof HistoricalWeatherStatusErrors];
+
+export type HistoricalWeatherStatusResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type HistoricalWeatherBackfillData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/config/weather/backfill';
+};
+
+export type HistoricalWeatherBackfillErrors = {
+    /**
+     * Unauthorized
+     */
+    401: HttpErrorJson;
+    /**
+     * Forbidden
+     */
+    403: HttpErrorJson;
+    /**
+     * Not Found
+     */
+    404: HttpErrorJson;
+    /**
+     * Unprocessable Entity
+     */
+    422: {
+        [key: string]: string;
+    };
+};
+
+export type HistoricalWeatherBackfillError = HistoricalWeatherBackfillErrors[keyof HistoricalWeatherBackfillErrors];
+
+export type HistoricalWeatherBackfillResponses = {
+    /**
+     * OK
+     */
+    200: ConfigHistoricalWeatherBackfillResponse;
+};
+
+export type HistoricalWeatherBackfillResponse = HistoricalWeatherBackfillResponses[keyof HistoricalWeatherBackfillResponses];
 
 export type RestoreJsonData = {
     body?: Array<RestoreLegacyResult>;

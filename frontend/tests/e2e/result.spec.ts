@@ -3,7 +3,7 @@ import { mockApi, result } from './fixtures'
 
 test('shows weather recorded with the result', async ({ page }) => {
   await mockApi(page, {
-    result: { body: { ...result, weather: { code: { name: 'Slight rain', emoji: '🌧️' }, temperature: 3, precipitation: 0, wind_speed: 4.2 } } }
+    result: { body: { ...result, weather: { code: { name: 'Slight rain', emoji: '🌧️' }, temperature: 3, precipitation: 0, wind_speed: 4.256 } } }
   })
 
   await page.goto(`/results/${result.id}`)
@@ -12,7 +12,7 @@ test('shows weather recorded with the result', async ({ page }) => {
   await expect(page.getByText('🌧️ Slight rain')).toBeVisible()
   await expect(page.getByText('3 °C')).toBeVisible()
   await expect(page.getByText('0 mm')).toBeVisible()
-  await expect(page.getByText('4.2 m/s')).toBeVisible()
+  await expect(page.getByText('4.26 m/s')).toBeVisible()
 })
 
 test('hides weather when the result has none', async ({ page }) => {

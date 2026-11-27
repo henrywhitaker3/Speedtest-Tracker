@@ -47,6 +47,14 @@
           <SettingsWeather />
         </dd>
       </div>
+      <div>
+        <dl class="text-muted text-sm">
+          Backfill Weather
+        </dl>
+        <dd class="mt-2 font-mono text-sm">
+          <SettingsBackfillWeather />
+        </dd>
+      </div>
     </dl>
   </UCard>
 </template>

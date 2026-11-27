@@ -36,7 +36,7 @@
           Wind speed
         </dt>
         <dd class="mt-1 font-medium">
-          {{ weather.wind_speed != null ? `${weather.wind_speed} m/s` : '-' }}
+          {{ weather.wind_speed != null ? `${formatWindSpeed(weather.wind_speed)} m/s` : '-' }}
         </dd>
       </div>
     </dl>

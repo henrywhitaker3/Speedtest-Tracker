@@ -106,3 +106,31 @@ test('loads and refreshes current weather and handles errors', async ({ page }) 
   await expect(dialog.getByText('Slight rain')).toBeVisible()
   expect(requests).toBe(3)
 })
+
+for (const scenario of [
+  { name: 'no existing job', status: 404, body: {}, enabled: true },
+  { name: 'pending job', status: 200, body: { Status: 0 }, enabled: false },
+  { name: 'active job', status: 200, body: { Status: 1 }, enabled: false },
+  { name: 'completed job', status: 200, body: { Status: 2 }, enabled: true },
+  { name: 'failed job', status: 200, body: { Status: 3 }, enabled: true },
+  { name: 'status error', status: 500, body: {}, enabled: false }
+]) {
+  test(`weather backfill availability with ${scenario.name}`, async ({ page }) => {
+    await mockApi(page)
+    let requests = 0
+    await page.route('**/v1/config/weather/backfill', async (route) => {
+      requests++
+      await route.fulfill({ status: scenario.status, json: scenario.body })
+    })
+    await page.goto('/settings')
+    const button = page.getByRole('button', { name: 'Backfill Weather' })
+    if (scenario.enabled) {
+      await expect(button).toBeEnabled()
+      await button.click()
+      expect(requests).toBe(1)
+    } else {
+      await expect(page.getByRole('status')).toBeVisible()
+      await expect(button).toBeDisabled()
+    }
+  })
+}
