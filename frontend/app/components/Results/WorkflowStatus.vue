@@ -56,6 +56,7 @@ const buildTimelineItem = (step: SpeedtestWorkflowStep): TimelineItem => {
 const showStep = (name: string): boolean => {
   switch (name) {
     case 'notify':
+    case 'should store weather data':
       return false
     default:
       return true
@@ -74,6 +75,8 @@ const prettyName = (name?: string) => {
       return 'Send Post-run Notifications'
     case 'pick server':
       return 'Pick Server'
+    case 'store weather data':
+      return 'Store Weather Data'
     default:
       return name
   }
@@ -91,6 +94,8 @@ const description = (name?: string) => {
       return 'Send configured post-run notifications'
     case 'pick server':
       return 'Choose which server the speedtest is run against'
+    case 'Store Weather Data':
+      return 'Get and store weather data from an external provider'
     default:
       return undefined
   }
