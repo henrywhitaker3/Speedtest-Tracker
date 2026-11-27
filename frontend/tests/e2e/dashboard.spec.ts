@@ -72,4 +72,16 @@ test('shows spaced weather markers on both charts when weather is available', as
     await expect(overlay.locator('span').first()).toBeVisible()
     expect(await overlay.locator('span').count()).toBeLessThan(100)
   }
+
+  await page.getByRole('button', { name: 'Graph settings' }).click()
+  const option = page.getByRole('menuitemcheckbox', { name: 'Weather emojis' })
+  await expect(option).toHaveAttribute('aria-checked', 'true')
+  await option.click()
+  await expect(overlays).toHaveCount(0)
+  await page.reload()
+  await expect(overlays).toHaveCount(0)
+  await page.getByRole('button', { name: 'Graph settings' }).click()
+  await expect(option).toHaveAttribute('aria-checked', 'false')
+  await option.click()
+  await expect(overlays).toHaveCount(2)
 })

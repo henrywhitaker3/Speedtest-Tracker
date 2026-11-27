@@ -18,6 +18,7 @@
     >
       <template #center>
         <ResultsWeatherOverlay
+          v-if="showWeather"
           :data="data"
           :time-domain="timeDomain"
         />
@@ -62,6 +63,7 @@ import { curveMonotoneX } from 'd3-shape'
 
 const props = defineProps<{
   data: ResultsStat[]
+  showWeather: boolean
   timeDomain?: readonly [Date, Date]
 }>()
 
