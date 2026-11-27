@@ -72,3 +72,17 @@ func TestAPIFreaksLoadDailyDataErrors(t *testing.T) {
 		})
 	}
 }
+
+func TestAPIFreaksThrottle(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(`{"message":"Minutely API request limit exceeded. Please try again in one minute."}`))
+	}))
+	defer server.Close()
+	provider := newAPIFreaks("test-key", 0, 0)
+	provider.baseURL = server.URL
+	_, err := provider.Get(context.Background(), time.Now())
+	var throttled *ThrottledError
+	require.ErrorAs(t, err, &throttled)
+	assert.Equal(t, time.Minute, throttled.RetryAfter)
+}

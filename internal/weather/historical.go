@@ -2,7 +2,9 @@ package weather
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -12,6 +14,14 @@ import (
 
 type HistoricalProvider interface {
 	Get(context.Context, time.Time) (*WeatherData, error)
+}
+
+type ThrottledError struct {
+	RetryAfter time.Duration
+}
+
+func (e *ThrottledError) Error() string {
+	return fmt.Sprintf("weather provider throttled; retry after %s", e.RetryAfter)
 }
 
 func BuildHistoricalProvider(
@@ -61,21 +71,54 @@ func (h *historicalActor) jobBackfill(ctx context.Context) error {
 
 	toStore := []Weather{}
 	for id, t := range toBackfill {
-		val, err := h.provider.Get(ctx, t)
+		val, err := h.getWeatherData(ctx, t)
 		if err != nil {
-			return fmt.Errorf("get historical weather data: %w", err)
+			if ctx.Err() != nil {
+				return fmt.Errorf("get historical weather data: %w", ctx.Err())
+			}
+			slog.ErrorContext(ctx, "get historical weather data", "error", err)
+			continue
 		}
-		toStore = append(toStore, Weather{
+		if val == nil {
+			slog.ErrorContext(ctx, "historical weather provider returned no data", "result", id)
+			continue
+		}
+		data := Weather{
 			ResultID:    id,
 			WeatherData: *val,
-		})
+		}
+		toStore = append(toStore, data)
+		slog.DebugContext(ctx, "retrieved historical weather data", "data", data)
 	}
 
+	if len(toStore) == 0 {
+		return nil
+	}
 	if err := h.repo.Store(ctx, toStore); err != nil {
 		return fmt.Errorf("store historical data: %w", err)
 	}
 
 	return nil
+}
+
+func (h *historicalActor) getWeatherData(ctx context.Context, t time.Time) (*WeatherData, error) {
+	for {
+		val, err := h.provider.Get(ctx, t)
+		if err == nil {
+			return val, nil
+		}
+		var throttled *ThrottledError
+		if !errors.As(err, &throttled) || throttled.RetryAfter <= 0 {
+			return nil, err
+		}
+		timer := time.NewTimer(throttled.RetryAfter)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return nil, fmt.Errorf("wait for weather provider: %w", ctx.Err())
+		case <-timer.C:
+		}
+	}
 }
 
 type store struct {

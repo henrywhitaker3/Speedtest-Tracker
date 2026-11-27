@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 )
@@ -78,6 +79,13 @@ func (a apiFreaks) loadDailyData(ctx context.Context, t time.Time) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		var apiError struct {
+			Message string `json:"message"`
+		}
+		if resp.StatusCode == http.StatusBadRequest && json.Unmarshal(body, &apiError) == nil &&
+			strings.Contains(strings.ToLower(apiError.Message), "minutely api request limit exceeded") {
+			return &ThrottledError{RetryAfter: time.Minute}
+		}
 		return fmt.Errorf("got status code %d: %s", resp.StatusCode, string(body))
 	}
 
