@@ -116,7 +116,7 @@ for (const scenario of [
   { name: 'status error', status: 500, body: {}, enabled: false }
 ]) {
   test(`weather backfill availability with ${scenario.name}`, async ({ page }) => {
-    await mockApi(page)
+    await mockApi(page, { config: { body: { auth: { enabled: false }, weather: { historical: { enabled: true } } } } })
     let requests = 0
     await page.route('**/v1/config/weather/backfill', async (route) => {
       requests++
@@ -126,7 +126,6 @@ for (const scenario of [
     const button = page.getByRole('button', { name: 'Backfill Weather' })
     if (scenario.enabled) {
       await expect(button).toBeEnabled()
-      await button.click()
       expect(requests).toBe(1)
     } else {
       await expect(page.getByRole('status')).toBeVisible()
@@ -134,3 +133,36 @@ for (const scenario of [
     }
   })
 }
+
+test('disables weather backfill when historical weather is not configured', async ({ page }) => {
+  await mockApi(page)
+  await page.goto('/settings')
+  await expect(page.getByRole('button', { name: 'Backfill Weather' })).toBeDisabled()
+  await expect(page.getByText('Historical weather is not configured.')).toBeVisible()
+})
+
+test('updates backfill status after starting and allows retry after failure', async ({ page }) => {
+  await mockApi(page, { config: { body: { auth: { enabled: false }, weather: { historical: { enabled: true } } } } })
+  let starts = 0
+  let checks = 0
+  await page.route('**/v1/config/weather/backfill', async (route) => {
+    if (route.request().method() === 'POST') {
+      starts++
+      await route.fulfill({ status: starts === 1 ? 500 : 200, json: starts === 1 ? {} : { job_id: 'job-1', created: true } })
+    } else {
+      checks++
+      await route.fulfill({ status: checks === 1 ? 404 : 200, json: checks === 1 ? {} : { Status: checks === 2 ? 1 : 2 } })
+    }
+  })
+  await page.goto('/settings')
+  const button = page.getByRole('button', { name: 'Backfill Weather' })
+  await expect(button).toBeEnabled()
+  await button.click()
+  await expect(page.getByText('Unable to start weather backfill. Please try again.')).toBeVisible()
+  await expect(button).toBeEnabled()
+  await button.click()
+  await expect(page.getByText('Weather backfill is already in progress.')).toBeVisible()
+  await expect(button).toBeDisabled()
+  await expect(page.getByText('Weather backfill completed.')).toBeVisible({ timeout: 10_000 })
+  await expect(button).toBeEnabled()
+})

@@ -70,6 +70,11 @@ export type ConfigHistoricalWeatherBackfillResponse = {
     job_id?: string;
 };
 
+export type ConfigHistoricalWeatherResponse = {
+    enabled?: boolean;
+    provider?: string;
+};
+
 export type ConfigNotification = {
     botToken?: string;
     chatID?: string;
@@ -90,6 +95,7 @@ export type ConfigNotifications = Array<ConfigNotification>;
 
 export type ConfigWeatherResponse = {
     enabled?: boolean;
+    historical?: ConfigHistoricalWeatherResponse;
     latitude?: number;
     longitude?: number;
     provider?: string;

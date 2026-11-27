@@ -19,11 +19,17 @@ type AuthResponse struct {
 	AdminGroup string `json:"admin_group"`
 }
 
+type HistoricalWeatherResponse struct {
+	Enabled  bool   `json:"enabled"`
+	Provider string `json:"provider"`
+}
+
 type WeatherResponse struct {
-	Enabled   bool    `json:"enabled"`
-	Provider  string  `json:"provider"`
-	Longitude float64 `json:"longitude"`
-	Latitude  float64 `json:"latitude"`
+	Enabled    bool                      `json:"enabled"`
+	Provider   string                    `json:"provider"`
+	Longitude  float64                   `json:"longitude"`
+	Latitude   float64                   `json:"latitude"`
+	Historical HistoricalWeatherResponse `json:"historical"`
 }
 
 type ConfigResponse struct {
@@ -47,6 +53,10 @@ func (h *configHandler) Handler() handlers.Handler[any, ConfigResponse] {
 				Provider:  h.conf.Weather.Provider,
 				Longitude: h.conf.Weather.Longitude,
 				Latitude:  h.conf.Weather.Latitude,
+				Historical: HistoricalWeatherResponse{
+					Enabled:  h.conf.Weather.Historical.Enabled,
+					Provider: h.conf.Weather.Historical.Provider,
+				},
 			},
 		}
 

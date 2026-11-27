@@ -21,6 +21,9 @@ export const useConfigStore = defineStore('config', {
     },
     weatherEnabled(): boolean {
       return this.config?.weather?.enabled ?? false
+    },
+    historicalWeatherEnabled(): boolean {
+      return this.config?.weather?.historical?.enabled ?? false
     }
   }
 })
