@@ -53,9 +53,9 @@ func TestOpenWeatherMapGet(t *testing.T) {
 				}),
 			)
 			defer server.Close()
-			provider := newOpenWeatherMap("test-key")
+			provider := newOpenWeatherMap("test-key", -0.12, 51.5)
 			provider.baseURL = server.URL
-			got, err := provider.Get(context.Background(), -0.12, 51.5)
+			got, err := provider.Get(context.Background())
 			if tt.wantError != "" {
 				require.ErrorContains(t, err, tt.wantError)
 				assert.Nil(t, got)

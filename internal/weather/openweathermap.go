@@ -14,25 +14,28 @@ const (
 )
 
 type openWeatherMap struct {
-	apiKey  string
-	baseURL string
+	apiKey   string
+	lon, lat float64
+	baseURL  string
 }
 
-func newOpenWeatherMap(apiKey string) openWeatherMap {
+func newOpenWeatherMap(apiKey string, lon, lat float64) openWeatherMap {
 	return openWeatherMap{
 		apiKey:  apiKey,
+		lon:     lon,
+		lat:     lat,
 		baseURL: openWeatherMapBaseURL,
 	}
 }
 
-func (o openWeatherMap) Get(ctx context.Context, lon, lat float64) (*WeatherData, error) {
+func (o openWeatherMap) Get(ctx context.Context) (*WeatherData, error) {
 	endpoint, err := url.Parse(o.baseURL + "/data/2.5/weather")
 	if err != nil {
 		return nil, fmt.Errorf("build url: %w", err)
 	}
 	query := endpoint.Query()
-	query.Set("lon", fmt.Sprint(lon))
-	query.Set("lat", fmt.Sprint(lat))
+	query.Set("lon", fmt.Sprint(o.lon))
+	query.Set("lat", fmt.Sprint(o.lat))
 	query.Set("appid", o.apiKey)
 	query.Set("units", "metric")
 	endpoint.RawQuery = query.Encode()
